@@ -31,7 +31,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     private Integer maxRequest;
 
     @Value(value = "${rate-limit.window-size}")
-    private Integer windowSize;
+    private Long windowSize;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
