@@ -88,7 +88,7 @@ knife4j:
     swagger-model-name: 实体列表
 
 
-#jwt，已弃用
+#jwt；已弃用
 jwt:
   #密钥
   secret-key: abcdefghijklmnopq123456789
@@ -127,3 +127,10 @@ tmp:
 #是否开启日志记录
 log:
   enable: true
+
+#限流
+rate-limit:
+  #最大请求数；单位：个
+  max-request: 20
+  #窗口大小；单位：秒
+  window-size: 2
