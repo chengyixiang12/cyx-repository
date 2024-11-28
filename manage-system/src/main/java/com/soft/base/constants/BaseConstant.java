@@ -53,6 +53,16 @@ public class BaseConstant {
     public final static String ESCAPE_CHARACTER = "\\";
 
     /**
+     * 英文冒号
+     */
+    public final static String ENG_COLON = ":";
+
+    /**
+     * 点
+     */
+    public final static String ENG_POINT = ".";
+
+    /**
      * 空白符
      */
     public final static String BLANK_CHARACTER = "";

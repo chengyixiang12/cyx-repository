@@ -1,5 +1,6 @@
 package com.soft.base.aspect;
 
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.enums.ResultEnum;
 import com.soft.base.resultapi.R;
@@ -7,6 +8,7 @@ import com.soft.base.utils.ResponseUtil;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  **/
 
 @Component
+@Slf4j
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     @Value(value = "${rate-limit.max-request}")
@@ -39,10 +42,10 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String clientIp = request.getRemoteAddr(); // 获取客户端 IP 地址
-        String key = RedisConstant.RATE_LIMIT_KEY + clientIp;
+        String key = RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER);
 
         // 获取当前时间戳
-        long currentTimestamp = Instant.now().getEpochSecond();
+        long currentTimestamp = System.currentTimeMillis();
 
         // 使用 Redis 存储请求的时间戳
         Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - windowSize, currentTimestamp);
