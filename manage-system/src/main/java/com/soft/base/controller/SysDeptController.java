@@ -54,7 +54,7 @@ public class SysDeptController {
     }
 
     @SysLog(value = "添加部门", module = LogModuleEnum.DEPT)
-    @PreAuthorize(value = "@cps.hasPermission('sys_menu_del')")
+    @PreAuthorize(value = "@cps.hasPermission('sys_dept_add')")
     @PostMapping
     @Operation(summary = "添加部门")
     public R saveDept(@RequestBody SaveDeptRequest request) {

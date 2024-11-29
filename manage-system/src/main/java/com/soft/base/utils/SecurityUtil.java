@@ -25,7 +25,7 @@ public class SecurityUtil {
     }
 
     /**
-     * 从上下文获取用户角色
+     * 从上下文获取用户权限
      * @return
      */
     public List<String> getPermission() {

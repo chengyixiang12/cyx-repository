@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * @Author: cyx
- * @Description: RSA工具类
+ * @Description: RSA非对称加密工具类
  * @DateTime: 2024/11/26 14:21
  **/
 
