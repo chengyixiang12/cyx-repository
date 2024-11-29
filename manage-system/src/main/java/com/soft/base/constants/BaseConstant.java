@@ -58,9 +58,9 @@ public class BaseConstant {
     public final static String ENG_COLON = ":";
 
     /**
-     * 点
+     * 英文破折号
      */
-    public final static String ENG_POINT = ".";
+    public final static String ENG_DASH = "-";
 
     /**
      * 空白符

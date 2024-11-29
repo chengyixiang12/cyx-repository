@@ -1,6 +1,8 @@
 package com.soft.base.utils;
 
 import com.soft.base.exception.NotArrayException;
+import com.soft.base.exception.NullListException;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Array;
@@ -17,6 +19,7 @@ public class UniversalUtil {
 
     /**
      * 生成随机数
+     *
      * @param length
      * @return
      */
@@ -31,17 +34,25 @@ public class UniversalUtil {
 
     /**
      * list转数组
+     *
      * @param list
      * @param valueType
-     * @return
      * @param <T>
+     * @return
      */
-    public <T> T toArray(List list, Class<T> valueType) throws NotArrayException {
-        if (!valueType.isArray()) {
+    public <T> T[] toArray(@NotNull List<T> list, @NotNull Class<T[]> valueType) throws NotArrayException, NullListException {
+        if (valueType == null || !valueType.isArray()) {
             throw new NotArrayException("valueType必须是数组类型");
         }
+        Class<?> componentType = valueType.getComponentType();
+        if (componentType == null) {
+            throw new NotArrayException("valueType必须是数组类型");
+        }
+        if (list == null) {
+            throw new NullListException("list不能为空");
+        }
         @SuppressWarnings("unchecked")
-        T array = (T) Array.newInstance(valueType.getComponentType(), list.size());
+        T[] array = (T[]) Array.newInstance(componentType, list.size());
         for (int i = 0; i < list.size(); i++) {
             Array.set(array, i, list.get(i));
         }

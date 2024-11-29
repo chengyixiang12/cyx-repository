@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: bean转map
  * @DateTime: 2024/11/4 15:14
  **/
 

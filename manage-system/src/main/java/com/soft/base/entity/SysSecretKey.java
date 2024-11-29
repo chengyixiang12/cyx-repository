@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @TableName(value ="sys_secret_key")
 @Data
-public class SecretKey implements Serializable {
+public class SysSecretKey implements Serializable {
     /**
      * 主键
      */

@@ -1,6 +1,7 @@
 package com.soft.base.conf;
 
 import io.netty.channel.ChannelOption;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -18,11 +19,17 @@ import java.time.Duration;
 @Configuration
 public class WebClientConfig {
 
+    @Value(value = "${web-client.response-timeout}")
+    private Long responseTimeout;
+
+    @Value(value = "${web-client.connect-timeout}")
+    private Integer connectTimeout;
+
     @Bean
     public WebClient.Builder webClient() {
         HttpClient httpClient = HttpClient.create()
-                .responseTimeout(Duration.ofSeconds(5))
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+                .responseTimeout(Duration.ofSeconds(responseTimeout))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
         return WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpClient));
     }
 }

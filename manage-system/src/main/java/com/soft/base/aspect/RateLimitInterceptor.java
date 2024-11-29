@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx
- * @Description: 限流拦截器
+ * @Description: 限流拦截器，滑动窗口实现
  * @DateTime: 2024/11/28 17:21
  **/
 
@@ -60,7 +60,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
 
         // 设置请求过期时间为窗口大小，确保缓存不会无限增大
-        redisTemplate.expire(key, windowSize, TimeUnit.SECONDS);
+        redisTemplate.expire(key, windowSize, TimeUnit.MILLISECONDS);
 
         return true;
     }

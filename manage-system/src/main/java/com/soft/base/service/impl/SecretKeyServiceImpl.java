@@ -2,23 +2,16 @@ package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.RedisConstant;
-import com.soft.base.entity.SecretKey;
+import com.soft.base.entity.SysSecretKey;
 import com.soft.base.service.SecretKeyService;
-import com.soft.base.mapper.SecretKeyMapper;
+import com.soft.base.mapper.SysSecretKeyMapper;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.utils.SecurityUtil;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -29,10 +22,10 @@ import java.util.Set;
 * @createDate 2024-11-26 16:19:51
 */
 @Service
-public class SecretKeyServiceImpl extends ServiceImpl<SecretKeyMapper, SecretKey>
+public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSecretKey>
     implements SecretKeyService{
 
-    private final SecretKeyMapper secretKeyMapper;
+    private final SysSecretKeyMapper sysSecretKeyMapper;
 
     private final RedisTemplate<String,Object> redisTemplate;
 
@@ -40,11 +33,11 @@ public class SecretKeyServiceImpl extends ServiceImpl<SecretKeyMapper, SecretKey
 
     private final SecurityUtil securityUtil;
 
-    public SecretKeyServiceImpl(SecretKeyMapper secretKeyMapper,
+    public SecretKeyServiceImpl(SysSecretKeyMapper sysSecretKeyMapper,
                                 RedisTemplate<String,Object> redisTemplate,
                                 RSAUtil rsaUtil,
                                 SecurityUtil securityUtil) {
-        this.secretKeyMapper = secretKeyMapper;
+        this.sysSecretKeyMapper = sysSecretKeyMapper;
         this.redisTemplate = redisTemplate;
         this.rsaUtil = rsaUtil;
         this.securityUtil = securityUtil;
@@ -53,13 +46,13 @@ public class SecretKeyServiceImpl extends ServiceImpl<SecretKeyMapper, SecretKey
     @Cacheable(cacheNames = "cyx::rsa::public", key = "#type")
     @Override
     public String getPublicKey(Integer type) {
-        return secretKeyMapper.getPublicKey(type);
+        return sysSecretKeyMapper.getPublicKey(type);
     }
 
     @Cacheable(cacheNames = "cyx::rsa::private", key = "#type")
     @Override
     public String getPrivateKey(Integer type) {
-        return secretKeyMapper.getPrivateKey(type);
+        return sysSecretKeyMapper.getPrivateKey(type);
     }
 
     @Override
@@ -68,7 +61,7 @@ public class SecretKeyServiceImpl extends ServiceImpl<SecretKeyMapper, SecretKey
         String privateKey = generate.get("privateKey");
         String publicKey = generate.get("publicKey");
         String username = securityUtil.getUserInfo().getUsername();
-        secretKeyMapper.generateKey(type, privateKey, publicKey, username);
+        sysSecretKeyMapper.generateKey(type, privateKey, publicKey, username);
 
         Set<String> keys = new HashSet<>();
         keys.add(RedisConstant.RSA_PUBLIC_KEY + type);

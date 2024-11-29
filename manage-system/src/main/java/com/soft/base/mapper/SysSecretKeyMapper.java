@@ -1,6 +1,6 @@
 package com.soft.base.mapper;
 
-import com.soft.base.entity.SecretKey;
+import com.soft.base.entity.SysSecretKey;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
 * @createDate 2024-11-26 16:19:51
 * @Entity com.soft.base.entity.SecretKey
 */
-public interface SecretKeyMapper extends BaseMapper<SecretKey> {
+public interface SysSecretKeyMapper extends BaseMapper<SysSecretKey> {
 
     String getPublicKey(@Param("type") Integer type);
 

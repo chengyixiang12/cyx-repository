@@ -62,7 +62,8 @@ public class MinioUtil {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
                     .object(objectKey)
-                    .stream(is, fileSize, compareFirst(BaseConstant.BURST_SIZE, fileSize) ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE).build());
+                    .stream(is, fileSize, compareFirst(BaseConstant.BURST_SIZE, fileSize) ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE)
+                    .build());
             return objectKey;
         } catch (Exception e) {
             throw new GlobelException(e.getMessage());
@@ -113,7 +114,7 @@ public class MinioUtil {
      * @return
      */
     public String fileKeyGen() {
-        return UUID.randomUUID().toString().replaceAll("-","");
+        return UUID.randomUUID().toString().replaceAll(BaseConstant.ENG_DASH, BaseConstant.BLANK_CHARACTER);
     }
 
     /**

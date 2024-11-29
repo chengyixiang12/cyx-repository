@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: RSA工具类
  * @DateTime: 2024/11/26 14:21
  **/
 
@@ -52,7 +52,7 @@ public class RSAUtil {
 
     /**
      * RSA解密
-     * @param encryptedData
+     * @param decryptedData
      * @param privateKey
      * @return
      * @throws NoSuchAlgorithmException
@@ -62,20 +62,20 @@ public class RSAUtil {
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException
      */
-    public String decrypt(String encryptedData, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public String decrypt(String decryptedData, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         // 使用私钥解密
         Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
         cipher.init(Cipher.DECRYPT_MODE, keyFactory.generatePrivate(keySpec));
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(decryptedData));
 
         return new String(decryptedBytes);
     }
 
     /**
      * 加密
-     * @param password
+     * @param encryptedData
      * @param publicKey
      * @return
      * @throws NoSuchAlgorithmException
@@ -86,16 +86,16 @@ public class RSAUtil {
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException
      */
-    public String encrypt(String password, String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException {
+    public String encrypt(String encryptedData, String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException {
         // 加载公钥
         byte[] keyBytes = Base64.getDecoder().decode(publicKey);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
         // 创建加密工具
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, keyFactory.generatePublic(spec));
-        byte[] encryptedBytes = cipher.doFinal(password.getBytes(StandardCharsets.UTF_8));
+        byte[] encryptedBytes = cipher.doFinal(encryptedData.getBytes(StandardCharsets.UTF_8));
 
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
