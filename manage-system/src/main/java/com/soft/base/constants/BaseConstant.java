@@ -13,21 +13,6 @@ public class BaseConstant {
     public final static String DEL_FLAG_EXIST = "1";
 
     /**
-     * 逻辑删除——删除
-     */
-    public final static String DEL_FLAG_UNEXIST = "0";
-
-    /**
-     * 是否启用——启用
-     */
-    public final static Integer ENABLED_TRUE = 1;
-
-    /**
-     * 是否启用——禁用
-     */
-    public final static Integer ENABLED_FALSE = 0;
-
-    /**
      * 邮箱文本路径
      */
     public final static String EMAIL_CONTENT_PATH = "template/emailcontent.txt";
@@ -101,11 +86,6 @@ public class BaseConstant {
      * 字典类型；启用
      */
     public final static String DICT_TYPE_STATUS_ENABLE = "1";
-
-    /**
-     * 字典类型；禁用
-     */
-    public final static String DICT_TYPE_STATUS_FORBIDDEN = "0";
 
     /**
      * 登录方式：密码

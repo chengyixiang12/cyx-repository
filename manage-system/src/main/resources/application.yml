@@ -6,6 +6,8 @@ server:
     connection-timeout: 10000
 
 spring:
+  config:
+    location: classpath:/application.yml
   mvc:
     async:
       request-timeout: 15000
@@ -18,10 +20,11 @@ spring:
       max-request-size: 100MB
       file-size-threshold: 2MB
       location: E:/tmp
+      #location: /home/docker-build/manage-system/tmp
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://192.168.226.129:3306/mysql_study?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://192.168.226.130:3306/mysql_study?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -31,7 +34,7 @@ spring:
       max-lifetime: 180000
   data:
     redis:
-      host: 192.168.226.129
+      host: 192.168.226.130
       port: 6379
       password: 123456
       database: 0
@@ -51,7 +54,7 @@ spring:
             enable: true
     default-encoding: UTF-8
   rabbitmq:
-    host: 192.168.226.129
+    host: 192.168.226.130
     port: 5672
     username: root
     password: 123456
@@ -79,6 +82,7 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/develop.log
+    #name: /home/docker-build/manage-system/logs/develop.log
 
 knife4j:
   production: false
@@ -97,7 +101,7 @@ jwt:
 
 #minio对象存储
 minio:
-  url: http://192.168.226.129:9002
+  url: http://192.168.226.130:9002
   accessKey: admin
   secretKey: 123456789
   bucket: cyx
@@ -123,6 +127,7 @@ manage-system:
 #临时文件存储路径
 tmp:
   path: E:/tmp
+  #path: /home/docker-build/manage-system/tmp
 
 #是否开启日志记录
 log:
@@ -131,6 +136,13 @@ log:
 #限流
 rate-limit:
   #最大请求数；单位：个
-  max-request: 20
+  max-request: 5
   #窗口大小；单位：秒
-  window-size: 2
+  window-size: 1
+
+#webclient配置
+web-client:
+  #响应超时；单位：秒
+  response-timeout: 5
+  #连接超时；单位：毫秒
+  connect-timeout: 5000
