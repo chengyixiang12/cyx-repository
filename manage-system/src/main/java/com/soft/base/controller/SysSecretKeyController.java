@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/secretKey")
 @Tag(name = "密钥")
 @Slf4j
-public class SecretKeyController {
+public class SysSecretKeyController {
 
     private final SecretKeyService secretKeyService;
 
     @Autowired
-    public SecretKeyController(SecretKeyService secretKeyService) {
+    public SysSecretKeyController(SecretKeyService secretKeyService) {
         this.secretKeyService = secretKeyService;
     }
 
