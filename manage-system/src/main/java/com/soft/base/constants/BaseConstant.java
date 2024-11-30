@@ -146,4 +146,9 @@ public class BaseConstant {
      * 权限-启用
      */
     public final static String PERMISSION_ENABLE = "1";
+
+    /**
+     * 限流窗口扩大1000倍
+     */
+    public final static Integer WINDOW_SIZE_EXPAND_MULTIPLE = 1000;
 }
