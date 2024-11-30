@@ -41,8 +41,8 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String clientIp = request.getRemoteAddr(); // 获取客户端 IP 地址
-        String key = RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER);
+        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
+        String key = RedisConstant.RATE_LIMIT_KEY + clientIp;
 
         // 获取当前时间戳
         long currentTimestamp = System.currentTimeMillis();
