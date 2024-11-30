@@ -7,6 +7,9 @@ WORKDIR /app
 # 维护者信息
 LABEL maintainer="1574641450@qq.com"
 
+# 配置文件路径
+COPY /config/application.yml /app/config/application.yml
+
 # 将本地的 JAR 文件复制到容器中
 # 假设你的 JAR 文件是 target 目录下的 app.jar，可以根据实际情况修改
 COPY /home/docker-build/manage-system/manage-system-1.0-SNAPSHOT.jar /manage-system-1.0-SNAPSHOT.jar
