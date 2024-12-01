@@ -54,7 +54,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             fileUploadAsync.uploadFile(multipartFile.getInputStream(),
                     originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX)),
                     multipartFile.getSize(), originalFilename);
-            log.info("调用完成");
         } catch (Exception e) {
             throw new GlobelException(e.getMessage());
         }
