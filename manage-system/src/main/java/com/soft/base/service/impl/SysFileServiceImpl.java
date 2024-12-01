@@ -3,6 +3,7 @@ package com.soft.base.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.dto.FileDetailDto;
 import com.soft.base.entity.SysFile;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 
 /**
 * @author cyq
@@ -34,12 +36,12 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final SysFileMapper sysFileMapper;
 
-    private final MinioUtil minioUtil;
+    private final FileUploadAsync fileUploadAsync;
 
     @Autowired
-    public SysFileServiceImpl(SysFileMapper sysFileMapper, MinioUtil minioUtil) {
+    public SysFileServiceImpl(SysFileMapper sysFileMapper, FileUploadAsync fileUploadAsync) {
         this.sysFileMapper = sysFileMapper;
-        this.minioUtil = minioUtil;
+        this.fileUploadAsync = fileUploadAsync;
     }
 
     @Override
@@ -49,33 +51,13 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             if (StringUtils.isBlank(originalFilename)) {
                 throw new GlobelException("文件名不能为空");
             }
-            uploadFile(multipartFile.getInputStream(), minioUtil.fileKeyGen(),
+            fileUploadAsync.uploadFile(multipartFile.getInputStream(),
                     originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX)),
                     multipartFile.getSize(), originalFilename);
+            log.info("调用完成");
         } catch (Exception e) {
             throw new GlobelException(e.getMessage());
         }
-    }
-
-    /**
-     * 异步上传文件
-     * @param inputStream
-     * @param fileKey
-     * @param fileSuffix
-     * @param fileSize
-     * @param originalFilename
-     */
-    @Async
-    protected void uploadFile(InputStream inputStream, String fileKey, String fileSuffix, Long fileSize, String originalFilename) {
-        String objectKey = minioUtil.upload(inputStream, fileKey, fileSuffix, fileSize);
-        SysFile sysFile = new SysFile();
-        sysFile.setFileKey(fileKey);
-        sysFile.setFileSuffix(fileSuffix);
-        sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
-        sysFile.setObjectKey(objectKey);
-        sysFile.setOriginalName(originalFilename);
-        sysFile.setFileSize(fileSize);
-        sysFileMapper.insert(sysFile);
     }
 
     @Override

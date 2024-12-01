@@ -50,7 +50,7 @@ public class SysFileController {
         this.minioUtil = minioUtil;
     }
 
-    @SysLog(value = "上传文件", module = LogModuleEnum.FILE)
+//    @SysLog(value = "上传文件", module = LogModuleEnum.FILE)
     @PostMapping
     @Operation(summary = "上传文件")
     @Parameter(name = "multipartFile", description = "文件流", required = true, in = ParameterIn.QUERY)

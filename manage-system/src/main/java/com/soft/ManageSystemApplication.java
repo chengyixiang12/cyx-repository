@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @MapperScan({"com.soft.cyx.mapper","com.soft.base.mapper"})
-@EnableAsync
 @EnableCaching
 @EnableScheduling
 public class ManageSystemApplication {
