@@ -65,11 +65,11 @@ public class SysLogAspect {
 
     @Around("@annotation(sysLog)")
     public Object around(ProceedingJoinPoint joinPoint, SysLog sysLog) throws Throwable {
-        Object result = null;
-        if (logEnable) {
-            long start = System.currentTimeMillis();
-            LogDto logDto = new LogDto();
-            try {
+        Object result = joinPoint.proceed();
+        long start = System.currentTimeMillis();
+        LogDto logDto = new LogDto();
+        try {
+            if (logEnable) {
                 logDto.setModuleName(sysLog.module().getName());
                 logDto.setOperationDesc(sysLog.value());
                 logDto.setType(sysLog.type().getCode());
@@ -80,8 +80,6 @@ public class SysLogAspect {
 
                 logDto.setRequestParams(JSON.toJSONString(exclude(joinPoint)));
                 logDto.setLogLevel(LogLevelEnum.INFO.getCode());
-
-                result = joinPoint.proceed();
                 logDto.setResponseResult(result != null ? result.toString() : null);
                 logDto.setStatusCode(result != null ? ((R) result).getCode() : null);
 
@@ -96,11 +94,13 @@ public class SysLogAspect {
                 Object value = getValue(joinPoint, sysLog, parser);
 
                 logDto.setCreateBy(value == null ? securityUtil.getUserInfo().getUsername() : String.valueOf(value));
-            } catch (Throwable throwable) {
-                logDto.setExceptionInfo(throwable.getMessage());
-                logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
-                throw throwable;
-            } finally {
+            }
+        } catch (Throwable throwable) {
+            logDto.setExceptionInfo(throwable.getMessage());
+            logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
+            throw throwable;
+        } finally {
+            if (logEnable) {
                 logDto.setExecutionTime(System.currentTimeMillis() - start);
                 sysLogProduce.sendSysLog(logDto);
             }
@@ -110,6 +110,7 @@ public class SysLogAspect {
 
     /**
      * 获取value值
+     *
      * @param joinPoint
      * @param sysLog
      * @param parser
@@ -148,6 +149,7 @@ public class SysLogAspect {
 
     /**
      * 排除
+     *
      * @param joinPoint
      * @return
      */
