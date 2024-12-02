@@ -40,11 +40,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
 
     @Override
     public List<MenusVo> getMenus() {
-        String username = securityUtil.getUserInfo().getUsername();
-        if (username.isEmpty()) {
+        Long userId = securityUtil.getUserInfo().getId();
+        if (userId == null) {
             return new ArrayList<>();
         }
-        List<MenusVo> menus = sysMenuMapper.getMenus(username);
+        List<MenusVo> menus = sysMenuMapper.getMenus(userId);
         return buildTree(menus);
     }
 

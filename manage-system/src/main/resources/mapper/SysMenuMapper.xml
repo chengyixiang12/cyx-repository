@@ -47,13 +47,7 @@
         AND sr.del_flag = '1'
         JOIN sys_user_role sur ON sur.role_id = sr.id
         WHERE
-        sur.user_id = (
-        SELECT
-        su.id
-        FROM
-        sys_user su
-        WHERE
-        su.del_flag = '1'
-        AND su.username = #{username})
+        sur.user_id = #{userId}
+        ORDER BY sm.order_num
     </select>
 </mapper>
