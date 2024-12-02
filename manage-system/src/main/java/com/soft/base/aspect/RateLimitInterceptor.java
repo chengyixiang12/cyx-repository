@@ -31,7 +31,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     private Integer maxRequest;
 
     @Value(value = "${rate-limit.window-size}")
-    private Integer windowSize;
+    private Long windowSize;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -43,13 +43,12 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
         String key = RedisConstant.RATE_LIMIT_KEY + clientIp;
-        windowSize *= BaseConstant.WINDOW_SIZE_EXPAND_MULTIPLE;
 
         // 获取当前时间戳
         long currentTimestamp = System.currentTimeMillis();
 
         // 使用 Redis 存储请求的时间戳
-        Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - windowSize, currentTimestamp);
+        Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - windowSize * BaseConstant.WINDOW_SIZE_EXPAND_MULTIPLE, currentTimestamp);
 
         // 如果超过最大请求次数，拒绝请求
         if (requestCount != null && requestCount >= maxRequest) {
@@ -61,7 +60,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
 
         // 设置请求过期时间为窗口大小，确保缓存不会无限增大
-        redisTemplate.expire(key, windowSize, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(key, windowSize, TimeUnit.SECONDS);
 
         return true;
     }

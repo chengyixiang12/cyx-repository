@@ -130,5 +130,5 @@ public class BaseConstant {
     /**
      * 限流窗口扩大1000倍
      */
-    public final static Integer WINDOW_SIZE_EXPAND_MULTIPLE = 1000;
+    public final static Long WINDOW_SIZE_EXPAND_MULTIPLE = 1000L;
 }

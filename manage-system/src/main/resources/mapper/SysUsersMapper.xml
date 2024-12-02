@@ -112,4 +112,18 @@
         AND su.username = #{username}
         OR su.email = #{username}
     </select>
+    <select id="getUser" parameterType="java.lang.Long" resultType="GetUserDto">
+        SELECT
+        su.id,
+        su.username,
+        su.nickname,
+        su.email,
+        su.phone,
+        su.dept_id
+        FROM
+        sys_user su
+        WHERE
+        su.del_flag = '1'
+        AND su.id = #{id}
+    </select>
 </mapper>

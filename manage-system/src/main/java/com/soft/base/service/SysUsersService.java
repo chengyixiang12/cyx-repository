@@ -7,6 +7,7 @@ import com.soft.base.request.PageRequest;
 import com.soft.base.request.ResetPasswordRequest;
 import com.soft.base.request.SaveUserRequest;
 import com.soft.base.vo.AllUserVo;
+import com.soft.base.vo.GetUserVo;
 import com.soft.base.vo.PageVo;
 
 /**
@@ -28,4 +29,6 @@ public interface SysUsersService extends IService<SysUser> {
     void saveUser(SaveUserRequest request) throws Exception;
 
     void editUser(EditUserRequest request);
+
+    GetUserVo getUser(Long id);
 }

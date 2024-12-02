@@ -168,4 +168,15 @@
             (#{request.roleId},#{item})
         </foreach>
     </insert>
+    <select id="getUserRole" parameterType="java.lang.Long" resultType="GetUserRoleDto">
+        SELECT
+        sr.id AS "value",
+        sr.`name` AS "label"
+        FROM
+        sys_role sr
+        JOIN sys_user_role sur ON sr.id = sur.role_id
+        WHERE
+        sr.del_flag = '1'
+        AND sur.user_id = #{userId}
+    </select>
 </mapper>

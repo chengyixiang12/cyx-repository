@@ -1,6 +1,7 @@
 package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
 import com.soft.base.request.DeleteRequest;
 import com.soft.base.vo.DeptTreeVo;
@@ -24,6 +25,8 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     void deleteDeptBatch(@Param("request") DeleteRequest request);
 
     DeptVo getDept(@Param("id") Long id);
+
+    GetUserDeptDto getUserDept(@Param("deptId") Long deptId);
 }
 
 

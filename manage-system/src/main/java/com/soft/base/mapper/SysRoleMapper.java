@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.dto.FixRolesDto;
+import com.soft.base.dto.GetUserRoleDto;
 import com.soft.base.entity.SysRole;
 import com.soft.base.request.DeleteRequest;
 import com.soft.base.request.GetRolesRequest;
@@ -48,6 +49,8 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     void deleteRolePermissions(@Param("request") SetPermissionsRequest request);
 
     void setPermissions(@Param("request") SetPermissionsRequest request);
+
+    List<GetUserRoleDto> getUserRole(@Param("userId") Long userId);
 }
 
 

@@ -2,6 +2,7 @@ package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
 import com.soft.base.exception.GlobelException;
 import com.soft.base.mapper.SysDeptMapper;
@@ -86,6 +87,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     @Override
     public DeptVo getDept(Long id) {
         return sysDeptMapper.getDept(id);
+    }
+
+    @Override
+    public GetUserDeptDto getUserDept(Long deptId) {
+        return sysDeptMapper.getUserDept(deptId);
     }
 
     /**

@@ -10,6 +10,7 @@ import com.soft.base.service.SysUsersService;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.utils.SecurityUtil;
 import com.soft.base.vo.AllUserVo;
+import com.soft.base.vo.GetUserVo;
 import com.soft.base.vo.PageVo;
 import com.soft.base.vo.UserInfoVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -162,9 +163,9 @@ public class SysUserController {
         }
     }
 
-    @SysLog(value = "获取用户信息", module = LogModuleEnum.USER)
+    @SysLog(value = "获取登录用户信息", module = LogModuleEnum.USER)
     @GetMapping(value = "/getUserInfo")
-    @Operation(summary = "获取用户信息")
+    @Operation(summary = "获取登录用户信息")
     @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
     public R<UserInfoVo> getUserInfo(@RequestParam(value = "username", required = false) String username) {
         if (StringUtils.isBlank(username)) {
@@ -174,6 +175,22 @@ public class SysUserController {
             UserInfoVo userInfoVo = new UserInfoVo();
             BeanUtils.copyProperties(securityUtil.getUserInfo(), userInfoVo);
             return R.ok(userInfoVo);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/getUser/{id}")
+    @Operation(summary = "获取用户")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    public R<GetUserVo> getUser(@PathVariable(value = "id") Long id) {
+        if (id == null) {
+            return R.fail("id不能为空");
+        }
+        try {
+            GetUserVo getUserVo = sysUsersService.getUser(id);
+            return R.ok(getUserVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
