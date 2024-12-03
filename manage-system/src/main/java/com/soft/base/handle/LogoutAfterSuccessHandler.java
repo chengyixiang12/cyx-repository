@@ -1,12 +1,9 @@
 package com.soft.base.handle;
 
-import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.TokenConstant;
-import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.enums.LogTypeEnum;
 import com.soft.base.enums.ResultEnum;
 import com.soft.base.resultapi.R;
 import com.soft.base.utils.ResponseUtil;

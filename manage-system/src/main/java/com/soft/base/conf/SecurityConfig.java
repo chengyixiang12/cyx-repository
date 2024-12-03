@@ -42,7 +42,7 @@ public class SecurityConfig {
 
     private final UniversalUtil universalUtil;
 
-    private JwtIgnoreProperty jwtIgnoreProperty;
+    private final JwtIgnoreProperty jwtIgnoreProperty;
 
     @Autowired
     public SecurityConfig(AuthenticationHandler authenticationHandler,
@@ -50,17 +50,14 @@ public class SecurityConfig {
                           UserDetailsService userDetailsService,
                           RedisTemplate<String, Object> redisTemplate,
                           UniversalUtil universalUtil,
-                          CustomAccessDeniedHandler customAccessDeniedHandler) {
+                          CustomAccessDeniedHandler customAccessDeniedHandler,
+                          JwtIgnoreProperty jwtIgnoreProperty) {
         this.authenticationHandler = authenticationHandler;
         this.logoutAfterSuccessHandler = logoutAfterSuccessHandler;
         this.userDetailsService = userDetailsService;
         this.redisTemplate = redisTemplate;
         this.universalUtil = universalUtil;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
-    }
-
-    @Autowired
-    public void setPermits(JwtIgnoreProperty jwtIgnoreProperty) {
         this.jwtIgnoreProperty = jwtIgnoreProperty;
     }
 
