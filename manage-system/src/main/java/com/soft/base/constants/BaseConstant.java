@@ -108,9 +108,19 @@ public class BaseConstant {
     public final static Integer FIX_ROLE_FLAG = 1;
 
     /**
+     * 非固定角色标识
+     */
+    public final static Integer UN_FIX_ROLE_FLAG = 0;
+
+    /**
      * 默认角色标识
      */
     public final static Integer DEFAULT_ROLE_FLAG = 1;
+
+    /**
+     * 非默认角色标识
+     */
+    public final static Integer UN_DEFAULT_ROLE_FLAG = 0;
 
     /**
      * 左方括弧

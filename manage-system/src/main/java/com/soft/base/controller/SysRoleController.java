@@ -60,6 +60,8 @@ public class SysRoleController {
             }
             SysRole sysRole = new SysRole();
             BeanUtils.copyProperties(request, sysRole);
+            sysRole.setIsDefault(BaseConstant.UN_DEFAULT_ROLE_FLAG);
+            sysRole.setFixRole(BaseConstant.UN_FIX_ROLE_FLAG);
             sysRoleService.save(sysRole);
             return R.ok("新增成功", null);
         } catch (Exception e) {
@@ -79,7 +81,7 @@ public class SysRoleController {
         try {
             SysRole sysRole = new SysRole();
             BeanUtils.copyProperties(request, sysRole);
-            sysRoleService.save(sysRole);
+            sysRoleService.updateById(sysRole);
             return R.ok("编辑成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

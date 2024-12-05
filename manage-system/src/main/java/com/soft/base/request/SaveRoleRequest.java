@@ -2,6 +2,7 @@ package com.soft.base.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Setter;
 import org.apache.ibatis.type.Alias;
 
 @Data
@@ -23,10 +24,4 @@ public class SaveRoleRequest {
 
     @Schema(description = "状态；1：启用；0：禁用")
     private Integer status;
-
-    @Schema(description = "是否标记为系统默认角色；1：是；0：不是", hidden = true)
-    private Integer isDefault = 0;
-
-    @Schema(description = "是否为固定角色（固定角色无法被删除）；1：是；0：不是", hidden = true)
-    private Integer fixRole = 0;
 }

@@ -23,7 +23,4 @@ public class EditRoleRequest {
 
     @Schema(description = "状态；1：启用；0：禁用")
     private Integer status;
-
-    @Schema(description = "是否标记为系统默认角色；1：是；0：不是")
-    private Integer isDefault;
 }
