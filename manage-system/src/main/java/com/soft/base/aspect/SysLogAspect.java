@@ -99,10 +99,8 @@ public class SysLogAspect {
                 logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
                 throw throwable;
             } finally {
-                if (logEnable) {
-                    logDto.setExecutionTime(System.currentTimeMillis() - start);
-                    sysLogProduce.sendSysLog(logDto);
-                }
+                logDto.setExecutionTime(System.currentTimeMillis() - start);
+                sysLogProduce.sendSysLog(logDto);
             }
         }
 
