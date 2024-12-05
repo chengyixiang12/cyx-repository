@@ -68,8 +68,8 @@ public class SysLogAspect {
         Object result = joinPoint.proceed();
         long start = System.currentTimeMillis();
         LogDto logDto = new LogDto();
-        try {
-            if (logEnable) {
+        if (logEnable) {
+            try {
                 logDto.setModuleName(sysLog.module().getName());
                 logDto.setOperationDesc(sysLog.value());
                 logDto.setType(sysLog.type().getCode());
@@ -94,17 +94,18 @@ public class SysLogAspect {
                 Object value = getValue(joinPoint, sysLog, parser);
 
                 logDto.setCreateBy(value == null ? securityUtil.getUserInfo().getUsername() : String.valueOf(value));
-            }
-        } catch (Throwable throwable) {
-            logDto.setExceptionInfo(throwable.getMessage());
-            logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
-            throw throwable;
-        } finally {
-            if (logEnable) {
-                logDto.setExecutionTime(System.currentTimeMillis() - start);
-                sysLogProduce.sendSysLog(logDto);
+            } catch (Throwable throwable) {
+                logDto.setExceptionInfo(throwable.getMessage());
+                logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
+                throw throwable;
+            } finally {
+                if (logEnable) {
+                    logDto.setExecutionTime(System.currentTimeMillis() - start);
+                    sysLogProduce.sendSysLog(logDto);
+                }
             }
         }
+
         return result;
     }
 
