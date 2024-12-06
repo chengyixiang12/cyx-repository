@@ -19,10 +19,10 @@ import java.util.List;
 @Configuration
 public class Knife4jConfig {
 
-    private AuthorizationIgnoreProperty authorizationIgnoreProperty;
+    private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
 
     @Autowired
-    public void setPermits(AuthorizationIgnoreProperty authorizationIgnoreProperty) {
+    public Knife4jConfig(AuthorizationIgnoreProperty authorizationIgnoreProperty) {
         this.authorizationIgnoreProperty = authorizationIgnoreProperty;
     }
 
