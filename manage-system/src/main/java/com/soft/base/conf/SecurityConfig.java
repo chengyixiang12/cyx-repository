@@ -1,6 +1,6 @@
 package com.soft.base.conf;
 
-import com.soft.base.filter.JwtRequestFilter;
+import com.soft.base.filter.AuthorizationVerifyFilter;
 import com.soft.base.handle.AuthenticationHandler;
 import com.soft.base.handle.CustomAccessDeniedHandler;
 import com.soft.base.handle.LogoutAfterSuccessHandler;
@@ -61,8 +61,8 @@ public class SecurityConfig {
         this.jwtIgnoreProperty = jwtIgnoreProperty;
     }
 
-    private JwtRequestFilter getJwtRequestFilter() {
-        return new JwtRequestFilter(userDetailsService,redisTemplate);
+    private AuthorizationVerifyFilter getAuthorizationVerifyFilter() {
+        return new AuthorizationVerifyFilter(userDetailsService,redisTemplate);
     }
 
     @Bean
@@ -87,7 +87,7 @@ public class SecurityConfig {
                                         // 用于处理已认证但没有权限访问资源的请求
                                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
-                .addFilterBefore(getJwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(getAuthorizationVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

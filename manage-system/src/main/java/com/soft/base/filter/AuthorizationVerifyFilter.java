@@ -26,17 +26,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * JWT过滤器
+ * 鉴权验证过滤器
  */
 @Slf4j
-public class JwtRequestFilter extends OncePerRequestFilter {
+public class AuthorizationVerifyFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public JwtRequestFilter(UserDetailsService userDetailsService,
-                            RedisTemplate<String, Object> redisTemplate) {
+    public AuthorizationVerifyFilter(UserDetailsService userDetailsService,
+                                     RedisTemplate<String, Object> redisTemplate) {
         this.userDetailsService = userDetailsService;
         this.redisTemplate = redisTemplate;
     }
