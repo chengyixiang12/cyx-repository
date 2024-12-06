@@ -1,7 +1,7 @@
 package com.soft.base.conf;
 
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.properties.JwtIgnoreProperty;
+import com.soft.base.properties.AuthorizationIgnoreProperty;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -19,11 +19,11 @@ import java.util.List;
 @Configuration
 public class Knife4jConfig {
 
-    private JwtIgnoreProperty jwtIgnoreProperty;
+    private AuthorizationIgnoreProperty authorizationIgnoreProperty;
 
     @Autowired
-    public void setPermits(JwtIgnoreProperty jwtIgnoreProperty) {
-        this.jwtIgnoreProperty = jwtIgnoreProperty;
+    public void setPermits(AuthorizationIgnoreProperty authorizationIgnoreProperty) {
+        this.authorizationIgnoreProperty = authorizationIgnoreProperty;
     }
 
     @Bean
@@ -73,7 +73,7 @@ public class Knife4jConfig {
      * @return
      */
     private boolean checkPermitUrl(String uri) {
-        List<String> notPermitUrl = jwtIgnoreProperty.getUrls();
+        List<String> notPermitUrl = authorizationIgnoreProperty.getUrls();
         for (String c : notPermitUrl) {
             if (BaseConstant.ALL_WILDCARD_CHARACTER.equals(c.substring(c.length() - 2)) &&
                     uri.length() > c.length() &&

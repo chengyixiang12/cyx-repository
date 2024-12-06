@@ -4,7 +4,7 @@ import com.soft.base.filter.AuthorizationVerifyFilter;
 import com.soft.base.handle.AuthenticationHandler;
 import com.soft.base.handle.CustomAccessDeniedHandler;
 import com.soft.base.handle.LogoutAfterSuccessHandler;
-import com.soft.base.properties.JwtIgnoreProperty;
+import com.soft.base.properties.AuthorizationIgnoreProperty;
 import com.soft.base.utils.UniversalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ public class SecurityConfig {
 
     private final UniversalUtil universalUtil;
 
-    private final JwtIgnoreProperty jwtIgnoreProperty;
+    private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
 
     @Autowired
     public SecurityConfig(AuthenticationHandler authenticationHandler,
@@ -51,14 +51,14 @@ public class SecurityConfig {
                           RedisTemplate<String, Object> redisTemplate,
                           UniversalUtil universalUtil,
                           CustomAccessDeniedHandler customAccessDeniedHandler,
-                          JwtIgnoreProperty jwtIgnoreProperty) {
+                          AuthorizationIgnoreProperty authorizationIgnoreProperty) {
         this.authenticationHandler = authenticationHandler;
         this.logoutAfterSuccessHandler = logoutAfterSuccessHandler;
         this.userDetailsService = userDetailsService;
         this.redisTemplate = redisTemplate;
         this.universalUtil = universalUtil;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
-        this.jwtIgnoreProperty = jwtIgnoreProperty;
+        this.authorizationIgnoreProperty = authorizationIgnoreProperty;
     }
 
     private AuthorizationVerifyFilter getAuthorizationVerifyFilter() {
@@ -74,7 +74,7 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(universalUtil.toArray(jwtIgnoreProperty.getUrls(), String[].class)).permitAll()
+                    auth.requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
                             .anyRequest().authenticated();
                 })
                 .logout(item -> item.logoutUrl("/logout")

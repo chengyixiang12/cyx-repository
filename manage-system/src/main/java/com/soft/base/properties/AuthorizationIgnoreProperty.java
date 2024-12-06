@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 @Data
 @ConfigurationProperties(prefix = "permit")
-public class JwtIgnoreProperty {
+public class AuthorizationIgnoreProperty {
 
     List<String> urls;
 }
