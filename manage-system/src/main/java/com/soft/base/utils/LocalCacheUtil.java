@@ -8,6 +8,8 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +73,7 @@ public class LocalCacheUtil {
      * @param key
      * @return
      */
-    public Object carry(String key) {
+    public Object get(String key) {
         Storage storage = localCache.get(key);
         Long expire = storage.getExpire();
         if (BaseConstant.LOCAL_CACHE_EXPIRE_NEVER.equals(expire) || System.currentTimeMillis() < expire) {
@@ -80,6 +82,26 @@ public class LocalCacheUtil {
             localCache.remove(key);
             throw new LocalCacheExpireException(key + "已过期");
         }
+    }
+
+    /**
+     * 移除
+     * @param key
+     */
+    public void remove(String key) {
+        localCache.remove(key);
+    }
+
+    /**
+     * 获取所有过期时间
+     * @return
+     */
+    public Map<String, Long> getAllExpire() {
+        Map<String, Long> map = new HashMap<>();
+        for (Map.Entry<String, Storage> c : localCache.entrySet()) {
+            map.put(c.getKey(), c.getValue().getExpire());
+        }
+        return map;
     }
 
     @Data
