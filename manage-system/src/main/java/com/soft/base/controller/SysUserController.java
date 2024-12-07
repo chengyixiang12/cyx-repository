@@ -166,14 +166,11 @@ public class SysUserController {
     @SysLog(value = "获取登录用户信息", module = LogModuleEnum.USER)
     @GetMapping(value = "/getUserInfo")
     @Operation(summary = "获取登录用户信息")
-    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
-    public R<UserInfoVo> getUserInfo(@RequestParam(value = "username", required = false) String username) {
-        if (StringUtils.isBlank(username)) {
-            return R.fail("用户名不能为空");
-        }
+    public R<UserInfoVo> getUserInfo() {
         try {
             UserInfoVo userInfoVo = new UserInfoVo();
             BeanUtils.copyProperties(securityUtil.getUserInfo(), userInfoVo);
+            userInfoVo.setPermissions(securityUtil.getPermission());
             return R.ok(userInfoVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

@@ -5,7 +5,7 @@ package com.soft.base.exception;
  * @Description: TODO
  * @DateTime: 2024/11/15 22:02
  **/
-public class NotArrayException extends Exception {
+public class NotArrayException extends RuntimeException {
 
     public NotArrayException(String message) {
         super(message);
