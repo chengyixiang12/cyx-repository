@@ -98,9 +98,7 @@ public class LocalCacheUtil {
      */
     public Map<String, Long> getAllExpire() {
         Map<String, Long> map = new HashMap<>();
-        for (Map.Entry<String, Storage> c : localCache.entrySet()) {
-            map.put(c.getKey(), c.getValue().getExpire());
-        }
+        localCache.forEach((k, v) -> map.put(k, v.getExpire()));
         return map;
     }
 
