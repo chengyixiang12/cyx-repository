@@ -44,10 +44,10 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
     @Override
     public void afterConnectionClosed(WebSocketSession session, @NotNull CloseStatus closeStatus) throws Exception {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
-        // 移除用户会话
-        WebSocketSessionManager.removeSession(userDto.getId());
         // 移除用户缓存
         redisTemplate.delete(RedisConstant.WS_USER_SESSION + userDto.getId());
+        // 移除用户会话
+        WebSocketSessionManager.removeSession(userDto.getId());
         log.info("{} connect closed...", userDto.getUsername());
     }
 }

@@ -2,6 +2,7 @@ package com.soft.base.websocket;
 
 import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +30,13 @@ public class WebSocketSessionManager {
      * 删除用户session
      * @param sessionKey
      */
-    public static void removeSession(Long sessionKey) {
-        USER_SESSION_MAP.remove(String.valueOf(sessionKey));
+    public static void removeSession(Long sessionKey) throws RuntimeException {
+        try {
+            getSession(sessionKey).close();
+            USER_SESSION_MAP.remove(String.valueOf(sessionKey));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
