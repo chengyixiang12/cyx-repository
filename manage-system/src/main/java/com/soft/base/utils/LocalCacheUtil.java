@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class LocalCacheUtil {
 
-    private final Map<String, Storage> localCache = new ConcurrentHashMap<>();
+    private final Map<String, Storage> LOCAL_CACHE = new ConcurrentHashMap<>();
 
     /**
      * 存储
@@ -50,7 +50,7 @@ public class LocalCacheUtil {
         }
 
         storage.setValue(value);
-        localCache.put(key, storage);
+        LOCAL_CACHE.put(key, storage);
     }
 
     /**
@@ -65,7 +65,7 @@ public class LocalCacheUtil {
         Storage storage = new Storage();
         storage.setExpire(BaseConstant.LOCAL_CACHE_EXPIRE_NEVER);
         storage.setValue(value);
-        localCache.put(key, storage);
+        LOCAL_CACHE.put(key, storage);
     }
 
     /**
@@ -74,12 +74,12 @@ public class LocalCacheUtil {
      * @return
      */
     public Object get(String key) {
-        Storage storage = localCache.get(key);
+        Storage storage = LOCAL_CACHE.get(key);
         Long expire = storage.getExpire();
         if (BaseConstant.LOCAL_CACHE_EXPIRE_NEVER.equals(expire) || System.currentTimeMillis() < expire) {
             return storage.getValue();
         } else {
-            localCache.remove(key);
+            LOCAL_CACHE.remove(key);
             throw new LocalCacheExpireException(key + "已过期");
         }
     }
@@ -89,7 +89,7 @@ public class LocalCacheUtil {
      * @param key
      */
     public void remove(String key) {
-        localCache.remove(key);
+        LOCAL_CACHE.remove(key);
     }
 
     /**
@@ -98,7 +98,7 @@ public class LocalCacheUtil {
      */
     public Map<String, Long> getAllExpire() {
         Map<String, Long> map = new HashMap<>();
-        localCache.forEach((k, v) -> map.put(k, v.getExpire()));
+        LOCAL_CACHE.forEach((k, v) -> map.put(k, v.getExpire()));
         return map;
     }
 
