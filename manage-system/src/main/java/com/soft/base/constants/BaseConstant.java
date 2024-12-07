@@ -141,4 +141,29 @@ public class BaseConstant {
      * 限流窗口扩大1000倍
      */
     public final static Long WINDOW_SIZE_EXPAND_MULTIPLE = 1000L;
+
+    /**
+     * 本地缓存过期时间转换秒
+     */
+    public final static Long LOCAL_CACHE_EXPIRE_SECOND = 1000L;
+
+    /**
+     * 本地缓存过期时间转换天
+     */
+    public final static Long LOCAL_CACHE_EXPIRE_DAY = 24 * 60 * 60 * 1000L;
+
+    /**
+     * 本地缓存过期时间转换时
+     */
+    public final static Long LOCAL_CACHE_EXPIRE_HOURS = 60 * 60 * 1000L;
+
+    /**
+     * 本地缓存过期时间转换分
+     */
+    public final static Long LOCAL_CACHE_EXPIRE_MINUTES = 60 * 1000L;
+
+    /**
+     * 本地缓存永不过期
+     */
+    public final static Long LOCAL_CACHE_EXPIRE_NEVER = -1L;
 }
