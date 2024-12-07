@@ -1,21 +1,18 @@
 package com.soft.base.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysUser;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.exception.CaptChaErrorException;
-import com.soft.base.exception.GlobelException;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.request.LoginRequest;
 import com.soft.base.service.AuthService;
 import com.soft.base.service.SecretKeyService;
-import com.soft.base.utils.AESUtil;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.vo.LoginVo;
-import com.soft.base.vo.PublicKeyVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,8 +21,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -63,10 +58,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void register(SysUser sysUser) throws GlobelException {
+    public void register(SysUser sysUser) throws GlobalException {
         try {
             if (sysUsersMapper.exists(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getUsername, sysUser.getUsername()))) {
-                throw new GlobelException("用户已存在");
+                throw new GlobalException("用户已存在");
             }
 
             String username = sysUsersMapper.getManager(BaseConstant.MANAGER_ROLE_CODE);
@@ -82,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
             sysUser.setDefault();
             sysUsersMapper.insert(sysUser);
         } catch (Exception e) {
-            throw new GlobelException(e.getMessage());
+            throw new GlobalException(e.getMessage());
         }
     }
 

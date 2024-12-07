@@ -3,7 +3,7 @@ package com.soft.base.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.dto.FileDetailDto;
 import com.soft.base.entity.SysFile;
-import com.soft.base.exception.GlobelException;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.request.FilesRequest;
 import com.soft.base.vo.FilesVo;
 import com.soft.base.vo.PageVo;
@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 */
 public interface SysFileService extends IService<SysFile> {
 
-    void uploadFile(MultipartFile multipartFile) throws GlobelException;
+    void uploadFile(MultipartFile multipartFile) throws GlobalException;
 
     FileDetailDto getFileDetailById(Long id);
 

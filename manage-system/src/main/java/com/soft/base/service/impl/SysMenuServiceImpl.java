@@ -2,7 +2,7 @@ package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysMenu;
-import com.soft.base.exception.GlobelException;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysMenuMapper;
 import com.soft.base.request.EditMenuRequest;
 import com.soft.base.request.SaveMenuRequest;
@@ -69,7 +69,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
      */
     private List<MenusVo> buildTree(List<MenusVo> menusVos) {
         if (menusVos == null || menusVos.isEmpty()) {
-            throw new GlobelException("菜单为空");
+            throw new GlobalException("菜单为空");
         }
 
         Map<Long, MenusVo> map = new HashMap<>();

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
-import com.soft.base.exception.GlobelException;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysDeptMapper;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.request.DeleteRequest;
@@ -102,7 +102,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
      */
     private List<DeptTreeVo> buildTree(List<DeptTreeVo> departments, List<DeptUserVo> users) {
         if (departments == null || departments.isEmpty()) {
-            throw new GlobelException("组织架构为空");
+            throw new GlobalException("组织架构为空");
         }
 
         Map<Long, DeptTreeVo> map = new HashMap<>();

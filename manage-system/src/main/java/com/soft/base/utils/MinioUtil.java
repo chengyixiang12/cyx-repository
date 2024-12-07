@@ -1,7 +1,7 @@
 package com.soft.base.utils;
 
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.exception.GlobelException;
+import com.soft.base.exception.GlobalException;
 import io.minio.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +51,9 @@ public class MinioUtil {
      * @param fileSuffix 文件后缀
      * @param fileSize 文件大小 B
      * @return
-     * @throws GlobelException
+     * @throws GlobalException
      */
-    public String upload(InputStream is, String fileKey, String fileSuffix, Long fileSize) throws GlobelException{
+    public String upload(InputStream is, String fileKey, String fileSuffix, Long fileSize) throws GlobalException {
         String objectKey = getObjectKey(fileKey, fileSuffix);
         try {
             if (!existBucket()) {
@@ -66,32 +66,32 @@ public class MinioUtil {
                     .build());
             return objectKey;
         } catch (Exception e) {
-            throw new GlobelException(e.getMessage());
+            throw new GlobalException(e.getMessage());
         }
     }
 
     /**
      * 判断桶是否存在
      * @return
-     * @throws GlobelException
+     * @throws GlobalException
      */
-    private Boolean existBucket() throws GlobelException{
+    private Boolean existBucket() throws GlobalException {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
         } catch (Exception e) {
-            throw new GlobelException(e.getMessage());
+            throw new GlobalException(e.getMessage());
         }
     }
 
     /**
      * 创建桶
-     * @throws GlobelException
+     * @throws GlobalException
      */
-    private void createBucket() throws GlobelException{
+    private void createBucket() throws GlobalException {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
         } catch (Exception e) {
-            throw new GlobelException(e.getMessage());
+            throw new GlobalException(e.getMessage());
         }
     }
 
@@ -99,13 +99,13 @@ public class MinioUtil {
      * 下载文件
      * @param objectKey
      * @return
-     * @throws GlobelException
+     * @throws GlobalException
      */
-    public InputStream download(String objectKey) throws GlobelException{
+    public InputStream download(String objectKey) throws GlobalException {
         try {
             return minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(objectKey).build());
         } catch (Exception e) {
-            throw new GlobelException(e.getMessage());
+            throw new GlobalException(e.getMessage());
         }
     }
 

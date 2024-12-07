@@ -7,22 +7,17 @@ import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.dto.FileDetailDto;
 import com.soft.base.entity.SysFile;
-import com.soft.base.exception.GlobelException;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.request.FilesRequest;
 import com.soft.base.service.SysFileService;
-import com.soft.base.utils.MinioUtil;
 import com.soft.base.vo.FilesVo;
 import com.soft.base.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.InputStream;
-import java.util.concurrent.CompletableFuture;
 
 /**
 * @author cyq
@@ -45,17 +40,17 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public void uploadFile(MultipartFile multipartFile) throws GlobelException{
+    public void uploadFile(MultipartFile multipartFile) throws GlobalException {
         try {
             String originalFilename = multipartFile.getOriginalFilename();
             if (StringUtils.isBlank(originalFilename)) {
-                throw new GlobelException("文件名不能为空");
+                throw new GlobalException("文件名不能为空");
             }
             fileUploadAsync.uploadFile(multipartFile.getInputStream(),
                     originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX)),
                     multipartFile.getSize(), originalFilename);
         } catch (Exception e) {
-            throw new GlobelException(e.getMessage());
+            throw new GlobalException(e.getMessage());
         }
     }
 
