@@ -73,7 +73,7 @@ public class LocalCacheUtil {
      * @param key
      * @return
      */
-    public Object get(String key) {
+    public Object get(String key) throws LocalCacheExpireException {
         Storage storage = LOCAL_CACHE.get(key);
         Long expire = storage.getExpire();
         if (BaseConstant.LOCAL_CACHE_EXPIRE_NEVER.equals(expire) || System.currentTimeMillis() < expire) {

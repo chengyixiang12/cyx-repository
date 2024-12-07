@@ -9,5 +9,5 @@ public interface AuthService {
 
     void register(SysUser sysUser) throws GlobalException;
 
-    LoginVo authenticate(LoginRequest request) throws RuntimeException;
+    LoginVo authenticate(LoginRequest request) throws Exception;
 }

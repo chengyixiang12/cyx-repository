@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginVo authenticate(LoginRequest request) throws RuntimeException{
+    public LoginVo authenticate(LoginRequest request) throws Exception {
         try {
             if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
                 String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
@@ -102,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new Exception(e);
         }
     }
 }
