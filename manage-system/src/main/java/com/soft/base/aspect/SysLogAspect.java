@@ -66,9 +66,9 @@ public class SysLogAspect {
     @Around("@annotation(sysLog)")
     public Object around(ProceedingJoinPoint joinPoint, SysLog sysLog) throws Throwable {
         Object result = joinPoint.proceed();
-        long start = System.currentTimeMillis();
-        LogDto logDto = new LogDto();
         if (logEnable) {
+            long start = System.currentTimeMillis();
+            LogDto logDto = new LogDto();
             try {
                 logDto.setModuleName(sysLog.module().getName());
                 logDto.setOperationDesc(sysLog.value());
