@@ -53,7 +53,7 @@ public class UsersDetailServiceImpl implements UserDetailsService{
                 sysUser.getAccountNonExpired(), sysUser.getCredentialsNonExpired(), sysUser.getAccountNonLocked(),
                 permissions.stream()
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList()));
+                        .toList());
     }
 }
 
