@@ -59,7 +59,14 @@ public class WebSocketSessionManager {
     /**
      * 清空用户会话
      */
-    public static void clear() {
+    public static void clear() throws RuntimeException {
+        USER_SESSION_MAP.forEach((k, v) -> {
+            try {
+                v.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         USER_SESSION_MAP.clear();
     }
 }
