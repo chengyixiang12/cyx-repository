@@ -16,8 +16,6 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.soft.base.enums.WebSocketOrderEnum.HEART_BEAT;
-
 /**
  * @Author: cyx
  * @Description: 心跳检测处理类，客户端每隔30秒调用一次

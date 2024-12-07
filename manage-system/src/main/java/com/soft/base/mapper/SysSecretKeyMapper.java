@@ -1,7 +1,7 @@
 package com.soft.base.mapper;
 
-import com.soft.base.entity.SysSecretKey;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.soft.base.entity.SysSecretKey;
 import org.apache.ibatis.annotations.Param;
 
 /**

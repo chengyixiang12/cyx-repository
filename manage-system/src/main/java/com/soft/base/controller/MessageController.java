@@ -4,7 +4,6 @@ import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.enums.LogTypeEnum;
 import com.soft.base.exception.RepeatSendCaptChaException;
 import com.soft.base.rabbitmq.producer.CaptchaProduce;
 import com.soft.base.resultapi.R;

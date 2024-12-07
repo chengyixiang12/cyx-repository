@@ -2,7 +2,6 @@ package com.soft.base.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.Setter;
 import org.apache.ibatis.type.Alias;
 
 @Data

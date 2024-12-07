@@ -8,7 +8,6 @@ import com.soft.base.dto.UserEmailDto;
 import com.soft.base.entity.SysUser;
 import com.soft.base.vo.AllUserVo;
 import com.soft.base.vo.DeptUserVo;
-import com.soft.base.vo.GetUserVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
