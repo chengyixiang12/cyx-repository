@@ -26,7 +26,7 @@ public class LocalCacheUtil {
      * 存储
      * @param key 键
      * @param value 值
-     * @param expire 过期时间
+     * @param expire 过期时间；-1：永不过期
      * @param timeUnit 时间单位
      */
     public void store(String key, Object value, long expire, TimeUnit timeUnit) throws NullPointerException, NumberRangeException, NotSupportTimeUnitException {
