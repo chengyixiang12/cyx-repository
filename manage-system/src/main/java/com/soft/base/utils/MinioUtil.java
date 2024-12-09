@@ -62,7 +62,7 @@ public class MinioUtil {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
                     .object(objectKey)
-                    .stream(is, fileSize, compareFirst(BaseConstant.BURST_SIZE, fileSize) ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE)
+                    .stream(is, fileSize, fileSize < BaseConstant.BURST_SIZE ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE)
                     .build());
             return objectKey;
         } catch (Exception e) {
@@ -115,15 +115,5 @@ public class MinioUtil {
      */
     public String fileKeyGen() {
         return UUID.randomUUID().toString().replaceAll(BaseConstant.ENG_DASH, BaseConstant.BLANK_CHARACTER);
-    }
-
-    /**
-     * 比较两个数，如果第一个参数比第二个参数大，返回true，否则false
-     * @param first
-     * @param second
-     * @return
-     */
-    private Boolean compareFirst(Long first, Long second) {
-        return Long.valueOf(Math.max(first, second)).equals(first);
     }
 }
