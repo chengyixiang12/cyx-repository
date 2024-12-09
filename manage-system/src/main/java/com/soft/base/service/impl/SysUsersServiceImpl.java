@@ -119,9 +119,10 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         sysUsersMapper.insert(sysUser);
 
         // 保存角色
-        if (request.getRoleIds() != null && !request.getRoleIds().isEmpty()) {
+        List<Long> roleIds = request.getRoleIds();
+        if (roleIds != null && !roleIds.isEmpty()) {
             List<SysUserRole> userRoles = new ArrayList<>();
-            request.getRoleIds().forEach(item -> {
+            roleIds.forEach(item -> {
                 SysUserRole sysUserRole = new SysUserRole();
                 sysUserRole.setRoleId(item);
                 sysUserRole.setUserId(sysUser.getId());
