@@ -38,7 +38,7 @@
         sp.del_flag = '1'
     </select>
     <select id="getPermissionsByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT
+        SELECT DISTINCT
         sp.`code`
         FROM
         sys_permission sp

@@ -18,4 +18,9 @@
             (#{item.roleId}, #{item.userId})
         </foreach>
     </insert>
+    <select id="getByUserId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT sur.role_id AS "roleId"
+        FROM sys_user_role sur
+        WHERE sur.user_id = #{userId}
+    </select>
 </mapper>

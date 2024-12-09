@@ -29,6 +29,11 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     public void insertBatch(List<SysUserRole> userRoles) {
         sysUserRoleMapper.insertBatch(userRoles);
     }
+
+    @Override
+    public List<Long> getByUserId(Long UserId) {
+        return sysUserRoleMapper.getByUserId(UserId);
+    }
 }
 
 
