@@ -33,10 +33,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
-* @author cyq
-* @description 针对表【users】的数据库操作Service实现
-* @createDate 2024-09-30 15:49:52
-*/
+ * @author cyq
+ * @description 针对表【users】的数据库操作Service实现
+ * @createDate 2024-09-30 15:49:52
+ */
 @Service
 @CacheConfig(cacheNames = "cyx::users")
 public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> implements SysUsersService {
@@ -110,7 +110,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveUser(SaveUserRequest request) throws Exception{
+    public void saveUser(SaveUserRequest request) throws Exception {
         String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
         request.setPassword(passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey)));
         SysUser sysUser = new SysUser();
@@ -140,35 +140,36 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         BeanUtils.copyProperties(request, sysUser);
         sysUsersMapper.updateById(sysUser);
 
-        //修改角色
         List<Long> roleIds = request.getRoleIds();
-        if (roleIds != null && !roleIds.isEmpty()) {
-            List<Long> roles = sysUserRoleService.getByUserId(request.getId());
+        if (roleIds == null) {
+            return;
+        }
+        //修改角色
+        List<Long> roles = sysUserRoleService.getByUserId(request.getId());
 
-            // 取两集合的交集
-            Set<Long> intersection = roleIds.stream()
-                    .filter(new HashSet<>(roles)::contains)
-                    .collect(Collectors.toSet());
-            roleIds.removeAll(intersection);
-            roles.removeAll(intersection);
+        // 取两集合的交集
+        Set<Long> intersection = roleIds.stream()
+                .filter(new HashSet<>(roles)::contains)
+                .collect(Collectors.toSet());
+        roleIds.removeAll(intersection);
+        roles.removeAll(intersection);
 
-            if (!roles.isEmpty()) {
-                LambdaQueryWrapper<SysUserRole> wrapper = new LambdaQueryWrapper<>();
-                wrapper.eq(SysUserRole::getUserId, request.getId());
-                wrapper.in(SysUserRole::getRoleId, roles);
-                sysUserRoleService.remove(wrapper);
-            }
+        if (!roles.isEmpty()) {
+            LambdaQueryWrapper<SysUserRole> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SysUserRole::getUserId, request.getId());
+            wrapper.in(SysUserRole::getRoleId, roles);
+            sysUserRoleService.remove(wrapper);
+        }
 
-            if (!roleIds.isEmpty()) {
-                List<SysUserRole> userRoles = new ArrayList<>();
-                roleIds.forEach(item -> {
-                    SysUserRole sysUserRole = new SysUserRole();
-                    sysUserRole.setUserId(request.getId());
-                    sysUserRole.setRoleId(item);
-                    userRoles.add(sysUserRole);
-                });
-                sysUserRoleService.insertBatch(userRoles);
-            }
+        if (!roleIds.isEmpty()) {
+            List<SysUserRole> userRoles = new ArrayList<>();
+            roleIds.forEach(item -> {
+                SysUserRole sysUserRole = new SysUserRole();
+                sysUserRole.setUserId(request.getId());
+                sysUserRole.setRoleId(item);
+                userRoles.add(sysUserRole);
+            });
+            sysUserRoleService.insertBatch(userRoles);
         }
     }
 
