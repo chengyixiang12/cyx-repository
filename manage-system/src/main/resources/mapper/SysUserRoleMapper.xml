@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.base.mapper.SysUserRoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.soft.base.entity.SysUserRole">
+            <result property="roleId" column="role_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        role_id,user_id
+    </sql>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO sys_user_role ( role_id, user_id )
+        <foreach collection="userRoles" item="item" open="VALUES" separator="," close="">
+            (#{item.roleId}, #{item.userId})
+        </foreach>
+    </insert>
+</mapper>

@@ -1,5 +1,6 @@
 package com.soft.base.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,16 +9,14 @@ import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.dto.GetUserDto;
 import com.soft.base.dto.GetUserRoleDto;
 import com.soft.base.entity.SysUser;
+import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.request.EditUserRequest;
 import com.soft.base.request.PageRequest;
 import com.soft.base.request.ResetPasswordRequest;
 import com.soft.base.request.SaveUserRequest;
-import com.soft.base.service.SecretKeyService;
-import com.soft.base.service.SysDeptService;
-import com.soft.base.service.SysRoleService;
-import com.soft.base.service.SysUsersService;
+import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.vo.AllUserVo;
 import com.soft.base.vo.GetUserVo;
@@ -28,7 +27,9 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,19 +53,23 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final SysRoleService sysRoleService;
 
+    private final SysUserRoleService sysUserRoleService;
+
     @Autowired
     public SysUsersServiceImpl(SysUsersMapper sysUsersMapper,
                                PasswordEncoder passwordEncoder,
                                RSAUtil rsaUtil,
                                SecretKeyService secretKeyService,
                                SysDeptService sysDeptService,
-                               SysRoleService sysRoleService) {
+                               SysRoleService sysRoleService,
+                               SysUserRoleService sysUserRoleService) {
         this.sysUsersMapper = sysUsersMapper;
         this.passwordEncoder = passwordEncoder;
         this.rsaUtil = rsaUtil;
         this.secretKeyService = secretKeyService;
         this.sysDeptService = sysDeptService;
         this.sysRoleService = sysRoleService;
+        this.sysUserRoleService = sysUserRoleService;
     }
 
     @Override
@@ -104,6 +109,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveUser(SaveUserRequest request) throws Exception{
         String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
         request.setPassword(passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey)));
@@ -111,14 +117,42 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         BeanUtils.copyProperties(request, sysUser);
         sysUser.setDefault();
         sysUsersMapper.insert(sysUser);
+
+        // 保存角色
+        if (request.getRoleIds() != null && !request.getRoleIds().isEmpty()) {
+            List<SysUserRole> userRoles = new ArrayList<>();
+            request.getRoleIds().forEach(item -> {
+                SysUserRole sysUserRole = new SysUserRole();
+                sysUserRole.setRoleId(item);
+                sysUserRole.setUserId(sysUser.getId());
+                userRoles.add(sysUserRole);
+            });
+            sysUserRoleService.insertBatch(userRoles);
+        }
     }
 
     @Override
     @CacheEvict(key = "#username")
+    @Transactional(rollbackFor = Exception.class)
     public void editUser(EditUserRequest request) {
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(request, sysUser);
         sysUsersMapper.updateById(sysUser);
+
+        //修改角色
+        if (request.getRoleIds() != null && !request.getRoleIds().isEmpty()) {
+            List<SysUserRole> userRoles = new ArrayList<>();
+            request.getRoleIds().forEach(item -> {
+                SysUserRole sysUserRole = new SysUserRole();
+                sysUserRole.setUserId(request.getId());
+                sysUserRole.setRoleId(item);
+                userRoles.add(sysUserRole);
+            });
+            LambdaQueryWrapper<SysUserRole> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SysUserRole::getUserId, request.getId());
+            sysUserRoleService.remove(wrapper);
+            sysUserRoleService.insertBatch(userRoles);
+        }
     }
 
     @Override
