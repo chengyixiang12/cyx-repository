@@ -2,6 +2,7 @@ package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.dto.ExportDeptDto;
 import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
 import com.soft.base.exception.GlobalException;
@@ -9,6 +10,7 @@ import com.soft.base.mapper.SysDeptMapper;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.request.DeleteRequest;
 import com.soft.base.request.EditDeptRequest;
+import com.soft.base.request.ExportDeptRequest;
 import com.soft.base.request.SaveDeptRequest;
 import com.soft.base.service.SysDeptService;
 import com.soft.base.vo.DeptTreeVo;
@@ -92,6 +94,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     @Override
     public GetUserDeptDto getUserDept(Long deptId) {
         return sysDeptMapper.getUserDept(deptId);
+    }
+
+    @Override
+    public List<ExportDeptDto> exportDept(ExportDeptRequest request) {
+        return sysDeptMapper.exportDept(request.getIds());
     }
 
     /**

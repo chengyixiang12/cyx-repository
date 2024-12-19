@@ -32,6 +32,8 @@
         <javax.version>2.3.1</javax.version>
         <agent.version>1.21</agent.version>
         <hibernate.version>8.0.1.Final</hibernate.version>
+        <poi.version>4.1.2</poi.version>
+        <tika.version>3.0.0</tika.version>
         <maven.plugin>3.3.1</maven.plugin>
     </properties>
 
@@ -124,10 +126,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-quartz</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
@@ -158,6 +156,17 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

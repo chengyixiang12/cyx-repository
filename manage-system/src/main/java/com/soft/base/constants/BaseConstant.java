@@ -166,4 +166,14 @@ public class BaseConstant {
      * 本地缓存永不过期
      */
     public final static Long LOCAL_CACHE_EXPIRE_NEVER = -1L;
+
+    /**
+     * 导出部门excel名称
+     */
+    public final static String EXPORT_DEPT_EXCEL_NAME = "部门.xlsx";
+
+    /**
+     * excel文件后缀
+     */
+    public final static String EXCEL_SUFFIX = ".xlsx";
 }

@@ -1,5 +1,6 @@
 package com.soft.base.conf;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
@@ -20,6 +21,7 @@ public class AsyncConfig implements AsyncConfigurer {
 
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
+    @Autowired
     public AsyncConfig(@Qualifier(value = "cyxTaskExecutor") ThreadPoolTaskExecutor threadPoolTaskExecutor) {
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }

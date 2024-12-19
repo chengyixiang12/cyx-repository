@@ -1,9 +1,12 @@
 package com.soft.base.controller;
 
 import com.soft.base.annotation.SysLog;
+import com.soft.base.constants.BaseConstant;
+import com.soft.base.dto.ExportDeptDto;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.request.DeleteRequest;
 import com.soft.base.request.EditDeptRequest;
+import com.soft.base.request.ExportDeptRequest;
 import com.soft.base.request.SaveDeptRequest;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDeptService;
@@ -15,10 +18,21 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -33,6 +47,9 @@ import java.util.List;
 @Slf4j
 public class SysDeptController {
 
+    @Value(value = "${tmp.path}")
+    private String fileTmp;
+
     private final SysDeptService sysDeptService;
 
     @Autowired
@@ -40,7 +57,6 @@ public class SysDeptController {
         this.sysDeptService = sysDeptService;
     }
 
-    @SysLog(value = "获取组织架构", module = LogModuleEnum.DEPT)
     @GetMapping(value = "/getDeptTree")
     @Operation(summary = "获取组织架构")
     public R<List<DeptTreeVo>> getDeptTree() {
@@ -134,7 +150,6 @@ public class SysDeptController {
         }
     }
 
-    @SysLog(value = "获取部门（单）", module = LogModuleEnum.DEPT)
     @GetMapping(value = "/{id}")
     @Operation(summary = "获取部门（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
@@ -148,6 +163,50 @@ public class SysDeptController {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
+        }
+    }
+
+    @PostMapping(value = "/exportDept")
+    @Operation(summary = "导出部门")
+    public ResponseEntity<Object> exportDept(@RequestBody ExportDeptRequest request) {
+        if (request.getIds() == null || request.getIds().isEmpty()) {
+            return ResponseEntity.ok().body(R.fail("部门id数组不能为空"));
+        }
+        String fileName = request.getFileName();
+        if (StringUtils.isBlank(fileName)) {
+            request.setFileName(BaseConstant.EXPORT_DEPT_EXCEL_NAME);
+        }
+        ClassPathResource resource = new ClassPathResource("template/exportDept.xlsx");
+        try(InputStream is = resource.getInputStream();
+            XSSFWorkbook workbook = new XSSFWorkbook(is)) {
+            List<ExportDeptDto> exportDeptDtos = sysDeptService.exportDept(request);
+
+            XSSFSheet sheet = workbook.getSheetAt(0);
+            for (int i = 0; i < exportDeptDtos.size(); i++) {
+                ExportDeptDto exportDeptDto = exportDeptDtos.get(i);
+                XSSFRow row = sheet.createRow(i + 1);
+                row.createCell(0).setCellValue(exportDeptDto.getId());
+                row.createCell(1).setCellValue(exportDeptDto.getCode());
+                row.createCell(2).setCellValue(exportDeptDto.getName());
+                row.createCell(3).setCellValue(exportDeptDto.getParentName());
+            }
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            workbook.write(byteArrayOutputStream);
+            byte[] excelBytes = byteArrayOutputStream.toByteArray();
+
+            // 设置响应头
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // 设置文件类型
+            headers.setContentDisposition(ContentDisposition.attachment().filename(fileName.endsWith(BaseConstant.EXCEL_SUFFIX) ? fileName : fileName + BaseConstant.EXCEL_SUFFIX).build()); // 设置文件名
+
+            // 返回 ResponseEntity，带上文件内容和响应头
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelBytes);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.ok().body(R.fail());
         }
     }
 }

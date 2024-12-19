@@ -1,6 +1,7 @@
 package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.soft.base.dto.ExportDeptDto;
 import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
 import com.soft.base.request.DeleteRequest;
@@ -27,6 +28,8 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     DeptVo getDept(@Param("id") Long id);
 
     GetUserDeptDto getUserDept(@Param("deptId") Long deptId);
+
+    List<ExportDeptDto> exportDept(@Param("ids") List<Long> ids);
 }
 
 

@@ -1,7 +1,7 @@
 package com.soft.base.service;
 
-import com.soft.base.entity.SysUserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.soft.base.entity.SysUserRole;
 
 import java.util.List;
 

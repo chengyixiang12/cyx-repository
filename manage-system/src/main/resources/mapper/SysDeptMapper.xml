@@ -78,4 +78,21 @@
         sd.del_flag = '1'
         AND sd.id = #{deptId}
     </select>
+    <select id="exportDept" parameterType="java.util.List" resultType="ExportDeptDto">
+        SELECT
+        sd.id,
+        sd.`code`,
+        sd.`name`,
+        sda.`name` AS "parentName"
+        FROM
+        sys_dept sd
+        LEFT JOIN sys_dept sda ON sd.parent_id = sda.id
+        AND sda.del_flag = '1'
+        WHERE
+        sd.del_flag = '1'
+        AND sd.id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>
