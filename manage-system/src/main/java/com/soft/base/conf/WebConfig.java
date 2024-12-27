@@ -1,6 +1,6 @@
 package com.soft.base.conf;
 
-import com.soft.base.aspect.RateLimitInterceptor;
+import com.soft.base.intercept.RateLimitInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

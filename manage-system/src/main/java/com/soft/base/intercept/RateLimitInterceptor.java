@@ -1,4 +1,4 @@
-package com.soft.base.aspect;
+package com.soft.base.intercept;
 
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
