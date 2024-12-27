@@ -37,7 +37,6 @@ public class SysPermissionController {
         this.sysPermissionService = sysPermissionService;
     }
 
-    @SysLog(value = "获取权限（复）", module = LogModuleEnum.PERMISSION)
     @PostMapping(value = "/getPermissions")
     @Operation(summary = "获取权限（复）")
     public R<PageVo<PermissionsVo>> getPermissions(@RequestBody PermissionsRequest request) {

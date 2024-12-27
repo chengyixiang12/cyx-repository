@@ -11,6 +11,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.nio.ByteBuffer;
+
 /**
  * @Author: cyx
  * @Description: 负责处理消息
@@ -35,6 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
-
+        ByteBuffer payload = message.getPayload();
+        // TODO：用来接收websocket传输的文件
     }
 }

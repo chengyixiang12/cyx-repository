@@ -47,9 +47,6 @@ import java.util.List;
 @Slf4j
 public class SysDeptController {
 
-    @Value(value = "${tmp.path}")
-    private String fileTmp;
-
     private final SysDeptService sysDeptService;
 
     @Autowired

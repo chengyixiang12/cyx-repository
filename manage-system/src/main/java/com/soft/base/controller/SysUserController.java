@@ -54,7 +54,6 @@ public class SysUserController {
         this.secretKeyService = secretKeyService;
     }
 
-    @SysLog(value = "获取所有用户", module = LogModuleEnum.USER)
     @PostMapping(value = "/getAllUsers")
     @Operation(summary = "获取所有用户")
     public R<PageVo<AllUserVo>> getAllUsers(@RequestBody PageRequest request) {
@@ -163,7 +162,6 @@ public class SysUserController {
         }
     }
 
-    @SysLog(value = "获取登录用户信息", module = LogModuleEnum.USER)
     @GetMapping(value = "/getUserInfo")
     @Operation(summary = "获取登录用户信息")
     public R<UserInfoVo> getUserInfo() {

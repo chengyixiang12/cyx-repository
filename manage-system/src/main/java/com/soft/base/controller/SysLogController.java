@@ -34,7 +34,6 @@ public class SysLogController {
         this.sysLogService = sysLogService;
     }
 
-    @SysLog(value = "获取日志（复）", module = LogModuleEnum.LOG)
     @PostMapping(value = "/getLogs")
     @Operation(summary = "获取日志（复）")
     public R<PageVo<LogsVo>> getLogs(@RequestBody LogsRequest request) {

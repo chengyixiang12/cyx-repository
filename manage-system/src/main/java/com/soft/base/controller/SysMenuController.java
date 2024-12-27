@@ -38,7 +38,6 @@ public class SysMenuController {
     }
 
 
-    @SysLog(value = "获取菜单", module = LogModuleEnum.MENU)
     @GetMapping(value = "/getMenus")
     @Operation(summary = "获取菜单")
     public R<List<MenusVo>> getMenus() {

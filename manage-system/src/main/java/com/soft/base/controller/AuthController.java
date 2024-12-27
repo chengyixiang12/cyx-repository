@@ -73,7 +73,6 @@ public class AuthController {
         }
     }
 
-    @SysLog(value = "用户注册", module = LogModuleEnum.AUTHORIZATION, type = LogTypeEnum.REGISTER, name = "#request.username")
     @PostMapping(value = "/register")
     @Operation(summary = "注册")
     public R register(@RequestBody RegisterRequest request) {

@@ -39,7 +39,6 @@ public class SysDictDataController {
         this.sysDictDataService = sysDictDataService;
     }
 
-    @SysLog(value = "获取字典数据（复）", module = LogModuleEnum.DICT_DATA)
     @PostMapping(value = "/getDictDatas")
     @Operation(summary = "获取字典数据（复）")
     public R<PageVo<DictDatasVo>> getDictDatas(@RequestBody DictDatasRequest request) {
@@ -55,7 +54,6 @@ public class SysDictDataController {
         }
     }
 
-    @SysLog(value = "获取字典数据（单）", module = LogModuleEnum.DICT_DATA)
     @GetMapping(value = "/{id}")
     @Operation(summary = "获取字典数据（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)

@@ -50,7 +50,6 @@ public class MessageController {
         this.sysUsersService = sysUsersService;
     }
 
-//    @SysLog(value = "发送注册验证码", module = LogModuleEnum.MESSAGE_QUEUE)
     @GetMapping(value = "/sendRegistCaptcha")
     @Operation(summary = "发送注册验证码")
     @Parameter(name = "email", description = "邮箱地址", required = true, in = ParameterIn.QUERY)
@@ -73,7 +72,6 @@ public class MessageController {
         }
     }
 
-    @SysLog(value = "发送登录验证码", module = LogModuleEnum.MESSAGE_QUEUE, name = "#username")
     @GetMapping(value = "/sendLoginCaptcha")
     @Operation(summary = "发送登录验证码")
     @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.QUERY)

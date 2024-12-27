@@ -39,7 +39,6 @@ public class SysDictTypeController {
         this.sysDictTypeService = sysDictTypeService;
     }
 
-    @SysLog(value = "获取字典类型", module = LogModuleEnum.DICT_TYPE)
     @GetMapping
     @Operation(summary = "获取字典类型")
     public R<List<DictTypesVo>> getDictTypes() {
@@ -89,7 +88,6 @@ public class SysDictTypeController {
         }
     }
 
-    @SysLog(value = "获取字典类型（单）", module = LogModuleEnum.DICT_TYPE)
     @GetMapping(value = "/{id}")
     @Operation(summary = "获取字典类型（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)

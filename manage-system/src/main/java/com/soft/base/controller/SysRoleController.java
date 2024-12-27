@@ -148,7 +148,6 @@ public class SysRoleController {
         }
     }
 
-    @SysLog(value = "获取角色（单）", module = LogModuleEnum.ROLE)
     @GetMapping(value = "/{id}")
     @Operation(summary = "获取角色（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
@@ -165,7 +164,6 @@ public class SysRoleController {
         }
     }
 
-    @SysLog(value = "获取角色（复）", module = LogModuleEnum.ROLE)
     @PostMapping(value = "/getRoles")
     @Operation(summary = "获取角色（复）")
     public R<PageVo<SysRoleVo>> getRoles(@RequestBody GetRolesRequest request) {
