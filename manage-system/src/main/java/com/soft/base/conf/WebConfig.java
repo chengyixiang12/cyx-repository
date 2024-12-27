@@ -23,6 +23,9 @@ public class WebConfig implements WebMvcConfigurer {
     }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(rateLimitInterceptor).order(1).addPathPatterns("/**");
+        registry
+                .addInterceptor(rateLimitInterceptor)
+                .order(1).addPathPatterns("/**")
+                .excludePathPatterns("/webjars/**", "/v3/**");
     }
 }
