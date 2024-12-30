@@ -4,14 +4,14 @@
  Source Server         : 虚拟机mysql
  Source Server Type    : MySQL
  Source Server Version : 80039
- Source Host           : 192.168.226.129:3306
+ Source Host           : 192.168.226.130:3306
  Source Schema         : mysql_study
 
  Target Server Type    : MySQL
  Target Server Version : 80039
  File Encoding         : 65001
 
- Date: 26/11/2024 20:56:41
+ Date: 30/12/2024 11:46:46
 */
 
 SET NAMES utf8mb4;
@@ -136,7 +136,7 @@ CREATE TABLE `sys_file`  (
   `file_suffix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '文件后缀；示例：.txt、.jpg',
   `file_size` bigint NULL DEFAULT NULL COMMENT '文件大小；单位：B',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_log
@@ -162,7 +162,7 @@ CREATE TABLE `sys_log`  (
   `os_browser_info` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '操作系统/浏览器信息',
   `type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '日志类型',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '日志表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 424 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -196,7 +196,7 @@ CREATE TABLE `sys_menu`  (
 INSERT INTO `sys_menu` VALUES (1, NULL, '系统管理', NULL, NULL, 'setting', '0', 1, 1, 1, '2024-11-16 03:25:27', '2024-11-16 04:48:48', '系统管理顶级菜单', 'admin', 'admin', '1');
 INSERT INTO `sys_menu` VALUES (2, NULL, '内容管理', NULL, NULL, 'folder', '0', 2, 1, 1, '2024-11-16 03:25:27', '2024-11-16 04:48:48', '内容管理顶级菜单', 'admin', 'admin', '1');
 INSERT INTO `sys_menu` VALUES (3, NULL, '统计分析', NULL, NULL, 'chart', '0', 3, 1, 1, '2024-11-16 03:25:27', '2024-11-16 04:48:49', '统计分析顶级菜单', 'admin', 'admin', '1');
-INSERT INTO `sys_menu` VALUES (4, 1, '用户管理', '/user/list', 'views/UserList.vue', 'user', '1', 1, 1, 1, '2024-11-16 03:25:27', '2024-11-16 03:26:43', '管理用户信息', 'admin', 'admin', '1');
+INSERT INTO `sys_menu` VALUES (4, 1, '用户管理', '/user', 'views/UserList.vue', 'user', '1', 1, 1, 1, '2024-11-16 03:25:27', '2024-11-27 12:59:55', '管理用户信息', 'admin', 'admin', '1');
 INSERT INTO `sys_menu` VALUES (5, 1, '角色管理', '/role/list', 'views/RoleList.vue', 'team', '1', 2, 1, 1, '2024-11-16 03:25:27', '2024-11-16 03:26:43', '管理角色信息', 'admin', 'admin', '1');
 INSERT INTO `sys_menu` VALUES (6, 1, '菜单管理', '/menu/list', 'views/MenuList.vue', 'menu', '1', 3, 1, 1, '2024-11-16 03:25:27', '2024-11-16 03:26:43', '管理菜单信息', 'admin', 'admin', '1');
 INSERT INTO `sys_menu` VALUES (7, 2, '文章管理', '/article/list', 'views/ArticleList.vue', 'file', '1', 1, 1, 1, '2024-11-16 03:25:27', '2024-11-16 03:26:43', '管理文章内容', 'admin', 'admin', '1');
@@ -409,7 +409,7 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1, 'admin', '2024-10-24 07:25:34', 'admin', '2024-11-16 04:29:52', '1', 'admin', '$2a$10$7GBeWjeLbS1OUOFl18nvMeiww0cAtVQRCnNOQJBVgzoJX.KMaezSy', '程益祥', '1907452460@qq.com', NULL, 1, 1, 1, 1, 1);
+INSERT INTO `sys_user` VALUES (1, 'admin', '2024-10-24 07:25:34', 'admin', '2024-11-16 04:29:52', '1', 'admin', '$2a$10$7GBeWjeLbS1OUOFl18nvMeiww0cAtVQRCnNOQJBVgzoJX.KMaezSy', '程益祥', '1907452460@qq.com', '13235423290', 1, 1, 1, 1, 1);
 INSERT INTO `sys_user` VALUES (2, 'admin', '2024-11-09 23:31:22', 'admin', '2024-11-16 12:20:40', '1', 'zjy001', '$2a$10$toTWMK/I76kY2SwHPKX2k.EQqYcjG14PWjJ.H4dkGPIzE.joJ0x3a', '张佳耀', '3332951238@qq.com', NULL, 1, 1, 1, 1, 1);
 
 -- ----------------------------
