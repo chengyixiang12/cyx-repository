@@ -73,6 +73,11 @@ public class BaseConstant {
     public final static String DEFAULT_STORAGE_LOCATION = "1";
 
     /**
+     * 存储位置；磁盘
+     */
+    public final static String DISK_STORAGE_LOCATION = "2";
+
+    /**
      * aes偏移量
      */
     public final static String AES_OFFSET = "0000000001000001";
@@ -176,4 +181,9 @@ public class BaseConstant {
      * excel文件后缀
      */
     public final static String EXCEL_SUFFIX = ".xlsx";
+
+    /**
+     * txt文件后缀
+     */
+    public final static String TXT_SUFFIX = ".txt";
 }

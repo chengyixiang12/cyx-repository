@@ -1,6 +1,7 @@
 package com.soft.base.websocket.handle;
 
 import com.alibaba.fastjson2.JSON;
+import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.OrderReceiveParams;
@@ -11,6 +12,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
@@ -31,13 +33,20 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.error("websocket异常，指令为空");
             return;
         }
-        WebSocketConcreteHandler webSocketConcreteHandler = WebSocketConcreteHolder.getConcreteHandler(order);
+        WebSocketConcreteHandler<?> concreteHandler = WebSocketConcreteHolder.getConcreteHandler(order);
+        WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(order);
         webSocketConcreteHandler.handle(session, message);
+
     }
 
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
-        ByteBuffer payload = message.getPayload();
-        // TODO：用来接收websocket传输的文件
+        try {
+            WebSocketConcreteHandler<ByteBuffer> webSocketConcreteHandler = (WebSocketConcreteHandler<ByteBuffer>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FILE_TRANSFER.toString());
+            webSocketConcreteHandler.handle(session, message);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException();
+        }
     }
 }

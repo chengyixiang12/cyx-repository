@@ -20,4 +20,19 @@ public enum WebSocketOrderEnum {
      * 心跳检测
      */
     HEART_BEAT,
+
+    /**
+     * 文件传输开始
+     */
+    FILE_TRANSFER_START,
+
+    /**
+     * 文件传输结束
+     */
+    FILE_TRANSFER_OVER,
+
+    /**
+     * 文件传输
+     */
+    FILE_TRANSFER,
 }

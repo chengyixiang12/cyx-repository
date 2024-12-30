@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -27,7 +28,7 @@ import java.io.IOException;
 
 @Component
 @Slf4j
-public class ForceOfflineHandler implements WebSocketConcreteHandler {
+public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -37,7 +38,7 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler {
     }
 
     @Override
-    public void handle(WebSocketSession session, TextMessage message) throws IOException {
+    public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         ForceOfflineRecParams forceOfflineRecParams = JSON.parseObject(message.getPayload(), ForceOfflineRecParams.class);
         WebSocketSession receiveSession = WebSocketSessionManager.getSession(forceOfflineRecParams.getReceiver());
         if (receiveSession == null) {

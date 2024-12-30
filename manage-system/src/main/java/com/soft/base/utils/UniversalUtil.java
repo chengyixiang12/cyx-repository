@@ -1,5 +1,6 @@
 package com.soft.base.utils;
 
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.exception.NotArrayException;
 import com.soft.base.exception.NullListException;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Array;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author: cyx
@@ -57,5 +59,13 @@ public class UniversalUtil {
             Array.set(array, i, list.get(i));
         }
         return array;
+    }
+
+    /**
+     * 生成唯一key
+     * @return
+     */
+    public String fileKeyGen() {
+        return UUID.randomUUID().toString().replaceAll(BaseConstant.ENG_DASH, BaseConstant.BLANK_CHARACTER);
     }
 }

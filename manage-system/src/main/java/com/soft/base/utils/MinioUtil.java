@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
-import java.util.UUID;
 
 /**
  * @Author: cyx
@@ -107,13 +106,5 @@ public class MinioUtil {
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
-    }
-
-    /**
-     * 生成文件key
-     * @return
-     */
-    public String fileKeyGen() {
-        return UUID.randomUUID().toString().replaceAll(BaseConstant.ENG_DASH, BaseConstant.BLANK_CHARACTER);
     }
 }

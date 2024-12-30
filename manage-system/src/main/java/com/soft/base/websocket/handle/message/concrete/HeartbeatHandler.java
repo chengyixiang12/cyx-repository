@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  **/
 @Component
 @Slf4j
-public class HeartbeatHandler implements WebSocketConcreteHandler {
+public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
 
     private final RedisTemplate<String, Object> redisTemplate;
     @Autowired
@@ -32,7 +32,7 @@ public class HeartbeatHandler implements WebSocketConcreteHandler {
     }
 
     @Override
-    public void handle(WebSocketSession session, TextMessage message) throws IOException {
+    public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         // 重新设置用户在线状态
         redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);

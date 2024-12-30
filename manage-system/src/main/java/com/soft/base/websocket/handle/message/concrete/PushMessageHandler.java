@@ -9,6 +9,7 @@ import com.soft.base.websocket.receive.PushMessageRecParams;
 import com.soft.base.websocket.send.PushMessageSendParams;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -21,9 +22,9 @@ import java.io.IOException;
  **/
 
 @Component
-public class PushMessageHandler implements WebSocketConcreteHandler {
+public class PushMessageHandler implements WebSocketConcreteHandler<String> {
     @Override
-    public void handle(WebSocketSession session, TextMessage message) throws IOException {
+    public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         PushMessageRecParams pushMessageRecParams = JSON.parseObject(message.getPayload(), PushMessageRecParams.class);
         JSONArray receivers = pushMessageRecParams.getReceivers();
         PushMessageSendParams pushMessageSendParams = new PushMessageSendParams();

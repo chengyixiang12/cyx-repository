@@ -66,4 +66,9 @@ public class RedisConstant {
      * 限流
      */
     public final static String RATE_LIMIT_KEY = "cyx:rate:limit:";
+
+    /**
+     * 分片文件key
+     */
+    public final static String SLICE_FILE_KEY = "cyx:slice:";
 }

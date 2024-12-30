@@ -4,6 +4,7 @@ import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysFile;
 import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.utils.MinioUtil;
+import com.soft.base.utils.UniversalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -23,10 +24,13 @@ public class FileUploadAsync {
 
     private final MinioUtil minioUtil;
 
+    private final UniversalUtil universalUtil;
+
     @Autowired
-    public FileUploadAsync(SysFileMapper sysFileMapper, MinioUtil minioUtil) {
+    public FileUploadAsync(SysFileMapper sysFileMapper, MinioUtil minioUtil, UniversalUtil universalUtil) {
         this.sysFileMapper = sysFileMapper;
         this.minioUtil = minioUtil;
+        this.universalUtil = universalUtil;
     }
 
     /**
@@ -38,7 +42,7 @@ public class FileUploadAsync {
      */
     @Async
     public void uploadFile(InputStream inputStream, String fileSuffix, Long fileSize, String originalFilename) {
-        String fileKey = minioUtil.fileKeyGen();
+        String fileKey = universalUtil.fileKeyGen();
         String objectKey = minioUtil.upload(inputStream, fileKey, fileSuffix, fileSize);
         SysFile sysFile = new SysFile();
         sysFile.setFileKey(fileKey);

@@ -2,6 +2,7 @@ package com.soft.base.websocket;
 
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import jakarta.annotation.PostConstruct;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +17,10 @@ import java.util.List;
 @Component
 public class WebSocketConcreteRegistry {
 
-    private final List<WebSocketConcreteHandler> webSocketConcreteHandlers;
+    private final List<WebSocketConcreteHandler<T>> webSocketConcreteHandlers;
 
     @Autowired
-    public WebSocketConcreteRegistry(List<WebSocketConcreteHandler> webSocketConcreteHandlers) {
+    public WebSocketConcreteRegistry(List<WebSocketConcreteHandler<T>> webSocketConcreteHandlers) {
         this.webSocketConcreteHandlers = webSocketConcreteHandlers;
     }
 
@@ -28,7 +29,7 @@ public class WebSocketConcreteRegistry {
      */
     @PostConstruct
     public void init() {
-        for (WebSocketConcreteHandler c : webSocketConcreteHandlers) {
+        for (WebSocketConcreteHandler<T> c : webSocketConcreteHandlers) {
             WebSocketConcreteHolder.addConcreteHandler(c.getOrder().toString(), c);
         }
     }
