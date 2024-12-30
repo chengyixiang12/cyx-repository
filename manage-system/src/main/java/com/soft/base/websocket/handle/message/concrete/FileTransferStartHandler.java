@@ -51,7 +51,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         String fileKey = universalUtil.fileKeyGen();
         log.info("fileKey: {}", fileKey);
         fileTransferStartSendParams.setFileKey(fileKey);
-        String filePath = tmpPath + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.TXT_SUFFIX;
+        String filePath = tmpPath + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
         boolean isCreate = file.createNewFile();
         if (isCreate) {

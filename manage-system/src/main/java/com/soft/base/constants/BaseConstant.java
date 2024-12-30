@@ -186,4 +186,31 @@ public class BaseConstant {
      * txt文件后缀
      */
     public final static String TXT_SUFFIX = ".txt";
+
+    /**
+     * tmp文件后缀
+     */
+    public final static String TMP_SUFFIX = ".tmp";
+
+    /**
+     * 缓冲池大小
+     */
+    public final static Integer BUFFER_SIZE = 1024;
+
+    /**
+     * 长整型初始值
+     */
+    public final static Long LONG_INIT_VAL = 0L;
+
+    /**
+     * 整型初始值
+     */
+    public final static Integer INTEGER_INIT_VAL = 0;
+
+    /**
+     * 文件流结束标识
+     */
+    public final static Long FILE_OVER_SIGN = -1L;
+
+
 }
