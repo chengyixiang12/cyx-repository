@@ -2,6 +2,7 @@ package com.soft.base.websocket.send;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @Author: cyx
@@ -10,10 +11,6 @@ import lombok.EqualsAndHashCode;
  **/
 @EqualsAndHashCode(callSuper = false)
 @Data
-public class PushMessageSendParams extends AbstractSendParams {
+public class PushMessageSendParams extends SendParams {
 
-    /**
-     * 消息
-     */
-    private String message;
 }

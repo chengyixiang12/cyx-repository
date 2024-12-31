@@ -49,7 +49,7 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
         ForceOfflineSendParams forceOfflineSendParams = new ForceOfflineSendParams();
         forceOfflineSendParams.setOrder(forceOfflineRecParams.getOrder());
 
-        receiveSession.sendMessage(new TextMessage(forceOfflineSendParams.toJsonString()));
+        receiveSession.sendMessage(new TextMessage(forceOfflineSendParams.toString()));
 
         UserDto userDto = (UserDto) receiveSession.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         WebSocketSessionManager.removeSession(userDto.getId());

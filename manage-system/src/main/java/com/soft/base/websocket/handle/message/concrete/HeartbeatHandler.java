@@ -5,12 +5,14 @@ import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.base.websocket.send.SendParams;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
@@ -33,10 +35,19 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
-        // 重新设置用户在线状态
-        redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
-        log.info("{} keep-live...", userDto.getUsername());
+        try {
+            UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+            // 重新设置用户在线状态
+            redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
+            log.info("{} keep-live...", userDto.getUsername());
+            SendParams sendParams = new SendParams();
+            sendParams.setStatus(true);
+            session.sendMessage(new TextMessage(sendParams.toString()));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+
+        }
+
     }
 
     @Override

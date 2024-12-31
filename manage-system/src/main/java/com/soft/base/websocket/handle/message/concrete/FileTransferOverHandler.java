@@ -12,6 +12,7 @@ import com.soft.base.service.SysFileService;
 import com.soft.base.utils.DateUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.FileTransferOverRecParams;
+import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,7 +104,9 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             tmpFile.deleteOnExit();
             redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + userDto.getUsername());
 
-            session.sendMessage(new TextMessage(JSON.toJSONString(R.ok())));
+            SendParams sendParams = new SendParams();
+            sendParams.setStatus(true);
+            session.sendMessage(new TextMessage(sendParams.toString()));
         }
     }
 

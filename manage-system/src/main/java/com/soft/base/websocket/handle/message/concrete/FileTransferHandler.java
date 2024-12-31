@@ -1,13 +1,12 @@
 package com.soft.base.websocket.handle.message.concrete;
 
-import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
 import com.soft.base.enums.WebSocketOrderEnum;
-import com.soft.base.resultapi.R;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +53,9 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
             os.write(payload.array());
             os.flush();
         } finally {
-            session.sendMessage(new TextMessage(JSON.toJSONString(R.ok())));
+            SendParams sendParams = new SendParams();
+            sendParams.setStatus(true);
+            session.sendMessage(new TextMessage(sendParams.toString()));
         }
 
     }

@@ -2,6 +2,7 @@ package com.soft.base.websocket.send;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @Author: cyx
@@ -11,7 +12,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
-public class FileTransferStartSendParams extends AbstractSendParams {
+public class FileTransferStartSendParams extends SendParams {
 
     /**
      * 文件唯一标识
