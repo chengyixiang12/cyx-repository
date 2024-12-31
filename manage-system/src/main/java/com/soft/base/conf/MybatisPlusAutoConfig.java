@@ -18,7 +18,7 @@ public class MybatisPlusAutoConfig implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         if (metaObject.hasSetter("createTime"))
             // 自动填充创建时间
-            fillValIfNullByName("createTime", LocalDateTime.now(),metaObject);
+            fillValIfNullByName("createTime", LocalDateTime.now(), metaObject);
         if (metaObject.hasSetter("createBy"))
             // 自动填充创建人
             fillValIfNullByName("createBy", getCurrentUsername(), metaObject);
@@ -35,10 +35,12 @@ public class MybatisPlusAutoConfig implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        // 自动填充更新时间
-        this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
-        // 自动填充更新人
-        this.setFieldValByName("updateBy", getCurrentUsername(), metaObject);
+        if (metaObject.hasSetter("updateTime"))
+            // 自动填充更新时间
+            this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
+        if (metaObject.hasSetter("updateBy"))
+            // 自动填充更新人
+            this.setFieldValByName("updateBy", getCurrentUsername(), metaObject);
     }
 
     private String getCurrentUsername() {
@@ -55,6 +57,7 @@ public class MybatisPlusAutoConfig implements MetaObjectHandler {
 
     /**
      * 如果提前设置了值，则不自动插入
+     *
      * @param fieldName
      * @param fieldVal
      * @param metaObject
