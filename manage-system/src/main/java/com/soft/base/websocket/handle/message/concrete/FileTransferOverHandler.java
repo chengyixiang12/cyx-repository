@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 文件传输结束处理器
  * @DateTime: 2024/12/30 20:00
  **/
 @Component

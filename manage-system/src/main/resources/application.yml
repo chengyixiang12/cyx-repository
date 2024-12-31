@@ -16,9 +16,9 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 50MB
-      max-request-size: 100MB
-      file-size-threshold: 2MB
+      max-file-size: 10MB
+      max-request-size: 20MB
+      file-size-threshold: 1MB
       location: E:/tmp
       #location: /home/docker-build/manage-system/tmp
   datasource:
@@ -45,7 +45,6 @@ spring:
       connection-test-query: SELECT 1
       # 连接验证的超时时间（单位：毫秒）
       validation-timeout: 5000
-
 
   data:
     redis:
@@ -164,3 +163,7 @@ web-client:
   response-timeout: 5
   #连接超时；单位：毫秒
   connect-timeout: 5000
+
+storage:
+  big-file:
+    location: D:/bigFile

@@ -15,8 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketConcreteHolder {
 
     private final static Map<String, WebSocketConcreteHandler<?>> CONCRETE_HANDLER_MAP = new ConcurrentHashMap<>();
-
-
     /**
      * 获取具体逻辑处理器
      * @param order

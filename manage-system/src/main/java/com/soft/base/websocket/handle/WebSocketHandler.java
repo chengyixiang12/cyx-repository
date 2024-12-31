@@ -33,7 +33,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.error("websocket异常，指令为空");
             return;
         }
-        WebSocketConcreteHandler<?> concreteHandler = WebSocketConcreteHolder.getConcreteHandler(order);
+
+        @SuppressWarnings("unchecked")
         WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(order);
         webSocketConcreteHandler.handle(session, message);
 
@@ -42,6 +43,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         try {
+            @SuppressWarnings("unchecked")
             WebSocketConcreteHandler<ByteBuffer> webSocketConcreteHandler = (WebSocketConcreteHandler<ByteBuffer>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FILE_TRANSFER.toString());
             webSocketConcreteHandler.handle(session, message);
         } catch (IOException e) {

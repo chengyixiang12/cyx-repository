@@ -22,7 +22,7 @@ import java.nio.ByteBuffer;
 
 /**
  * @Author: cyx
- * @Description: 文件传输处理逻辑
+ * @Description: 文件传输处理器
  * @DateTime: 2024/12/30 18:16
  **/
 

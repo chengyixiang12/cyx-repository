@@ -1,7 +1,5 @@
 package com.soft.base.controller;
 
-import com.soft.base.annotation.SysLog;
-import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.request.LogsRequest;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysLogService;
