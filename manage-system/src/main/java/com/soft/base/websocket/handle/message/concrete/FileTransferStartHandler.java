@@ -5,6 +5,7 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
 import com.soft.base.enums.WebSocketOrderEnum;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.utils.UniversalUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.send.FileTransferStartSendParams;
@@ -46,23 +47,26 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
-        log.info("username: {}", userDto.getUsername());
+        String username = userDto.getUsername();
         FileTransferStartSendParams fileTransferStartSendParams = new FileTransferStartSendParams();
         String fileKey = universalUtil.fileKeyGen();
         log.info("fileKey: {}", fileKey);
         fileTransferStartSendParams.setFileKey(fileKey);
-        String filePath = tmpPath + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.TMP_SUFFIX;
+        String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey;
         File file = new File(filePath);
-        boolean isCreate = file.createNewFile();
+        boolean isCreate = file.mkdirs();
         if (isCreate) {
-            log.info("文件创建成功");
+            log.info("文件夹创建成功");
+            fileTransferStartSendParams.setIsCreate(isCreate);
+            session.sendMessage(new TextMessage(fileTransferStartSendParams.toString()));
+            redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_KEY + username, fileKey);
+            log.info("快开始文件传输");
+            redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey, BaseConstant.INTEGER_INIT_VAL);
+            log.info("记录分片文件序号");
         } else {
-            log.info("文件创建失败");
+            log.info("文件夹创建失败");
+            throw new GlobalException("文件夹创建失败");
         }
-        fileTransferStartSendParams.setIsCreate(isCreate);
-        session.sendMessage(new TextMessage(fileTransferStartSendParams.toString()));
-        redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_KEY + userDto.getUsername(), fileKey);
-        log.info("file transfer start...");
     }
 
     @Override

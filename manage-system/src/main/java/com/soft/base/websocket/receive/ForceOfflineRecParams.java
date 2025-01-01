@@ -1,7 +1,7 @@
 package com.soft.base.websocket.receive;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.lang.Nullable;
 
 /**
@@ -9,14 +9,9 @@ import org.springframework.lang.Nullable;
  * @Description: 强制离线接收参数
  * @DateTime: 2024/11/23 21:56
  **/
+@EqualsAndHashCode(callSuper = false)
 @Data
-public class ForceOfflineRecParams {
-
-    /**
-     * 指令
-     */
-    @NotNull
-    private String order;
+public class ForceOfflineRecParams extends OrderReceiveParams {
 
     /**
      * 接收者

@@ -43,6 +43,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         try {
+            log.info("received file, start process...");
             @SuppressWarnings("unchecked")
             WebSocketConcreteHandler<ByteBuffer> webSocketConcreteHandler = (WebSocketConcreteHandler<ByteBuffer>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FILE_TRANSFER.toString());
             webSocketConcreteHandler.handle(session, message);

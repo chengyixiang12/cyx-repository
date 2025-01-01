@@ -3,7 +3,6 @@ package com.soft.base.websocket.send;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
  * @Author: cyx

@@ -2,6 +2,7 @@ package com.soft.base.websocket.receive;
 
 import com.alibaba.fastjson2.JSONArray;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @Author: cyx
@@ -9,8 +10,9 @@ import lombok.Data;
  * @DateTime: 2024/11/23 23:06
  **/
 
+@EqualsAndHashCode(callSuper = false)
 @Data
-public class PushMessageRecParams {
+public class PushMessageRecParams extends OrderReceiveParams {
 
     /**
      * 消息

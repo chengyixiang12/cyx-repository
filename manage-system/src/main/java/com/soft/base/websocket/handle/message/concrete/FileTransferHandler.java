@@ -43,19 +43,27 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
     public void handle(WebSocketSession session, AbstractWebSocketMessage<ByteBuffer> message) throws IOException {
         ByteBuffer payload = message.getPayload();
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
-        String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + userDto.getUsername());
-        String filePath = tmpPath + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.TMP_SUFFIX;
+        String username = userDto.getUsername();
+        // 分片文件key
+        String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
+        // 分片文件序号
+        Integer sliceNo = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
+        String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + sliceNo + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
         if (!file.exists()) {
-            throw new RuntimeException();
+            file.createNewFile();
         }
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
             os.write(payload.array());
             os.flush();
+            log.info("分片文件保存成功");
         } finally {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toString()));
+
+            redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
+            log.info("分片文件序号递增");
         }
 
     }

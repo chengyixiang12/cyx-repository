@@ -2,7 +2,6 @@ package com.soft.base.websocket.send;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 /**
  * @Author: cyx

@@ -70,5 +70,10 @@ public class RedisConstant {
     /**
      * 分片文件key
      */
-    public final static String SLICE_FILE_KEY = "cyx:slice:";
+    public final static String SLICE_FILE_KEY = "cyx:slice:keys:";
+
+    /**
+     * 分片文件序号key
+     */
+    public final static String SLICE_FILE_NO_KEY = "cyx:slice:nos:";
 }
