@@ -50,7 +50,9 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
     private String bigFileLocation;
 
     @Autowired
-    public FileTransferOverHandler(RedisTemplate<String, Object> redisTemplate, DateUtil dateUtil, SysFileService sysFileService) {
+    public FileTransferOverHandler(RedisTemplate<String, Object> redisTemplate,
+                                   DateUtil dateUtil,
+                                   SysFileService sysFileService) {
         this.redisTemplate = redisTemplate;
         this.dateUtil = dateUtil;
         this.sysFileService = sysFileService;
@@ -80,12 +82,16 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         // 大文件存储路径
         File file = new File(bigFileLocation + objectKey);
         if (!file.exists()) {
-            if (file.getParentFile() != null) {
-                file.getParentFile().mkdirs();
+            if (file.getParentFile() != null && !file.getParentFile().mkdirs()) {
+                log.error("文件夹创建失败，{}", file.getParent());
+                throw new GlobalException("文件夹创建失败");
             }
-            file.createNewFile();
+            if (!file.createNewFile()) {
+                log.error("文件创建失败，{}", file.getName());
+                throw new GlobalException("文件创建失败");
+            }
         }
-        try (OutputStream os = new FileOutputStream(file)) {
+        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
             while (index < maxIndex) {
                 String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
                 Path path = Paths.get(filePath);
@@ -97,6 +103,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
                 size += length;
                 index++;
             }
+            os.flush();
 
             LocalDateTime now = LocalDateTime.now();
             SysFile sysFile = new SysFile();

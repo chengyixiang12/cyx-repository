@@ -5,6 +5,7 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
 import com.soft.base.enums.WebSocketOrderEnum;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
@@ -50,11 +51,16 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         Integer index = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
-        if (!file.exists()) {
-            file.createNewFile();
+        if (!file.exists() && !file.createNewFile()) {
+            log.error("文件创建失败，{}", file.getName());
+            throw new GlobalException("文件创建失败");
         }
+        int byteIndex = BaseConstant.INTEGER_INIT_VAL;
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
-            os.write(payload.array());
+            while (byteIndex < payload.array().length) {
+                os.write(payload.array(), byteIndex, BaseConstant.BUFFER_SIZE);
+                byteIndex += BaseConstant.BUFFER_SIZE;
+            }
             os.flush();
             log.info("分片文件保存成功");
         } finally {

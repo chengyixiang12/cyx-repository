@@ -40,14 +40,15 @@ public class SysFileController {
     private final MinioUtil minioUtil;
 
     @Autowired
-    public SysFileController(SysFileService sysFileService, MinioUtil minioUtil) {
+    public SysFileController(SysFileService sysFileService,
+                             MinioUtil minioUtil) {
         this.sysFileService = sysFileService;
         this.minioUtil = minioUtil;
     }
 
     @PostMapping
     @Operation(summary = "上传文件")
-    @Parameter(name = "multipartFile", description = "文件流", required = true, in = ParameterIn.QUERY)
+    @Parameter(name = "multipartFile", description = "文件流", required = true, in = ParameterIn.DEFAULT)
     public R uploadFile(@RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) {
         if (multipartFile == null) {
             return R.fail("文件不能为空");

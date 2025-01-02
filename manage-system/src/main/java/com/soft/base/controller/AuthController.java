@@ -106,11 +106,13 @@ public class AuthController {
             sysUser.setNickname(request.getNickname());
             sysUser.setEmail(request.getEmail());
             authService.register(sysUser);
-            redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
             return R.ok("注册成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
+        } finally {
+            redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
+            log.info("验证码缓存清除");
         }
     }
 }

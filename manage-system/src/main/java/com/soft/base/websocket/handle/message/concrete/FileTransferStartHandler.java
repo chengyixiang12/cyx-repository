@@ -39,7 +39,8 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
     private String tmpPath;
 
     @Autowired
-    public FileTransferStartHandler(UniversalUtil universalUtil, RedisTemplate<String, Object> redisTemplate) {
+    public FileTransferStartHandler(UniversalUtil universalUtil,
+                                    RedisTemplate<String, Object> redisTemplate) {
         this.universalUtil = universalUtil;
         this.redisTemplate = redisTemplate;
     }

@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 线程池配置
  * @DateTime: 2024/11/7 20:07
  **/
 
