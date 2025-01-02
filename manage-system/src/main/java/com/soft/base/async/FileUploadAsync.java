@@ -2,7 +2,7 @@ package com.soft.base.async;
 
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysFile;
-import com.soft.base.mapper.SysFileMapper;
+import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.UniversalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +20,15 @@ import java.io.InputStream;
 @Component
 public class FileUploadAsync {
 
-    private final SysFileMapper sysFileMapper;
+    private final SysFileService sysFileService;
 
     private final MinioUtil minioUtil;
 
     private final UniversalUtil universalUtil;
 
     @Autowired
-    public FileUploadAsync(SysFileMapper sysFileMapper, MinioUtil minioUtil, UniversalUtil universalUtil) {
-        this.sysFileMapper = sysFileMapper;
+    public FileUploadAsync(SysFileService sysFileService, MinioUtil minioUtil, UniversalUtil universalUtil) {
+        this.sysFileService = sysFileService;
         this.minioUtil = minioUtil;
         this.universalUtil = universalUtil;
     }
@@ -51,6 +51,6 @@ public class FileUploadAsync {
         sysFile.setObjectKey(objectKey);
         sysFile.setOriginalName(originalFilename);
         sysFile.setFileSize(fileSize);
-        sysFileMapper.insert(sysFile);
+        sysFileService.save(sysFile);
     }
 }

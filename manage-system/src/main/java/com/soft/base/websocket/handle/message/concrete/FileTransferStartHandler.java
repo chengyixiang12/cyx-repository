@@ -61,7 +61,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
             session.sendMessage(new TextMessage(fileTransferStartSendParams.toString()));
             redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_KEY + username, fileKey);
             log.info("分片文件key缓存成功");
-            redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey, BaseConstant.INTEGER_INIT_VAL);
+            redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INDEX_KEY + username, BaseConstant.INTEGER_INIT_VAL);
             log.info("分片文件序号缓存成功");
         } else {
             log.info("文件夹创建失败");

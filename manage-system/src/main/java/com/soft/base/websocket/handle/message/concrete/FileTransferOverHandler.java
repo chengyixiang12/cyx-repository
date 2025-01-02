@@ -70,11 +70,11 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
         int length = BaseConstant.BUFFER_SIZE;
         long size = BaseConstant.LONG_INIT_VAL;
-        int no = BaseConstant.INTEGER_INIT_VAL;
+        int index = BaseConstant.INTEGER_INIT_VAL;
 
-        Integer nos = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
-        if (nos == null) {
-            throw new GlobalException("分片文件序号为空");
+        Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+        if (maxIndex == null) {
+            throw new GlobalException("分片文件索引为空");
         }
 
         // 大文件存储路径
@@ -86,8 +86,8 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             file.createNewFile();
         }
         try (OutputStream os = new FileOutputStream(file)) {
-            while (no < nos) {
-                String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + no + BaseConstant.TMP_SUFFIX;
+            while (index < maxIndex) {
+                String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
                 Path path = Paths.get(filePath);
                 InputStream stream = Files.newInputStream(path);
                 length = stream.read(buffer, BaseConstant.INTEGER_INIT_VAL, length);
@@ -95,7 +95,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
                 stream.close();
                 os.write(buffer, BaseConstant.INTEGER_INIT_VAL, length);
                 size += length;
-                no++;
+                index++;
             }
 
             LocalDateTime now = LocalDateTime.now();
@@ -117,7 +117,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             log.info("start remove cache...");
             redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
             log.info("删除{}的分片文件key缓存", username);
-            redisTemplate.delete(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
+            redisTemplate.delete(RedisConstant.SLICE_FILE_INDEX_KEY + username);
             log.info("删除{}的分片文件no缓存", username);
 
             SendParams sendParams = new SendParams();

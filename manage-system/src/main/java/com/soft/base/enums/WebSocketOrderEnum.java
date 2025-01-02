@@ -35,4 +35,9 @@ public enum WebSocketOrderEnum {
      * 文件传输
      */
     FILE_TRANSFER,
+
+    /**
+     * 文件传输断点续传
+     */
+    FILE_TRANSFER_CONTINUE,
 }

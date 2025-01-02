@@ -46,9 +46,9 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         String username = userDto.getUsername();
         // 分片文件key
         String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
-        // 分片文件序号
-        Integer sliceNo = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
-        String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + sliceNo + BaseConstant.TMP_SUFFIX;
+        // 分片文件索引
+        Integer index = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+        String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
         if (!file.exists()) {
             file.createNewFile();
@@ -62,8 +62,8 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toString()));
 
-            redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
-            log.info("分片文件序号递增");
+            redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+            log.info("分片文件索引递增");
         }
 
     }
