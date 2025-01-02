@@ -57,12 +57,12 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         boolean isCreate = file.mkdirs();
         if (isCreate) {
             log.info("文件夹创建成功");
-            fileTransferStartSendParams.setIsCreate(isCreate);
+            fileTransferStartSendParams.setIsCreate(true);
             session.sendMessage(new TextMessage(fileTransferStartSendParams.toString()));
             redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_KEY + username, fileKey);
-            log.info("快开始文件传输");
+            log.info("分片文件key缓存成功");
             redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey, BaseConstant.INTEGER_INIT_VAL);
-            log.info("记录分片文件序号");
+            log.info("分片文件序号缓存成功");
         } else {
             log.info("文件夹创建失败");
             throw new GlobalException("文件夹创建失败");

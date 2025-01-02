@@ -5,6 +5,7 @@ import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
+import com.soft.base.entity.SysFile;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.service.SysFileService;
@@ -25,6 +26,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 /**
  * @Author: cyx
@@ -96,34 +98,56 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
                 no++;
             }
 
-//            LocalDateTime now = LocalDateTime.now();
-//            SysFile sysFile = new SysFile();
-//            sysFile.setFileSize(size);
-//            sysFile.setCreateBy(username);
-//            sysFile.setUpdateBy(username);
-//            sysFile.setOriginalName(originalName);
-//            sysFile.setCreateTime(now);
-//            sysFile.setUpdateTime(now);
-//            sysFile.setObjectKey(objectKey);
-//            sysFile.setFileSuffix(suffix);
-//            sysFile.setLocation(BaseConstant.DISK_STORAGE_LOCATION);
-//            sysFile.setFileKey(fileKey);
-//            sysFile.setDelFlag(BaseConstant.DEL_FLAG_EXIST);
-//            sysFileService.save(sysFile);
-//            log.info("start save file data to database...");
+            LocalDateTime now = LocalDateTime.now();
+            SysFile sysFile = new SysFile();
+            sysFile.setFileSize(size);
+            sysFile.setCreateBy(username);
+            sysFile.setUpdateBy(username);
+            sysFile.setOriginalName(originalName);
+            sysFile.setCreateTime(now);
+            sysFile.setUpdateTime(now);
+            sysFile.setObjectKey(objectKey);
+            sysFile.setFileSuffix(suffix);
+            sysFile.setLocation(BaseConstant.DISK_STORAGE_LOCATION);
+            sysFile.setFileKey(fileKey);
+            sysFile.setDelFlag(BaseConstant.DEL_FLAG_EXIST);
+            sysFileService.save(sysFile);
+            log.info("start save file data to database...");
 
             log.info("start remove cache...");
-            File tmpFile = new File(tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey);
-            tmpFile.deleteOnExit();
-//            redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
-//            log.info("删除{}的分片文件key缓存", username);
-//            redisTemplate.delete(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
-//            log.info("删除{}的分片文件no缓存", username);
+            redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
+            log.info("删除{}的分片文件key缓存", username);
+            redisTemplate.delete(RedisConstant.SLICE_FILE_NO_KEY + username + BaseConstant.ENG_COLON + fileKey);
+            log.info("删除{}的分片文件no缓存", username);
 
             SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toString()));
+
+            File tmpFile = new File(tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey);
+            if (deleteChildFile(tmpFile)) {
+                tmpFile.deleteOnExit();
+            }
         }
+    }
+
+    /**
+     * 递归删除文件夹中的文件
+     * @param folder
+     * @return
+     */
+    private boolean deleteChildFile(File folder) {
+        if (folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                     if (!deleteChildFile(file)) {
+                         return false;
+                     }
+                }
+            }
+        }
+        return folder.delete();
     }
 
     @Override
