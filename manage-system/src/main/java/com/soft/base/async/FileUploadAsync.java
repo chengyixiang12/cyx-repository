@@ -2,6 +2,7 @@ package com.soft.base.async;
 
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysFile;
+import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.UniversalUtil;
@@ -20,15 +21,12 @@ import java.io.InputStream;
 @Component
 public class FileUploadAsync {
 
-    private final SysFileService sysFileService;
-
     private final MinioUtil minioUtil;
 
     private final UniversalUtil universalUtil;
 
     @Autowired
-    public FileUploadAsync(SysFileService sysFileService, MinioUtil minioUtil, UniversalUtil universalUtil) {
-        this.sysFileService = sysFileService;
+    public FileUploadAsync(MinioUtil minioUtil, UniversalUtil universalUtil) {
         this.minioUtil = minioUtil;
         this.universalUtil = universalUtil;
     }
@@ -41,7 +39,7 @@ public class FileUploadAsync {
      * @param originalFilename
      */
     @Async
-    public void uploadFile(InputStream inputStream, String fileSuffix, Long fileSize, String originalFilename) {
+    public void uploadFile(InputStream inputStream, String fileSuffix, Long fileSize, String originalFilename, SysFileService sysFileService) {
         String fileKey = universalUtil.fileKeyGen();
         String objectKey = minioUtil.upload(inputStream, fileKey, fileSuffix, fileSize);
         SysFile sysFile = new SysFile();

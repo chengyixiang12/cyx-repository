@@ -5,6 +5,7 @@ import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.OrderReceiveParams;
+import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.socket.BinaryMessage;
@@ -30,7 +31,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
         OrderReceiveParams orderReceiveParams = JSON.parseObject(payload, OrderReceiveParams.class);
         String order = orderReceiveParams.getOrder();
         if (StringUtils.isBlank(order)) {
-            log.error("websocket异常，指令为空");
+            SendParams sendParams = new SendParams();
+            sendParams.setStatus(false);
+            sendParams.setMessage("websocket连接异常，指令为空");
+            log.error("websocket连接异常，指令为空");
             return;
         }
 
@@ -49,7 +53,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
             webSocketConcreteHandler.handle(session, message);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new RuntimeException();
         }
     }
 }

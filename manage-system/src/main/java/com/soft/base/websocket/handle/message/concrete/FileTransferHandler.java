@@ -53,7 +53,11 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         File file = new File(filePath);
         if (!file.exists() && !file.createNewFile()) {
             log.error("文件创建失败，{}", file.getName());
-            throw new GlobalException("文件创建失败");
+            SendParams sendParams = new SendParams();
+            sendParams.setStatus(false);
+            sendParams.setMessage("文件创建失败");
+            session.sendMessage(new TextMessage(sendParams.toString()));
+            return;
         }
         int byteIndex = BaseConstant.INTEGER_INIT_VAL;
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
@@ -67,7 +71,6 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
             SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toString()));
-
             redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_INDEX_KEY + username);
             log.info("分片文件索引递增");
         }

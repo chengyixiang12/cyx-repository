@@ -14,7 +14,7 @@ public class SendParams {
     /**
      * 状态
      */
-    private Boolean status;
+    private Boolean status = true;
 
     /**
      * 返回信息

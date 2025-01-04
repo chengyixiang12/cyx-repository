@@ -45,7 +45,6 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
             session.sendMessage(new TextMessage(sendParams.toString()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-
         }
 
     }

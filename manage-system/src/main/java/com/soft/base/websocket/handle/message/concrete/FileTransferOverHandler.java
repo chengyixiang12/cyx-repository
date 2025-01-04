@@ -74,21 +74,28 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         long size = BaseConstant.LONG_INIT_VAL;
         int index = BaseConstant.INTEGER_INIT_VAL;
 
+        SendParams sendParams = new SendParams();
+        sendParams.setStatus(false);
         Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         if (maxIndex == null) {
-            throw new GlobalException("分片文件索引为空");
+            sendParams.setMessage("分片文件索引为空");
+            session.sendMessage(new TextMessage(sendParams.toString()));
+            log.info("分片文件索引为空，{}", originalName);
+            return;
         }
 
         // 大文件存储路径
         File file = new File(bigFileLocation + objectKey);
         if (!file.exists()) {
             if (file.getParentFile() != null && !file.getParentFile().mkdirs()) {
+                sendParams.setMessage("文件夹创建失败");
                 log.error("文件夹创建失败，{}", file.getParent());
-                throw new GlobalException("文件夹创建失败");
+                return;
             }
             if (!file.createNewFile()) {
+                sendParams.setMessage("文件创建失败");
                 log.error("文件创建失败，{}", file.getName());
-                throw new GlobalException("文件创建失败");
+                return;
             }
         }
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
@@ -127,7 +134,6 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             redisTemplate.delete(RedisConstant.SLICE_FILE_INDEX_KEY + username);
             log.info("删除{}的分片文件no缓存", username);
 
-            SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toString()));
 

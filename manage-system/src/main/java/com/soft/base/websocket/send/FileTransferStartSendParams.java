@@ -17,9 +17,4 @@ public class FileTransferStartSendParams extends SendParams {
      * 文件唯一标识
      */
     private String fileKey;
-
-    /**
-     * 文件是否被创建
-     */
-    private Boolean isCreate;
 }

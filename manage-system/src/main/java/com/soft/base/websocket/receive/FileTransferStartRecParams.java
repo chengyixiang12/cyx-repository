@@ -9,13 +9,12 @@ import lombok.Data;
  * @DateTime: 2024/12/30 15:37
  **/
 
-@Deprecated
 @Data
 public class FileTransferStartRecParams {
 
     /**
-     * 文件名
+     * 文件hash值
      */
     @NotNull
-    private String fileName;
+    private String fileHash;
 }

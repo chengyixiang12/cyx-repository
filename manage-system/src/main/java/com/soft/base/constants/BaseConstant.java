@@ -211,6 +211,4 @@ public class BaseConstant {
      * 文件流结束标识
      */
     public final static Long FILE_OVER_SIGN = -1L;
-
-
 }
