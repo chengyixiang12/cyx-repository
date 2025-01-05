@@ -131,7 +131,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
             log.info("删除{}的分片文件key缓存", username);
             redisTemplate.delete(RedisConstant.SLICE_FILE_INDEX_KEY + username);
-            log.info("删除{}的分片文件no缓存", username);
+            log.info("删除{}的分片文件index缓存", username);
 
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toString()));
