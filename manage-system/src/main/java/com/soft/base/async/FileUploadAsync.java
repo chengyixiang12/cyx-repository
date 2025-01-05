@@ -2,7 +2,6 @@ package com.soft.base.async;
 
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysFile;
-import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.UniversalUtil;

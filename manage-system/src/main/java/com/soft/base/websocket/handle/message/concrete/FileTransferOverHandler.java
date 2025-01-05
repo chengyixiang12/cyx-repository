@@ -7,7 +7,6 @@ import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
 import com.soft.base.entity.SysFile;
 import com.soft.base.enums.WebSocketOrderEnum;
-import com.soft.base.exception.GlobalException;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.DateUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;

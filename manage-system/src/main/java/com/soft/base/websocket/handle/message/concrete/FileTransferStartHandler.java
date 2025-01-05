@@ -6,11 +6,9 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
 import com.soft.base.enums.WebSocketOrderEnum;
-import com.soft.base.exception.GlobalException;
 import com.soft.base.utils.UniversalUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.FileTransferStartRecParams;
-import com.soft.base.websocket.send.FileTransferStartSendParams;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +21,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author: cyx

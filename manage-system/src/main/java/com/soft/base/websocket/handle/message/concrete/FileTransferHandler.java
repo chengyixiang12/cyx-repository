@@ -5,7 +5,6 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.dto.UserDto;
 import com.soft.base.enums.WebSocketOrderEnum;
-import com.soft.base.exception.GlobalException;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
