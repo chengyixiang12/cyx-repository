@@ -1,6 +1,7 @@
 package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.async.ClearSecretKeyCacheAsync;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysSecretKey;
 import com.soft.base.mapper.SysSecretKeyMapper;
@@ -27,18 +28,18 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
     private final SysSecretKeyMapper sysSecretKeyMapper;
 
-    private final RedisTemplate<String,Object> redisTemplate;
+    private final ClearSecretKeyCacheAsync clearSecretKeyCacheAsync;
 
     private final RSAUtil rsaUtil;
 
     private final SecurityUtil securityUtil;
 
     public SecretKeyServiceImpl(SysSecretKeyMapper sysSecretKeyMapper,
-                                RedisTemplate<String,Object> redisTemplate,
+                                ClearSecretKeyCacheAsync clearSecretKeyCacheAsync,
                                 RSAUtil rsaUtil,
                                 SecurityUtil securityUtil) {
         this.sysSecretKeyMapper = sysSecretKeyMapper;
-        this.redisTemplate = redisTemplate;
+        this.clearSecretKeyCacheAsync = clearSecretKeyCacheAsync;
         this.rsaUtil = rsaUtil;
         this.securityUtil = securityUtil;
     }
@@ -62,11 +63,7 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
         String publicKey = generate.get("publicKey");
         String username = securityUtil.getUserInfo().getUsername();
         sysSecretKeyMapper.generateKey(type, privateKey, publicKey, username);
-
-        Set<String> keys = new HashSet<>();
-        keys.add(RedisConstant.RSA_PUBLIC_KEY + type);
-        keys.add(RedisConstant.RSA_PRIVATE_KEY + type);
-        redisTemplate.delete(keys);
+        clearSecretKeyCacheAsync.clear(type);
     }
 }
 
