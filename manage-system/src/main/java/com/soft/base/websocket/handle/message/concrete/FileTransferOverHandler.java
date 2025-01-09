@@ -103,13 +103,13 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
                 Path path = Paths.get(filePath);
                 InputStream stream = Files.newInputStream(path);
                 length = stream.read(buffer, BaseConstant.INTEGER_INIT_VAL, length);
-                log.info("读取文件长度为：{}", length);
                 stream.close();
                 os.write(buffer, BaseConstant.INTEGER_INIT_VAL, length);
                 size += length;
                 index++;
             }
             os.flush();
+            log.info("文件写入完成，{}", file.getName());
 
             LocalDateTime now = LocalDateTime.now();
             SysFile sysFile = new SysFile();

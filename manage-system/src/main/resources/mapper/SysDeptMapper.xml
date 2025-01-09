@@ -44,6 +44,7 @@
         sys_dept sd
         WHERE
         sd.del_flag = '1'
+        ORDER BY sd.create_time DESC
     </select>
     <update id="deleteDeptBatch" parameterType="DeleteRequest">
         UPDATE sys_dept

@@ -48,5 +48,6 @@
         sys_file sf
         WHERE
         sf.del_flag = '1'
+        ORDER BY sf.create_time DESC
     </select>
 </mapper>

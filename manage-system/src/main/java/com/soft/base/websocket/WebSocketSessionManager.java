@@ -1,5 +1,6 @@
 package com.soft.base.websocket;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Description: websocket连接会话管理
  * @DateTime: 2024/11/21 23:26
  **/
+
+@Slf4j
 public class WebSocketSessionManager {
 
     private static final Map<String, WebSocketSession> USER_SESSION_MAP = new ConcurrentHashMap<>();
@@ -35,7 +38,7 @@ public class WebSocketSessionManager {
             getSession(sessionKey).close();
             USER_SESSION_MAP.remove(String.valueOf(sessionKey));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("{}的session会话未正常关闭", sessionKey);
         }
     }
 
@@ -59,12 +62,12 @@ public class WebSocketSessionManager {
     /**
      * 清空用户会话
      */
-    public static void clear() throws RuntimeException {
+    public static void clear() {
         USER_SESSION_MAP.forEach((k, v) -> {
             try {
                 v.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.error("{}的session会话未正常关闭", k);
             }
         });
         USER_SESSION_MAP.clear();
