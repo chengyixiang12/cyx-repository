@@ -1,5 +1,6 @@
 package com.soft.base.websocket.send;
 
+import com.alibaba.fastjson2.JSON;
 import lombok.Data;
 
 /**
@@ -20,4 +21,8 @@ public class SendParams {
      * 返回信息
      */
     private String message;
+
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
 }
