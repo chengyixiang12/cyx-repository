@@ -34,7 +34,7 @@ public class PushMessageHandler implements WebSocketConcreteHandler<String> {
             if (sendSession == null) {
                 continue;
             }
-            sendSession.sendMessage(new TextMessage(pushMessageSendParams.toString()));
+            sendSession.sendMessage(new TextMessage(pushMessageSendParams.toJsonString()));
         }
     }
 

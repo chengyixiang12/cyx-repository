@@ -46,7 +46,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
             sendParams.setMessage("文件hash值不一致");
-            session.sendMessage(new TextMessage(sendParams.toString()));
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
         Integer currIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
@@ -54,7 +54,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
         FileTransferContinueSendParams fileTransferContinueSendParams = new FileTransferContinueSendParams();
         fileTransferContinueSendParams.setStatus(true);
         fileTransferContinueSendParams.setIndex(currIndex);
-        session.sendMessage(new TextMessage(fileTransferContinueSendParams.toString()));
+        session.sendMessage(new TextMessage(fileTransferContinueSendParams.toJsonString()));
     }
 
     @Override

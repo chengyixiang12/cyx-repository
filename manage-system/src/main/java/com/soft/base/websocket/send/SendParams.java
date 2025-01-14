@@ -22,7 +22,7 @@ public class SendParams {
      */
     private String message;
 
-    public String toString() {
+    public String toJsonString() {
         return JSON.toJSONString(this);
     }
 }

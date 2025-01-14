@@ -78,7 +78,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         if (maxIndex == null) {
             sendParams.setMessage("分片文件索引为空");
-            session.sendMessage(new TextMessage(sendParams.toString()));
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
             log.info("分片文件索引为空，{}", originalName);
             return;
         }
@@ -134,7 +134,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             log.info("删除{}的分片文件index缓存", username);
 
             sendParams.setStatus(true);
-            session.sendMessage(new TextMessage(sendParams.toString()));
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
 
             File tmpFile = new File(tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey);
             if (deleteChildFile(tmpFile)) {

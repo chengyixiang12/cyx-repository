@@ -55,7 +55,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
             sendParams.setMessage("文件创建失败");
-            session.sendMessage(new TextMessage(sendParams.toString()));
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
         int byteIndex = BaseConstant.INTEGER_INIT_VAL;
@@ -69,7 +69,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         } finally {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
-            session.sendMessage(new TextMessage(sendParams.toString()));
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
             redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_INDEX_KEY + username);
             log.info("分片文件索引递增");
         }
