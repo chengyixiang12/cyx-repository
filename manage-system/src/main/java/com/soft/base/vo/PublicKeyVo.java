@@ -2,6 +2,7 @@ package com.soft.base.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.apache.ibatis.type.Alias;
 
 /**
  * @Author: cyx
@@ -11,6 +12,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "获取公钥响应参数")
+@Alias(value = "PublicKeyVo")
 public class PublicKeyVo {
 
     @Schema(description = "公钥")
