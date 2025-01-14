@@ -56,8 +56,9 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey;
         File file = new File(filePath);
         boolean isCreate = file.mkdirs();
+        SendParams sendParams = new SendParams();
         if (!isCreate) {
-            SendParams sendParams = new SendParams();
+
             sendParams.setStatus(false);
             sendParams.setMessage("文件夹创建失败");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
@@ -72,6 +73,10 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         log.info("分片文件索引缓存成功");
         redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INFO + username, fileTransferStartRecParams.getFileHash());
         log.info("分片文件hash缓存成功");
+
+        sendParams.setStatus(true);
+        sendParams.setMessage("文件创建成功");
+        session.sendMessage(new TextMessage(sendParams.toJsonString()));
     }
 
     @Override
