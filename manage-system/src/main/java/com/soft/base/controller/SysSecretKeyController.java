@@ -37,7 +37,6 @@ public class SysSecretKeyController {
         this.secretKeyService = secretKeyService;
     }
 
-    @SysLog(value = "获取公钥", module = LogModuleEnum.AUTHORIZATION, name = "#username")
     @GetMapping(value = "/getPublicKey")
     @Operation(summary = "获取公钥")
     @Parameters(value = {@Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.QUERY),
