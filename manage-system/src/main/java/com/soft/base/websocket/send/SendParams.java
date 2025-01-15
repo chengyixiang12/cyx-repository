@@ -22,6 +22,11 @@ public class SendParams {
      */
     private String message;
 
+    /**
+     * 指令
+     */
+    private String order;
+
     public String toJsonString() {
         return JSON.toJSONString(this);
     }

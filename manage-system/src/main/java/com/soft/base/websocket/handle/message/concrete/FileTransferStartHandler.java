@@ -75,7 +75,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         log.info("分片文件hash缓存成功");
 
         sendParams.setStatus(true);
-        sendParams.setMessage("文件创建成功");
+        sendParams.setMessage("文件夹创建成功");
         session.sendMessage(new TextMessage(sendParams.toJsonString()));
     }
 

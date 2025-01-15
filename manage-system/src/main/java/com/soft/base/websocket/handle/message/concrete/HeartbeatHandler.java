@@ -42,6 +42,7 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
             log.info("{} keep-live...", userDto.getUsername());
             SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
+            sendParams.setOrder(WebSocketOrderEnum.HEART_BEAT.toString());
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);

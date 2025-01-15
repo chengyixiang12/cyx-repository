@@ -50,10 +50,12 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         Integer index = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
+        SendParams sendParams = new SendParams();
+        sendParams.setOrder(WebSocketOrderEnum.FILE_TRANSFER.toString());
         if (!file.exists() && !file.createNewFile()) {
             log.error("文件创建失败，{}", file.getName());
-            SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
+            sendParams.setOrder(WebSocketOrderEnum.FILE_TRANSFER.toString());
             sendParams.setMessage("文件创建失败");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
@@ -67,7 +69,6 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
             os.flush();
             log.info("分片文件保存成功");
         } finally {
-            SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_INDEX_KEY + username);

@@ -75,6 +75,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
 
         SendParams sendParams = new SendParams();
         sendParams.setStatus(false);
+        sendParams.setOrder(fileTransferOverRecParams.getOrder());
         Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         if (maxIndex == null) {
             sendParams.setMessage("分片文件索引为空");
