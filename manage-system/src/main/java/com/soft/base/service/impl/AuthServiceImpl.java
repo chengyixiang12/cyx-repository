@@ -3,6 +3,7 @@ package com.soft.base.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
+import com.soft.base.constants.TokenConstant;
 import com.soft.base.entity.SysUser;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.exception.CaptChaErrorException;
@@ -23,8 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
-import static com.soft.base.constants.TokenConstant.TOKEN_PREFIX;
 
 @Service
 @Slf4j
@@ -98,7 +97,7 @@ public class AuthServiceImpl implements AuthService {
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), RedisConstant.AUTHORIZATION_EXPIRE, TimeUnit.SECONDS);
-            loginVo.setToken(TOKEN_PREFIX + token);
+            loginVo.setToken(TokenConstant.TOKEN_PREFIX + token);
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (Exception e) {

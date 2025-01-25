@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @Author: cyx
@@ -80,7 +82,7 @@ public class SysFileController {
 
             // 设置响应头
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentDisposition(ContentDisposition.attachment().filename(fileDetail.getOriginalName()).build()); // 设置文件名
+            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
             // 返回文件内容
