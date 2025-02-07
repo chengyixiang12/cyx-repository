@@ -8,6 +8,7 @@ import com.soft.base.entity.SysUser;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.exception.CaptChaErrorException;
 import com.soft.base.exception.GlobalException;
+import com.soft.base.exception.InvalidLoginMethodException;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.request.LoginRequest;
 import com.soft.base.service.AuthService;
@@ -17,8 +18,7 @@ import com.soft.base.vo.LoginVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -93,6 +93,8 @@ public class AuthServiceImpl implements AuthService {
                     throw new CaptChaErrorException("验证码错误");
                 }
                 redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
+            } else {
+                throw new InvalidLoginMethodException("无效的登录方式");
             }
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
@@ -100,8 +102,22 @@ public class AuthServiceImpl implements AuthService {
             loginVo.setToken(TokenConstant.TOKEN_PREFIX + token);
             loginVo.setUsername(request.getUsername());
             return loginVo;
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException(e.getMessage());
+        } catch (DisabledException e) {
+            throw new DisabledException(e.getMessage());
+        } catch (LockedException e) {
+            throw new LockedException(e.getMessage());
+        } catch (CredentialsExpiredException e) {
+            throw new CredentialsExpiredException(e.getMessage());
+        } catch (AccountExpiredException e) {
+            throw new AccountExpiredException(e.getMessage());
+        } catch (CaptChaErrorException e) {
+            throw new CaptChaErrorException(e.getMessage());
+        } catch (InvalidLoginMethodException e) {
+            throw new InvalidLoginMethodException(e.getMessage());
         } catch (Exception e) {
-            throw new Exception(e);
+            throw new Exception(e.getMessage());
         }
     }
 }

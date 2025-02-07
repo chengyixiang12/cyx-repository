@@ -7,6 +7,7 @@ import com.soft.base.entity.SysUser;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.LogTypeEnum;
 import com.soft.base.exception.CaptChaErrorException;
+import com.soft.base.exception.InvalidLoginMethodException;
 import com.soft.base.request.LoginRequest;
 import com.soft.base.request.RegisterRequest;
 import com.soft.base.resultapi.R;
@@ -64,7 +65,8 @@ public class AuthController {
                  | LockedException
                  | CredentialsExpiredException
                  | AccountExpiredException
-                 | CaptChaErrorException e) {
+                 | CaptChaErrorException
+                 | InvalidLoginMethodException e) {
             log.error(e.getMessage(), e);
             return R.fail(e.getMessage());
         } catch (Exception e) {
