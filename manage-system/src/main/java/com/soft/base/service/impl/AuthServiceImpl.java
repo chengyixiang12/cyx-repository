@@ -17,6 +17,7 @@ import com.soft.base.utils.RSAUtil;
 import com.soft.base.vo.LoginVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
+
+    @Value(value = "${authorization-expire}")
+    private Long authorizationExpire;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -98,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
             }
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), RedisConstant.AUTHORIZATION_EXPIRE, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), authorizationExpire, TimeUnit.SECONDS);
             loginVo.setToken(TokenConstant.TOKEN_PREFIX + token);
             loginVo.setUsername(request.getUsername());
             return loginVo;

@@ -51,7 +51,7 @@ spring:
       host: 192.168.226.130
       port: 6379
       password: 123456
-      database: 0
+      database: 15
       connect-timeout: 2000
   mail:
     host: smtp.qq.com
@@ -115,6 +115,9 @@ jwt:
   secret-key: abcdefghijklmnopq123456789
   #单位秒；1小时过期
   expire: 3600000
+
+#鉴权过期时间；单位：秒
+authorization-expire: 36000
 
 #minio对象存储
 minio:

@@ -10,17 +10,13 @@ public class RedisConstant {
     /**
      * 黑名单
      */
+    @Deprecated
     public final static String TOKEN_BLACKLIST_KEY = "cyx:token:blacklist";
 
     /**
      * 用户鉴权
      */
     public final static String AUTHORIZATION_USERNAME = "cyx:token:";
-
-    /**
-     * 用户鉴权过期时间；单位：秒
-     */
-    public final static Long AUTHORIZATION_EXPIRE = 3600L;
 
     /**
      * 邮箱验证码
