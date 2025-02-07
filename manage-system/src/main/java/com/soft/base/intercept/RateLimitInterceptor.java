@@ -3,6 +3,7 @@ package com.soft.base.intercept;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.enums.ResultEnum;
+import com.soft.base.properties.RateLimitProperty;
 import com.soft.base.resultapi.R;
 import com.soft.base.utils.ResponseUtil;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -27,16 +28,14 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RateLimitInterceptor implements HandlerInterceptor {
 
-    @Value(value = "${rate-limit.max-request}")
-    private Integer maxRequest;
-
-    @Value(value = "${rate-limit.window-size}")
-    private Long windowSize;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public RateLimitInterceptor(RedisTemplate<String, Object> redisTemplate) {
+    private final RateLimitProperty rateLimitProperty;
+
+    public RateLimitInterceptor(RedisTemplate<String, Object> redisTemplate,
+                                RateLimitProperty rateLimitProperty) {
         this.redisTemplate  = redisTemplate;
+        this.rateLimitProperty = rateLimitProperty;
     }
 
     @Override
@@ -44,25 +43,27 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 //        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
         String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
         log.info("用户请求的接口：{}", requestURI);
-        String key = RedisConstant.RATE_LIMIT_KEY + requestURI;
 
-        // 获取当前时间戳
-        long currentTimestamp = System.currentTimeMillis();
+        if (rateLimitProperty.getEnable()) {
+            String key = RedisConstant.RATE_LIMIT_KEY + requestURI;
+            // 获取当前时间戳
+            long currentTimestamp = System.currentTimeMillis();
 
-        // 使用 Redis 存储请求的时间戳
-        Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - windowSize * BaseConstant.WINDOW_SIZE_EXPAND_MULTIPLE, currentTimestamp);
+            // 使用 Redis 存储请求的时间戳
+            Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * BaseConstant.WINDOW_SIZE_EXPAND_MULTIPLE, currentTimestamp);
 
-        // 如果超过最大请求次数，拒绝请求
-        if (requestCount != null && requestCount >= maxRequest) {
-            ResponseUtil.writeErrMsg(response, HttpResponseStatus.OK.code(), R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
-            return false;
+            // 如果超过最大请求次数，拒绝请求
+            if (requestCount != null && requestCount >= rateLimitProperty.getMaxRequest()) {
+                ResponseUtil.writeErrMsg(response, HttpResponseStatus.OK.code(), R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
+                return false;
+            }
+
+            // 记录请求时间戳
+            redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
+
+            // 设置请求过期时间为窗口大小，确保缓存不会无限增大
+            redisTemplate.expire(key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
         }
-
-        // 记录请求时间戳
-        redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
-
-        // 设置请求过期时间为窗口大小，确保缓存不会无限增大
-        redisTemplate.expire(key, windowSize, TimeUnit.SECONDS);
 
         return true;
     }

@@ -39,7 +39,7 @@ spring:
       max-lifetime: 180000
       # 连接池名称
       pool-name: cyx-datasource-pool
-      # 数据性能监测
+      # 数据性能监测jconsole
       register-mbeans: true
       # 连接验证的 SQL 查询
       connection-test-query: SELECT 1
@@ -74,7 +74,7 @@ spring:
     password: 123456
     virtual-host: /
   jmx:
-    # 启动JMX监控
+    # 启动JMX监控，jconsole
     enabled: true
 
 #mybatis配置
@@ -152,6 +152,8 @@ log:
 
 #限流
 rate-limit:
+  #是否开启限流
+  enable: true
   #最大请求数；单位：个
   max-request: 10
   #窗口大小；单位：秒
@@ -164,6 +166,7 @@ web-client:
   #连接超时；单位：毫秒
   connect-timeout: 5000
 
+#大文件存储路径
 storage:
   big-file:
     location: D:/bigFile
