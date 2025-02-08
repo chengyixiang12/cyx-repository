@@ -43,7 +43,7 @@ public class UsersDetailServiceImpl implements UserDetailsService{
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUser sysUser = sysUsersMapper.selectOne(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getUsername, username).or().eq(SysUser::getEmail, username));
         if (sysUser == null) {
-            throw new UsernameNotFoundException("用户名或密码错误");
+            throw new UsernameNotFoundException("用户不存在");
         }
         // 角色集合
         List<String> roleCodes = sysRoleService.getRoleCodesByUserId(sysUser.getId());

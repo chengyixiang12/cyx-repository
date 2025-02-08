@@ -81,6 +81,7 @@ public class SysDeptController {
 
         try {
             Boolean notEmpty = sysDeptService.isNotEmpty();
+            // 如果数据库中存在值，则父id不能为空
             if (notEmpty && request.getParentId() == null) {
                 return R.fail("父级id不能为空");
             }
