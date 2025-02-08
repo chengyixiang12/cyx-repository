@@ -43,4 +43,6 @@ public interface SysRoleService extends IService<SysRole> {
     void setPermissions(SetPermissionsRequest request);
 
     List<GetUserRoleDto> getUserRole(Long userId);
+
+    List<String> getRoleCodesByUserId(Long userId);
 }

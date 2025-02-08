@@ -21,4 +21,6 @@ public interface SysPermissionService extends IService<SysPermission> {
     List<String> getPermissionsByUserId(Long id);
 
     void savePermission(SavePermissionRequest request);
+
+    List<String> getPermissionsByRoleCodes(List<String> roleCodes);
 }

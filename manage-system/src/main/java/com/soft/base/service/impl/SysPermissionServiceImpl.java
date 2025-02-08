@@ -54,6 +54,11 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
         sysPermission.setStatus(BaseConstant.PERMISSION_ENABLE);
         sysPermissionMapper.insert(sysPermission);
     }
+
+    @Override
+    public List<String> getPermissionsByRoleCodes(List<String> roleCodes) {
+        return sysPermissionMapper.getPermissionsByRoleCodes(roleCodes);
+    }
 }
 
 

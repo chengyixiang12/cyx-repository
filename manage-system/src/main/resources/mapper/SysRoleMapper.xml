@@ -179,4 +179,14 @@
         sr.del_flag = '1'
         AND sur.user_id = #{userId}
     </select>
+    <select id="getRoleCodesByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+        sr.`code`
+        FROM
+        `sys_role` sr
+        JOIN `sys_user_role` sur ON sr.`id` = sur.role_id
+        WHERE
+        sr.del_flag = '1'
+        AND sur.user_id = #{userId}
+    </select>
 </mapper>

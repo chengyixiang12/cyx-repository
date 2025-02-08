@@ -6,6 +6,7 @@ import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.request.*;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SecretKeyService;
+import com.soft.base.service.SysPermissionService;
 import com.soft.base.service.SysUsersService;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.utils.SecurityUtil;
@@ -25,6 +26,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/user")
 @Slf4j
@@ -41,17 +44,21 @@ public class SysUserController {
 
     private final SecretKeyService secretKeyService;
 
+    private final SysPermissionService sysPermissionService;
+
     @Autowired
     public SysUserController(SysUsersService sysUsersService,
                              RSAUtil rsaUtil,
                              SecurityUtil securityUtil,
                              PasswordEncoder passwordEncoder,
-                             SecretKeyService secretKeyService) {
+                             SecretKeyService secretKeyService,
+                             SysPermissionService sysPermissionService) {
         this.sysUsersService = sysUsersService;
         this.rsaUtil = rsaUtil;
         this.securityUtil = securityUtil;
         this.passwordEncoder = passwordEncoder;
         this.secretKeyService = secretKeyService;
+        this.sysPermissionService = sysPermissionService;
     }
 
     @PostMapping(value = "/getAllUsers")
@@ -168,7 +175,7 @@ public class SysUserController {
         try {
             UserInfoVo userInfoVo = new UserInfoVo();
             BeanUtils.copyProperties(securityUtil.getUserInfo(), userInfoVo);
-            userInfoVo.setPermissions(securityUtil.getPermission());
+            userInfoVo.setPermissions(sysPermissionService.getPermissionsByRoleCodes(securityUtil.getRoleCodes()));
             return R.ok(userInfoVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

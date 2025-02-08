@@ -25,10 +25,10 @@ public class SecurityUtil {
     }
 
     /**
-     * 从上下文获取用户权限
+     * 从上下文获取用户角色编码
      * @return
      */
-    public List<String> getPermission() {
+    public List<String> getRoleCodes() {
         return SecurityContextHolder
                 .getContext()
                 .getAuthentication()

@@ -51,6 +51,8 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     void setPermissions(@Param("request") SetPermissionsRequest request);
 
     List<GetUserRoleDto> getUserRole(@Param("userId") Long userId);
+
+    List<String> getRoleCodesByUserId(@Param("userId") Long userId);
 }
 
 

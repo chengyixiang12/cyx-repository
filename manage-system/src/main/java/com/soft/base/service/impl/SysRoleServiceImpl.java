@@ -109,6 +109,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     public List<GetUserRoleDto> getUserRole(Long userId) {
         return sysRoleMapper.getUserRole(userId);
     }
+
+    @Override
+    public List<String> getRoleCodesByUserId(Long userId) {
+        return sysRoleMapper.getRoleCodesByUserId(userId);
+    }
 }
 
 

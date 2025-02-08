@@ -5,6 +5,7 @@ import com.soft.base.dto.UserDto;
 import com.soft.base.entity.SysUser;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.service.SysPermissionService;
+import com.soft.base.service.SysRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -29,12 +30,12 @@ public class UsersDetailServiceImpl implements UserDetailsService{
 
     private final SysUsersMapper sysUsersMapper;
 
-    private final SysPermissionService sysPermissionService;
+    private final SysRoleService sysRoleService;
 
     @Autowired
-    public UsersDetailServiceImpl(SysUsersMapper sysUsersMapper, SysPermissionService sysPermissionService) {
+    public UsersDetailServiceImpl(SysUsersMapper sysUsersMapper, SysRoleService sysRoleService) {
         this.sysUsersMapper = sysUsersMapper;
-        this.sysPermissionService = sysPermissionService;
+        this.sysRoleService = sysRoleService;
     }
 
     @Override
@@ -44,13 +45,13 @@ public class UsersDetailServiceImpl implements UserDetailsService{
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户名或密码错误");
         }
-        // 权限集合
-        List<String> permissions = sysPermissionService.getPermissionsByUserId(sysUser.getId());
+        // 角色集合
+        List<String> roleCodes = sysRoleService.getRoleCodesByUserId(sysUser.getId());
 
         return new UserDto(sysUser.getId(), sysUser.getUsername(), sysUser.getDeptId(), sysUser.getPhone(),
                 sysUser.getNickname(), sysUser.getEmail(), sysUser.getPassword(), sysUser.getEnabled(),
                 sysUser.getAccountNonExpired(), sysUser.getCredentialsNonExpired(), sysUser.getAccountNonLocked(),
-                permissions.stream()
+                roleCodes.stream()
                         .map(SimpleGrantedAuthority::new)
                         .toList());
     }

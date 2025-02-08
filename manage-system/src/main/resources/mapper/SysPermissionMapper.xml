@@ -50,4 +50,19 @@
         AND sr.del_flag = '1'
         AND sur.user_id = #{id}
     </select>
+    <select id="getPermissionsByRoleCodes" parameterType="java.util.List" resultType="java.lang.String">
+        SELECT DISTINCT
+        sp.`code`
+        FROM
+        sys_permission sp
+        JOIN sys_role_permission srp ON sp.`id` = srp.permission_id
+        JOIN sys_role sr ON sr.`id` = srp.role_id
+        WHERE
+        sp.del_flag = '1'
+        AND sr.del_flag = '1'
+        AND sr.`code` IN
+        <foreach collection="roleCodes" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>
