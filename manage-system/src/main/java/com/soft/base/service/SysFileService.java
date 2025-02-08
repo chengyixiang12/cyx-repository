@@ -7,6 +7,7 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.request.FilesRequest;
 import com.soft.base.vo.FilesVo;
 import com.soft.base.vo.PageVo;
+import com.soft.base.vo.UploadFileVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -16,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 */
 public interface SysFileService extends IService<SysFile> {
 
-    void uploadFile(MultipartFile multipartFile) throws GlobalException;
+    UploadFileVo uploadFile(MultipartFile multipartFile) throws GlobalException;
 
     FileDetailDto getFileDetailById(Long id);
 

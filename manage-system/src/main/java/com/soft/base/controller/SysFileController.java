@@ -9,6 +9,7 @@ import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.vo.FilesVo;
 import com.soft.base.vo.PageVo;
+import com.soft.base.vo.UploadFileVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -56,8 +57,8 @@ public class SysFileController {
             return R.fail("文件不能为空");
         }
         try {
-            sysFileService.uploadFile(multipartFile);
-            return R.ok();
+            UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
+            return R.ok(uploadFileVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

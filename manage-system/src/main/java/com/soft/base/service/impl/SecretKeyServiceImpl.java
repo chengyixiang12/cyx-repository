@@ -54,12 +54,13 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
     @Override
     public void generateKey(Integer type) throws NoSuchAlgorithmException {
+        clearSecretKeyCacheAsync.clear(type);
+
         Map<String, String> generate = rsaUtil.generate();
         String privateKey = generate.get("privateKey");
         String publicKey = generate.get("publicKey");
         String username = securityUtil.getUserInfo().getUsername();
         sysSecretKeyMapper.generateKey(type, privateKey, publicKey, username);
-        clearSecretKeyCacheAsync.clear(type);
     }
 }
 

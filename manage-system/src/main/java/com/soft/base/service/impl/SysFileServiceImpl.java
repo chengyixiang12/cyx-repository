@@ -3,7 +3,6 @@ package com.soft.base.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.dto.FileDetailDto;
 import com.soft.base.entity.SysFile;
@@ -11,8 +10,11 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.request.FilesRequest;
 import com.soft.base.service.SysFileService;
+import com.soft.base.utils.MinioUtil;
+import com.soft.base.utils.UniversalUtil;
 import com.soft.base.vo.FilesVo;
 import com.soft.base.vo.PageVo;
+import com.soft.base.vo.UploadFileVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,24 +33,42 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final SysFileMapper sysFileMapper;
 
-    private final FileUploadAsync fileUploadAsync;
+    private final MinioUtil minioUtil;
+
+    private final UniversalUtil universalUtil;
 
     @Autowired
-    public SysFileServiceImpl(SysFileMapper sysFileMapper, FileUploadAsync fileUploadAsync) {
+    public SysFileServiceImpl(SysFileMapper sysFileMapper, MinioUtil minioUtil, UniversalUtil universalUtil) {
         this.sysFileMapper = sysFileMapper;
-        this.fileUploadAsync = fileUploadAsync;
+        this.minioUtil = minioUtil;
+        this.universalUtil = universalUtil;
     }
 
     @Override
-    public void uploadFile(MultipartFile multipartFile) throws GlobalException {
+    public UploadFileVo uploadFile(MultipartFile multipartFile) throws GlobalException {
         try {
             String originalFilename = multipartFile.getOriginalFilename();
             if (StringUtils.isBlank(originalFilename)) {
                 throw new GlobalException("文件名不能为空");
             }
-            fileUploadAsync.uploadFile(multipartFile.getInputStream(),
-                    originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX)),
-                    multipartFile.getSize(), originalFilename, this);
+            long fileSize = multipartFile.getSize();
+            String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
+
+            String fileKey = universalUtil.fileKeyGen();
+            String objectKey = minioUtil.upload(multipartFile.getInputStream(), fileKey, fileSuffix, fileSize);
+            SysFile sysFile = new SysFile();
+            sysFile.setFileKey(fileKey);
+            sysFile.setFileSuffix(fileSuffix);
+            sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
+            sysFile.setObjectKey(objectKey);
+            sysFile.setOriginalName(originalFilename);
+            sysFile.setFileSize(fileSize);
+            sysFileMapper.insert(sysFile);
+
+            UploadFileVo uploadFileVo = new UploadFileVo();
+            uploadFileVo.setFileId(sysFile.getId());
+            uploadFileVo.setFileName(sysFile.getOriginalName());
+            return uploadFileVo;
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
