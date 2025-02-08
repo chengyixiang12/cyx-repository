@@ -82,7 +82,7 @@ public class AuthController {
             return R.fail("用户名不能为空");
         }
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
-            return R.fail("用户名不能使用中文");
+            return R.fail("用户名只能包含英文字母或数字");
         }
         if (StringUtils.isBlank(request.getPassword())) {
             return R.fail("密码不能为空");

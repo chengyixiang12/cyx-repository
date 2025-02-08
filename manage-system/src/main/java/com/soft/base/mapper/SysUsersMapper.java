@@ -33,6 +33,10 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
     String getEmail(@Param("username") String username);
 
     GetUserDto getUser(@Param("id") Long id);
+
+    void lockUser(@Param("username") String username);
+
+    void unlockUser(@Param("username") String username);
 }
 
 

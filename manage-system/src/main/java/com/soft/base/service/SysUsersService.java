@@ -31,4 +31,10 @@ public interface SysUsersService extends IService<SysUser> {
     void editUser(EditUserRequest request);
 
     GetUserVo getUser(Long id);
+
+    String getManager(String managerRoleCode);
+
+    void lockUser(String username);
+
+    void unlockUser(String username);
 }

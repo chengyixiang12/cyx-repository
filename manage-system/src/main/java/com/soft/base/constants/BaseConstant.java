@@ -211,4 +211,9 @@ public class BaseConstant {
      * 文件流结束标识
      */
     public final static Long FILE_OVER_SIGN = -1L;
+
+    /**
+     * 最大登录错误次数：5次
+     */
+    public final static Long MAX_LOGIN_ERROR_TIME = 4L;
 }

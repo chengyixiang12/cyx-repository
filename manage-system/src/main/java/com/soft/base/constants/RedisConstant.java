@@ -34,6 +34,11 @@ public class RedisConstant {
     public final static String USER_INFO = "cyx::users::";
 
     /**
+     * 用户登录错误次数
+     */
+    public final static String USER_LOGIN_ERROR_TIME = "cyx::login-error-time::";
+
+    /**
      * websocket中的用户会话
      */
     public final static String WS_USER_SESSION = "ws:user:session:";

@@ -187,6 +187,23 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         getUserVo.setGetUserRoleDtoList(getUserRoleDto);
         return getUserVo;
     }
+
+    @Override
+    public String getManager(String managerRoleCode) {
+        return sysUsersMapper.getManager(managerRoleCode);
+    }
+
+    @Override
+    @CacheEvict(key = "#username")
+    public void lockUser(String username) {
+        sysUsersMapper.lockUser(username);
+    }
+
+    @Override
+    @CacheEvict(key = "#username")
+    public void unlockUser(String username) {
+        sysUsersMapper.unlockUser(username);
+    }
 }
 
 

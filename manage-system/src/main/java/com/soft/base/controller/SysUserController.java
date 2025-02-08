@@ -198,4 +198,38 @@ public class SysUserController {
             return R.fail();
         }
     }
+
+    @GetMapping(value = "/lockUser/{username}")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_lock')")
+    @Operation(summary = "锁定用户")
+    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
+    public R lockUser(@PathVariable(value = "username") String username) {
+        if (StringUtils.isBlank(username)) {
+            return R.fail("用户名不能为空");
+        }
+        try {
+            sysUsersService.lockUser(username);
+            return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/unlockUser/{username}")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_unlock')")
+    @Operation(summary = "解锁用户")
+    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
+    public R unLockUser(@PathVariable(value = "username") String username) {
+        if (StringUtils.isBlank(username)) {
+            return R.fail("用户名不能为空");
+        }
+        try {
+            sysUsersService.unlockUser(username);
+            return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
 }

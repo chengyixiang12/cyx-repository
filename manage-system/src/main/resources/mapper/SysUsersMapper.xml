@@ -126,4 +126,18 @@
         su.del_flag = '1'
         AND su.id = #{id}
     </select>
+    <update id="lockUser" parameterType="java.lang.String">
+        UPDATE `sys_user`
+        SET account_non_locked = 0
+        WHERE
+        del_flag = '1'
+        AND username = #{username}
+    </update>
+    <update id="unlockUser" parameterType="java.lang.String">
+        UPDATE `sys_user`
+        SET account_non_locked = 1
+        WHERE
+        del_flag = '1'
+        AND username = #{username}
+    </update>
 </mapper>
