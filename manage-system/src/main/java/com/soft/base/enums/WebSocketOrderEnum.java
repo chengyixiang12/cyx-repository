@@ -40,4 +40,9 @@ public enum WebSocketOrderEnum {
      * 文件传输断点续传
      */
     FILE_TRANSFER_CONTINUE,
+
+    /**
+     * 批量文件上传
+     */
+    FILES_TRANSFER,
 }

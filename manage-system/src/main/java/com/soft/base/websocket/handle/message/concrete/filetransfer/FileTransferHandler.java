@@ -1,4 +1,4 @@
-package com.soft.base.websocket.handle.message.concrete;
+package com.soft.base.websocket.handle.message.concrete.filetransfer;
 
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;

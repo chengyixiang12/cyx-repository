@@ -1,4 +1,4 @@
-package com.soft.base.websocket.handle.message.concrete;
+package com.soft.base.websocket.handle.message.concrete.filetransfer;
 
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.RedisConstant;

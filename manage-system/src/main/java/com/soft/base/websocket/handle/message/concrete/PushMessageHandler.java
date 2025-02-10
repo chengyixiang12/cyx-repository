@@ -8,6 +8,7 @@ import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.PushMessageRecParams;
 import com.soft.base.websocket.send.PushMessageSendParams;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
@@ -22,6 +23,7 @@ import java.io.IOException;
  **/
 
 @Component
+@Slf4j
 public class PushMessageHandler implements WebSocketConcreteHandler<String> {
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
