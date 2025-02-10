@@ -47,6 +47,7 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
             }
             UserDto user = (UserDto) userDetailsService.loadUserByUsername(username);
             attributes.put(WebSocketConstant.WEBSOCKET_USER, user);
+            attributes.put(WebSocketConstant.AUTHORIZATION, token);
         } else {
             log.info("request is not ServletServerHttpRequest type");
             return false;

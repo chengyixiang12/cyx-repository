@@ -12,4 +12,9 @@ import lombok.EqualsAndHashCode;
 @Data
 public class PushMessageSendParams extends SendParams {
 
+    /**
+     * 消息体
+     */
+    private String body;
+
 }

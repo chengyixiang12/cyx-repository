@@ -2,6 +2,7 @@ package com.soft.base.websocket.handle.message.concrete.filestransfer;
 
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.async.FilesTransferAsync;
+import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.FilesTransferRecParams;
@@ -34,6 +35,7 @@ public class FilesTransferHandler implements WebSocketConcreteHandler<String> {
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         FilesTransferRecParams filesTransferRecParams = JSON.parseObject(message.getPayload(), FilesTransferRecParams.class);
         //TODO 待定
+        log.info("方法session：{}", session.getAttributes().get(WebSocketConstant.AUTHORIZATION).toString());
     }
 
     @Override
