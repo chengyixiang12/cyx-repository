@@ -57,9 +57,9 @@ spring:
     host: smtp.qq.com
     port: 587
     #发送方邮箱
-    username:
+    username: 1574641450@qq.com
     #授权码
-    password:
+    password: ryssjdgebjgwbabh
     properties:
       mail:
         smtp:
@@ -114,7 +114,7 @@ jwt:
   #密钥
   secret-key: abcdefghijklmnopq123456789
   #单位秒；1小时过期
-  expire: 3600
+  expire: 3600000
 
 #minio对象存储
 minio:

@@ -17,4 +17,7 @@ public class LoginRequest {
 
     @Schema(description = "登录方式，password：密码登录；email：邮箱验证码登录")
     private String loginMethod;
+
+    @Schema(description = "图形验证码")
+    private String graphicsCaptcha;
 }

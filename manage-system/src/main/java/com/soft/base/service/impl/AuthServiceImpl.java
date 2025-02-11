@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
-    @Value(value = "${authorization-expire}")
+    @Value(value = "${manage-system.token.expire-time}")
     private Long authorizationExpire;
 
     private final PasswordEncoder passwordEncoder;

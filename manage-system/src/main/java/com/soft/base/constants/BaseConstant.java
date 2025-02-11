@@ -216,4 +216,9 @@ public class BaseConstant {
      * 最大登录错误次数：5次
      */
     public final static Long MAX_LOGIN_ERROR_TIME = 4L;
+
+    /**
+     * 图形验证码类型
+     */
+    public final static String GRAPHICS_CAPTCHA_TYPE = "PNG";
 }

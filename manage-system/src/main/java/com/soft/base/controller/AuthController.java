@@ -1,6 +1,9 @@
 package com.soft.base.controller;
 
+import com.github.xiaoymin.knife4j.annotations.Ignore;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.soft.base.annotation.SysLog;
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.entity.SysUser;
@@ -14,17 +17,22 @@ import com.soft.base.resultapi.R;
 import com.soft.base.service.AuthService;
 import com.soft.base.vo.LoginVo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.*;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @RestController
@@ -33,15 +41,22 @@ import java.util.regex.Pattern;
 @Slf4j
 public class AuthController {
 
+    @Value(value = "${manage-system.graphics.expire-time}")
+    private Long graphicsCaptchaExpireTime;
+
     private final AuthService authService;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    private final DefaultKaptcha captchaProducer;
+
     @Autowired
     public AuthController(AuthService authService,
-                          RedisTemplate<String, Object> redisTemplate) {
+                          RedisTemplate<String, Object> redisTemplate,
+                          DefaultKaptcha captchaProducer) {
         this.authService = authService;
         this.redisTemplate = redisTemplate;
+        this.captchaProducer = captchaProducer;
     }
 
     @SysLog(value = "用户登录", module = LogModuleEnum.AUTHORIZATION, type = LogTypeEnum.LOGIN, name = "#request.username")
@@ -57,7 +72,17 @@ public class AuthController {
         if (StringUtils.isBlank(request.getLoginMethod())) {
             return R.fail("登录方式不能为空");
         }
+        if (StringUtils.isBlank(request.getGraphicsCaptcha())) {
+            return R.fail("图形验证码不能为空");
+        }
         try {
+            String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + request.getUsername());
+            if (StringUtils.isBlank(graphicsCaptcha)) {
+                return R.fail("图形验证码过期");
+            }
+            if (!graphicsCaptcha.equals(request.getGraphicsCaptcha())) {
+                return R.fail("图形验证码错误");
+            }
             LoginVo loginVo = authService.authenticate(request);
             return R.ok(loginVo);
         } catch (BadCredentialsException
@@ -115,6 +140,28 @@ public class AuthController {
         } finally {
             redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
             log.info("验证码缓存清除");
+        }
+    }
+
+    @GetMapping(value = "/getGraphicCaptcha/{username}")
+    @Operation(summary = "获取图形验证码")
+    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
+    public void getGraphicCaptcha(@PathVariable(value = "username") String username, @Ignore HttpServletResponse response) {
+        if (StringUtils.isBlank(username)) {
+            return;
+        }
+
+        try {
+            String text = captchaProducer.createText();
+
+            redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + username, text, graphicsCaptchaExpireTime, TimeUnit.SECONDS);
+
+            BufferedImage image = captchaProducer.createImage(text);
+
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+            ImageIO.write(image, BaseConstant.GRAPHICS_CAPTCHA_TYPE, response.getOutputStream());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
 }

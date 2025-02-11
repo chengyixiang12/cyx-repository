@@ -31,12 +31,17 @@ public class RedisConstant {
     /**
      * 用户信息
      */
-    public final static String USER_INFO = "cyx::users::";
+    public final static String USER_INFO = "cyx:users:";
+
+    /**
+     * 登录图形验证码
+     */
+    public final static String LOGIN_GRAPHICS_CAPTCHA = "cyx:graphics:captcha:";
 
     /**
      * 用户登录错误次数
      */
-    public final static String USER_LOGIN_ERROR_TIME = "cyx::login-error-time::";
+    public final static String USER_LOGIN_ERROR_TIME = "cyx:login-error-time:";
 
     /**
      * websocket中的用户会话

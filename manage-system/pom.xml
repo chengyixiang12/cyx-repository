@@ -33,6 +33,7 @@
         <poi.version>4.1.2</poi.version>
         <tika.version>3.0.0</tika.version>
         <maven.plugin>3.3.1</maven.plugin>
+        <kaptcha.vesion>2.3.2</kaptcha.vesion>
     </properties>
 
     <dependencies>
@@ -166,6 +167,12 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>${tika.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.penggle/kaptcha -->
+        <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>${kaptcha.vesion}</version>
         </dependency>
     </dependencies>
 
