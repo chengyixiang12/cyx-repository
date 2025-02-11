@@ -1,10 +1,12 @@
 package com.soft.base.conf;
 
 import com.soft.base.filter.AuthorizationVerifyFilter;
+import com.soft.base.filter.RateLimitFilter;
 import com.soft.base.handle.AuthenticationHandler;
 import com.soft.base.handle.CustomAccessDeniedHandler;
 import com.soft.base.handle.LogoutAfterSuccessHandler;
 import com.soft.base.properties.AuthorizationIgnoreProperty;
+import com.soft.base.properties.RateLimitProperty;
 import com.soft.base.utils.UniversalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,6 +47,8 @@ public class SecurityConfig {
 
     private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
 
+    private final RateLimitProperty rateLimitProperty;
+
     @Autowired
     public SecurityConfig(AuthenticationHandler authenticationHandler,
                           LogoutAfterSuccessHandler logoutAfterSuccessHandler,
@@ -51,7 +56,8 @@ public class SecurityConfig {
                           RedisTemplate<String, Object> redisTemplate,
                           UniversalUtil universalUtil,
                           CustomAccessDeniedHandler customAccessDeniedHandler,
-                          AuthorizationIgnoreProperty authorizationIgnoreProperty) {
+                          AuthorizationIgnoreProperty authorizationIgnoreProperty,
+                          RateLimitProperty rateLimitProperty) {
         this.authenticationHandler = authenticationHandler;
         this.logoutAfterSuccessHandler = logoutAfterSuccessHandler;
         this.userDetailsService = userDetailsService;
@@ -59,10 +65,15 @@ public class SecurityConfig {
         this.universalUtil = universalUtil;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.authorizationIgnoreProperty = authorizationIgnoreProperty;
+        this.rateLimitProperty = rateLimitProperty;
     }
 
     private AuthorizationVerifyFilter getAuthorizationVerifyFilter() {
         return new AuthorizationVerifyFilter(userDetailsService,redisTemplate);
+    }
+
+    private RateLimitFilter getRateLimitFilter() {
+        return new RateLimitFilter(redisTemplate, rateLimitProperty);
     }
 
     @Bean
@@ -72,7 +83,13 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 // 禁用csrf
                 .csrf(CsrfConfigurer::disable)
+                // 禁用http basic认证
+                .httpBasic(AbstractHttpConfigurer::disable)
+                // 允许iframe嵌套
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                // 会话无状态
+                .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 忽略不鉴权的路由
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
                             .anyRequest().authenticated();
@@ -87,6 +104,9 @@ public class SecurityConfig {
                                         // 用于处理已认证但没有权限访问资源的请求
                                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
+                // 限流过滤器
+                .addFilterBefore(getRateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
+                // 鉴权过滤器
                 .addFilterBefore(getAuthorizationVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
