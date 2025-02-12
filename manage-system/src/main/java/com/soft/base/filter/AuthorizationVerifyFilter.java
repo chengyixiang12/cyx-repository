@@ -52,7 +52,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             }
             if (!token.startsWith(TokenConstant.TOKEN_PREFIX)) {
                 log.info("非法鉴权：{}", token);
-                ResponseUtil.writeErrMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
+                ResponseUtil.writeErrMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
                 return;
             }
             // 去除token前缀

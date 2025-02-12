@@ -1,32 +1,33 @@
 package com.soft.base.handle;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.soft.base.enums.ResultEnum;
-import org.springframework.http.HttpHeaders;
+import com.soft.base.resultapi.R;
+import com.soft.base.utils.ResponseUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.io.IOException;
 
 /**
  * 全局异常处理器
  */
 
 @ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
-    // 处理不支持的请求方法异常
-    @Override
-    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        String message = String.format("不支持的方法：%s", ex.getMethod());
-        JSONObject body = new JSONObject();
-        body.put("code", ResultEnum.FAIL_NORMAL.getCode());
-        body.put("msg", message);
-        body.put("data", null);
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(body);
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public void handleNoHandlerFoundException(HttpServletResponse response) throws IOException {
+        ResponseUtil.writeErrMsg(response, HttpStatus.NOT_FOUND.value(), R.fail("不存在的请求路径"));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public void methodNotSupportException(HttpServletResponse response) throws IOException {
+        ResponseUtil.writeErrMsg(response, HttpStatus.METHOD_NOT_ALLOWED.value(), R.fail("不支持的请求方式"));
     }
 }

@@ -1,6 +1,7 @@
 package com.soft.base.controller;
 
 import com.soft.base.annotation.SysLog;
+import com.soft.base.constants.HttpConstant;
 import com.soft.base.dto.FileDetailDto;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.request.FilesRequest;
@@ -51,7 +52,6 @@ public class SysFileController {
 
     @PostMapping
     @Operation(summary = "上传文件")
-    @Parameter(name = "multipartFile", description = "文件流", required = true, in = ParameterIn.DEFAULT)
     public R uploadFile(@RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) {
         if (multipartFile == null) {
             return R.fail("文件不能为空");
@@ -77,7 +77,7 @@ public class SysFileController {
         try {
             FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
             if (fileDetail == null) {
-                return ResponseEntity.status(HttpStatus.OK).body(R.fail("不存在的文件"));
+                return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).body(R.fail("不存在的文件"));
             }
             is = minioUtil.download(fileDetail.getObjectKey());
 

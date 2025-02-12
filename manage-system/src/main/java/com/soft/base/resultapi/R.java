@@ -19,6 +19,9 @@ public class R<T> {
     @Schema(description = "响应结果集")
     private T data;
 
+    @Schema(description = "时间戳")
+    private Long timestamp;
+
     public static <T> R<T> ok() {
         return setR(SUCCESS.getCode(), SUCCESS.getMessage(), null);
     }
@@ -52,6 +55,7 @@ public class R<T> {
         result.code = code;
         result.msg = msg;
         result.data = data;
+        result.timestamp = System.currentTimeMillis();
         return result;
     }
 

@@ -168,7 +168,6 @@
             <artifactId>tika-core</artifactId>
             <version>${tika.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.penggle/kaptcha -->
         <dependency>
             <groupId>com.github.penggle</groupId>
             <artifactId>kaptcha</artifactId>

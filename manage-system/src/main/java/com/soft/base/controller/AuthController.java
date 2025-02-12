@@ -3,6 +3,7 @@ package com.soft.base.controller;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.entity.SysUser;
@@ -25,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -150,7 +151,7 @@ public class AuthController {
     @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
     public ResponseEntity<Object> getGraphicCaptcha(@PathVariable(value = "username") String username) {
         if (StringUtils.isBlank(username)) {
-            return ResponseEntity.status(HttpStatus.OK).body(R.fail("用户名不能为空"));
+            return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).body(R.fail("用户名不能为空"));
         }
 
         try {

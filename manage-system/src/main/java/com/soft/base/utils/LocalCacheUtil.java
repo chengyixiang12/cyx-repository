@@ -30,7 +30,7 @@ public class LocalCacheUtil {
      * @param expire 过期时间；-1：永不过期
      * @param timeUnit 时间单位
      */
-    public void store(String key, Object value, long expire, TimeUnit timeUnit) throws NullPointerException, NumberRangeException, NotSupportTimeUnitException {
+    public void store(String key, Object value, long expire, TimeUnit timeUnit) throws NullPointerException {
         if (StringUtils.isBlank(key) || value == null) {
             throw new NullPointerException();
         }
