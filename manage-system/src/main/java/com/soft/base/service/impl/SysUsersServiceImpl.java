@@ -102,6 +102,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void editPassword(String targetPass, Long id) {
         try {
             String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
@@ -129,6 +130,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void resetPassword(ResetPasswordRequest request) {
         try {
             String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
