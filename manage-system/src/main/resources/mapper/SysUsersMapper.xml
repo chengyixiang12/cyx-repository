@@ -140,4 +140,13 @@
         del_flag = '1'
         AND username = #{username}
     </update>
+    <select id="getUsernameById" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+        su.username
+        FROM
+        `sys_user` su
+        WHERE
+        su.del_flag = '1'
+        AND su.`id` = #{id}
+    </select>
 </mapper>

@@ -34,7 +34,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -96,19 +102,57 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
-    @CacheEvict(key = "#username")
-    public void editPassword(String targetPass, String username) throws Exception {
-        String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
-        String encode = passwordEncoder.encode(rsaUtil.decrypt(targetPass, privateKey));
-        sysUsersMapper.editPassword(username, encode);
+    public void editPassword(String targetPass, Long id) {
+        try {
+            String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+            String encode = passwordEncoder.encode(rsaUtil.decrypt(targetPass, privateKey));
+
+            SysUser sysUser = new SysUser();
+            sysUser.setId(id);
+            sysUser.setPassword(encode);
+
+            sysUsersMapper.updateById(sysUser);
+
+            sendWebsocket(id);
+        } catch (NoSuchPaddingException
+                 | IllegalBlockSizeException
+                 | NoSuchAlgorithmException
+                 | InvalidKeySpecException
+                 | BadPaddingException
+                 | IOException
+                 | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 清除用户在redis中的缓存
+            redisTemplate.delete(RedisConstant.USER_INFO + sysUsersMapper.getUsernameById(id));
+        }
     }
 
     @Override
-    @CacheEvict(key = "#username")
-    public void resetPassword(ResetPasswordRequest request) throws Exception {
-        String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
-        String encode = passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey));
-        sysUsersMapper.editPassword(request.getUsername(), encode);
+    public void resetPassword(ResetPasswordRequest request) {
+        try {
+            String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+            String encode = passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey));
+
+            SysUser sysUser = new SysUser();
+            sysUser.setId(request.getId());
+            sysUser.setPassword(encode);
+
+            sysUsersMapper.updateById(sysUser);
+
+            sendWebsocket(request.getId());
+        } catch (NoSuchPaddingException
+                 | IllegalBlockSizeException
+                 | NoSuchAlgorithmException
+                 | InvalidKeySpecException
+                 | BadPaddingException
+                 | IOException
+                 | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 清除用户在redis中的缓存
+            redisTemplate.delete(RedisConstant.USER_INFO + sysUsersMapper.getUsernameById(request.getId()));
+        }
     }
 
     @Override
@@ -224,20 +268,29 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             sysUser.setUsername(request.getNewUsername());
             sysUsersMapper.updateById(sysUser);
 
-            // 重置用户名后需强制用户离线
-            @SuppressWarnings("unchecked")
-            WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-            JSONObject forceOfflineParam = new JSONObject();
-            forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
-            forceOfflineParam.put("receiver", request.getId());
-            TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
-            webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(request.getId()), textMessage);
+            sendWebsocket(request.getId());
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             // 清除用户在redis中的缓存
             redisTemplate.delete(RedisConstant.USER_INFO + request.getOldUsername());
         }
+    }
+
+    /**
+     * 调用websocket发送强制下线消息
+     * @param id
+     * @throws IOException
+     */
+    private void sendWebsocket(Long id) throws IOException {
+        // 重置用户名后需强制用户离线
+        @SuppressWarnings("unchecked")
+        WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+        JSONObject forceOfflineParam = new JSONObject();
+        forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
+        forceOfflineParam.put("receiver", id);
+        TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
+        webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
     }
 }
 

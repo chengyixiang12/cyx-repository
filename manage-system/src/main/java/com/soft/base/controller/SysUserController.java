@@ -92,8 +92,8 @@ public class SysUserController {
             if (!passwordEncoder.matches(originalDecrypt, password)) {
                 return R.fail("原密码不正确");
             }
-            String username = securityUtil.getUserInfo().getUsername();
-            sysUsersService.editPassword(request.getTargetPass(), username);
+            Long id = securityUtil.getUserInfo().getId();
+            sysUsersService.editPassword(request.getTargetPass(), id);
             return R.ok("修改成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

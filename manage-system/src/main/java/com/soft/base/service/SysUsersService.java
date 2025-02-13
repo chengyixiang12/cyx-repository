@@ -15,9 +15,9 @@ import com.soft.base.vo.PageVo;
 public interface SysUsersService extends IService<SysUser> {
     PageVo<AllUserVo> getAllUsers(PageRequest request);
 
-    void editPassword(String targetPass, String username) throws Exception;
+    void editPassword(String targetPass, Long id);
 
-    void resetPassword(ResetPasswordRequest request) throws Exception;
+    void resetPassword(ResetPasswordRequest request);
 
     String getEmail(String username);
 
