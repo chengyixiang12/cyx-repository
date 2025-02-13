@@ -21,9 +21,6 @@ import java.util.List;
 public interface SysUsersMapper extends BaseMapper<SysUser> {
     Page<AllUserVo> getAllUsers(IPage<AllUserVo> page);
 
-    void editPassword(@Param("username") String username,
-                      @Param("password") String password);
-
     List<DeptUserVo> getAllUser();
 
     String getManager(@Param("roleCode") String managerRoleCode);

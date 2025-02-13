@@ -58,12 +58,6 @@
         WHERE
         u.del_flag = '1'
     </select>
-    <update id="editPassword">
-        UPDATE sys_user
-        SET `password` = #{password}
-        WHERE
-        username = #{username}
-    </update>
     <select id="getAllUser" resultType="DeptUserVo">
         SELECT
         su.id,
