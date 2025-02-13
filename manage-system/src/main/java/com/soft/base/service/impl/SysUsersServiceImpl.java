@@ -1,34 +1,40 @@
 package com.soft.base.service.impl;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.dto.GetUserDto;
 import com.soft.base.dto.GetUserRoleDto;
 import com.soft.base.entity.SysUser;
 import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
+import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.mapper.SysUsersMapper;
-import com.soft.base.request.EditUserRequest;
-import com.soft.base.request.PageRequest;
-import com.soft.base.request.ResetPasswordRequest;
-import com.soft.base.request.SaveUserRequest;
+import com.soft.base.request.*;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.vo.AllUserVo;
 import com.soft.base.vo.GetUserVo;
 import com.soft.base.vo.PageVo;
+import com.soft.base.websocket.WebSocketConcreteHolder;
+import com.soft.base.websocket.WebSocketSessionManager;
+import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.TextMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +64,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final SysUserRoleService sysUserRoleService;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
     public SysUsersServiceImpl(SysUsersMapper sysUsersMapper,
                                PasswordEncoder passwordEncoder,
@@ -65,7 +73,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
                                SecretKeyService secretKeyService,
                                SysDeptService sysDeptService,
                                SysRoleService sysRoleService,
-                               SysUserRoleService sysUserRoleService) {
+                               SysUserRoleService sysUserRoleService,
+                               RedisTemplate<String, Object> redisTemplate) {
         this.sysUsersMapper = sysUsersMapper;
         this.passwordEncoder = passwordEncoder;
         this.rsaUtil = rsaUtil;
@@ -73,6 +82,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         this.sysDeptService = sysDeptService;
         this.sysRoleService = sysRoleService;
         this.sysUserRoleService = sysUserRoleService;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -203,6 +213,31 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @CacheEvict(key = "#username")
     public void unlockUser(String username) {
         sysUsersMapper.unlockUser(username);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void resetUsername(ResetUsernameRequest request) {
+        try {
+            SysUser sysUser = new SysUser();
+            sysUser.setId(request.getId());
+            sysUser.setUsername(request.getNewUsername());
+            sysUsersMapper.updateById(sysUser);
+
+            // 重置用户名后需强制用户离线
+            @SuppressWarnings("unchecked")
+            WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+            JSONObject forceOfflineParam = new JSONObject();
+            forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
+            forceOfflineParam.put("receiver", request.getOldUsername());
+            TextMessage textMessage = new TextMessage(forceOfflineParam.toString());
+            webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(request.getId()), textMessage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 清除用户在redis中的缓存
+            redisTemplate.delete(RedisConstant.USER_INFO + request.getOldUsername());
+        }
     }
 }
 

@@ -136,7 +136,7 @@ public class AuthController {
             sysUser.setNickname(request.getNickname());
             sysUser.setEmail(request.getEmail());
             authService.register(sysUser);
-            return R.ok("注册成功", null);
+            return R.ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

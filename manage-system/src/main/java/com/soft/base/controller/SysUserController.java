@@ -1,6 +1,7 @@
 package com.soft.base.controller;
 
 import com.soft.base.annotation.SysLog;
+import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.request.*;
@@ -25,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -123,6 +126,9 @@ public class SysUserController {
         if (StringUtils.isBlank(request.getUsername())) {
             return R.fail("用户名不能为空");
         }
+        if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
+            return R.fail("用户名只能包含英文字母或数字");
+        }
         if (StringUtils.isBlank(request.getPassword())) {
             return R.fail("密码不能为空");
         }
@@ -148,9 +154,6 @@ public class SysUserController {
     public R editUser(@RequestBody EditUserRequest request) {
         if (request.getId() == null) {
             return R.fail("id不能为空");
-        }
-        if (StringUtils.isBlank(request.getUsername())) {
-            return R.fail("用户名不能为空");
         }
         if (request.getDeptId() == null) {
             return R.fail("部门不能为空");
@@ -224,6 +227,27 @@ public class SysUserController {
         }
         try {
             sysUsersService.unlockUser(username);
+            return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @PutMapping(value = "/resetUsername")
+    @Operation(summary = "重置用户名")
+    public R resetUsername(@RequestBody ResetUsernameRequest request) {
+        if (request.getId() == null) {
+            return R.fail("主键不能为空");
+        }
+        if (StringUtils.isBlank(request.getNewUsername())) {
+            return R.fail("新用户名不能为空");
+        }
+        if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getNewUsername())) {
+            return R.fail("用户名只能包含英文字母或数字");
+        }
+        try {
+            sysUsersService.resetUsername(request);
             return R.ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);

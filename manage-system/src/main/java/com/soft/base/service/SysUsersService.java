@@ -2,10 +2,7 @@ package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysUser;
-import com.soft.base.request.EditUserRequest;
-import com.soft.base.request.PageRequest;
-import com.soft.base.request.ResetPasswordRequest;
-import com.soft.base.request.SaveUserRequest;
+import com.soft.base.request.*;
 import com.soft.base.vo.AllUserVo;
 import com.soft.base.vo.GetUserVo;
 import com.soft.base.vo.PageVo;
@@ -37,4 +34,6 @@ public interface SysUsersService extends IService<SysUser> {
     void lockUser(String username);
 
     void unlockUser(String username);
+
+    void resetUsername(ResetUsernameRequest request);
 }

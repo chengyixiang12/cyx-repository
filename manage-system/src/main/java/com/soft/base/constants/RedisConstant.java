@@ -29,9 +29,9 @@ public class RedisConstant {
     public final static String SYS_LOG_CACHE = "cyx:log:";
 
     /**
-     * 用户信息
+     * 用户信息，注意：此处的“::”不能改为“:”
      */
-    public final static String USER_INFO = "cyx:users:";
+    public final static String USER_INFO = "cyx:users::";
 
     /**
      * 登录图形验证码
