@@ -229,8 +229,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
             JSONObject forceOfflineParam = new JSONObject();
             forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
-            forceOfflineParam.put("receiver", request.getOldUsername());
-            TextMessage textMessage = new TextMessage(forceOfflineParam.toString());
+            forceOfflineParam.put("receiver", request.getId());
+            TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
             webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(request.getId()), textMessage);
         } catch (IOException e) {
             throw new RuntimeException(e);
