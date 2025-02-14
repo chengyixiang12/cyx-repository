@@ -48,16 +48,20 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
 
         ForceOfflineSendParams forceOfflineSendParams = new ForceOfflineSendParams();
         forceOfflineSendParams.setOrder(forceOfflineRecParams.getOrder());
-
         receiveSession.sendMessage(new TextMessage(forceOfflineSendParams.toJsonString()));
+
         UserDto userDto = (UserDto) receiveSession.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        String username = userDto.getUsername();
+
         String token = (String) receiveSession.getAttributes().get(WebSocketConstant.AUTHORIZATION);
         WebSocketSessionManager.removeSession(userDto.getId());
-        log.info("remove {} session...", userDto.getUsername());
+        log.info("remove {} session...", username);
         redisTemplate.delete(RedisConstant.WS_USER_SESSION + userDto.getId());
-        log.info("{} offline...", userDto.getUsername());
+        log.info("{} offline...", username);
         redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + token);
         log.info("token clear...");
+        redisTemplate.delete(RedisConstant.USER_INFO + username);
+        log.info("{} userinfo already remove in redis", username);
     }
 
     @Override

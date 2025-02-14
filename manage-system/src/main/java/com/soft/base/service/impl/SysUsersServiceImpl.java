@@ -123,9 +123,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
                  | IOException
                  | InvalidKeyException e) {
             throw new RuntimeException(e);
-        } finally {
-            // 清除用户在redis中的缓存
-            redisTemplate.delete(RedisConstant.USER_INFO + sysUsersMapper.getUsernameById(id));
         }
     }
 
@@ -151,9 +148,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
                  | IOException
                  | InvalidKeyException e) {
             throw new RuntimeException(e);
-        } finally {
-            // 清除用户在redis中的缓存
-            redisTemplate.delete(RedisConstant.USER_INFO + sysUsersMapper.getUsernameById(request.getId()));
         }
     }
 
@@ -273,9 +267,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             sendWebsocket(request.getId());
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            // 清除用户在redis中的缓存
-            redisTemplate.delete(RedisConstant.USER_INFO + request.getOldUsername());
         }
     }
 
