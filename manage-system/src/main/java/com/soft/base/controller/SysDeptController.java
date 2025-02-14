@@ -168,6 +168,8 @@ public class SysDeptController {
     @PostMapping(value = "/exportDept")
     @Operation(summary = "导出部门")
     public ResponseEntity<Object> exportDept(@RequestBody ExportDeptRequest request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         if (request.getIds() == null || request.getIds().isEmpty()) {
             return ResponseEntity.ok().body(R.fail("部门id数组不能为空"));
         }
@@ -195,7 +197,6 @@ public class SysDeptController {
             byte[] excelBytes = byteArrayOutputStream.toByteArray();
 
             // 设置响应头
-            HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // 设置文件类型
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileName.endsWith(BaseConstant.EXCEL_SUFFIX) ? fileName : fileName + BaseConstant.EXCEL_SUFFIX, StandardCharsets.UTF_8)).build()); // 设置文件名
 

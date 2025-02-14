@@ -150,6 +150,8 @@ public class AuthController {
     @Operation(summary = "获取图形验证码")
     @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
     public ResponseEntity<Object> getGraphicCaptcha(@PathVariable(value = "username") String username) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         if (StringUtils.isBlank(username)) {
             return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).body(R.fail("用户名不能为空"));
         }
@@ -164,7 +166,6 @@ public class AuthController {
             ImageIO.write(image, BaseConstant.GRAPHICS_CAPTCHA_TYPE, bis);
             byte[] byteArray = bis.toByteArray();
 
-            HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_PNG);
 
             return ResponseEntity.ok()

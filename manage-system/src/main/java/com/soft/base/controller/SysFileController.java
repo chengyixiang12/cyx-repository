@@ -25,6 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,16 +77,19 @@ public class SysFileController {
     @Operation(summary = "下载文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public ResponseEntity<Object> downloadFile(@RequestParam(value = "id", required = false) Long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
         if (id == null) {
-            return ResponseEntity.ok().body(R.fail("主键不能为空"));
+            return ResponseEntity.ok().headers(headers).body(R.fail("主键不能为空"));
         }
         InputStream is = null;
-
+        File file;
 
         try {
             FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
             if (fileDetail == null) {
-                return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).body(R.fail("不存在的文件"));
+                return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).headers(headers).body(R.fail("不存在的文件"));
             }
 
             // 根据存储位置来获取文件源
@@ -95,13 +99,20 @@ public class SysFileController {
                     break;
                 }
                 case BaseConstant.DISK_STORAGE_LOCATION: {
-                    is = new FileInputStream(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
+                    file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
+                    if (!file.exists()) {
+                        throw new GlobalException("源文件不存在");
+                    }
+                    is = new FileInputStream(file);
                     break;
                 }
             }
 
+            if (is == null) {
+                throw new GlobalException("文件不存在于规定的存储对象中");
+            }
+
             // 设置响应头
-            HttpHeaders headers = new HttpHeaders();
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
@@ -111,7 +122,7 @@ public class SysFileController {
                     .body(is.readAllBytes());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return ResponseEntity.ok().body(R.fail());
+            return ResponseEntity.ok().headers(headers).body(R.fail());
         } finally {
             if (is != null) {
                 try {
