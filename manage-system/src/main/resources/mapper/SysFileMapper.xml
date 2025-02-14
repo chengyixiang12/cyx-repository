@@ -29,7 +29,8 @@
         SELECT
         sf.object_key AS "objectKey",
         sf.original_name AS "originalName",
-        sf.file_size AS "fileSize"
+        sf.file_size AS "fileSize",
+        sf.location
         FROM
         sys_file sf
         WHERE

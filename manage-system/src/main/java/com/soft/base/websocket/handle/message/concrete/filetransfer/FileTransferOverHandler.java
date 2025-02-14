@@ -36,17 +36,17 @@ import java.time.LocalDateTime;
 @Slf4j
 public class FileTransferOverHandler implements WebSocketConcreteHandler<String> {
 
+    @Value(value = "${tmp.path}")
+    private String tmpPath;
+
+    @Value(value = "${storage.big-file.location}")
+    private String bigfileLocation;
+
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final DateUtil dateUtil;
 
     private final SysFileService sysFileService;
-
-    @Value(value = "${tmp.path}")
-    private String tmpPath;
-
-    @Value(value = "${storage.big-file.location}")
-    private String bigFileLocation;
 
     @Autowired
     public FileTransferOverHandler(RedisTemplate<String, Object> redisTemplate,
@@ -85,7 +85,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         }
 
         // 大文件存储路径
-        File file = new File(bigFileLocation + objectKey);
+        File file = new File(bigfileLocation + objectKey);
         if (!file.exists()) {
             if (file.getParentFile() != null && !file.getParentFile().mkdirs()) {
                 sendParams.setMessage("文件夹创建失败");

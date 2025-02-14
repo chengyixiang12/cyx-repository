@@ -1,9 +1,11 @@
 package com.soft.base.controller;
 
 import com.soft.base.annotation.SysLog;
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.dto.FileDetailDto;
 import com.soft.base.enums.LogModuleEnum;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.request.FilesRequest;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysFileService;
@@ -17,11 +19,13 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -38,6 +42,9 @@ import java.nio.charset.StandardCharsets;
 @Tag(name = "文件")
 @Slf4j
 public class SysFileController {
+
+    @Value(value = "${storage.big-file.location}")
+    private String bigfileLocation;
 
     private final SysFileService sysFileService;
 
@@ -74,12 +81,24 @@ public class SysFileController {
         }
         InputStream is = null;
 
+
         try {
             FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
             if (fileDetail == null) {
                 return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).body(R.fail("不存在的文件"));
             }
-            is = minioUtil.download(fileDetail.getObjectKey());
+
+            // 根据存储位置来获取文件源
+            switch (fileDetail.getLocation()) {
+                case BaseConstant.DEFAULT_STORAGE_LOCATION: {
+                    is = minioUtil.download(fileDetail.getObjectKey());
+                    break;
+                }
+                case BaseConstant.DISK_STORAGE_LOCATION: {
+                    is = new FileInputStream(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
+                    break;
+                }
+            }
 
             // 设置响应头
             HttpHeaders headers = new HttpHeaders();

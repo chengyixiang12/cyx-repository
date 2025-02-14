@@ -20,4 +20,10 @@ public class FileDetailDto {
 
     @Schema(description = "源文件名")
     private String originalName;
+
+    @Schema(description = "文件大小")
+    private Long fileSize;
+
+    @Schema(description = "存储位置")
+    private String location;
 }
