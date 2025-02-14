@@ -52,12 +52,7 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION).replaceFirst(TokenConstant.TOKEN_PREFIX, BaseConstant.BLANK_CHARACTER);
         String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + authorization);
 
-        UserDto userDto = (UserDto) redisTemplate.opsForValue().get(RedisConstant.USER_INFO + username);
-
-        if (userDto == null) {
-            userDto = (UserDto) userDetailsService.loadUserByUsername(username);
-        }
-
+        UserDto userDto = (UserDto) userDetailsService.loadUserByUsername(username);
         Long id = userDto.getId();
 
         @SuppressWarnings("unchecked")
