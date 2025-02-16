@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Schema(description = "字典数据请求参数")
-public class DictDatasRequest extends PageRequest{
+public class DictDatasRequest extends PageRequest {
 
     @Schema(description = "字典类型")
     private String dictType;

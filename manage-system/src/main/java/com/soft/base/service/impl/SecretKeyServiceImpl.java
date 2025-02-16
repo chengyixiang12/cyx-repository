@@ -1,17 +1,20 @@
 package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.base.async.ClearSecretKeyCacheAsync;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysSecretKey;
 import com.soft.base.mapper.SysSecretKeyMapper;
 import com.soft.base.service.SecretKeyService;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.utils.SecurityUtil;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
 * @author cyq
@@ -24,18 +27,18 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
     private final SysSecretKeyMapper sysSecretKeyMapper;
 
-    private final ClearSecretKeyCacheAsync clearSecretKeyCacheAsync;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final RSAUtil rsaUtil;
 
     private final SecurityUtil securityUtil;
 
     public SecretKeyServiceImpl(SysSecretKeyMapper sysSecretKeyMapper,
-                                ClearSecretKeyCacheAsync clearSecretKeyCacheAsync,
+                                RedisTemplate<String, Object> redisTemplate,
                                 RSAUtil rsaUtil,
                                 SecurityUtil securityUtil) {
         this.sysSecretKeyMapper = sysSecretKeyMapper;
-        this.clearSecretKeyCacheAsync = clearSecretKeyCacheAsync;
+        this.redisTemplate = redisTemplate;
         this.rsaUtil = rsaUtil;
         this.securityUtil = securityUtil;
     }
@@ -54,13 +57,17 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
     @Override
     public void generateKey(Integer type) throws NoSuchAlgorithmException {
-        clearSecretKeyCacheAsync.clear(type);
-
         Map<String, String> generate = rsaUtil.generate();
         String privateKey = generate.get("privateKey");
         String publicKey = generate.get("publicKey");
         String username = securityUtil.getUserInfo().getUsername();
         sysSecretKeyMapper.generateKey(type, privateKey, publicKey, username);
+
+        // 清空redis中缓存的密钥
+        Set<String> keys = new HashSet<>();
+        keys.add(RedisConstant.RSA_PUBLIC_KEY + type);
+        keys.add(RedisConstant.RSA_PRIVATE_KEY + type);
+        redisTemplate.delete(keys);
     }
 }
 

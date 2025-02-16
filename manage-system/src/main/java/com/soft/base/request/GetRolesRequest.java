@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @Schema(description = "获取角色（复）")
 @Alias(value = "GetRolesRequest")
-public class GetRolesRequest extends PageRequest{
+public class GetRolesRequest extends PageRequest {
 
     @Schema(description = "角色名称")
     private String name;
