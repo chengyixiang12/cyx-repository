@@ -68,9 +68,9 @@ public class AuthServiceImpl implements AuthService {
                 throw new GlobalException("用户已存在");
             }
 
-            String username = sysUsersService.getManager(BaseConstant.MANAGER_ROLE_CODE);
-            sysUser.setCreateBy(username);
-            sysUser.setUpdateBy(username);
+            Long userId = sysUsersService.getManager(BaseConstant.MANAGER_ROLE_CODE);
+            sysUser.setCreateBy(userId);
+            sysUser.setUpdateBy(userId);
             // 解密密码
             String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
             String decrypt = rsaUtil.decrypt(sysUser.getPassword(), privateKey);

@@ -98,13 +98,13 @@ public class SysMenu implements Serializable {
      * 创建人
      */
     @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private String createBy;
+    private Long createBy;
 
     /**
      * 修改人
      */
     @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private String updateBy;
+    private Long updateBy;
 
     /**
      * 逻辑删除；1：存在；0：删除

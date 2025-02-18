@@ -60,6 +60,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         FileTransferOverRecParams fileTransferOverRecParams = JSON.parseObject(message.getPayload(), FileTransferOverRecParams.class);
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        Long userId = userDto.getId();
         String username = userDto.getUsername();
         String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
         // 源文件名
@@ -115,8 +116,8 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             LocalDateTime now = LocalDateTime.now();
             SysFile sysFile = new SysFile();
             sysFile.setFileSize(size);
-            sysFile.setCreateBy(username);
-            sysFile.setUpdateBy(username);
+            sysFile.setCreateBy(userId);
+            sysFile.setUpdateBy(userId);
             sysFile.setOriginalName(originalName);
             sysFile.setCreateTime(now);
             sysFile.setUpdateTime(now);

@@ -70,9 +70,9 @@
         AND su.enabled = 1
         AND su.account_non_locked = 1
     </select>
-    <select id="getManager" parameterType="java.lang.String" resultType="java.lang.String">
+    <select id="getManager" parameterType="java.lang.String" resultType="java.lang.Long">
         SELECT
-        su.username
+        su.id
         FROM
         sys_role sr
         JOIN sys_user_role sur ON sr.id = sur.role_id

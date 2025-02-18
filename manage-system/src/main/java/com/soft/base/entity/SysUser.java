@@ -94,13 +94,13 @@ public class SysUser implements Serializable {
      * 修改人
      */
     @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private String updateBy;
+    private Long updateBy;
 
     /**
      * 创建人
      */
     @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private String createBy;
+    private Long createBy;
 
     /**
      * 昵称

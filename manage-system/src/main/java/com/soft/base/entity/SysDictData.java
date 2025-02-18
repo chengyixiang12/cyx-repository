@@ -30,7 +30,7 @@ public class SysDictData implements Serializable {
      * 创建人
      */
     @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private String createBy;
+    private Long createBy;
 
     /**
      * 创建时间
@@ -43,7 +43,7 @@ public class SysDictData implements Serializable {
      * 修改人
      */
     @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private String updateBy;
+    private Long updateBy;
 
     /**
      * 修改时间

@@ -239,7 +239,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
-    public String getManager(String managerRoleCode) {
+    public Long getManager(String managerRoleCode) {
         return sysUsersMapper.getManager(managerRoleCode);
     }
 
