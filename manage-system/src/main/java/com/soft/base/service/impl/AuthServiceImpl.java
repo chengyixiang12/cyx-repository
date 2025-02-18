@@ -87,18 +87,24 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginVo authenticate(LoginRequest request) throws Exception {
         try {
-            if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
-                String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername()
-                        , rsaUtil.decrypt(request.getPassword(), privateKey)));
-            } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
-                String captCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
-                if (!request.getPassword().equals(captCha)) {
-                    throw new CaptChaErrorException("验证码错误");
+            switch (request.getLoginMethod()) {
+                case BaseConstant.LOGIN_METHOD_PASSWORD: {
+                    String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername()
+                            , rsaUtil.decrypt(request.getPassword(), privateKey)));
+                    break;
                 }
-                redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
-            } else {
-                throw new InvalidLoginMethodException("无效的登录方式");
+                case BaseConstant.LOGIN_METHOD_EMAIL: {
+                    String captCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
+                    if (!request.getPassword().equals(captCha)) {
+                        throw new CaptChaErrorException("验证码错误");
+                    }
+                    redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
+                    break;
+                }
+                default: {
+                    throw new InvalidLoginMethodException("无效的登录方式");
+                }
             }
 
             // 清空错误登录次数
