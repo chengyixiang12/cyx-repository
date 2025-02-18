@@ -10,6 +10,9 @@ import static com.soft.base.enums.ResultEnum.SUCCESS;
 @Schema(description = "restful响应结果集")
 public class R<T> {
 
+    @Schema(description = "时间戳")
+    private Long timestamp;
+
     @Schema(description = "响应代码", example = "2001")
     private Integer code;
 
@@ -18,9 +21,6 @@ public class R<T> {
 
     @Schema(description = "响应结果集")
     private T data;
-
-    @Schema(description = "时间戳")
-    private Long timestamp;
 
     public static <T> R<T> ok() {
         return setR(SUCCESS.getCode(), SUCCESS.getMessage(), null);
