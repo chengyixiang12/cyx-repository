@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -25,6 +26,7 @@ public class SysUserRole implements Serializable {
     @TableField(value = "user_id")
     private Long userId;
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -97,6 +98,7 @@ public class SysRole implements Serializable {
     @TableField(value = "fix_role")
     private Integer fixRole;
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

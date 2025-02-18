@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -82,6 +83,7 @@ public class SysDept implements Serializable {
     @TableField(value = "level")
     private String level;
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

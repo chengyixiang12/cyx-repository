@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -42,6 +43,7 @@ public class UserDto extends User implements Serializable {
      */
     private final String email;
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @JsonCreator

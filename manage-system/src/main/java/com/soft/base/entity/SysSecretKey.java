@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -76,6 +77,7 @@ public class SysSecretKey implements Serializable {
     @TableField(value = "description")
     private String description;
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

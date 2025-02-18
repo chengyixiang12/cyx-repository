@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -114,6 +115,7 @@ public class SysUser implements Serializable {
     @TableField(value = "dept_id")
     private Long deptId;
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

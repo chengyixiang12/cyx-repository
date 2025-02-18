@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -88,6 +89,7 @@ public class SysFile implements Serializable {
     @TableField(value = "file_size")
     private Long fileSize;
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
