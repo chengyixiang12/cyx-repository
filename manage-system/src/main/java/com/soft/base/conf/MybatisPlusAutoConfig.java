@@ -3,6 +3,7 @@ package com.soft.base.conf;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.dto.UserDto;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
@@ -43,14 +44,14 @@ public class MybatisPlusAutoConfig implements MetaObjectHandler {
             this.setFieldValByName("updateBy", getCurrentUsername(), metaObject);
     }
 
-    private String getCurrentUsername() {
+    private Long getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             if (authentication.getPrincipal() instanceof String) {
                 return null;
             }
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            return userDetails.getUsername(); // 返回当前用户的用户名
+            UserDto userDetails = (UserDto) authentication.getPrincipal();
+            return userDetails.getId(); // 返回当前用户的用户名
         }
         return null; // 或者返回一个默认值
     }
