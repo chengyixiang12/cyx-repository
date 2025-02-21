@@ -4,6 +4,9 @@ import com.soft.base.resultapi.R;
 import com.soft.base.utils.ResponseUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,14 +23,17 @@ import java.io.IOException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public void handleNoHandlerFoundException(HttpServletResponse response) throws IOException {
-        ResponseUtil.writeErrMsg(response, HttpStatus.NOT_FOUND.value(), R.fail("不存在的请求路径"));
+    public ResponseEntity<R<Object>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+        return new ResponseEntity<>(R.fail("不存在的请求路径"), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public void methodNotSupportException(HttpServletResponse response) throws IOException {
-        ResponseUtil.writeErrMsg(response, HttpStatus.METHOD_NOT_ALLOWED.value(), R.fail("不支持的请求方式"));
+    public ResponseEntity<R<Object>> methodNotSupportException(HttpRequestMethodNotSupportedException ex) {
+        return new ResponseEntity<>(R.fail("不支持的请求方式"), HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<R<Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return new ResponseEntity<>(R.fail("日期格式异常"), HttpStatus.BAD_REQUEST);
     }
 }

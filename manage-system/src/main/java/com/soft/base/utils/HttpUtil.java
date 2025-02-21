@@ -33,11 +33,12 @@ public class HttpUtil {
      * @return
      * @param <T> 响应参数为单个元素。如：Map
      */
-    public <T> T SyncMonoGet(String url, String uri, Map<String, Object> params, Class<T> responseType) {
+    public <T> T SyncMonoGet(String url, String uri, Map<String, Object> params, Map<String, String> header, Class<T> responseType) {
         WebClient webClient = webClientBuilder.baseUrl(url).build();
         return webClient
                 .get()
                 .uri(item -> buildUri(item, uri, params))
+                .headers(item -> header.forEach(item::set))
                 .retrieve()
                 .bodyToMono(responseType)
                 .block();
@@ -53,11 +54,12 @@ public class HttpUtil {
      * @return
      * @param <T> 响应参数为单个元素。如：Map
      */
-    public <T> T SyncMonoPost(String url, String uri, Map<String, Object> params, Map<String, Object> body, Class<T> responseType) {
+    public <T> T SyncMonoPost(String url, String uri, Map<String, Object> params, Map<String, String> header, Map<String, Object> body, Class<T> responseType) {
         WebClient webClient = webClientBuilder.baseUrl(url).build();
         return webClient
                 .post()
                 .uri(item -> buildUri(item, uri, params))
+                .headers(item -> header.forEach(item::set))
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseType)
