@@ -61,9 +61,9 @@ public class SysSecretKeyController {
     }
 
     @PreAuthorize(value = "@cps.hasPermission('sys_secret_key_generate')")
-    @SysLog(value = "生成密钥", module = LogModuleEnum.SECRET_KEY)
+    @SysLog(value = "生成密钥对", module = LogModuleEnum.SECRET_KEY)
     @GetMapping(value = "/generateKey")
-    @Operation(summary = "生成密钥")
+    @Operation(summary = "生成密钥对")
     @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY)
     public R generateKey(@RequestParam(value = "type", required = false) Integer type) {
         if (type == null) {
