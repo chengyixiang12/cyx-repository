@@ -1,7 +1,11 @@
 package com.soft.base.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * @Author: cyx
@@ -11,7 +15,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "日志传输参数")
-public class LogDto {
+public class LogDto implements Serializable {
 
     @Schema(description = "日志级别")
     private String logLevel;
@@ -53,8 +57,12 @@ public class LogDto {
     private String osBrowserInfo;
 
     @Schema(description = "创建者")
-    private String createBy;
+    private Long createBy;
 
     @Schema(description = "日志类型")
     private String type;
+
+    @Serial
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
 }

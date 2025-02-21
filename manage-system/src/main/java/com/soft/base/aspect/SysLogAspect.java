@@ -43,14 +43,17 @@ import static com.soft.base.constants.BaseConstant.LEFT_SLASH;
 @Component
 public class SysLogAspect {
 
+    @Value(value = "${log.enable}")
+    private boolean logEnable;
+
+    @Value(value = "${log.record-param}")
+    private boolean recordParam;
+
     private final SysLogProduce sysLogProduce;
 
     private final HttpServletRequest servletRequest;
 
     private final SecurityUtil securityUtil;
-
-    @Value(value = "${log.enable}")
-    private boolean logEnable;
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
 
@@ -75,11 +78,18 @@ public class SysLogAspect {
                 logDto.setRequestMethod(servletRequest.getMethod());
                 logDto.setRequestUrl(servletRequest.getRequestURI());
                 logDto.setIpAddress(servletRequest.getRemoteAddr());
-
-                logDto.setRequestParams(JSON.toJSONString(exclude(joinPoint)));
                 logDto.setLogLevel(LogLevelEnum.INFO.getCode());
-                logDto.setResponseResult(result != null ? result.toString() : null);
-                logDto.setStatusCode(result != null ? ((R) result).getCode() : null);
+
+                // 是否记录请求和响应参数
+                if (recordParam) {
+                    logDto.setRequestParams(JSON.toJSONString(exclude(joinPoint)));
+                    logDto.setResponseResult(result != null ? result.toString() : null);
+                    if (result != null) {
+                        @SuppressWarnings("unchecked")
+                        Integer code = ((R<Object>) result).getCode();
+                        logDto.setStatusCode(code);
+                    }
+                }
 
                 // 获取 User-Agent
                 String userAgentString = servletRequest.getHeader(HEADER_USER_AGENT);
@@ -88,10 +98,7 @@ public class SysLogAspect {
                 String browserName = userAgent.getBrowser().getName();
                 logDto.setOsBrowserInfo(osName + LEFT_SLASH + browserName);
 
-                // 解析 SpEL 表达式
-                Object value = getValue(joinPoint, sysLog, parser);
-
-                logDto.setCreateBy(value == null ? securityUtil.getUserInfo().getUsername() : String.valueOf(value));
+                logDto.setCreateBy(securityUtil.getUserInfo().getId());
             } catch (Throwable throwable) {
                 logDto.setExceptionInfo(throwable.getMessage());
                 logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
@@ -103,45 +110,6 @@ public class SysLogAspect {
         }
 
         return result;
-    }
-
-    /**
-     * 获取value值
-     *
-     * @param joinPoint
-     * @param sysLog
-     * @param parser
-     * @return
-     */
-    private Object getValue(ProceedingJoinPoint joinPoint, SysLog sysLog, SpelExpressionParser parser) {
-        Object[] args = joinPoint.getArgs();
-        String[] paramNames = ((MethodSignature) joinPoint.getSignature()).getParameterNames();
-
-        // 构建 SpEL 解析上下文
-        StandardEvaluationContext context = new StandardEvaluationContext();
-        // 查找指定的参数
-        String targetParam = sysLog.param(); // 获取注解中指定的参数名
-        Object targetValue;
-        if (StringUtils.isBlank(targetParam)) {
-            for (int i = 0; i < paramNames.length; i++) {
-                context.setVariable(paramNames[i], args[i]); // 设置参数名和对应值
-            }
-        } else {
-            for (int i = 0; i < paramNames.length; i++) {
-                if (paramNames[i].equals(targetParam)) {
-                    targetValue = args[i]; // 找到匹配的参数值
-                    context.setVariable(targetParam, targetValue); // 仅设置指定参数
-                    break;
-                }
-            }
-        }
-
-        String spelExpression = sysLog.name();
-        if (StringUtils.isNotBlank(spelExpression)) {
-            Expression expression = parser.parseExpression(spelExpression);
-            return expression.getValue(context);
-        }
-        return null;
     }
 
     /**

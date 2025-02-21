@@ -33,16 +33,4 @@ public @interface SysLog {
      * @return
      */
     LogTypeEnum type() default LogTypeEnum.OPERATION;
-
-    /**
-     * 传入的值，el表达式
-     * @return
-     */
-    String name() default "";
-
-    /**
-     * 指定传入的参数
-     * @return
-     */
-    String param() default "";
 }

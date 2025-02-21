@@ -155,7 +155,9 @@ tmp:
 
 #是否开启日志记录
 log:
-  enable: false
+  enable: true
+  #是否记录结果
+  record-param: false
 
 #限流
 rate-limit:
