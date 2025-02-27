@@ -62,7 +62,6 @@ public class AuthController {
         this.captchaProducer = captchaProducer;
     }
 
-    @SysLog(value = "用户登录", module = LogModuleEnum.AUTHORIZATION, type = LogTypeEnum.LOGIN)
     @PostMapping("/login")
     @Operation(summary = "登录")
     public R<LoginVo> authenticate(@RequestBody LoginRequest request) {
