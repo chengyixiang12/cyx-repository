@@ -13,14 +13,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @DateTime: 2024/11/28 17:23
  **/
 
-@Configuration
-@EnableWebMvc
-public class WebConfig implements WebMvcConfigurer {
-
-    @Bean
-    public DispatcherServletRegistrationBean dispatcherServletRegistration(DispatcherServlet dispatcherServlet) {
-        DispatcherServletRegistrationBean registration = new DispatcherServletRegistrationBean(dispatcherServlet, "/");
-        registration.setIgnoreRegistrationFailure(true); // 启用抛出 NoHandlerFoundException
-        return registration;
-    }
-}
+//@Configuration
+//@EnableWebMvc
+//public class WebConfig implements WebMvcConfigurer {
+//
+//    @Bean
+//    public DispatcherServletRegistrationBean dispatcherServletRegistration(DispatcherServlet dispatcherServlet) {
+//        DispatcherServletRegistrationBean registration = new DispatcherServletRegistrationBean(dispatcherServlet, "/");
+//        registration.setIgnoreRegistrationFailure(true); // 启用抛出 NoHandlerFoundException
+//        return registration;
+//    }
+//}
