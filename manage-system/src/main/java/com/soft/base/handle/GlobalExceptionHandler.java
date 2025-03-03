@@ -22,11 +22,6 @@ import java.io.IOException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<R<Object>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
-        return new ResponseEntity<>(R.fail("不存在的请求路径"), HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<R<Object>> methodNotSupportException(HttpRequestMethodNotSupportedException ex) {
         return new ResponseEntity<>(R.fail("不支持的请求方式"), HttpStatus.METHOD_NOT_ALLOWED);

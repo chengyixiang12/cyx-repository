@@ -132,6 +132,7 @@ permit:
     - /message/sendLoginCaptcha
     - /ws/**
     - /secretKey/getPublicKey
+    - /error
 
 #登录验证码
 manage-system:
@@ -156,7 +157,7 @@ tmp:
 #是否开启日志记录
 log:
   enable: true
-  #是否记录结果
+  #是否记录请求及响应数据
   record-param: false
 
 #限流

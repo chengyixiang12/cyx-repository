@@ -1,6 +1,5 @@
 package com.soft.base.conf;
 
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -18,9 +17,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 //public class WebConfig implements WebMvcConfigurer {
 //
 //    @Bean
-//    public DispatcherServletRegistrationBean dispatcherServletRegistration(DispatcherServlet dispatcherServlet) {
-//        DispatcherServletRegistrationBean registration = new DispatcherServletRegistrationBean(dispatcherServlet, "/");
-//        registration.setIgnoreRegistrationFailure(true); // 启用抛出 NoHandlerFoundException
+//    public DispatcherServlet dispatcherServletRegistration(DispatcherServlet dispatcherServlet) {
+//        dispatcherServlet.setThr
 //        return registration;
 //    }
 //}
