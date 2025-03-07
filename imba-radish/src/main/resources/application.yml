@@ -20,7 +20,7 @@ spring:
       max-request-size: 20MB
       file-size-threshold: 1MB
       location: E:/tmp
-      #location: /home/docker-build/manage-system/tmp
+      #location: /app/tmp
   datasource:
     username: root
     password: 123456
@@ -57,9 +57,9 @@ spring:
     host: smtp.qq.com
     port: 587
     #发送方邮箱
-    username:
+    username: chengyixiang157@qq.com
     #授权码
-    password:
+    password: hdqvdqscunfyideg
     properties:
       mail:
         smtp:
@@ -99,7 +99,7 @@ logging:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/develop.log
-    #name: /home/docker-build/manage-system/logs/develop.log
+    #name: /app/logs/develop.log
 
 knife4j:
   production: false
@@ -152,7 +152,7 @@ manage-system:
 #临时文件存储路径
 tmp:
   path: E:/tmp
-  #path: /home/docker-build/manage-system/tmp
+  #path: /app/tmp
 
 #是否开启日志记录
 log:
@@ -180,3 +180,4 @@ web-client:
 storage:
   big-file:
     location: D:/bigFile
+    #location: /app/bigFile

@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8db08bf5-4803-4001-8dd1-05f51c273c7c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/mysql_study.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/ManageSystemApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/annotation/SysLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/aspect/SysLogAspect.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/async/FilesTransferAsync.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/AsyncConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/CaptchaConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/Knife4jConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/MinioConfg.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/MybatisPlusAutoConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/MybatisPlusConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/RabbitMQConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/RedisConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/ThreadPoolConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/TransactionConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/WebClientConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/WebConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/conf/WebSocketConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/constants/BaseConstant.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/constants/HttpConstant.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/constants/RabbitmqConstant.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/constants/RedisConstant.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/constants/RegexConstant.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/constants/TokenConstant.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/constants/WebSocketConstant.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/AuthController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/MessageController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysDeptController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysDictDataController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysDictTypeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysFileController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysLogController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysMenuController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysPermissionController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysRoleController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysSecretKeyController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/controller/SysUserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/ExportDeptDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/FileDetailDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/FixRolesDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/GetUserDeptDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/GetUserDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/GetUserRoleDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/LogDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/SaveTmpFileDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/UserDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/UserEmailDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/dto/UserRoleDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysDept.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysDictData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysDictType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysLog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysMenu.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysPermission.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysRole.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysSecretKey.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysUser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/entity/SysUserRole.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/enums/LogLevelEnum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/enums/LogModuleEnum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/enums/LogTypeEnum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/enums/ResultEnum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/enums/SecretKeyEnum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/enums/WebSocketOrderEnum.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/CaptChaErrorException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/GlobalException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/InvalidLoginMethodException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/LocalCacheExpireException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/NotArrayException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/NotSupportTimeUnitException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/NullListException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/NumberRangeException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/RepeatSendCaptChaException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/exception/ServiceException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/filter/AuthorizationVerifyFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/filter/RateLimitFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/handle/AuthenticationHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/handle/CustomAccessDeniedHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/handle/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/handle/LogoutAfterSuccessHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysDeptMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysDictDataMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysDictTypeMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysFileMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysLogMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysMenuMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysPermissionMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysRoleMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysSecretKeyMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysUserRoleMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/mapper/SysUsersMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/permission/CustomPermissionService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/properties/AuthorizationIgnoreProperty.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/properties/RateLimitProperty.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/rabbitmq/consumer/CaptchaConsume.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/rabbitmq/consumer/SysLogConsume.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/rabbitmq/producer/CaptchaProduce.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/rabbitmq/producer/SysLogProduce.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/DeleteRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/DictDatasRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/EditDeptRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/EditDictDataRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/EditDictTypeRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/EditMenuRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/EditPasswordRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/EditRoleRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/EditUserRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/ExportDeptRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/FilesRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/GetRolesRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/LoginRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/LogsRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/PageRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/PermissionsRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/RegisterRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/ResetPasswordRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/ResetUsernameRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SaveDeptRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SaveDictDataRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SaveDictTypeRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SaveMenuRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SavePermissionRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SaveRoleRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SaveUserRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SendMessageRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SetMenusRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SetPermissionsRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/request/SetRoleForUserRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/resultapi/R.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/schedule/LocalCacheStorageTimer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/schedule/WebsocketSessionTimer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/AuthService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SecretKeyService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysDeptService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysDictDataService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysDictTypeService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysFileService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysLogService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysMenuService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysPermissionService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysRoleService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysUserRoleService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/SysUsersService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/AuthServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SecretKeyServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysDeptServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysDictDataServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysDictTypeServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysFileServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysLogServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysMenuServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysPermissionServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysRoleServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysUserRoleServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/SysUsersServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/service/impl/UsersDetailServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/AESUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/BeanUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/DateUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/HttpUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/JwtUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/LocalCacheUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/MinioUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/RSAUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/ResponseUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/SecurityUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/utils/UniversalUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/AllUserVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/DeptTreeVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/DeptUserVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/DeptVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/DictDataVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/DictDatasVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/DictTypeVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/DictTypesVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/FilesVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/GetUserVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/LoginVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/LogsVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/MenusVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/PageVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/PermissionsVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/PublicKeyVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/RegisterVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/SysRoleVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/UploadFileVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/vo/UserInfoVo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/WebSocketConcreteHolder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/WebSocketConcreteRegistry.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/WebSocketInterceptor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/WebSocketSessionManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/CustomWebSocketHandlerDecorator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/WebSocketHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/WebSocketConcreteHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/ForceOfflineHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/HeartbeatHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/PushMessageHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/filestransfer/FilesTransferHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/filetransfer/FileTransferContinueHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/filetransfer/FileTransferHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/filetransfer/FileTransferOverHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/handle/message/concrete/filetransfer/FileTransferStartHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/receive/FileTransferContinueRecParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/receive/FileTransferOverRecParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/receive/FileTransferStartRecParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/receive/FilesTransferRecParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/receive/ForceOfflineRecParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/receive/OrderReceiveParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/receive/PushMessageRecParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/send/FileTransferContinueSendParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/send/FileTransferStartSendParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/send/ForceOfflineSendParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/send/PushMessageSendParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/soft/base/websocket/send/SendParams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/logback-spring.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysDeptMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysDictDataMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysDictTypeMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysFileMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysLogMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysMenuMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysPermissionMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysRoleMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysSecretKeyMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysUserRoleMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/mapper/SysUsersMapper.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/template/emailcontent.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/template/exportDept.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/soft/base/file/FileTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/soft/base/redis/RedisTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/soft/base/utils/AESUtilTest.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="for-update" />
+                    <option name="lastUsedInstant" value="1739178042" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1739178041" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$/.." />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="E:\repository" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../apache-maven-3.9.9" />
+        <option name="userSettingsFile" value="E:\apache-maven-3.9.9\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2ssJa06zrpbIKR0c6062VdfPFF4" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="false" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "for-update",
+    "last_opened_file_path": "E:/java/cyx-repository/manage-system/src/main/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "MavenSettings"
+  }
+}]]></component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\java\cyx-repository\manage-system\src\main\resources" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="ManageSystemApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="imba-radish" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.soft.ManageSystemApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.soft.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.ManageSystemApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
