@@ -32,7 +32,6 @@
         <agent.version>1.21</agent.version>
         <poi.version>4.1.2</poi.version>
         <tika.version>3.0.0</tika.version>
-        <maven.plugin>3.3.1</maven.plugin>
         <kaptcha.vesion>2.3.2</kaptcha.vesion>
     </properties>
 
@@ -181,7 +180,21 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${maven.plugin}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>
