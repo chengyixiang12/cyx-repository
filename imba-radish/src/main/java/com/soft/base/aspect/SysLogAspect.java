@@ -55,8 +55,6 @@ public class SysLogAspect {
 
     private final SecurityUtil securityUtil;
 
-    private final SpelExpressionParser parser = new SpelExpressionParser();
-
     @Autowired
     public SysLogAspect(SysLogProduce sysLogProduce, HttpServletRequest servletRequest, SecurityUtil securityUtil) {
         this.sysLogProduce = sysLogProduce;
