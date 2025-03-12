@@ -7,7 +7,7 @@ import com.soft.base.vo.LoginVo;
 
 public interface AuthService {
 
-    void register(SysUser sysUser) throws GlobalException;
+    void register(SysUser sysUser);
 
     LoginVo authenticate(LoginRequest request) throws Exception;
 }

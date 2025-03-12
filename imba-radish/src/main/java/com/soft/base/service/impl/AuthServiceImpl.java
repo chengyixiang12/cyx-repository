@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void register(SysUser sysUser) throws GlobalException {
+    public void register(SysUser sysUser) {
         try {
             if (sysUsersService.exists(Wrappers.lambdaQuery(SysUser.class)
                     .eq(SysUser::getUsername, sysUser.getUsername()))) {
