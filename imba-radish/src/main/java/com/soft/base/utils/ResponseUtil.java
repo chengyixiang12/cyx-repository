@@ -26,8 +26,7 @@ public class ResponseUtil {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         try (PrintWriter writer = response.getWriter()) {
-            String jsonResponse = JSONUtil.toJsonStr(result);
-            writer.print(jsonResponse);
+            writer.print(JSONUtil.toJsonStr(result));
             writer.flush(); // 确保将响应内容写入到输出流
         } catch (IOException e) {
             log.error("响应异常处理失败", e);
