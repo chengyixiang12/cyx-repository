@@ -1,9 +1,13 @@
 package com.soft.base.utils;
 
+import com.soft.base.exception.GlobalException;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * @Author: cyx
@@ -25,6 +29,8 @@ public class DateUtil {
     private final static String FOURTEEN_BIT_NUMBER = "yyyyMMddHHmmss";
 
     private final static String FOURTEEN_BIT_SLASH = "yyyy/MM/dd HH:mm:ss";
+
+    private static final String REGEX = "^\\d+$";
 
     /**
      * 生成14位横线日期
@@ -72,5 +78,122 @@ public class DateUtil {
      */
     public String date8Slash() {
         return new SimpleDateFormat(EIGHT_BIT_SLASH).format(new Date());
+    }
+
+    /**
+     * 解析字符串格式日期
+     * @param dateStr
+     * @return
+     * @throws GlobalException
+     */
+    public LocalDateTime parse(String dateStr) throws GlobalException {
+        String tmp;
+        String[] dateArr;
+        String[] dateTimeArr = dateStr.trim().split(" ");
+        Calendar calendar = Calendar.getInstance();
+        switch (dateTimeArr.length) {
+            case 2: {
+                // 时分秒
+                String date = dateTimeArr[1];
+                dateArr = date.split(":");
+                switch (dateArr.length) {
+                    case 3: {
+                        // 秒
+                        tmp = dateArr[2];
+                        if (!Pattern.matches(REGEX, tmp)) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        int second = Integer.parseInt(tmp);
+                        if (0 > second || 60 < second) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        calendar.set(Calendar.SECOND, second);
+                    }
+                    case 2: {
+                        // 分
+                        tmp = dateArr[1];
+                        if (!Pattern.matches(REGEX, tmp)) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        int minutes = Integer.parseInt(tmp);
+                        if (0 > minutes || 60 < minutes) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        calendar.set(Calendar.MINUTE, minutes);
+                    }
+                    case 1: {
+                        // 时
+                        tmp = dateArr[0];
+                        if (!Pattern.matches(REGEX, tmp)) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        int minutes = Integer.parseInt(tmp);
+                        if (0 > minutes || 12 < minutes) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        calendar.set(Calendar.HOUR_OF_DAY, minutes);
+                        break;
+                    }
+                    default: {
+                        throw new GlobalException("非法时间格式");
+                    }
+                }
+            }
+            case 1: {
+                // 年月日
+                String date = dateTimeArr[0];
+                dateArr = date.split("-");
+                switch (dateArr.length) {
+                    case 3: {
+                        // 日
+                        tmp = dateArr[2];
+
+                        if (!Pattern.matches(REGEX, tmp)) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        int month = Integer.parseInt(tmp);
+                        if (0 >= month || 31 < month) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(tmp));
+                    }
+                    case 2: {
+                        // 月
+                        tmp = dateArr[1];
+                        if (!Pattern.matches(REGEX, tmp)) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        int month = Integer.parseInt(tmp);
+                        if (0 >= month || 12 < month) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        calendar.set(Calendar.MONTH, month - 1);
+                    }
+                    case 1: {
+                        // 年
+                        tmp = dateArr[0];
+                        if (!Pattern.matches(REGEX, tmp)) {
+                            throw new GlobalException("非法时间格式");
+                        }
+                        calendar.set(Calendar.YEAR, Integer.parseInt(dateArr[0]));
+                        break;
+                    }
+                    default: {
+                        throw new GlobalException("非法时间格式");
+                    }
+                }
+                break;
+            }
+            default: {
+                throw new GlobalException("非法时间格式");
+            }
+        }
+        return LocalDateTime.of(
+                calendar.get(Calendar.YEAR),
+                Calendar.MONTH,
+                Calendar.DAY_OF_MONTH,
+                Calendar.HOUR_OF_DAY,
+                Calendar.MINUTE,
+                Calendar.SECOND);
     }
 }
