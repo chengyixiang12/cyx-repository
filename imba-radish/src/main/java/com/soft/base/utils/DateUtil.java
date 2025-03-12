@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -90,7 +91,12 @@ public class DateUtil {
         String tmp;
         String[] dateArr;
         String[] dateTimeArr = dateStr.trim().split(" ");
-        Calendar calendar = Calendar.getInstance();
+        int year = 1;
+        int month = 1;
+        int day = 1;
+        int hour = 0;
+        int minute = 0;
+        int second = 0;
         switch (dateTimeArr.length) {
             case 2: {
                 // 时分秒
@@ -103,11 +109,10 @@ public class DateUtil {
                         if (!Pattern.matches(REGEX, tmp)) {
                             throw new GlobalException("非法时间格式");
                         }
-                        int second = Integer.parseInt(tmp);
+                        second = Integer.parseInt(tmp);
                         if (0 > second || 60 < second) {
                             throw new GlobalException("非法时间格式");
                         }
-                        calendar.set(Calendar.SECOND, second);
                     }
                     case 2: {
                         // 分
@@ -115,11 +120,10 @@ public class DateUtil {
                         if (!Pattern.matches(REGEX, tmp)) {
                             throw new GlobalException("非法时间格式");
                         }
-                        int minutes = Integer.parseInt(tmp);
-                        if (0 > minutes || 60 < minutes) {
+                        minute = Integer.parseInt(tmp);
+                        if (0 > minute || 60 < minute) {
                             throw new GlobalException("非法时间格式");
                         }
-                        calendar.set(Calendar.MINUTE, minutes);
                     }
                     case 1: {
                         // 时
@@ -127,11 +131,10 @@ public class DateUtil {
                         if (!Pattern.matches(REGEX, tmp)) {
                             throw new GlobalException("非法时间格式");
                         }
-                        int minutes = Integer.parseInt(tmp);
-                        if (0 > minutes || 12 < minutes) {
+                        hour = Integer.parseInt(tmp);
+                        if (0 > hour || 12 < hour) {
                             throw new GlobalException("非法时间格式");
                         }
-                        calendar.set(Calendar.HOUR_OF_DAY, minutes);
                         break;
                     }
                     default: {
@@ -147,15 +150,13 @@ public class DateUtil {
                     case 3: {
                         // 日
                         tmp = dateArr[2];
-
                         if (!Pattern.matches(REGEX, tmp)) {
                             throw new GlobalException("非法时间格式");
                         }
-                        int month = Integer.parseInt(tmp);
-                        if (0 >= month || 31 < month) {
+                        day = Integer.parseInt(tmp);
+                        if (0 >= day || 31 < day) {
                             throw new GlobalException("非法时间格式");
-                        }
-                        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(tmp));
+                        };
                     }
                     case 2: {
                         // 月
@@ -163,11 +164,10 @@ public class DateUtil {
                         if (!Pattern.matches(REGEX, tmp)) {
                             throw new GlobalException("非法时间格式");
                         }
-                        int month = Integer.parseInt(tmp);
+                        month = Integer.parseInt(tmp);
                         if (0 >= month || 12 < month) {
                             throw new GlobalException("非法时间格式");
                         }
-                        calendar.set(Calendar.MONTH, month - 1);
                     }
                     case 1: {
                         // 年
@@ -175,7 +175,7 @@ public class DateUtil {
                         if (!Pattern.matches(REGEX, tmp)) {
                             throw new GlobalException("非法时间格式");
                         }
-                        calendar.set(Calendar.YEAR, Integer.parseInt(dateArr[0]));
+                        year = Integer.parseInt(tmp);
                         break;
                     }
                     default: {
@@ -188,12 +188,6 @@ public class DateUtil {
                 throw new GlobalException("非法时间格式");
             }
         }
-        return LocalDateTime.of(
-                calendar.get(Calendar.YEAR),
-                Calendar.MONTH,
-                Calendar.DAY_OF_MONTH,
-                Calendar.HOUR_OF_DAY,
-                Calendar.MINUTE,
-                Calendar.SECOND);
+        return LocalDateTime.of(year, month, day, hour, minute, second);
     }
 }
