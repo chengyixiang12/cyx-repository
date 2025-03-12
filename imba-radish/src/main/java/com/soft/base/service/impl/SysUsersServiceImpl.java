@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.base.constants.RedisConstant;
 import com.soft.base.dto.GetUserDeptDto;
 import com.soft.base.dto.GetUserDto;
 import com.soft.base.dto.GetUserRoleDto;
@@ -70,8 +69,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final SysUserRoleService sysUserRoleService;
 
-    private final RedisTemplate<String, Object> redisTemplate;
-
     @Autowired
     public SysUsersServiceImpl(SysUsersMapper sysUsersMapper,
                                PasswordEncoder passwordEncoder,
@@ -79,8 +76,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
                                SecretKeyService secretKeyService,
                                SysDeptService sysDeptService,
                                SysRoleService sysRoleService,
-                               SysUserRoleService sysUserRoleService,
-                               RedisTemplate<String, Object> redisTemplate) {
+                               SysUserRoleService sysUserRoleService) {
         this.sysUsersMapper = sysUsersMapper;
         this.passwordEncoder = passwordEncoder;
         this.rsaUtil = rsaUtil;
@@ -88,7 +84,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         this.sysDeptService = sysDeptService;
         this.sysRoleService = sysRoleService;
         this.sysUserRoleService = sysUserRoleService;
-        this.redisTemplate = redisTemplate;
     }
 
     @Override

@@ -1,14 +1,11 @@
 package com.soft.base.controller;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.entity.SysUser;
-import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.enums.LogTypeEnum;
 import com.soft.base.exception.CaptChaErrorException;
 import com.soft.base.exception.InvalidLoginMethodException;
 import com.soft.base.request.LoginRequest;
