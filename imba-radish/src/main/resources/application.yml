@@ -24,7 +24,7 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://192.168.226.130:3306/mysql_study?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://192.168.226.130:3306/radish_master?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       # 连接池最大连接数
@@ -91,6 +91,7 @@ mybatis-plus:
       logic-delete-field: delFlag
   type-aliases-package: com.soft.base.entity, com.soft.base.request, com.soft.base.vo, com.soft.base.dto
 
+#日志
 logging:
   level:
     root: info
@@ -101,6 +102,22 @@ logging:
     name: logs/develop.log
     #name: /app/logs/develop.log
 
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    #标签排序
+    tags-sorter: alpha
+    #接口排序
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'system'
+      paths-to-match: '/**'
+      packages-to-scan: com.soft.base.controller
+
+# knife4j的增强配置
 knife4j:
   production: false
   enable: true
