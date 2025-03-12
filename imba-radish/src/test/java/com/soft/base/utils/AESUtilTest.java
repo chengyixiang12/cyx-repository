@@ -1,6 +1,6 @@
 package com.soft.base.utils;
 
-import com.soft.ManageSystemApplication;
+import com.soft.ImbaRadishApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.Base64;
  * @DateTime: 2024/11/4 22:50
  **/
 
-@SpringBootTest(classes = ManageSystemApplication.class)
+@SpringBootTest(classes = ImbaRadishApplication.class)
 @Slf4j
 public class AESUtilTest {
 

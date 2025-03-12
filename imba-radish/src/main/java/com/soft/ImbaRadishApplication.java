@@ -10,9 +10,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan({"com.soft.cyx.mapper","com.soft.base.mapper"})
 @EnableCaching
 @EnableScheduling
-public class ManageSystemApplication {
+public class ImbaRadishApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ManageSystemApplication.class, args);
+        SpringApplication.run(ImbaRadishApplication.class, args);
     }
 }
