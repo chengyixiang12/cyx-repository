@@ -50,7 +50,7 @@ public class BaseConstant {
     /**
      * 空白符
      */
-    public final static String BLANK_CHARACTER = "";
+    public final static String BLANK_CHARACTER = " ";
 
     /**
      * 分片大小
@@ -80,6 +80,7 @@ public class BaseConstant {
     /**
      * aes偏移量
      */
+    @Deprecated
     public final static String AES_OFFSET = "0000000001000001";
 
     /**
