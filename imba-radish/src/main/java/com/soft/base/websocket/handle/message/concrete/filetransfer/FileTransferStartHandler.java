@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
-import com.soft.base.dto.UserDto;
+import com.soft.base.model.dto.UserDto;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.utils.UniversalUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;

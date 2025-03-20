@@ -2,11 +2,11 @@ package com.soft.base.controller;
 
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.request.EditMenuRequest;
-import com.soft.base.request.SaveMenuRequest;
+import com.soft.base.model.request.EditMenuRequest;
+import com.soft.base.model.request.SaveMenuRequest;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysMenuService;
-import com.soft.base.vo.MenusVo;
+import com.soft.base.model.vo.MenusVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

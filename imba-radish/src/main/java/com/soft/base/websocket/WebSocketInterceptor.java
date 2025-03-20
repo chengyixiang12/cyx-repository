@@ -2,7 +2,7 @@ package com.soft.base.websocket;
 
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
-import com.soft.base.dto.UserDto;
+import com.soft.base.model.dto.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;

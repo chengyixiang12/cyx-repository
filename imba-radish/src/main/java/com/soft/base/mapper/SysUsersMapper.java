@@ -3,11 +3,11 @@ package com.soft.base.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.soft.base.dto.GetUserDto;
-import com.soft.base.dto.UserEmailDto;
+import com.soft.base.model.dto.GetUserDto;
+import com.soft.base.model.dto.UserEmailDto;
 import com.soft.base.entity.SysUser;
-import com.soft.base.vo.AllUserVo;
-import com.soft.base.vo.DeptUserVo;
+import com.soft.base.model.vo.AllUserVo;
+import com.soft.base.model.vo.DeptUserVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.soft.base.utils;
 
-import com.soft.base.dto.UserDto;
+import com.soft.base.model.dto.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

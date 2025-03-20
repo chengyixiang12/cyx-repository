@@ -4,7 +4,7 @@ import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SecretKeyService;
-import com.soft.base.vo.PublicKeyVo;
+import com.soft.base.model.vo.PublicKeyVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;

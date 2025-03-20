@@ -2,7 +2,7 @@ package com.soft.base.rabbitmq.consumer;
 
 import com.rabbitmq.client.Channel;
 import com.soft.base.constants.RabbitmqConstant;
-import com.soft.base.dto.LogDto;
+import com.soft.base.model.dto.LogDto;
 import com.soft.base.service.SysLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;

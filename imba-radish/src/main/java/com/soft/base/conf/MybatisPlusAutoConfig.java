@@ -3,7 +3,7 @@ package com.soft.base.conf;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.dto.UserDto;
+import com.soft.base.model.dto.UserDto;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;

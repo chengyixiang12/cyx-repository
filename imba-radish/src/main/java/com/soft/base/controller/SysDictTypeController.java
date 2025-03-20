@@ -2,13 +2,13 @@ package com.soft.base.controller;
 
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.request.DeleteRequest;
-import com.soft.base.request.EditDictTypeRequest;
-import com.soft.base.request.SaveDictTypeRequest;
+import com.soft.base.model.request.DeleteRequest;
+import com.soft.base.model.request.EditDictTypeRequest;
+import com.soft.base.model.request.SaveDictTypeRequest;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDictTypeService;
-import com.soft.base.vo.DictTypeVo;
-import com.soft.base.vo.DictTypesVo;
+import com.soft.base.model.vo.DictTypeVo;
+import com.soft.base.model.vo.DictTypesVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

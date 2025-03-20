@@ -6,11 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysPermission;
 import com.soft.base.mapper.SysPermissionMapper;
-import com.soft.base.request.PermissionsRequest;
-import com.soft.base.request.SavePermissionRequest;
+import com.soft.base.model.request.PermissionsRequest;
+import com.soft.base.model.request.SavePermissionRequest;
 import com.soft.base.service.SysPermissionService;
-import com.soft.base.vo.PageVo;
-import com.soft.base.vo.PermissionsVo;
+import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PermissionsVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 

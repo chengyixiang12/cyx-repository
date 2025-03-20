@@ -4,11 +4,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysDictType;
 import com.soft.base.mapper.SysDictTypeMapper;
-import com.soft.base.request.EditDictTypeRequest;
-import com.soft.base.request.SaveDictTypeRequest;
+import com.soft.base.model.request.EditDictTypeRequest;
+import com.soft.base.model.request.SaveDictTypeRequest;
 import com.soft.base.service.SysDictTypeService;
-import com.soft.base.vo.DictTypeVo;
-import com.soft.base.vo.DictTypesVo;
+import com.soft.base.model.vo.DictTypeVo;
+import com.soft.base.model.vo.DictTypesVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 

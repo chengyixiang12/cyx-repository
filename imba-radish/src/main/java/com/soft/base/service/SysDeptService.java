@@ -1,15 +1,15 @@
 package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.soft.base.dto.ExportDeptDto;
-import com.soft.base.dto.GetUserDeptDto;
+import com.soft.base.model.dto.ExportDeptDto;
+import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
-import com.soft.base.request.DeleteRequest;
-import com.soft.base.request.EditDeptRequest;
-import com.soft.base.request.ExportDeptRequest;
-import com.soft.base.request.SaveDeptRequest;
-import com.soft.base.vo.DeptTreeVo;
-import com.soft.base.vo.DeptVo;
+import com.soft.base.model.request.DeleteRequest;
+import com.soft.base.model.request.EditDeptRequest;
+import com.soft.base.model.request.ExportDeptRequest;
+import com.soft.base.model.request.SaveDeptRequest;
+import com.soft.base.model.vo.DeptTreeVo;
+import com.soft.base.model.vo.DeptVo;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package com.soft.base.websocket.handle;
 
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
-import com.soft.base.dto.UserDto;
+import com.soft.base.model.dto.UserDto;
 import com.soft.base.websocket.WebSocketSessionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -50,4 +50,6 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         WebSocketSessionManager.removeSession(userDto.getId());
         log.info("{} connect closed...", userDto.getUsername());
     }
+
+
 }

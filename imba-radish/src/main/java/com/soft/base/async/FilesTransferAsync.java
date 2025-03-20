@@ -1,7 +1,7 @@
 package com.soft.base.async;
 
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.dto.SaveTmpFileDto;
+import com.soft.base.model.dto.SaveTmpFileDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;

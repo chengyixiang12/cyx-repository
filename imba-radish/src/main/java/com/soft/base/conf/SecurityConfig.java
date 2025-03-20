@@ -68,10 +68,18 @@ public class SecurityConfig {
         this.rateLimitProperty = rateLimitProperty;
     }
 
+    /**
+     * 获取鉴权过滤器实例
+     * @return
+     */
     private AuthorizationVerifyFilter getAuthorizationVerifyFilter() {
         return new AuthorizationVerifyFilter(userDetailsService,redisTemplate);
     }
 
+    /**
+     * 获取限流过滤器实例
+     * @return
+     */
     private RateLimitFilter getRateLimitFilter() {
         return new RateLimitFilter(redisTemplate, rateLimitProperty);
     }

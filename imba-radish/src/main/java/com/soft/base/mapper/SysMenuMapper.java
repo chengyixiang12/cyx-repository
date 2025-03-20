@@ -2,7 +2,7 @@ package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soft.base.entity.SysMenu;
-import com.soft.base.vo.MenusVo;
+import com.soft.base.model.vo.MenusVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

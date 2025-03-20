@@ -3,10 +3,10 @@ package com.soft.base.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysDictData;
-import com.soft.base.request.DeleteRequest;
-import com.soft.base.request.DictDatasRequest;
-import com.soft.base.vo.DictDataVo;
-import com.soft.base.vo.DictDatasVo;
+import com.soft.base.model.request.DeleteRequest;
+import com.soft.base.model.request.DictDatasRequest;
+import com.soft.base.model.vo.DictDataVo;
+import com.soft.base.model.vo.DictDatasVo;
 import org.apache.ibatis.annotations.Param;
 
 /**

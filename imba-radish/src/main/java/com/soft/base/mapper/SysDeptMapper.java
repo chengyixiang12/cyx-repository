@@ -1,12 +1,12 @@
 package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.soft.base.dto.ExportDeptDto;
-import com.soft.base.dto.GetUserDeptDto;
+import com.soft.base.model.dto.ExportDeptDto;
+import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
-import com.soft.base.request.DeleteRequest;
-import com.soft.base.vo.DeptTreeVo;
-import com.soft.base.vo.DeptVo;
+import com.soft.base.model.request.DeleteRequest;
+import com.soft.base.model.vo.DeptTreeVo;
+import com.soft.base.model.vo.DeptVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

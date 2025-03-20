@@ -3,7 +3,7 @@ package com.soft.base.filter;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.TokenConstant;
-import com.soft.base.dto.UserDto;
+import com.soft.base.model.dto.UserDto;
 import com.soft.base.enums.ResultEnum;
 import com.soft.base.resultapi.R;
 import com.soft.base.utils.ResponseUtil;

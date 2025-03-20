@@ -2,7 +2,7 @@ package com.soft.base.rabbitmq.producer;
 
 import com.soft.base.constants.RabbitmqConstant;
 import com.soft.base.constants.RedisConstant;
-import com.soft.base.dto.LogDto;
+import com.soft.base.model.dto.LogDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

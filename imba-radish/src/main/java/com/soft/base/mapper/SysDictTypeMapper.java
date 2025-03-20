@@ -2,8 +2,8 @@ package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soft.base.entity.SysDictType;
-import com.soft.base.vo.DictTypeVo;
-import com.soft.base.vo.DictTypesVo;
+import com.soft.base.model.vo.DictTypeVo;
+import com.soft.base.model.vo.DictTypesVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

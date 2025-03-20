@@ -2,10 +2,10 @@ package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysDictType;
-import com.soft.base.request.EditDictTypeRequest;
-import com.soft.base.request.SaveDictTypeRequest;
-import com.soft.base.vo.DictTypeVo;
-import com.soft.base.vo.DictTypesVo;
+import com.soft.base.model.request.EditDictTypeRequest;
+import com.soft.base.model.request.SaveDictTypeRequest;
+import com.soft.base.model.vo.DictTypeVo;
+import com.soft.base.model.vo.DictTypesVo;
 
 import java.util.List;
 

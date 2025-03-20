@@ -1,15 +1,15 @@
 package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.soft.base.dto.FixRolesDto;
-import com.soft.base.dto.GetUserRoleDto;
+import com.soft.base.model.dto.FixRolesDto;
+import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.entity.SysRole;
-import com.soft.base.request.DeleteRequest;
-import com.soft.base.request.GetRolesRequest;
-import com.soft.base.request.SetMenusRequest;
-import com.soft.base.request.SetPermissionsRequest;
-import com.soft.base.vo.PageVo;
-import com.soft.base.vo.SysRoleVo;
+import com.soft.base.model.request.DeleteRequest;
+import com.soft.base.model.request.GetRolesRequest;
+import com.soft.base.model.request.SetMenusRequest;
+import com.soft.base.model.request.SetPermissionsRequest;
+import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.SysRoleVo;
 
 import java.util.List;
 

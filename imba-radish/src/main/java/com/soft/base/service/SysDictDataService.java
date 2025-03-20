@@ -2,13 +2,13 @@ package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysDictData;
-import com.soft.base.request.DeleteRequest;
-import com.soft.base.request.DictDatasRequest;
-import com.soft.base.request.EditDictDataRequest;
-import com.soft.base.request.SaveDictDataRequest;
-import com.soft.base.vo.DictDataVo;
-import com.soft.base.vo.DictDatasVo;
-import com.soft.base.vo.PageVo;
+import com.soft.base.model.request.DeleteRequest;
+import com.soft.base.model.request.DictDatasRequest;
+import com.soft.base.model.request.EditDictDataRequest;
+import com.soft.base.model.request.SaveDictDataRequest;
+import com.soft.base.model.vo.DictDataVo;
+import com.soft.base.model.vo.DictDatasVo;
+import com.soft.base.model.vo.PageVo;
 
 /**
 * @author cyq

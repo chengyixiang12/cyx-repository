@@ -9,7 +9,7 @@ import java.util.Properties;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 图形验证码配置
  * @DateTime: 2025/2/11 11:31
  **/
 
