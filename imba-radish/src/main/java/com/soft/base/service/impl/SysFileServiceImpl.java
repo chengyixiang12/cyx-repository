@@ -4,22 +4,26 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.dto.FileDetailDto;
+import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
-import com.soft.base.request.FilesRequest;
+import com.soft.base.model.request.FilesRequest;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.UniversalUtil;
-import com.soft.base.vo.FilesVo;
-import com.soft.base.vo.PageVo;
-import com.soft.base.vo.UploadFileVo;
+import com.soft.base.model.vo.FilesVo;
+import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.UploadFileVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigInteger;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 
 /**
 * @author cyq
@@ -51,6 +55,17 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             if (StringUtils.isBlank(originalFilename)) {
                 throw new GlobalException("文件名不能为空");
             }
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-265");
+            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
+                byte[] buffer = new byte[8192];
+                while (dis.read(buffer) != -1) {
+                    // 读取流数据，自动计算 Hash
+                }
+            }
+            byte[] hashBytes = digest.digest();
+            String hashCode = new BigInteger(1, hashBytes).toString(16);
+
             long fileSize = multipartFile.getSize();
             String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
 

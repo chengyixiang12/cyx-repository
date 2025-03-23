@@ -50,9 +50,25 @@ spring:
     redis:
       host: 192.168.226.130
       port: 6379
+      # 密码，未配置密码可不填
       password: 123456
+      # 数据源
       database: 15
+      # 连接超时（单位：毫秒）
       connect-timeout: 2000
+      # 响应超时（单位毫秒）
+      timeout: 5000
+      # redis连接池
+      lettuce:
+        pool:
+          # 连接池中的最大连接数
+          max-active: 10
+          # 最大空闲连接数
+          max-idle: 8
+          # 最小空闲连接数
+          min-idle: 2
+          # 连接池获取连接的最大等待时间（单位：毫秒）
+          max-wait: 5000
   mail:
     host: smtp.qq.com
     port: 587
@@ -89,7 +105,7 @@ mybatis-plus:
       logic-delete-value: 0
       logic-not-delete-value: 1
       logic-delete-field: delFlag
-  type-aliases-package: com.soft.base.entity, com.soft.base.request, com.soft.base.vo, com.soft.base.dto
+  type-aliases-package: com.soft.base.model.entity, com.soft.base.model.request, com.soft.base.model.vo, com.soft.base.model.dto
 
 #日志
 logging:
