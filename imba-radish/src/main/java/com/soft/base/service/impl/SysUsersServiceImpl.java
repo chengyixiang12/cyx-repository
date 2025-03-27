@@ -255,13 +255,18 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         try {
             SysUser sysUser = new SysUser();
             sysUser.setId(request.getId());
-            sysUser.setUsername(request.getNewUsername());
+            sysUser.setUsername(request.getUsername());
             sysUsersMapper.updateById(sysUser);
 
             sendWebsocket(request.getId());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean existsUsername(String newUsername) {
+        return sysUsersMapper.exists(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getUsername, newUsername));
     }
 
     /**

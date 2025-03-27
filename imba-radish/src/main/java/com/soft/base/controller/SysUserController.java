@@ -240,11 +240,14 @@ public class SysUserController {
         if (request.getId() == null) {
             return R.fail("主键不能为空");
         }
-        if (StringUtils.isBlank(request.getNewUsername())) {
-            return R.fail("新用户名不能为空");
+        if (StringUtils.isBlank(request.getUsername())) {
+            return R.fail("用户名不能为空");
         }
-        if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getNewUsername())) {
+        if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
+        }
+        if (sysUsersService.existsUsername(request.getUsername())) {
+            return R.fail("用户名重复");
         }
         try {
             sysUsersService.resetUsername(request);

@@ -16,9 +16,6 @@ public class ResetUsernameRequest {
     @Schema(description = "用户主键")
     private Long id;
 
-    @Schema(description = "旧用户名")
-    private String oldUsername;
-
-    @Schema(description = "新用户名")
-    private String newUsername;
+    @Schema(description = "用户名")
+    private String username;
 }

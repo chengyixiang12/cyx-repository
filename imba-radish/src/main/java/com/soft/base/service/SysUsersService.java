@@ -36,4 +36,6 @@ public interface SysUsersService extends IService<SysUser> {
     void unlockUser(String username);
 
     void resetUsername(ResetUsernameRequest request);
+
+    boolean existsUsername(String newUsername);
 }
