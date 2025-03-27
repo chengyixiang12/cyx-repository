@@ -77,11 +77,13 @@ public class SysLogAspect {
                 if (recordParam) {
                     logDto.setRequestParams(JSON.toJSONString(exclude(joinPoint)));
                     logDto.setResponseResult(result != null ? result.toString() : null);
-                    if (result != null) {
-                        @SuppressWarnings("unchecked")
-                        Integer code = ((R<Object>) result).getCode();
-                        logDto.setStatusCode(code);
-                    }
+                }
+
+                // 记录接口响应代码
+                if (result != null) {
+                    @SuppressWarnings("unchecked")
+                    Integer code = ((R<Object>) result).getCode();
+                    logDto.setStatusCode(code);
                 }
 
                 // 获取 User-Agent
