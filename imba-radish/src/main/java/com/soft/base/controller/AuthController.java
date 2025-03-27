@@ -13,6 +13,7 @@ import com.soft.base.model.request.RegisterRequest;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.AuthService;
 import com.soft.base.model.vo.LoginVo;
+import com.soft.base.service.SysUsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -50,13 +51,17 @@ public class AuthController {
 
     private final DefaultKaptcha captchaProducer;
 
+    private final SysUsersService sysUsersService;
+
     @Autowired
     public AuthController(AuthService authService,
                           RedisTemplate<String, Object> redisTemplate,
-                          DefaultKaptcha captchaProducer) {
+                          DefaultKaptcha captchaProducer,
+                          SysUsersService sysUsersService) {
         this.authService = authService;
         this.redisTemplate = redisTemplate;
         this.captchaProducer = captchaProducer;
+        this.sysUsersService = sysUsersService;
     }
 
     @PostMapping("/login")
@@ -116,6 +121,9 @@ public class AuthController {
         }
         if (!Pattern.matches(RegexConstant.EMAIL, request.getEmail())) {
             return R.fail("非法邮箱");
+        }
+        if (sysUsersService.existsEmail(request.getEmail())) {
+            return R.fail("邮箱已注册");
         }
         if (StringUtils.isBlank(request.getCaptcha())) {
             return R.fail("验证码不能为空");

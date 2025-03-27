@@ -138,6 +138,9 @@ public class SysUserController {
         if (StringUtils.isBlank(request.getEmail())) {
             return R.fail("邮箱不能为空");
         }
+        if (sysUsersService.existsEmail(request.getEmail())) {
+            return R.fail("邮箱已注册");
+        }
         try {
             sysUsersService.saveUser(request);
             return R.ok();
@@ -160,6 +163,9 @@ public class SysUserController {
         }
         if (StringUtils.isBlank(request.getEmail())) {
             return R.fail("邮箱不能为空");
+        }
+        if (sysUsersService.existsEmail(request.getId(), request.getEmail())) {
+            return R.fail("邮箱已注册");
         }
         try {
             sysUsersService.editUser(request);

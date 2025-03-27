@@ -38,4 +38,8 @@ public interface SysUsersService extends IService<SysUser> {
     void resetUsername(ResetUsernameRequest request);
 
     boolean existsUsername(String newUsername);
+
+    boolean existsEmail(String email);
+
+    boolean existsEmail(Long id, String email);
 }

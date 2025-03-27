@@ -143,4 +143,14 @@
         su.del_flag = '1'
         AND su.`id` = #{id}
     </select>
+    <select id="existsEmail" resultType="java.lang.Long">
+        SELECT
+        COUNT( * )
+        FROM
+        `sys_user` su
+        WHERE
+        su.del_flag = '1'
+        AND su.`id` <![CDATA[<>]]> #{id}
+        AND su.email = #{email}
+    </select>
 </mapper>

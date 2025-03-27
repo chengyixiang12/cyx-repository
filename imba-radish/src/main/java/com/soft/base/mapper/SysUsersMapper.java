@@ -36,6 +36,9 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
     void unlockUser(@Param("username") String username);
 
     String getUsernameById(@Param("id") Long id);
+
+    Long existsEmail(@Param("id") Long id,
+                        @Param("email") String email);
 }
 
 

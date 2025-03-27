@@ -269,6 +269,16 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         return sysUsersMapper.exists(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getUsername, newUsername));
     }
 
+    @Override
+    public boolean existsEmail(String email) {
+        return sysUsersMapper.exists(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getEmail, email));
+    }
+
+    @Override
+    public boolean existsEmail(Long id, String email) {
+        return sysUsersMapper.existsEmail(id, email) > 0;
+    }
+
     /**
      * 调用websocket发送强制下线消息
      * @param id
