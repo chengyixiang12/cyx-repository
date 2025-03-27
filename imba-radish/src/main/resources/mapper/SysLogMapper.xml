@@ -37,14 +37,19 @@
     <select id="getLogs" parameterType="LogsRequest" resultType="LogsVo">
         SELECT
         sl.id,
+        su.nickname,
         sl.module_name AS "moduleName",
         sl.request_method AS "requestMethod",
         sl.status_code AS "statusCode",
-        sl.execution_time AS "executionTime"
+        sl.execution_time AS "executionTime",
+        sl.operation_desc AS "operationDesc"
         FROM
         sys_log sl
+        join sys_user su
+        on sl.create_by = su.id
         WHERE
         sl.del_flag = '1'
+        AND su.del_flag = '1'
         <if test="request.requestMethod != null and request.requestMethod != ''">
             AND sl.request_method = #{request.requestMethod}
         </if>

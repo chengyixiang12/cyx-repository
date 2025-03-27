@@ -16,6 +16,9 @@ public class LogsVo {
     @Schema(description = "主键")
     private Long id;
 
+    @Schema(description = "创建人")
+    private String nickname;
+
     @Schema(description = "模块名称")
     private String moduleName;
 
@@ -27,4 +30,7 @@ public class LogsVo {
 
     @Schema(description = "耗时")
     private Long executionTime;
+
+    @Schema(description = "操作描述")
+    private String operationDesc;
 }
