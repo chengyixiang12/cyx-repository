@@ -45,8 +45,8 @@
         sl.operation_desc AS "operationDesc"
         FROM
         sys_log sl
-        join sys_user su
-        on sl.create_by = su.id
+        JOIN sys_user su
+        ON sl.create_by = su.id
         WHERE
         sl.del_flag = '1'
         AND su.del_flag = '1'
