@@ -39,7 +39,7 @@ public class SysSecretKeyController {
 
     @GetMapping(value = "/getPublicKey")
     @Operation(summary = "获取公钥")
-    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.QUERY)
+    @Parameter(name = "type", description = "密钥类型", required = true, in = ParameterIn.QUERY)
     public R<PublicKeyVo> getPublicKey(@RequestParam(value = "type", required = false) Integer type) {
         if (type == null) {
             return R.fail("密钥类型不能为空");
