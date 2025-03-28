@@ -3,6 +3,7 @@ package com.soft.base.controller;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
+import com.soft.base.exception.ResourceNotExistException;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.exception.GlobalException;
@@ -117,7 +118,7 @@ public class SysFileController {
                         break;
                     }
                     default: {
-                        throw new GlobalException("资源不存在");
+                        throw new ResourceNotExistException("资源不存在");
                     }
                 }
 
@@ -132,6 +133,9 @@ public class SysFileController {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(responseBody);
+        } catch (ResourceNotExistException e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.ok().headers(headers).body(R.fail(e.getMessage()));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.ok().headers(headers).body(R.fail());
