@@ -24,6 +24,7 @@ import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,13 +79,10 @@ public class SysFileController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public ResponseEntity<Object> downloadFile(@RequestParam(value = "id", required = false) Long id) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
 
         if (id == null) {
             return ResponseEntity.ok().headers(headers).body(R.fail("主键不能为空"));
         }
-        InputStream is = null;
-        File file;
 
         try {
             FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
@@ -92,45 +90,51 @@ public class SysFileController {
                 return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).headers(headers).body(R.fail("不存在的文件"));
             }
 
-            // 根据存储位置来获取文件源
-            switch (fileDetail.getLocation()) {
-                case BaseConstant.DEFAULT_STORAGE_LOCATION: {
-                    is = minioUtil.download(fileDetail.getObjectKey());
-                    break;
-                }
-                case BaseConstant.DISK_STORAGE_LOCATION: {
-                    file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
-                    if (!file.exists()) {
-                        throw new GlobalException("源文件不存在");
-                    }
-                    is = new FileInputStream(file);
-                    break;
-                }
-            }
-
-            if (is == null) {
-                throw new GlobalException("文件不存在于规定的存储对象中");
-            }
-
             // 设置响应头
+            headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+            //流式传输
+            StreamingResponseBody responseBody = outputStream -> {
+                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
+                int bytesRead;
+                InputStream is;
+                File file;
+
+                // 根据存储位置来获取文件源
+                switch (fileDetail.getLocation()) {
+                    case BaseConstant.DEFAULT_STORAGE_LOCATION: {
+                        is = minioUtil.download(fileDetail.getObjectKey());
+                        break;
+                    }
+                    case BaseConstant.DISK_STORAGE_LOCATION: {
+                        file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
+                        if (!file.exists()) {
+                            throw new GlobalException("源文件不存在");
+                        }
+                        is = new FileInputStream(file);
+                        break;
+                    }
+                    default: {
+                        throw new GlobalException("资源不存在");
+                    }
+                }
+
+                while ((bytesRead = is.read(buffer)) != BaseConstant.FILE_OVER_SIGN) {
+                    outputStream.write(buffer, BaseConstant.INTEGER_INIT_VAL, bytesRead);
+                    outputStream.flush();
+                }
+                is.close();
+            };
 
             // 返回文件内容
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(is.readAllBytes());
+                    .body(responseBody);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.ok().headers(headers).body(R.fail());
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
         }
     }
 
