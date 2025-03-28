@@ -14,7 +14,7 @@ import lombok.Data;
 public class GetUserRoleDto {
 
     @Schema(description = "主键")
-    private String value;
+    private Long value;
 
     @Schema(description = "名称")
     private String label;

@@ -7,6 +7,8 @@ import com.soft.base.model.vo.AllUserVo;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
 
+import java.io.IOException;
+
 /**
 * @author cyq
 * @description 针对表【users】的数据库操作Service
@@ -25,7 +27,7 @@ public interface SysUsersService extends IService<SysUser> {
 
     void saveUser(SaveUserRequest request) throws Exception;
 
-    void editUser(EditUserRequest request);
+    void editUser(EditUserRequest request, String username);
 
     GetUserVo getUser(Long id);
 
@@ -35,11 +37,15 @@ public interface SysUsersService extends IService<SysUser> {
 
     void unlockUser(String username);
 
-    void resetUsername(ResetUsernameRequest request);
+    void resetUsername(ResetUsernameRequest request, String username) throws IOException;
 
     boolean existsUsername(String newUsername);
 
     boolean existsEmail(String email);
 
     boolean existsEmail(Long id, String email);
+
+    void deleteUser(Long id, String username) throws IOException;
+
+    String getUsername(Long id);
 }

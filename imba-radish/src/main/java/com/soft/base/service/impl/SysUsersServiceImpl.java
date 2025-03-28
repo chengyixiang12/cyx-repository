@@ -99,6 +99,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Transactional(rollbackFor = Exception.class)
     public void editPassword(String targetPass, Long id) {
         try {
+            sendWebsocket(id);
+
             String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
             String encode = passwordEncoder.encode(rsaUtil.decrypt(targetPass, privateKey));
 
@@ -107,8 +109,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             sysUser.setPassword(encode);
 
             sysUsersMapper.updateById(sysUser);
-
-            sendWebsocket(id);
         } catch (NoSuchPaddingException
                  | IllegalBlockSizeException
                  | NoSuchAlgorithmException
@@ -124,6 +124,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Transactional(rollbackFor = Exception.class)
     public void resetPassword(ResetPasswordRequest request) {
         try {
+            sendWebsocket(request.getId());
+
             String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
             String encode = passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey));
 
@@ -132,8 +134,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             sysUser.setPassword(encode);
 
             sysUsersMapper.updateById(sysUser);
-
-            sendWebsocket(request.getId());
         } catch (NoSuchPaddingException
                  | IllegalBlockSizeException
                  | NoSuchAlgorithmException
@@ -182,7 +182,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     @CacheEvict(key = "#username")
     @Transactional(rollbackFor = Exception.class)
-    public void editUser(EditUserRequest request) {
+    public void editUser(EditUserRequest request, String username) {
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(request, sysUser);
         sysUsersMapper.updateById(sysUser);
@@ -250,18 +250,15 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
+    @CacheEvict(key = "#username")
     @Transactional(rollbackFor = Exception.class)
-    public void resetUsername(ResetUsernameRequest request) {
-        try {
-            SysUser sysUser = new SysUser();
-            sysUser.setId(request.getId());
-            sysUser.setUsername(request.getUsername());
-            sysUsersMapper.updateById(sysUser);
+    public void resetUsername(ResetUsernameRequest request, String username) throws IOException {
+        sendWebsocket(request.getId());
 
-            sendWebsocket(request.getId());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        SysUser sysUser = new SysUser();
+        sysUser.setId(request.getId());
+        sysUser.setUsername(request.getUsername());
+        sysUsersMapper.updateById(sysUser);
     }
 
     @Override
@@ -277,6 +274,19 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     public boolean existsEmail(Long id, String email) {
         return sysUsersMapper.existsEmail(id, email) > 0;
+    }
+
+    @Override
+    @CacheEvict(key = "#username")
+    public void deleteUser(Long id, String username) throws IOException {
+        sendWebsocket(id);
+
+        sysUsersMapper.deleteById(id);
+    }
+
+    @Override
+    public String getUsername(Long id) {
+        return sysUsersMapper.getUsername(id);
     }
 
     /**

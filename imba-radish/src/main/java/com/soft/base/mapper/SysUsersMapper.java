@@ -3,9 +3,9 @@ package com.soft.base.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.soft.base.entity.SysUser;
 import com.soft.base.model.dto.GetUserDto;
 import com.soft.base.model.dto.UserEmailDto;
-import com.soft.base.entity.SysUser;
 import com.soft.base.model.vo.AllUserVo;
 import com.soft.base.model.vo.DeptUserVo;
 import org.apache.ibatis.annotations.Param;
@@ -39,6 +39,8 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
 
     Long existsEmail(@Param("id") Long id,
                         @Param("email") String email);
+
+    String getUsername(@Param("id") Long id);
 }
 
 

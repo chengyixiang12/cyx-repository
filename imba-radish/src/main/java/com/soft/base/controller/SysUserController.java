@@ -168,7 +168,8 @@ public class SysUserController {
             return R.fail("邮箱已注册");
         }
         try {
-            sysUsersService.editUser(request);
+            String username = sysUsersService.getUsername(request.getId());
+            sysUsersService.editUser(request, username);
             return R.ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -206,15 +207,16 @@ public class SysUserController {
         }
     }
 
-    @GetMapping(value = "/lockUser/{username}")
+    @GetMapping(value = "/lockUser/{id}")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_lock')")
     @Operation(summary = "锁定用户")
-    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
-    public R lockUser(@PathVariable(value = "username") String username) {
-        if (StringUtils.isBlank(username)) {
-            return R.fail("用户名不能为空");
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    public R<Object> lockUser(@PathVariable(value = "id") Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
         }
         try {
+            String username = sysUsersService.getUsername(id);
             sysUsersService.lockUser(username);
             return R.ok();
         } catch (Exception e) {
@@ -223,15 +225,16 @@ public class SysUserController {
         }
     }
 
-    @GetMapping(value = "/unlockUser/{username}")
+    @GetMapping(value = "/unlockUser/{id}")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_unlock')")
     @Operation(summary = "解锁用户")
-    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
-    public R unLockUser(@PathVariable(value = "username") String username) {
-        if (StringUtils.isBlank(username)) {
-            return R.fail("用户名不能为空");
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    public R unLockUser(@PathVariable(value = "id") Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
         }
         try {
+            String username = sysUsersService.getUsername(id);
             sysUsersService.unlockUser(username);
             return R.ok();
         } catch (Exception e) {
@@ -256,7 +259,26 @@ public class SysUserController {
             return R.fail("用户名重复");
         }
         try {
-            sysUsersService.resetUsername(request);
+            String username = sysUsersService.getUsername(request.getId());
+            sysUsersService.resetUsername(request, username);
+            return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @DeleteMapping
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_delete')")
+    @Operation(summary = "删除用户")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> deleteUser(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            String username = sysUsersService.getUsername(id);
+            sysUsersService.deleteUser(id, username);
             return R.ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);

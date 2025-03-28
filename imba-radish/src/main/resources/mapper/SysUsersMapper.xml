@@ -153,4 +153,12 @@
         AND su.`id` <![CDATA[<>]]> #{id}
         AND su.email = #{email}
     </select>
+    <select id="getUsername" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+        su.username
+        FROM
+        `sys_user` su
+        WHERE
+        su.id = #{id}
+    </select>
 </mapper>
