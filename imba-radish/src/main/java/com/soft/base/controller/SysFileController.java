@@ -112,7 +112,7 @@ public class SysFileController {
                     case BaseConstant.DISK_STORAGE_LOCATION: {
                         file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
                         if (!file.exists()) {
-                            throw new GlobalException("源文件不存在");
+                            throw new ResourceNotExistException("资源不存在");
                         }
                         is = new FileInputStream(file);
                         break;
