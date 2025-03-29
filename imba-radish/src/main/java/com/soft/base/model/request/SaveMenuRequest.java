@@ -16,7 +16,7 @@ import org.apache.ibatis.type.Alias;
 public class SaveMenuRequest {
 
     @Schema(description = "父级id，若为根节点则不传")
-    private String parentId;
+    private Long parentId;
 
     @Schema(description = "菜单名称")
     private String name;

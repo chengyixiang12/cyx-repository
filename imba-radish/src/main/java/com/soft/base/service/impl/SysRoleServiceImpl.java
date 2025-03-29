@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.entity.SysRole;
@@ -49,7 +50,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Override
     public Boolean fixRoleFlag(Long id) {
-        return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getId, id));
+        return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getId, id).eq(SysRole::getFixRole, BaseConstant.FIX_ROLE_FLAG));
     }
 
     @Override
