@@ -20,4 +20,7 @@ public class LoginRequest {
 
     @Schema(description = "图形验证码")
     private String graphicsCaptcha;
+
+    @Schema(description = "验证码唯一标识")
+    private String uuid;
 }

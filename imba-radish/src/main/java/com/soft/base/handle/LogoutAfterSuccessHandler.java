@@ -26,6 +26,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @Author: cyx
@@ -50,10 +52,17 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION).replaceFirst(TokenConstant.TOKEN_PREFIX, BaseConstant.BLANK_CHARACTER);
-        String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + authorization);
+        String redisKeyAuth = RedisConstant.AUTHORIZATION_USERNAME + authorization;
+        String username = (String) redisTemplate.opsForValue().get(redisKeyAuth);
 
         UserDto userDto = (UserDto) userDetailsService.loadUserByUsername(username);
         Long id = userDto.getId();
+
+        Set<String> keys = new HashSet<>();
+        keys.add(redisKeyAuth);
+        keys.add(RedisConstant.USER_INFO + username);
+
+        redisTemplate.delete(keys);
 
         @SuppressWarnings("unchecked")
         WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());

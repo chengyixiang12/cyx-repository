@@ -38,6 +38,7 @@
         sm.`name` AS "title",
         sm.icon,
         sm.path,
+        sm.component,
         sm.parent_id AS "parentId"
         FROM
         sys_menu sm

@@ -50,7 +50,7 @@ public class BaseConstant {
     /**
      * 空白符
      */
-    public final static String BLANK_CHARACTER = "\u0020";
+    public final static String BLANK_CHARACTER = "";
 
     /**
      * 分片大小

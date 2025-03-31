@@ -29,6 +29,9 @@ public class MenusVo {
     @Schema(description = "菜单路由路径")
     private String path;
 
+    @Schema(description = "前端组件路径")
+    private String component;
+
     @Schema(description = "父菜单 ID")
     private Long parentId;
 

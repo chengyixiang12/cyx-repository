@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class SysMenuController {
 
 
     @GetMapping(value = "/getMenus")
-    @Operation(summary = "获取菜单")
+    @Operation(summary = "用户获取菜单")
     public R<List<MenusVo>> getMenus() {
         try {
             List<MenusVo> pageVo = sysMenuService.getMenus();

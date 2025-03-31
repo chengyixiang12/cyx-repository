@@ -80,7 +80,7 @@ public class AuthController {
             return R.fail("图形验证码不能为空");
         }
         try {
-            String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + request.getUsername());
+            String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + request.getUuid());
             if (StringUtils.isBlank(graphicsCaptcha)) {
                 return R.fail("图形验证码过期");
             }
@@ -150,20 +150,20 @@ public class AuthController {
         }
     }
 
-    @GetMapping(value = "/getGraphicCaptcha/{username}")
+    @GetMapping(value = "/getGraphicCaptcha/{uuid}")
     @Operation(summary = "获取图形验证码")
-    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.PATH)
-    public ResponseEntity<Object> getGraphicCaptcha(@PathVariable(value = "username") String username) {
+    @Parameter(name = "uuid", description = "唯一标识", required = true, in = ParameterIn.PATH)
+    public ResponseEntity<Object> getGraphicCaptcha(@PathVariable(value = "uuid") String uuid) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        if (StringUtils.isBlank(username)) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).body(R.fail("用户名不能为空"));
+        if (StringUtils.isBlank(uuid)) {
+            return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).body(R.fail("唯一标识不能为空"));
         }
 
         try {
             String text = captchaProducer.createText();
 
-            redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + username, text, graphicsCaptchaExpireTime, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + uuid, text, graphicsCaptchaExpireTime, TimeUnit.SECONDS);
 
             BufferedImage image = captchaProducer.createImage(text);
             ByteArrayOutputStream bis = new ByteArrayOutputStream();
