@@ -1,26 +1,26 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import MainLayout from '../layouts/MainLayout.vue';
 
-// 1. 使用Vite的glob导入所有页面组件
-// const pageComponents = import.meta.glob('/src/views/**/*.vue')
-
 // 2. 基础路由
 const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/',
+    name: 'MainLayout',
     component: MainLayout,
     redirect: '/dashboard',
     children: [
       {
         path: 'dashboard',
-        component: () => import('@/views/Dashboard.vue'),
+        name: 'dashboard',
+        component: () => import('/src/views/Dashboard.vue'),
         meta: { title: '首页' }
       }
     ]
   },
   {
     path: '/login',
-    component: () => import('@/views/login/Login.vue'),
+    name: 'login',
+    component: () => import('/src/views/login/Login.vue'),
     meta: { title: '登录', noAuth: true }
   }
 ]
@@ -36,84 +36,101 @@ let dynamicRoutesAdded = false
 const addedRoutes = new Set<string>()
 
 // 5. 改进的动态路由生成
-function generateRoutes(menus: MenuItem[]): RouteRecordRaw[] {
-  return menus.map(menu => {
-    // 转换组件路径格式 (system/User -> /src/views/system/User.vue)
-    let componentPath;
-    console.log(menu.component);
-    if (menu.component != null) {
-      componentPath = `/src/views/${menu.component}.vue`;
-    } else {
-      componentPath = '/src/views/error/404.vue';
-    }
-    const route: RouteRecordRaw = {
-      path: menu.path.startsWith('/') ? menu.path : `/${menu.path}`, // 确保父路径有 `/`
-      name: menu.title.replace(/\s+/g, '-') || menu.path.replace(/\//g, '-'),
-      component: () => import(/* @vite-ignore */componentPath),
-      meta: {
-        title: menu.title,
-        icon: menu.icon,
-        requiresAuth: !menu.noAuth
-      },
-      children: menu.children?.length ? generateRoutes(menu.children) : undefined
+function generateRoutes(menus: MenuItem[], parentPath: string = ''): RouteRecordRaw[] {
+  
+  const routes: RouteRecordRaw[] = [];
+  
+  menus.forEach(menu => {
+    // 如果是有子菜单的父级菜单，直接处理子菜单
+    if (menu.children?.length && !menu.component) {
+      routes.push(...generateRoutes(menu.children, menu.path));
+      return;
     }
 
-    return route
-  })
+    // 处理具体页面的路由
+    if (menu.component) {
+      // 移除开头的 views/ 如果存在
+      const cleanComponent = menu.component.replace(/^views\//, '');
+      const componentPath = `/src/views/${cleanComponent}${cleanComponent.endsWith('.vue') ? '' : '.vue'}`;
+
+      const route: RouteRecordRaw = {
+        path: menu.path.startsWith('/') ? menu.path : `/${menu.path}`,
+        name: menu.title.replace(/\s+/g, '-').toLowerCase(),
+        component: () => {
+          return import(/* @vite-ignore */ componentPath);
+        },
+        meta: {
+          title: menu.title,
+          icon: menu.icon,
+          parentPath: parentPath, // 记录父级路径用于面包屑
+          requiresAuth: true
+        }
+      };
+
+      routes.push(route);
+    }
+  });
+
+  return routes;
 }
 
 // 6. 安全添加动态路由
 export async function addDynamicRoutes(menuList: MenuItem[]) {
-  if (dynamicRoutesAdded) return
+  if (dynamicRoutesAdded) {
+    return;
+  }
 
-  console.log('a', menuList)
   try {
-    const dynamicRoutes = generateRoutes(menuList)
-    dynamicRoutes.forEach(route => {
-      if (!addedRoutes.has(route.path)) {
-        router.addRoute(route)
-        addedRoutes.add(route.path)
+    // 生成路由配置
+    const dynamicRoutes = generateRoutes(menuList);
+
+    // 清除现有的动态路由
+    Array.from(addedRoutes).forEach(path => {
+      try {
+        router.removeRoute(path);
+      } catch (e) {
+        console.warn(`Failed to remove route: ${path}`, e);
       }
-    })
+    });
+    addedRoutes.clear();
+    
+    // 将所有路由直接添加到主布局下
+    dynamicRoutes.forEach(route => {
+      try {
+        router.addRoute('MainLayout', route);
+        addedRoutes.add(route.path);
+      } catch (e) {
+        console.error(`Failed to add route: ${route.path}`, e);
+      }
+    });
 
-    // 确保404是最后添加的
-    if (!addedRoutes.has('*')) {
-      router.addRoute({
-        path: '/:pathMatch(.*)*',
-        component: () => import('@/views/error/404.vue')
-      })
-      addedRoutes.add('*')
-    }
+    // 添加404路由
+    router.addRoute({
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      component: () => import('/src/views/error/404.vue'),
+      meta: { title: '404' }
+    });
+    addedRoutes.add('*');
 
-    // console.log(router.getRoutes());
-
-    dynamicRoutesAdded = true
+    dynamicRoutesAdded = true;
   } catch (err) {
-    console.error('添加动态路由失败:', err)
-    throw err
+    console.error('添加动态路由失败:', err);
+    throw err;
   }
 }
 
-// 7. 增强的路由守卫
+// 7. 改进路由守卫
 router.beforeEach(async (to, from, next) => {
-  const token = sessionStorage.getItem('Authorization')
-
-  // 登录页特殊处理
+  const token = sessionStorage.getItem('Authorization');
   if (to.path === '/login') {
     token ? next('/') : next()
     return
   }
 
-  // 认证检查
-  if (to.meta.requiresAuth !== false && !token) {
-    next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
-    return
-  }
-
-  // 动态路由加载
   if (token && !dynamicRoutesAdded) {
     try {
-      const menus: MenuItem[] = JSON.parse(sessionStorage.getItem('menus') || '');
+      const menus: MenuItem[] = JSON.parse(sessionStorage.getItem('menus') || '[]');
       await addDynamicRoutes(menus)
       next({ ...to, replace: true })
     } catch (err) {
@@ -123,8 +140,8 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // 检查路由是否存在
-  if (to.matched.length === 0 && !addedRoutes.has('*')) {
+  // 简化路由匹配逻辑
+  if (to.matched.length === 0) {
     next('/404')
   } else {
     next()
