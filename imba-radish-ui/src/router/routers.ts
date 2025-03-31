@@ -13,7 +13,7 @@ const constantRoutes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: 'dashboard',
         component: () => import('/src/views/Dashboard.vue'),
-        meta: { title: '首页' }
+        meta: { title: '首页', requiresAuth: true }
       }
     ]
   },
@@ -21,7 +21,13 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/login',
     name: 'login',
     component: () => import('/src/views/login/Login.vue'),
-    meta: { title: '登录', noAuth: true }
+    meta: { title: '登录', requiresAuth: false }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: '404',
+    component: () => import('/src/views/error/404.vue'),
+    meta: { title: '404', requiresAuth: false }
   }
 ]
 
@@ -37,9 +43,9 @@ const addedRoutes = new Set<string>()
 
 // 5. 改进的动态路由生成
 function generateRoutes(menus: MenuItem[], parentPath: string = ''): RouteRecordRaw[] {
-  
+
   const routes: RouteRecordRaw[] = [];
-  
+
   menus.forEach(menu => {
     // 如果是有子菜单的父级菜单，直接处理子菜单
     if (menu.children?.length && !menu.component) {
@@ -55,7 +61,7 @@ function generateRoutes(menus: MenuItem[], parentPath: string = ''): RouteRecord
 
       const route: RouteRecordRaw = {
         path: menu.path.startsWith('/') ? menu.path : `/${menu.path}`,
-        name: menu.title.replace(/\s+/g, '-').toLowerCase(),
+        name: menu.path.replace(/\s+/g, '-').toLowerCase(),
         component: () => {
           return import(/* @vite-ignore */ componentPath);
         },
@@ -93,7 +99,7 @@ export async function addDynamicRoutes(menuList: MenuItem[]) {
       }
     });
     addedRoutes.clear();
-    
+
     // 将所有路由直接添加到主布局下
     dynamicRoutes.forEach(route => {
       try {
@@ -105,12 +111,12 @@ export async function addDynamicRoutes(menuList: MenuItem[]) {
     });
 
     // 添加404路由
-    router.addRoute({
-      path: '/:pathMatch(.*)*',
-      name: '404',
-      component: () => import('/src/views/error/404.vue'),
-      meta: { title: '404' }
-    });
+    // router.addRoute({
+    //   path: '/:pathMatch(.*)*',
+    //   name: '404',
+    //   component: () => import('/src/views/error/404.vue'),
+    //   meta: { title: '404' }
+    // });
     addedRoutes.add('*');
 
     dynamicRoutesAdded = true;
@@ -126,6 +132,12 @@ router.beforeEach(async (to, from, next) => {
   if (to.path === '/login') {
     token ? next('/') : next()
     return
+  }
+
+  // 如果路由需要认证但没有 token，跳转到登录页
+  if (to.meta.requiresAuth && !token) {
+    next('/login?error=unauthorized');
+    return;
   }
 
   if (token && !dynamicRoutesAdded) {
