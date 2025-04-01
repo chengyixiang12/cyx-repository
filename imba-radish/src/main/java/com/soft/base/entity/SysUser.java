@@ -115,6 +115,12 @@ public class SysUser implements Serializable {
     @TableField(value = "dept_id")
     private Long deptId;
 
+    /**
+     * 用户头像
+     */
+    @TableField(value = "avatar")
+    private Long avatar;
+
     @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

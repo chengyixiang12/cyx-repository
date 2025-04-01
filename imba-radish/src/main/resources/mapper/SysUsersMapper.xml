@@ -20,6 +20,7 @@
         <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
         <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
         <result property="deptId" column="dept_id" jdbcType="BIGINT"/>
+        <result property="avatar" column="avatar" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -27,7 +28,7 @@
         enabled,account_non_locked,credentials_non_expired,
         account_non_expired,email,phone,
         create_time,update_time,del_flag,
-        update_by,create_by,dept_id
+        update_by,create_by,dept_id,avatar
     </sql>
 
 <!--    <select id="getByUserName" parameterType="java.lang.String" resultType="java.lang.String">-->
