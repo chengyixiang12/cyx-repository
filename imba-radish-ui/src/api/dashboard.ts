@@ -1,9 +1,6 @@
-import { post, get } from '@/utils/methods';
+import { post, get } from '@/utils/http';
 
 export async function fetchMenuList(): Promise<MenuItem[]> {
-  return await get<Array<MenuItem>>(
-    '/menu/getMenus',
-    true,
-    null  // 无查询参数
-  );
+  const menus = await get<Array<MenuItem>>('/menu/getMenuTree',{ flag: true });
+  return menus.data
  }

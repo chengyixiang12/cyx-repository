@@ -1,4 +1,4 @@
-import { get } from '../utils/methods';
+import { get } from '@/utils/http';
 import type { PublicKeyVo } from '../types/auth';
 
 /**
@@ -8,6 +8,6 @@ import type { PublicKeyVo } from '../types/auth';
 export async function getPublicKey(
   type: number
 ): Promise<string> {
-  const res = await get<PublicKeyVo>('/secretKey/getPublicKey', false, { type });
-  return res.publicKey;
+  const res = await get<PublicKeyVo>('/secretKey/getPublicKey', { flag: false, params: { type } });
+  return res.data.publicKey;
 }

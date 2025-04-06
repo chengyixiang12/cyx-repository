@@ -1,18 +1,18 @@
 import { LoginRequest, LoginVo, UserInfoVo } from '../types/login';
-import { post, get } from '@/utils/methods';
+import { post, get, getBlob } from '@/utils/http';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uuid: string }> {
-   // 生成或使用传入的唯一标识
-   const finalUKey = uuid || uuidv4();
-   // 调用method.ts的get方法（明确指定responseType为'blob'）
-  const blob = await get<Blob>(
-   `/auth/getGraphicCaptcha/${finalUKey}`,
-   false, // 不需要认证
-   null,  // 无查询参数
-   'blob' // 指定返回Blob类型
- );
- return { blob, uuid: finalUKey };
+  // 生成或使用传入的唯一标识
+  const finalUKey = uuid || uuidv4();
+  // 调用method.ts的get方法（明确指定responseType为'blob'）
+  const blob = await getBlob(
+    `/auth/getGraphicCaptcha/${finalUKey}`,
+    {
+      flag: false
+    }
+  );
+  return { blob, uuid: finalUKey };
 }
 
 /**
@@ -20,28 +20,25 @@ export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uu
  * @param params 登录参数
  */
 export async function login(
-   params: LoginRequest
- ): Promise<LoginVo> {
-   // 调用method.ts封装的post方法
-   // 第二个参数false表示不需要携带认证token
-   return post<LoginVo>('/auth/login', false, params);
- }
-
- /**
- * 获取登录用户信息
- * @param params 登录参数
- */
-export async function getUserInfo(): Promise<UserInfoVo> {
-  // 调用method.ts封装的post方法
-  // 第二个参数false表示不需要携带认证token
-  return get<UserInfoVo>('/user/getUserInfo', true, null);
+  params: LoginRequest
+): Promise<LoginVo> {
+  const loginVo = await post<LoginVo>('/auth/login', params, { flag: false, silent: true });
+  return loginVo.data;
 }
 
- /**
- * 退出登录
- */
- export async function logouted(): Promise<UserInfoVo> {
-  // 调用method.ts封装的post方法
-  // 第二个参数false表示不需要携带认证token
-  return get('/logout', true, null);
+/**
+* 获取登录用户信息
+* @param params 登录参数
+*/
+export async function getUserInfo(): Promise<UserInfoVo> {
+  const userInfoVo = await get<UserInfoVo>('/user/getUserInfo', { flag: true });
+  return userInfoVo.data;
+}
+
+/**
+* 退出登录
+*/
+export async function logouted(): Promise<any> {
+  const logout = await get('/logout', { flag: true });
+  return logout.data
 }

@@ -1,25 +1,36 @@
-// src/utils/http.ts
-import axios, { AxiosRequestConfig, Method } from 'axios';
-import { ApiResponse, ApiError } from '../types/method';
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import { ApiResponse, ApiError, RequestConfig } from '../types/method';
+import router from '@/router/routers';
+import { showNotify } from '@/utils/notify';
+import { clearCache } from '@/utils/clearCache';
 
 const instance = axios.create({
   baseURL: '/api',
-  timeout: 10000,
+  timeout: 30000, // 延长超时时间
 });
 
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
+    // 处理认证令牌
     const token = sessionStorage.getItem('Authorization');
     if (token && config.headers) {
-      const requiresAuth = config.headers['flag'] !== false;
-      if (requiresAuth) {
-        config.headers['Authorization'] = token;
-      }
+      config.headers.Authorization = `Bearer ${token}`; // 标准化Bearer Token
     }
-    if (config.headers) {
-      delete config.headers['flag'];
+
+    // 处理flag标记（仅作为header）
+    if (config.headers?.flag !== undefined) {
+      config.headers['X-Flag'] = config.headers.flag; // 重命名为更标准的X-Flag
+      delete config.headers.flag;
     }
+
+    // 确保JSON请求头
+    if (!config.headers?.['Content-Type'] && typeof config.data === 'object') {
+      // 使用 Axios 的标准方式设置 headers
+      config.headers = axios.AxiosHeaders.from(config.headers);
+      config.headers.set('Content-Type', 'application/json');
+    }
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -27,90 +38,148 @@ instance.interceptors.request.use(
 
 // 响应拦截器
 instance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // 转换错误格式
-    const apiError: ApiError = {
-      ...error,
-      message: error.response?.data?.msg || error.message,
-      response: {
-        data: error.response?.data,
-        status: error.response?.status,
-      },
-    };
-    return Promise.reject(apiError);
-  }
+  (response) => response.config.responseType !== 'json'
+    ? response
+    : parseResponse(response),
+  (error) => handleResponseError(error)
 );
 
-/**
- * 核心请求方法
- * @param method 请求方法
- * @param url 请求地址
- * @param config 配置
- */
+// 响应数据处理
+function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
+  if (response.data.code !== 2001) {
+    throw {
+      message: response.data.msg,
+      response: { data: response.data },
+      config: response.config,
+    } as unknown as ApiError;
+  }
+  return response.data.data;
+}
+
+// 错误统一处理
+function handleResponseError(error: any) {
+  const apiError: ApiError = {
+    message: error.response?.data?.msg || error.message,
+    response: {
+      data: error.response?.data,
+      status: error.response?.status,
+    },
+    config: error.config,
+    name: ''
+  };
+
+  if (error.response?.data?.code) {
+    handleErrorCode(error.response.data);
+  }
+
+  return Promise.reject(apiError);
+}
+
+// 错误码处理
+function handleErrorCode(data: ApiResponse) {
+  const authErrorCodes = [5002, 5004, 5005];
+  if (authErrorCodes.includes(data.code)) {
+    clearCache();
+    router.push('/login');
+  } else if (data.code === 5003) {
+    router.push('/403');
+  }
+  showNotify(data.msg || '请求失败', 'error');
+}
+
+// 核心请求方法（重载版本）
 async function request<T = any>(
   method: Method,
   url: string,
-  config?: AxiosRequestConfig & { 
-    flag?: boolean; 
-    silent?: boolean; // 是否静默处理错误
-  }
-): Promise<T> {
-  try {
-    const response = await instance.request<ApiResponse<T>>({
-      url,
-      method,
-      ...config,
-      headers: {
-        ...config?.headers,
-        flag: config?.flag,
-      },
-    });
-    // 二进制响应直接返回
-    if (config?.responseType && config.responseType !== 'json') {
-      return response.data as unknown as T;
-    }
-
-    // 处理业务错误（根据你们的code规范）
-    const res = response.data;
-    if (res.code !== 2001) { // 假设2001表示成功
-      throw {
-        message: res.msg,
-        response: { data: res },
-      } as ApiError;
-    }
-
-    return res.data;
-  } catch (error) {
-    return handleError(error as ApiError, config?.silent);
-  }
-}
-
-// 统一错误处理
-function handleError(error: ApiError, silent = false): never {
-  const errorMessage = error.response?.data?.msg || error.message;
-  !silent && console.error(`[API Error] ${error.config?.url}:`, {
-    code: error.response?.data?.code,
-    message: errorMessage,
-  });
-
-  throw new Error(errorMessage);
-}
-
-// ================= 导出常用方法 ================= //
-export function get<T = any>(
-  url: string,
-  config?: {
-    params?: Record<string, any>;
+  config?: AxiosRequestConfig & {
     flag?: boolean;
     silent?: boolean;
-    responseType?: 'arraybuffer' | 'blob';
   }
-): Promise<T> {
+): Promise<ApiResponse<T>>;
+
+async function request(
+  method: Method,
+  url: string,
+  config: AxiosRequestConfig & {
+    flag?: boolean;
+    silent?: boolean;
+    responseType: 'blob' | 'arraybuffer';
+  }
+): Promise<Blob>;
+
+async function request<T = any>(
+  method: Method,
+  url: string,
+  config?: any
+): Promise<any> {
+  try {
+    const { silent, ...axiosConfig } = config || {};
+    const response = await instance.request({
+      method,
+      url,
+      ...axiosConfig,
+      headers: {
+        ...axiosConfig?.headers,
+        ...(config?.flag !== undefined && { 'X-Flag': String(config.flag) }),
+      },
+    });
+
+    // 二进制响应
+    if (config?.responseType === 'blob' || config?.responseType === 'arraybuffer') {
+      if (!(response.data instanceof Blob)) {
+        throw new Error(`Expected Blob but got ${typeof response.data}`);
+      }
+      return response.data;
+    }
+
+    // JSON 响应
+    const res = response.data as ApiResponse<T>;
+    if (res.code !== 2001) throw new Error(res.msg);
+    return res;
+
+  } catch (error) {
+    return handleRequestError(error as ApiError, config?.silent);
+  }
+}
+
+// 请求错误处理
+function handleRequestError(error: ApiError, silent = false): never {
+  if (!silent && error.message) {
+    console.error(`[API Error] ${error.config?.url || ''}:`, error.message);
+  }
+  throw error;
+}
+
+// ================= 方法导出 ================= //
+// 获取完整响应
+export async function get<T = any>(
+  url: string,
+  config?: RequestConfig
+): Promise<ApiResponse<T>> {
   return request('GET', url, config);
 }
 
-export function post<T = any>(
+// 获取纯数据（自动解构）
+export async function getData<T = any>(
+  url: string,
+  config?: RequestConfig
+): Promise<T> {
+  return get<T>(url, config).then(res => res.data);
+}
+
+// 获取二进制流
+export async function getBlob(
+  url: string,
+  config?: Omit<RequestConfig, 'responseType'>
+): Promise<Blob> {
+  const response = await instance.get<Blob>(url, { 
+    ...config, 
+    responseType: 'blob' 
+  });
+  return response.data;
+}
+
+export async function post<T = any>(
   url: string,
   data?: any,
   config?: {
@@ -118,12 +187,32 @@ export function post<T = any>(
     flag?: boolean;
     silent?: boolean;
   }
-): Promise<T> {
+): Promise<ApiResponse<T>> {
   return request('POST', url, { ...config, data });
 }
 
-// 其他方法同理...
-// export const put = /* 类似post */;
-// export const del = /* 类似get */;
+export async function put<T = any>(
+  url: string,
+  data?: any,
+  config?: {
+    params?: Record<string, any>;
+    flag?: boolean;
+    silent?: boolean;
+  }
+): Promise<ApiResponse<T>> {
+  return request('PUT', url, { ...config, data });
+}
+
+export async function del<T = any>(
+  url: string,
+  config?: {
+    params?: Record<string, any>;
+    data?: any;
+    flag?: boolean;
+    silent?: boolean;
+  }
+): Promise<ApiResponse<T>> {
+  return request('DELETE', url, config);
+}
 
 export default instance;

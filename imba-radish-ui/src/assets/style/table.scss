@@ -1,0 +1,53 @@
+.unified-list-container {
+  // padding: 20px;
+  // background: #fff;
+  // border-radius: 4px;
+  // box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  // margin-bottom: 20px;
+
+  .list-header {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    /* 减小上下padding */
+    height: 30px;
+    /* 设置固定高度 */
+  }
+
+  .list-table {
+    width: 100%;
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #ebeef5;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f5f7fa;
+        color: #909399;
+        font-weight: 500;
+      }
+
+      tr:hover td {
+        background-color: #f5f7fa;
+      }
+    }
+  }
+
+  .list-pagination {
+    margin-top: 15px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
