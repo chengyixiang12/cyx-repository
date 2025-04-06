@@ -7,7 +7,6 @@ import com.soft.base.model.dto.UserDto;
 import com.soft.base.enums.ResultEnum;
 import com.soft.base.resultapi.R;
 import com.soft.base.utils.ResponseUtil;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,7 +51,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             }
             if (!token.startsWith(TokenConstant.TOKEN_PREFIX)) {
                 log.info("非法鉴权：{}", token);
-                ResponseUtil.writeErrMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
+                ResponseUtil.writeMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
                 return;
             }
             // 去除token前缀
@@ -60,7 +59,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
             if (StringUtils.isEmpty(username)) {
                 log.info("{}，鉴权过期", token);
-                ResponseUtil.writeErrMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.AUTHENTICATION_FAIL.getCode(), ResultEnum.AUTHENTICATION_FAIL.getMessage()));
+                ResponseUtil.writeMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.AUTHENTICATION_FAIL.getCode(), ResultEnum.AUTHENTICATION_FAIL.getMessage()));
                 return;
             }
             UserDto user = (UserDto) this.userDetailsService.loadUserByUsername(username);
@@ -71,9 +70,9 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             log.info("context already set...");
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
-            ResponseUtil.writeErrMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.AUTHENTICATION_FAIL.getCode(), ResultEnum.AUTHENTICATION_FAIL.getMessage()));
+            ResponseUtil.writeMsg(response,  HttpConstant.SERVER_ERROR, R.fail(ResultEnum.FAIL_NORMAL.getCode(), ResultEnum.FAIL_NORMAL.getMessage()));
         } finally {
             // 清除安全上下文
             SecurityContextHolder.clearContext();

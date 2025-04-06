@@ -115,6 +115,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     public List<String> getRoleCodesByUserId(Long userId) {
         return sysRoleMapper.getRoleCodesByUserId(userId);
     }
+
+    @Override
+    public Long getDefaultRole(Integer defaultRoleFlag) {
+        return sysRoleMapper.getDefaultRole(defaultRoleFlag);
+    }
 }
 
 

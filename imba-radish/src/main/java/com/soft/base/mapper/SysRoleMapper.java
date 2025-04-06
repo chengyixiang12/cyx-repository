@@ -53,6 +53,8 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     List<GetUserRoleDto> getUserRole(@Param("userId") Long userId);
 
     List<String> getRoleCodesByUserId(@Param("userId") Long userId);
+
+    Long getDefaultRole(@Param("defaultRoleFlag") Integer defaultRoleFlag);
 }
 
 

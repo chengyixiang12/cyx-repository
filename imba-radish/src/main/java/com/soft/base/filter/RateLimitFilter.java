@@ -1,12 +1,12 @@
 package com.soft.base.filter;
 
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.enums.ResultEnum;
 import com.soft.base.properties.RateLimitProperty;
 import com.soft.base.resultapi.R;
 import com.soft.base.utils.ResponseUtil;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +40,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
-//        log.info(request.getRequestURI());
+        log.info(request.getRequestURI());
         String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
 
         if (rateLimitProperty.getEnable()) {
@@ -53,7 +53,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
             // 如果超过最大请求次数，拒绝请求
             if (requestCount != null && requestCount >= rateLimitProperty.getMaxRequest()) {
-                ResponseUtil.writeErrMsg(response, HttpResponseStatus.OK.code(), R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
+                ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
                 return;
             }
 

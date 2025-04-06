@@ -1,11 +1,17 @@
 package com.soft.base.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysMenu;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysMenuMapper;
 import com.soft.base.model.request.EditMenuRequest;
+import com.soft.base.model.request.GetMenuListRequest;
 import com.soft.base.model.request.SaveMenuRequest;
+import com.soft.base.model.vo.GetMenuListVo;
+import com.soft.base.model.vo.GetMenuVo;
+import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysMenuService;
 import com.soft.base.utils.SecurityUtil;
 import com.soft.base.model.vo.MenusVo;
@@ -39,13 +45,16 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public List<MenusVo> getMenus() {
+    public List<MenusVo> getMenuTree() {
         Long userId = securityUtil.getUserInfo().getId();
         if (userId == null) {
             return new ArrayList<>();
         }
-        List<MenusVo> menus = sysMenuMapper.getMenus(userId);
-        return buildTree(menus);
+        List<MenusVo> menus = sysMenuMapper.getMenuTree(userId);
+        if (menus != null && !menus.isEmpty()) {
+            return buildTree(menus);
+        }
+        return menus;
     }
 
     @Override
@@ -62,15 +71,27 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         sysMenuMapper.updateById(sysMenu);
     }
 
+    @Override
+    public PageVo<GetMenuListVo> getMenuList(GetMenuListRequest request) {
+        IPage<GetMenuListVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+        sysMenuMapper.getMenuList(page, request);
+        PageVo<GetMenuListVo> pageVo = new PageVo<>();
+        pageVo.setResult(page.getRecords());
+        pageVo.setTotal(page.getTotal());
+        return pageVo;
+    }
+
+    @Override
+    public GetMenuVo getMenu(Long id) {
+        return sysMenuMapper.getMenu(id);
+    }
+
     /**
      * 菜单架构树
      * @param menusVos
      * @return
      */
     private List<MenusVo> buildTree(List<MenusVo> menusVos) {
-        if (menusVos == null || menusVos.isEmpty()) {
-            throw new GlobalException("菜单为空");
-        }
 
         Map<Long, MenusVo> map = new HashMap<>();
         List<MenusVo> tree = new ArrayList<>();

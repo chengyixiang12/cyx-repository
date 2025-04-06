@@ -71,6 +71,6 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
         forceOfflineParam.put("receiver", id);
         TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
         webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
-        ResponseUtil.writeErrMsg(response, HttpConstant.SUCCESS, R.ok(ResultEnum.SUCCESS.getCode(), "注销成功"));
+        ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.ok(ResultEnum.SUCCESS.getCode(), "注销成功"));
     }
 }

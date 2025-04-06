@@ -3,16 +3,19 @@ package com.soft.base.controller;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.EditMenuRequest;
+import com.soft.base.model.request.GetMenuListRequest;
 import com.soft.base.model.request.SaveMenuRequest;
+import com.soft.base.model.vo.GetMenuListVo;
+import com.soft.base.model.vo.GetMenuVo;
+import com.soft.base.model.vo.MenusVo;
+import com.soft.base.model.vo.PageVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysMenuService;
-import com.soft.base.model.vo.MenusVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,11 +42,11 @@ public class SysMenuController {
     }
 
 
-    @GetMapping(value = "/getMenus")
+    @GetMapping(value = "/getMenuTree")
     @Operation(summary = "用户获取菜单")
-    public R<List<MenusVo>> getMenus() {
+    public R<List<MenusVo>> getMenuTree() {
         try {
-            List<MenusVo> pageVo = sysMenuService.getMenus();
+            List<MenusVo> pageVo = sysMenuService.getMenuTree();
             return R.ok(pageVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -93,6 +96,33 @@ public class SysMenuController {
         }
         try {
             return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @PostMapping(value = "/getMenuList")
+    @Operation(summary = "获取菜单列表")
+    public R<PageVo<GetMenuListVo>> getMenuList(@RequestBody GetMenuListRequest request) {
+        try {
+            PageVo<GetMenuListVo> pageVo = sysMenuService.getMenuList(request);
+            return R.ok(pageVo);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/getMenu")
+    @Operation(summary = "获取菜单（单）")
+    public R<GetMenuVo> getMenu(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("id不能为空");
+        }
+        try {
+            GetMenuVo getMenuVo = sysMenuService.getMenu(id);
+            return R.ok(getMenuVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

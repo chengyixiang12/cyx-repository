@@ -1,13 +1,13 @@
 package com.soft.base.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.model.dto.ExportDeptDto;
 import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.model.request.DeleteRequest;
-import com.soft.base.model.request.EditDeptRequest;
-import com.soft.base.model.request.ExportDeptRequest;
-import com.soft.base.model.request.SaveDeptRequest;
+import com.soft.base.model.request.*;
+import com.soft.base.model.vo.GetDeptsVo;
+import com.soft.base.model.vo.PageVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDeptService;
 import com.soft.base.model.vo.DeptTreeVo;
@@ -207,6 +207,18 @@ public class SysDeptController {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.ok().body(R.fail());
+        }
+    }
+
+    @PostMapping(value = "/getDepts")
+    @Operation(summary = "获取部门（复）")
+    public R<PageVo<GetDeptsVo>> getDepts(@RequestBody GetDeptsRequest request) {
+        try {
+            PageVo<GetDeptsVo> pageVo = sysDeptService.getDepts(request);
+            return R.ok(pageVo);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
         }
     }
 }

@@ -1,21 +1,19 @@
 package com.soft.base.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.model.dto.ExportDeptDto;
 import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysDeptMapper;
 import com.soft.base.mapper.SysUsersMapper;
-import com.soft.base.model.request.DeleteRequest;
-import com.soft.base.model.request.EditDeptRequest;
-import com.soft.base.model.request.ExportDeptRequest;
-import com.soft.base.model.request.SaveDeptRequest;
+import com.soft.base.model.request.*;
+import com.soft.base.model.vo.*;
 import com.soft.base.service.SysDeptService;
-import com.soft.base.model.vo.DeptTreeVo;
-import com.soft.base.model.vo.DeptUserVo;
-import com.soft.base.model.vo.DeptVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,8 +46,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     @Override
     public List<DeptTreeVo> getDeptTree() {
         List<DeptTreeVo> deptTreeVos = sysDeptMapper.getAllDept();
-        List<DeptUserVo> deptUserVos = sysUsersMapper.getAllUser();
-        deptTreeVos = buildTree(deptTreeVos, deptUserVos);
+        deptTreeVos = buildTree(deptTreeVos);
         return deptTreeVos;
     }
 
@@ -68,7 +65,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
         String level = sysDeptMapper.getLevel(request.getParentId());
         SysDept sysDept = new SysDept();
         BeanUtils.copyProperties(request, sysDept);
-        sysDept.setLevel(level);
+        sysDept.setLevel(level + BaseConstant.DEPT_LEVEL_ADD_ONE);
         sysDeptMapper.insert(sysDept);
     }
 
@@ -101,13 +98,18 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
         return sysDeptMapper.exportDept(request.getIds());
     }
 
+    @Override
+    public PageVo<GetDeptsVo> getDepts(GetDeptsRequest request) {
+        IPage<GetDeptsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+        return sysDeptMapper.getDepts(page, request);
+    }
+
     /**
      * 组织架构树
      * @param departments
-     * @param users
      * @return
      */
-    private List<DeptTreeVo> buildTree(List<DeptTreeVo> departments, List<DeptUserVo> users) {
+    private List<DeptTreeVo> buildTree(List<DeptTreeVo> departments) {
         if (departments == null || departments.isEmpty()) {
             throw new GlobalException("组织架构为空");
         }
@@ -128,16 +130,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
                 DeptTreeVo parent = map.get(dept.getParentId());
                 if (parent != null) {
                     parent.getChildren().add(dept);
-                }
-            }
-        }
-
-        if (!(users == null || users.isEmpty())) {
-            // 将用户分配到部门
-            for (DeptUserVo user : users) {
-                DeptTreeVo dept = map.get(user.getDeptId());
-                if (dept != null) {
-                    dept.getUsers().add(user);
                 }
             }
         }

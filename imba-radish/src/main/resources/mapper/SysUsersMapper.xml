@@ -53,11 +53,14 @@
         u.email,
         u.nickname,
         u.enabled,
-        u.dept_id AS "deptId"
+        u.account_non_locked
         FROM
         `sys_user` u
         WHERE
         u.del_flag = '1'
+        <if test="request.deptId != null">
+            AND u.dept_id = #{request.deptId}
+        </if>
     </select>
     <select id="getAllUser" resultType="DeptUserVo">
         SELECT
@@ -114,7 +117,8 @@
         su.nickname,
         su.email,
         su.phone,
-        su.dept_id
+        su.dept_id,
+        su.avatar
         FROM
         sys_user su
         WHERE

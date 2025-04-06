@@ -32,7 +32,7 @@
         update_by,del_flag
     </sql>
 
-    <select id="getMenus" parameterType="java.util.List" resultType="MenusVo">
+    <select id="getMenuTree" parameterType="java.util.List" resultType="MenusVo">
         SELECT
         sm.id,
         sm.`name` AS "title",
@@ -50,5 +50,38 @@
         WHERE
         sur.user_id = #{userId}
         ORDER BY sm.order_num
+    </select>
+    <select id="getMenuList" parameterType="GetMenuListRequest" resultType="GetMenuListVo">
+        SELECT
+            sm.`id`,
+            sm.`name`,
+            sm.type,
+            sm.`status`,
+            sm.order_num,
+            sm.icon
+        FROM
+            `sys_menu` sm
+        WHERE
+            sm.del_flag = '1'
+        ORDER BY sm.create_time DESC
+    </select>
+    <select id="getMenu" parameterType="java.lang.Long" resultType="GetMenuVo">
+        SELECT
+            sm.id,
+            sm.parent_id,
+            sm.`name`,
+            sm.path,
+            sm.component,
+            sm.icon,
+            sm.type,
+            sm.order_num,
+            sm.`status`,
+            sm.visible,
+            sm.remark
+        FROM
+            `sys_menu` sm
+        WHERE
+            sm.del_flag = '1'
+          AND sm.id = #{id}
     </select>
 </mapper>

@@ -189,4 +189,12 @@
         sr.del_flag = '1'
         AND sur.user_id = #{userId}
     </select>
+    <select id="getDefaultRole" parameterType="java.lang.Integer" resultType="java.lang.Long">
+        SELECT
+            sr.`id`
+        FROM
+            `sys_role` sr
+        WHERE
+            sr.is_default = #{defaultRoleFlag}
+    </select>
 </mapper>

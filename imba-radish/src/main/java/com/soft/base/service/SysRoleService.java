@@ -45,4 +45,6 @@ public interface SysRoleService extends IService<SysRole> {
     List<GetUserRoleDto> getUserRole(Long userId);
 
     List<String> getRoleCodesByUserId(Long userId);
+
+    Long getDefaultRole(Integer defaultRoleFlag);
 }

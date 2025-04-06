@@ -27,6 +27,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
@@ -64,7 +66,7 @@ public class SysUserController {
 
     @PostMapping(value = "/getAllUsers")
     @Operation(summary = "获取所有用户")
-    public R<PageVo<AllUserVo>> getAllUsers(@RequestBody PageRequest request) {
+    public R<PageVo<AllUserVo>> getAllUsers(@RequestBody GetAllUsersRequest request) {
         try {
             PageVo<AllUserVo> allUsers = sysUsersService.getAllUsers(request);
             return R.ok(allUsers);
@@ -72,7 +74,6 @@ public class SysUserController {
             log.error(e.getMessage(), e);
             return R.fail();
         }
-
     }
 
     @SysLog(value = "修改密码", module = LogModuleEnum.USER)
@@ -183,7 +184,10 @@ public class SysUserController {
         try {
             UserInfoVo userInfoVo = new UserInfoVo();
             BeanUtils.copyProperties(securityUtil.getUserInfo(), userInfoVo);
-            userInfoVo.setPermissions(sysPermissionService.getPermissionsByRoleCodes(securityUtil.getRoleCodes()));
+            List<String> roleCodes = securityUtil.getRoleCodes();
+            if (roleCodes != null && !roleCodes.isEmpty()) {
+                userInfoVo.setPermissions(sysPermissionService.getPermissionsByRoleCodes(roleCodes));
+            }
             return R.ok(userInfoVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

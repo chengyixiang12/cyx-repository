@@ -27,12 +27,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * @Author: cyx
@@ -62,7 +61,7 @@ public class SysFileController {
 
     @PostMapping
     @Operation(summary = "上传文件")
-    public R uploadFile(@RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) {
+    public R<UploadFileVo> uploadFile(@RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) {
         if (multipartFile == null) {
             return R.fail("文件不能为空");
         }
@@ -92,9 +91,9 @@ public class SysFileController {
             }
 
             // 设置响应头
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            String mimeType = Files.probeContentType(Paths.get(fileDetail.getOriginalName()));
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentType(MediaType.parseMediaType(mimeType != null ? mimeType : MediaType.APPLICATION_OCTET_STREAM_VALUE));
 
             //流式传输
             StreamingResponseBody responseBody = outputStream -> {

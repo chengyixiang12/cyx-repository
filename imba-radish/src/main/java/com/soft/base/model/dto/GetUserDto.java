@@ -30,4 +30,7 @@ public class GetUserDto {
 
     @Schema(description = "部门id")
     private Long deptId;
+
+    @Schema(description = "用户头像")
+    private Long avatar;
 }

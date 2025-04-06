@@ -31,6 +31,9 @@ public class GetUserVo {
     @Schema(description = "手机号码")
     private String phone;
 
+    @Schema(description = "用户头像")
+    private Long avatar;
+
     private GetUserDeptDto getUserDeptDto;
 
     private List<GetUserRoleDto> getUserRoleDtoList;

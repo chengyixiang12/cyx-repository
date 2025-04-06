@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.model.dto.GetUserDto;
 import com.soft.base.model.dto.GetUserRoleDto;
@@ -86,9 +87,9 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
-    public PageVo<AllUserVo> getAllUsers(PageRequest request) {
+    public PageVo<AllUserVo> getAllUsers(GetAllUsersRequest request) {
         IPage<AllUserVo> page = new Page<>(request.getPageNum(), request.getPageSize());
-        Page<AllUserVo> allUsers = sysUsersMapper.getAllUsers(page);
+        Page<AllUserVo> allUsers = sysUsersMapper.getAllUsers(page, request);
         PageVo<AllUserVo> pageVo = new PageVo<>();
         pageVo.setResult(allUsers.getRecords());
         pageVo.setTotal(allUsers.getTotal());
@@ -167,16 +168,22 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
         // 保存角色
         List<Long> roleIds = request.getRoleIds();
-        if (roleIds != null && !roleIds.isEmpty()) {
-            List<SysUserRole> userRoles = new ArrayList<>();
-            roleIds.forEach(item -> {
-                SysUserRole sysUserRole = new SysUserRole();
-                sysUserRole.setRoleId(item);
-                sysUserRole.setUserId(sysUser.getId());
-                userRoles.add(sysUserRole);
-            });
-            sysUserRoleService.insertBatch(userRoles);
+        Long defaultRoleId = sysRoleService.getDefaultRole(BaseConstant.DEFAULT_ROLE_FLAG);
+        if (roleIds == null) {
+            roleIds = new ArrayList<>();
+
         }
+        if (!roleIds.contains(defaultRoleId)) {
+            roleIds.add(defaultRoleId);
+        }
+        List<SysUserRole> userRoles = new ArrayList<>();
+        roleIds.forEach(item -> {
+            SysUserRole sysUserRole = new SysUserRole();
+            sysUserRole.setRoleId(item);
+            sysUserRole.setUserId(sysUser.getId());
+            userRoles.add(sysUserRole);
+        });
+        sysUserRoleService.insertBatch(userRoles);
     }
 
     @Override

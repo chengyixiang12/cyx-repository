@@ -1,12 +1,16 @@
 package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.model.dto.ExportDeptDto;
 import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.entity.SysDept;
 import com.soft.base.model.request.DeleteRequest;
+import com.soft.base.model.request.GetDeptsRequest;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
+import com.soft.base.model.vo.GetDeptsVo;
+import com.soft.base.model.vo.PageVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -30,6 +34,9 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
     GetUserDeptDto getUserDept(@Param("deptId") Long deptId);
 
     List<ExportDeptDto> exportDept(@Param("ids") List<Long> ids);
+
+    PageVo<GetDeptsVo> getDepts(@Param("page") IPage<GetDeptsVo> page,
+                                @Param("request") GetDeptsRequest request);
 }
 
 

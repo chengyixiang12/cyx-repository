@@ -222,4 +222,9 @@ public class BaseConstant {
      * 图形验证码类型
      */
     public final static String GRAPHICS_CAPTCHA_TYPE = "PNG";
+
+    /**
+     * 部门层级加1
+     */
+    public final static Integer DEPT_LEVEL_ADD_ONE = 1;
 }

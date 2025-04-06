@@ -73,9 +73,9 @@ spring:
     host: smtp.qq.com
     port: 587
     #发送方邮箱
-    username:
+    username: chengyixiang157@qq.com
     #授权码
-    password:
+    password: ztkckjnoopdugbgb
     properties:
       mail:
         smtp:
@@ -177,7 +177,7 @@ manage-system:
     expire-time: 300
   graphics:
     #图形验证码过期时间（秒）
-    expire-time: 60
+    expire-time: 20
   token:
     #token过期时间（秒）
     expire-time: 36000

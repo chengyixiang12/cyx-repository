@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysUser;
 import com.soft.base.model.dto.GetUserDto;
 import com.soft.base.model.dto.UserEmailDto;
+import com.soft.base.model.request.GetAllUsersRequest;
 import com.soft.base.model.vo.AllUserVo;
 import com.soft.base.model.vo.DeptUserVo;
 import org.apache.ibatis.annotations.Param;
@@ -19,7 +20,8 @@ import java.util.List;
 * @Entity com.soft.entity.Users
 */
 public interface SysUsersMapper extends BaseMapper<SysUser> {
-    Page<AllUserVo> getAllUsers(IPage<AllUserVo> page);
+    Page<AllUserVo> getAllUsers(@Param("page") IPage<AllUserVo> page,
+                                @Param("request") GetAllUsersRequest request);
 
     List<DeptUserVo> getAllUser();
 

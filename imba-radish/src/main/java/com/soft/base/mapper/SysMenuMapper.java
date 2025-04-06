@@ -1,7 +1,11 @@
 package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysMenu;
+import com.soft.base.model.request.GetMenuListRequest;
+import com.soft.base.model.vo.GetMenuListVo;
+import com.soft.base.model.vo.GetMenuVo;
 import com.soft.base.model.vo.MenusVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,7 +19,12 @@ import java.util.List;
 */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<MenusVo> getMenus(@Param("userId") Long userId);
+    List<MenusVo> getMenuTree(@Param("userId") Long userId);
+
+    IPage<GetMenuListVo> getMenuList(@Param("page") IPage<GetMenuListVo> page,
+                     @Param("request") GetMenuListRequest request);
+
+    GetMenuVo getMenu(@Param("id") Long id);
 }
 
 

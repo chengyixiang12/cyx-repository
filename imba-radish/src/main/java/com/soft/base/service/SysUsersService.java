@@ -15,7 +15,7 @@ import java.io.IOException;
 * @createDate 2024-09-30 15:49:52
 */
 public interface SysUsersService extends IService<SysUser> {
-    PageVo<AllUserVo> getAllUsers(PageRequest request);
+    PageVo<AllUserVo> getAllUsers(GetAllUsersRequest request);
 
     void editPassword(String targetPass, Long id);
 

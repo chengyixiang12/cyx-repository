@@ -21,18 +21,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<R<Object>> methodNotSupportException(HttpRequestMethodNotSupportedException ex) {
         log.error(ex.getLocalizedMessage());
-        return new ResponseEntity<>(R.fail("不支持的请求方式"), HttpStatus.METHOD_NOT_ALLOWED);
+        return new ResponseEntity<>(R.fail("不支持的请求方式"), HttpStatus.OK);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<R<Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.error(ex.getLocalizedMessage());
-        return new ResponseEntity<>(R.fail("非法日期格式"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(R.fail("非法日期格式"), HttpStatus.OK);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<R<Object>> noResourceFoundException(NoResourceFoundException ex) {
         log.error(ex.getLocalizedMessage());
-        return new ResponseEntity<>(R.fail("未找到资源"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(R.fail("未找到资源"), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<R<Object>> Exception(Exception ex) {
+        log.error(ex.getLocalizedMessage());
+        return new ResponseEntity<>(R.fail(), HttpStatus.OK);
     }
 }

@@ -56,15 +56,15 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 throw new GlobalException("文件名不能为空");
             }
 
-            MessageDigest digest = MessageDigest.getInstance("SHA-265");
-            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
-                byte[] buffer = new byte[8192];
-                while (dis.read(buffer) != -1) {
-                    // 读取流数据，自动计算 Hash
-                }
-            }
-            byte[] hashBytes = digest.digest();
-            String hashCode = new BigInteger(1, hashBytes).toString(16);
+//            MessageDigest digest = MessageDigest.getInstance("SHA-265");
+//            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
+//                byte[] buffer = new byte[8192];
+//                while (dis.read(buffer) != -1) {
+//                    // 读取流数据，自动计算 Hash
+//                }
+//            }
+//            byte[] hashBytes = digest.digest();
+//            String hashCode = new BigInteger(1, hashBytes).toString(16);
 
             long fileSize = multipartFile.getSize();
             String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));

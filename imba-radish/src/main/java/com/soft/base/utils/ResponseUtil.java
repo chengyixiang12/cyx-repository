@@ -14,14 +14,14 @@ import java.nio.charset.StandardCharsets;
 public class ResponseUtil {
 
     /**
-     * 异常消息返回(适用过滤器中处理异常响应)
+     * 消息返回
      *
      * @param response  HttpServletResponse
-     * @param resultCode 响应结果码
+     * @param httpCode 状态码
      */
-    public static void writeErrMsg(HttpServletResponse response, Integer resultCode, R<Object> result) {
+    public static void writeMsg(HttpServletResponse response, int httpCode, R<Object> result) {
 
-        response.setStatus(resultCode);
+        response.setStatus(httpCode);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 

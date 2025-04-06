@@ -114,23 +114,22 @@ public class AuthServiceImpl implements AuthService {
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), authorizationExpire, TimeUnit.SECONDS);
-            loginVo.setToken(TokenConstant.TOKEN_PREFIX + token);
+            loginVo.setToken(token);
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (BadCredentialsException e) {
-            Boolean hasKey = redisTemplate.hasKey(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());
-            hasKey = hasKey != null && hasKey;
-            Long decrement = BaseConstant.MAX_LOGIN_ERROR_TIME;
-            if (hasKey) {
-                decrement = redisTemplate.opsForValue().decrement(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());
-                if (BaseConstant.LONG_INIT_VAL.equals(decrement)) {
+            Long errorTime = (Long) redisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());;
+            if (errorTime != null) {
+                if (BaseConstant.LONG_INIT_VAL.equals(errorTime)) {
                     sysUsersService.lockUser(request.getUsername());
                     throw new LockedException("登录次数用完，您的账号已锁定");
                 }
+                redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), --errorTime);
             } else {
-                redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), BaseConstant.MAX_LOGIN_ERROR_TIME);
+                errorTime = BaseConstant.MAX_LOGIN_ERROR_TIME;
+                redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), errorTime);
             }
-            throw new BadCredentialsException(e.getMessage() + "，您还有" + decrement + "次登录机会");
+            throw new BadCredentialsException(e.getMessage() + "，您还有" + errorTime + "次登录机会");
         } catch (DisabledException e) {
             throw new DisabledException(e.getMessage());
         } catch (LockedException e) {
