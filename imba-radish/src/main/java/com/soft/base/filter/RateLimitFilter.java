@@ -12,11 +12,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * @Author: cyx
@@ -38,14 +40,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
-        log.info("用户ip：{}", clientIp);
-        log.info("用户请求接口路径：{}", request.getRequestURI());
-        String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
-
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         if (rateLimitProperty.getEnable()) {
-            String key = RedisConstant.RATE_LIMIT_KEY + requestURI;
+            String key = getIp(request);
             // 获取当前时间戳
             long currentTimestamp = System.currentTimeMillis();
 
@@ -66,5 +63,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @NotNull
+    private static String getIp(HttpServletRequest request) {
+        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
+        //        String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
+//            log.info("用户ip：{}", clientIp);
+//            log.info("用户请求接口路径：{}", request.getRequestURI());
+        String escapedRegex = Pattern.quote(BaseConstant.FILE_POINT_SUFFIX);
+        return RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(escapedRegex, BaseConstant.BLANK_CHARACTER);
     }
 }
