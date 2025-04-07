@@ -139,6 +139,6 @@ onMounted(() => {
   if (props.menuId) {
     getMenu()
   }
-  getMenuTree()
+  // getMenuTree()
 })
 </script>
