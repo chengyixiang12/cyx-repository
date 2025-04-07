@@ -68,7 +68,6 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
             usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            log.info("context already set...");
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -76,7 +75,6 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
         } finally {
             // 清除安全上下文
             SecurityContextHolder.clearContext();
-            log.info("securityContextHolder cleared...");
         }
     }
 }

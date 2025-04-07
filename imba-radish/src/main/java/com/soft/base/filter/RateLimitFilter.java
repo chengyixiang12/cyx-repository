@@ -33,14 +33,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     public RateLimitFilter(RedisTemplate<String, Object> redisTemplate,
                            RateLimitProperty rateLimitProperty) {
-        this.redisTemplate  = redisTemplate;
+        this.redisTemplate = redisTemplate;
         this.rateLimitProperty = rateLimitProperty;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
-        log.info(request.getRequestURI());
+        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
+        log.info("用户ip：{}", clientIp);
+        log.info("用户请求接口路径：{}", request.getRequestURI());
         String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
 
         if (rateLimitProperty.getEnable()) {
