@@ -61,8 +61,8 @@ logging:
     com.soft.cyx.mapper: debug
     root: info
   config: classpath:logback-spring.xml
-#是否开启日志记录
 log:
+  #是否开启日志记录
   enable: true
   #是否记录请求及响应数据
   record-param: false

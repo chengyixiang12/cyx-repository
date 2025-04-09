@@ -4,6 +4,8 @@
     <!--禁用JNDI-->
     <disableJNDI>true</disableJNDI>
     <withJansi>true</withJansi>
+    <!--配置日志生成路径-->
+    <springProperty scope="context" name="LOG_HOME" source="log.file.home" defaultValue="logs"/>
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -17,7 +19,6 @@
     <!-- 文件输出，按天滚动日志 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <springProperty scope="context" name="LOG_HOME" source="log.file.home" defaultValue="logs"/>
             <fileNamePattern>${LOG_HOME}/develop.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
