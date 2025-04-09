@@ -48,7 +48,7 @@ mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
   global-config:
     db-config:
       id-type: auto
@@ -56,14 +56,6 @@ mybatis-plus:
       logic-not-delete-value: 1
       logic-delete-field: delFlag
   type-aliases-package: com.soft.base.model.entity, com.soft.base.model.request, com.soft.base.model.vo, com.soft.base.model.dto
-#日志
-logging:
-  level:
-    root: info
-    com.baomidou.mybatisplus: debug
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:

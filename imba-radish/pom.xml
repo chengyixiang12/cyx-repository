@@ -22,12 +22,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mysql.version>8.0.31</mysql.version>
         <minio.version>8.5.1</minio.version>
-        <mybatisplus.version>3.5.7</mybatisplus.version>
+        <mybatisplus.version>3.5.8</mybatisplus.version>
         <jwt.version>0.9.1</jwt.version>
         <knife4j.version>4.5.0</knife4j.version>
         <hutool.version>5.8.28</hutool.version>
         <fastjson.version>2.0.53</fastjson.version>
-        <mybatis-spring.version>3.0.3</mybatis-spring.version>
         <javax.version>2.3.1</javax.version>
         <agent.version>1.21</agent.version>
         <poi.version>4.1.2</poi.version>
@@ -120,19 +119,8 @@
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>${mybatisplus.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>mybatis-spring</artifactId>
-                    <groupId>org.mybatis</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>${mybatis-spring.version}</version>
         </dependency>
         <!--已弃用-->
         <dependency>

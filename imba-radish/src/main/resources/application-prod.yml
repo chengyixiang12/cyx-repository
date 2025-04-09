@@ -54,6 +54,16 @@ spring:
           max-wait: 5000
 #日志
 logging:
+  level:
+    com.baomidou.mybatisplus: debug
+    org.mybatis: debug
+    com.soft.base.mapper: debug
+    com.soft.cyx.mapper: debug
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  config: classpath:logback-spring.xml
   file:
     name: /app/logs/develop.log
 #临时文件存储路径
