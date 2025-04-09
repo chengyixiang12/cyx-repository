@@ -85,6 +85,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         return sysMenuMapper.getMenu(id);
     }
 
+    @Override
+    public void deleteMenu(Long id) {
+        List<Long> ids = new ArrayList<>();
+        ids.add(id);
+        List<Long> tmpList = new ArrayList<>();
+        do {
+            tmpList.addAll(ids);
+            ids = sysMenuMapper.getByIds(ids);
+        } while (!ids.isEmpty());
+        sysMenuMapper.deleteByIds(tmpList);
+    }
+
     /**
      * 菜单架构树
      * @param menusVos

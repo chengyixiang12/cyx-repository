@@ -28,4 +28,6 @@ public interface SysMenuService extends IService<SysMenu> {
     PageVo<GetMenuListVo> getMenuList(GetMenuListRequest request);
 
     GetMenuVo getMenu(Long id);
+
+    void deleteMenu(Long id);
 }

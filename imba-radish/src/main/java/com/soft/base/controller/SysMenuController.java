@@ -109,11 +109,12 @@ public class SysMenuController {
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R deleteMenu(@PathVariable(value = "id") Long id) {
+    public R<Object> deleteMenu(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
         try {
+            sysMenuService.deleteMenu(id);
             return R.ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);

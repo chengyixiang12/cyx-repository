@@ -35,7 +35,7 @@
     <select id="getMenuTree" parameterType="java.util.List" resultType="MenusVo">
         SELECT
         sm.id,
-        sm.`name` AS "title",
+        sm.`name`,
         sm.icon,
         sm.path,
         sm.component,
@@ -83,5 +83,17 @@
         WHERE
             sm.del_flag = '1'
           AND sm.id = #{id}
+    </select>
+    <select id="getByIds" parameterType="java.util.List" resultType="java.lang.Long">
+        SELECT
+            sm.`id`
+        FROM
+            sys_menu sm
+        WHERE
+            sm.del_flag = '1'
+          AND sm.parent_id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 </mapper>

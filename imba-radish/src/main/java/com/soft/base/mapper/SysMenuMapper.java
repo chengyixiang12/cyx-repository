@@ -25,6 +25,8 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
                      @Param("request") GetMenuListRequest request);
 
     GetMenuVo getMenu(@Param("id") Long id);
+
+    List<Long> getByIds(@Param("ids") List<Long> ids);
 }
 
 
