@@ -6,12 +6,12 @@ server:
     connection-timeout: 10000
 spring:
   profiles:
-    active: dev
-  config:
-    #指定配置文件
-    location: classpath:/application.yml
-    #指定额外配置文件（会覆盖掉相同的配置，额外配置优先级最高）
-    import: classpath:application-dev.yml
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+#  config:
+#    #指定配置文件
+#    location: classpath:/application.yml
+#    #指定额外配置文件（会覆盖掉相同的配置，额外配置优先级最高）
+#    import: classpath:application-dev.yml
   mvc:
     async:
       request-timeout: 150000
@@ -114,11 +114,6 @@ manage-system:
   token:
     #token过期时间（秒）
     expire-time: 36000
-#是否开启日志记录
-log:
-  enable: true
-  #是否记录请求及响应数据
-  record-param: false
 #webclient配置
 web-client:
   #响应超时；单位：秒

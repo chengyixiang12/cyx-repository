@@ -15,10 +15,10 @@ COPY /config/application.yml /app/config/application.yml
 
 # 将本地的 JAR 文件复制到容器中
 # 假设你的 JAR 文件是 target 目录下的 app.jar，可以根据实际情况修改
-COPY ./manage-system-1.0-SNAPSHOT.jar /manage-system-1.0-SNAPSHOT.jar
+COPY ./imba-radish-1.0-SNAPSHOT.jar /imba-radish-1.0-SNAPSHOT.jar
 
 # 设定容器启动时运行的命令
-ENTRYPOINT ["java", "-jar", "-Dfile.encoding=utf-8", "/manage-system-1.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "-Dfile.encoding=utf-8", "/manage-system-1.0-SNAPSHOT.jar", "--SPRING_PROFILES_ACTIVE=prod"]
 
 # 容器对外暴露的端口，通常是 8081
 EXPOSE 8081

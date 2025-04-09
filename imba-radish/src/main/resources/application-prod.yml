@@ -60,12 +60,14 @@ logging:
     com.soft.base.mapper: debug
     com.soft.cyx.mapper: debug
     root: info
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   config: classpath:logback-spring.xml
+#是否开启日志记录
+log:
+  enable: true
+  #是否记录请求及响应数据
+  record-param: false
   file:
-    name: /app/logs/develop.log
+    home: app/logs
 #临时文件存储路径
 tmp:
   path: /app/tmp

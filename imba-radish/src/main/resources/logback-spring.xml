@@ -17,10 +17,10 @@
     <!-- 文件输出，按天滚动日志 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/develop.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxFileSize>100MB</maxFileSize>
+            <springProperty scope="context" name="LOG_HOME" source="log.file.home" defaultValue="logs"/>
+            <fileNamePattern>${LOG_HOME}/develop.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>10GB</totalSizeCap>
+            <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
