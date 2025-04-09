@@ -1,11 +1,11 @@
 export interface MenuItem {
   id: number
   path: string
-  component: string  // 对应views目录下的组件路径
-  title: string
+  component?: string  // 对应views目录下的组件路径
+  name: string
   icon?: string
   noAuth?: boolean   // 是否不需要认证
-  parentId: number
+  parentId?: number
   children?: MenuItem[]
 }
 
@@ -35,7 +35,7 @@ export interface GetMenuVo {
   parentId: number;
   name: string;
   path: string;
-  component: string;
+  component: string | null;
   icon: string;
   type: string;
   orderNum: number;

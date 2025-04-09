@@ -63,9 +63,15 @@
               <el-table-column label="操作" width="180" align="center">
                 <template #default="scope">
                   <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
-                  <el-button size="small" type="danger" @click="handleDelete(scope.row)">
-                    删除
-                  </el-button>
+                  <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
+                    @confirm="handleDelete(scope.row.id)">
+                    <template #reference>
+                      <el-button size="small" type="danger">
+                        删除
+                      </el-button>
+                    </template>
+                  </el-popconfirm>
+
                 </template>
               </el-table-column>
             </el-table>
@@ -208,34 +214,9 @@ const handleDeptClick = (data: DeptTreeVo) => {
   loadUsers()
 }
 
-const handleDelete = (row: AllUserVo) => {
-  ElMessageBox.confirm(
-    `确定要删除用户 "${row.username}" 吗？此操作不可恢复！`,
-    '删除确认',
-    {
-      confirmButtonText: '确定删除',
-      cancelButtonText: '取消',
-      type: 'warning',
-      dangerouslyUseHTMLString: true,
-      beforeClose: (action, instance, done) => {
-        if (action === 'confirm') {
-          instance.confirmButtonLoading = true
-          deleteUserById(row.id).then((res) => {
-            loadUsers()
-            done()
-          }).catch(() => {
-            done()
-          }).finally(() => {
-            instance.confirmButtonLoading = false
-          })
-        } else {
-          done()
-        }
-      }
-    }
-  ).catch(() => {
-    ElMessage.info('已取消删除')
-  })
+const handleDelete = async (id: number) => {
+  await deleteUserById(id);
+  await loadUsers();
 }
 
 const handlePageChange = (page: number) => {
@@ -288,8 +269,11 @@ onMounted(() => {
 
 .dept-card-header {
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center;     /* 垂直居中 */
-  height: 40px;           /* 设置合适的高度 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  height: 40px;
+  /* 设置合适的高度 */
 }
 </style>

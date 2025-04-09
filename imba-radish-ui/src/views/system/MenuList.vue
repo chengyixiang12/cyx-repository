@@ -48,7 +48,12 @@
           <el-table-column label="操作" align="center" fixed="right">
             <template #default="scope">
               <el-button size="small" @click="handleEdit(scope.row.id)">编辑</el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+              <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
+                @confirm="handleDelete(scope.row.id)">
+                <template #reference>
+                  <el-button size="small" type="danger">删除</el-button>
+                </template>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -63,15 +68,17 @@
     </el-card>
   </div>
 
-  <menu-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" @submit="handleAddSubmit" />
-  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :menu-id="menuId" @submit="handleEditSubmit" />
+  <menu-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
+    @submit="handleAddSubmit" />
+  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :menu-id="menuId"
+    @submit="handleEditSubmit" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { GetMenuListRequest, GetMenuListVo, MenuType, GetMenuVo } from '@/types/menu'
-import { getMenuList } from '@/api/menu'
+import { getMenuList, deleteMenuApi } from '@/api/menu'
 import MenuFormDialog from '@/components/system/MenuFormDialog.vue'
 
 const pagination = ref({
@@ -82,8 +89,8 @@ const pagination = ref({
 
 const getMenuListRequest = ref<GetMenuListRequest>({
   menuName: '',
-  pageNum: pagination.value.current,
-  pageSize: pagination.value.size
+  pageNum: 1,
+  pageSize: 10
 })
 
 const loading = ref(false)
@@ -99,7 +106,7 @@ const handleAddSubmit = async () => {
 
 // 编辑提交逻辑
 const handleEditSubmit = async (formData: GetMenuVo) => {
-  
+
 }
 
 // 加载菜单数据
@@ -124,22 +131,25 @@ const handleEdit = async (id: number) => {
 
 // 删除
 const handleDelete = async (id: number) => {
+  await deleteMenuApi(id)
+  await loadMenuList();
 
 }
 
 // 刷新列表
 const refreshList = async () => {
-  loadMenuList()
+  await loadMenuList()
 }
 
 // 分页变化
 const handleSizeChange = (size: number) => {
-  pagination.value.size = size
+  getMenuListRequest.value.pageSize = size
   pagination.value.current = 1
+  loadMenuList()
 }
 
 const handlePageChange = (page: number) => {
-  pagination.value.current = page
+  getMenuListRequest.value.pageNum = page
   loadMenuList()
 }
 

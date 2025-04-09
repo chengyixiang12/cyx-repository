@@ -1,14 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import MainLayout from '../layouts/MainLayout.vue'
+import { MenuItem } from '../types/menu'
 
-// 1. 定义菜单项类型
-interface MenuItem {
-  path: string
-  title: string
-  icon?: string
-  component?: string
-  children?: MenuItem[]
-}
 
 // 2. 基础路由
 const constantRoutes: RouteRecordRaw[] = [
@@ -82,7 +75,7 @@ function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteReco
     name: menu.path.replace(/\s+/g, '-').toLowerCase(),
     component: () => import(/* @vite-ignore */ componentPath),
     meta: {
-      title: menu.title,
+      title: menu.name,
       icon: menu.icon,
       parentPath: parentPath,
       requiresAuth: true

@@ -4,8 +4,8 @@ import { PaginatedData, PaginatedResponse } from '@/types/api'
 import { ApiResponse } from '@/types/login';
 
 export async function getUserList(data: any): Promise<PaginatedData<AllUserVo>> {
-   const users = await post<PaginatedData<AllUserVo>>('/user/getAllUsers', data, { flag: true });
-   return users.data;
+   const res = await post<PaginatedData<AllUserVo>>('/user/getAllUsers', data, { flag: true });
+   return res.data;
 }
 
 /**
@@ -31,8 +31,8 @@ export async function updateUser(params: EditUserRequest): Promise<any> {
  * @returns 
  */
 export async function getUser(param: number): Promise<GetUserVo> {
-   const getUserVo = await get<GetUserVo>(`/user/getUser/${param}`, { flag: true })
-   return getUserVo.data;
+   const res = await get<GetUserVo>(`/user/getUser/${param}`, { flag: true })
+   return res.data;
 }
 
 /**

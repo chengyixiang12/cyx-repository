@@ -7,8 +7,8 @@ import { UploadFileVo } from '@/types/file';
  * @returns 
  */
 export async function getFileById(param?: number): Promise<Blob> {
-  const file = await get<Blob>('/file/downloadFile', { flag: true, params: { id: param }, responseType: 'blob'});
-  return file.data;
+  const res = await get<Blob>('/file/downloadFile', { flag: true, params: { id: param }, responseType: 'blob'});
+  return res.data;
 }
 
 /**
@@ -16,6 +16,6 @@ export async function getFileById(param?: number): Promise<Blob> {
  * @param params 
  */
 export async function uploadFile(params?: FormData): Promise<UploadFileVo> {
-  const uploadFileVo = await post<UploadFileVo>('/file', params, { flag: true })
-  return uploadFileVo.data;
+  const res = await post<UploadFileVo>('/file', params, { flag: true })
+  return res.data;
 }

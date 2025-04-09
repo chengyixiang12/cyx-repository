@@ -22,8 +22,8 @@ export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uu
 export async function login(
   params: LoginRequest
 ): Promise<LoginVo> {
-  const loginVo = await post<LoginVo>('/auth/login', params, { flag: false, silent: true });
-  return loginVo.data;
+  const res = await post<LoginVo>('/auth/login', params, { flag: false, silent: true });
+  return res.data;
 }
 
 /**
@@ -31,14 +31,14 @@ export async function login(
 * @param params 登录参数
 */
 export async function getUserInfo(): Promise<UserInfoVo> {
-  const userInfoVo = await get<UserInfoVo>('/user/getUserInfo', { flag: true });
-  return userInfoVo.data;
+  const res = await get<UserInfoVo>('/user/getUserInfo', { flag: true });
+  return res.data;
 }
 
 /**
 * 退出登录
 */
 export async function logouted(): Promise<any> {
-  const logout = await get('/logout', { flag: true });
-  return logout.data
+  const res = await get('/logout', { flag: true });
+  return res.data
 }

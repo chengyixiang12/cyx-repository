@@ -53,13 +53,13 @@
                                 <el-icon v-if="menu.icon">
                                     <component :is="menu.icon" />
                                 </el-icon>
-                                <span>{{ menu.title }}</span>
+                                <span>{{ menu.name }}</span>
                             </template>
                             <el-menu-item v-for="child in menu.children" :key="child.path" :index="`${child.path}`">
                                 <el-icon v-if="child.icon">
                                     <component :is="child.icon" />
                                 </el-icon>
-                                <span>{{ child.title }}</span>
+                                <span>{{ child.name }}</span>
                             </el-menu-item>
                         </el-sub-menu>
 
