@@ -37,6 +37,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.error("websocket连接异常，指令为空");
             return;
         }
+        if (!WebSocketOrderEnum.exist(order)) {
+            SendParams sendParams = new SendParams();
+            sendParams.setStatus(false);
+            sendParams.setMessage("无效的指令");
+            log.error("无效的指令");
+            return;
+        }
 
         @SuppressWarnings("unchecked")
         WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(order);

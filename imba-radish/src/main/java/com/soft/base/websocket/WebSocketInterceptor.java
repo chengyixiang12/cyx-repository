@@ -24,7 +24,6 @@ import java.util.Map;
  * @DateTime: 2024/11/21 20:02
  **/
 @Slf4j
-@Component
 public class WebSocketInterceptor implements HandshakeInterceptor {
 
     private final UserDetailsService userDetailsService;

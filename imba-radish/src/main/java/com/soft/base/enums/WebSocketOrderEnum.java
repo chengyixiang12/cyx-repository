@@ -1,5 +1,7 @@
 package com.soft.base.enums;
 
+import java.util.Arrays;
+
 /**
  * @Author: cyx
  * @Description: websocket指令集
@@ -45,4 +47,15 @@ public enum WebSocketOrderEnum {
      * 批量文件上传
      */
     FILES_TRANSFER,
+
+    ;
+
+    /**
+     * 判断入参是否存在于枚举中
+     * @param order
+     * @return
+     */
+    public static Boolean exist(String order) {
+        return Arrays.stream(WebSocketOrderEnum.values()).anyMatch(item -> item.toString().equals(order));
+    }
 }
