@@ -7,20 +7,20 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.model.dto.GetUserDeptDto;
-import com.soft.base.model.dto.GetUserDto;
-import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.entity.SysUser;
 import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.mapper.SysUsersMapper;
+import com.soft.base.model.dto.GetUserDeptDto;
+import com.soft.base.model.dto.GetUserDto;
+import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.model.request.*;
-import com.soft.base.service.*;
-import com.soft.base.utils.RSAUtil;
 import com.soft.base.model.vo.AllUserVo;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.service.*;
+import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
@@ -280,7 +280,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     public boolean existsEmail(Long id, String email) {
-        return sysUsersMapper.existsEmail(id, email) > 0;
+        return sysUsersMapper.existsEmail(id, email);
     }
 
     @Override

@@ -1,10 +1,10 @@
 package com.soft.base.controller;
 
 import com.soft.base.model.request.LogsRequest;
-import com.soft.base.resultapi.R;
-import com.soft.base.service.SysLogService;
 import com.soft.base.model.vo.LogsVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.resultapi.R;
+import com.soft.base.service.SysLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;

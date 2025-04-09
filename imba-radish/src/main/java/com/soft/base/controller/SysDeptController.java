@@ -1,17 +1,16 @@
 package com.soft.base.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.model.dto.ExportDeptDto;
 import com.soft.base.enums.LogModuleEnum;
+import com.soft.base.model.dto.ExportDeptDto;
 import com.soft.base.model.request.*;
+import com.soft.base.model.vo.DeptTreeVo;
+import com.soft.base.model.vo.DeptVo;
 import com.soft.base.model.vo.GetDeptsVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDeptService;
-import com.soft.base.model.vo.DeptTreeVo;
-import com.soft.base.model.vo.DeptVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -75,10 +74,12 @@ public class SysDeptController {
         if (StringUtils.isBlank(request.getCode())) {
             return R.fail("部门编码不能为空");
         }
+        if (sysDeptService.existCode(request.getCode())) {
+            return R.fail("部门编码已存在");
+        }
         if (StringUtils.isBlank(request.getName())) {
             return R.fail("部门名称不能为空");
         }
-
         try {
             Boolean notEmpty = sysDeptService.isNotEmpty();
             // 如果数据库中存在值，则父id不能为空
@@ -104,6 +105,15 @@ public class SysDeptController {
     public R editDept(@RequestBody EditDeptRequest request) {
         if (request.getId() == null) {
             return R.fail("id不能为空");
+        }
+        if (StringUtils.isBlank(request.getCode())) {
+            return R.fail("部门编码不能为空");
+        }
+        if (sysDeptService.existCode(request.getCode())) {
+            return R.fail("部门编码已存在");
+        }
+        if (StringUtils.isBlank(request.getName())) {
+            return R.fail("部门名称不能为空");
         }
         try {
             sysDeptService.editDept(request);

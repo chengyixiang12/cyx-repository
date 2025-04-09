@@ -2,16 +2,14 @@ package com.soft.base.controller;
 
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
+import com.soft.base.model.vo.PublicKeyVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SecretKeyService;
-import com.soft.base.model.vo.PublicKeyVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

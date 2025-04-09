@@ -4,26 +4,22 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
+import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
-import com.soft.base.service.SysFileService;
-import com.soft.base.utils.MinioUtil;
-import com.soft.base.utils.UniversalUtil;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UploadFileVo;
+import com.soft.base.service.SysFileService;
+import com.soft.base.utils.MinioUtil;
+import com.soft.base.utils.UniversalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.math.BigInteger;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
 
 /**
 * @author cyq

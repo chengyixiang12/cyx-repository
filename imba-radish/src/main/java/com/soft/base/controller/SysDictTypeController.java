@@ -5,10 +5,10 @@ import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.EditDictTypeRequest;
 import com.soft.base.model.request.SaveDictTypeRequest;
-import com.soft.base.resultapi.R;
-import com.soft.base.service.SysDictTypeService;
 import com.soft.base.model.vo.DictTypeVo;
 import com.soft.base.model.vo.DictTypesVo;
+import com.soft.base.resultapi.R;
+import com.soft.base.service.SysDictTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -62,6 +62,9 @@ public class SysDictTypeController {
         if (StringUtils.isBlank(request.getDictType())) {
             return R.fail("字典类型不能为空");
         }
+        if (sysDictTypeService.existDictType(request.getDictType())) {
+            return R.fail("字典类型已存在");
+        }
         try {
             sysDictTypeService.saveDictType(request);
             return R.ok();
@@ -78,6 +81,12 @@ public class SysDictTypeController {
     public R editDictType(@RequestBody EditDictTypeRequest request) {
         if (request.getId() == null) {
             return R.fail("主键不能为空");
+        }
+        if (StringUtils.isBlank(request.getDictType())) {
+            return R.fail("字典类型不能为空");
+        }
+        if (sysDictTypeService.existDictType(request.getDictType())) {
+            return R.fail("字典类型已存在");
         }
         try {
             sysDictTypeService.editDictType(request);

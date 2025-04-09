@@ -39,7 +39,7 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
 
     String getUsernameById(@Param("id") Long id);
 
-    Long existsEmail(@Param("id") Long id,
+    Boolean existsEmail(@Param("id") Long id,
                         @Param("email") String email);
 
     String getUsername(@Param("id") Long id);

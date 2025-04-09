@@ -3,14 +3,14 @@ package com.soft.base.controller;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RegexConstant;
-import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.entity.SysRole;
 import com.soft.base.enums.LogModuleEnum;
+import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.request.*;
-import com.soft.base.resultapi.R;
-import com.soft.base.service.SysRoleService;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
+import com.soft.base.resultapi.R;
+import com.soft.base.service.SysRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -50,6 +50,9 @@ public class SysRoleController {
         if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
             return R.fail("无效的角色编码");
         }
+        if (sysRoleService.existCode(request.getCode())) {
+            R.fail("角色编码已存在");
+        }
         if (request.getStatus() == null) {
             request.setStatus(BaseConstant.DEF_STATUS);
         }
@@ -74,7 +77,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_edit')")
     @PutMapping
     @Operation(summary = "编辑角色")
-    public R editRole(@RequestBody EditRoleRequest request) {
+    public R<Object> editRole(@RequestBody EditRoleRequest request) {
         if (request.getId() == null) {
             return R.fail("主键不能为空");
         }

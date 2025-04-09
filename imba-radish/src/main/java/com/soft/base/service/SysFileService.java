@@ -1,9 +1,9 @@
 package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
+import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;

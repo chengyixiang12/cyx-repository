@@ -6,11 +6,11 @@ import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.request.EditDictDataRequest;
 import com.soft.base.model.request.SaveDictDataRequest;
-import com.soft.base.resultapi.R;
-import com.soft.base.service.SysDictDataService;
 import com.soft.base.model.vo.DictDataVo;
 import com.soft.base.model.vo.DictDatasVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.resultapi.R;
+import com.soft.base.service.SysDictDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -78,6 +78,15 @@ public class SysDictDataController {
         if (StringUtils.isBlank(request.getDictType())) {
             return R.fail("字典类型不能为空");
         }
+        if (StringUtils.isBlank(request.getCode())) {
+            return R.fail("字典编码不能为空");
+        }
+        if (sysDictDataService.existCode(request.getCode())) {
+            return R.fail("字典编码已存在");
+        }
+        if (StringUtils.isBlank(request.getValue())) {
+            return R.fail("字典值不能为空");
+        }
         try {
             sysDictDataService.saveDictData(request);
             return R.ok();
@@ -97,6 +106,15 @@ public class SysDictDataController {
         }
         if (StringUtils.isBlank(request.getDictType())) {
             return R.fail("字典类型不能为空");
+        }
+        if (StringUtils.isBlank(request.getCode())) {
+            return R.fail("字典编码不能为空");
+        }
+        if (sysDictDataService.existCode(request.getCode())) {
+            return R.fail("字典编码已存在");
+        }
+        if (StringUtils.isBlank(request.getValue())) {
+            return R.fail("字典值不能为空");
         }
         try {
             sysDictDataService.editDictData(request);

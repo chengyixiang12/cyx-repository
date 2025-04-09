@@ -5,16 +5,16 @@ import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.model.request.*;
+import com.soft.base.model.vo.AllUserVo;
+import com.soft.base.model.vo.GetUserVo;
+import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.UserInfoVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SecretKeyService;
 import com.soft.base.service.SysPermissionService;
 import com.soft.base.service.SysUsersService;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.utils.SecurityUtil;
-import com.soft.base.model.vo.AllUserVo;
-import com.soft.base.model.vo.GetUserVo;
-import com.soft.base.model.vo.PageVo;
-import com.soft.base.model.vo.UserInfoVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -27,7 +27,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 

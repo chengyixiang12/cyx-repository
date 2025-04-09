@@ -2,9 +2,9 @@ package com.soft.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.soft.base.entity.SysDept;
 import com.soft.base.model.dto.ExportDeptDto;
 import com.soft.base.model.dto.GetUserDeptDto;
-import com.soft.base.entity.SysDept;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.GetDeptsRequest;
 import com.soft.base.model.vo.DeptTreeVo;

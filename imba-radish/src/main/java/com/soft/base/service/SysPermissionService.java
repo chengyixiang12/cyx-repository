@@ -23,4 +23,6 @@ public interface SysPermissionService extends IService<SysPermission> {
     void savePermission(SavePermissionRequest request);
 
     List<String> getPermissionsByRoleCodes(List<String> roleCodes);
+
+    boolean existCode(String code);
 }

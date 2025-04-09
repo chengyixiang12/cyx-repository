@@ -28,4 +28,6 @@ public interface SysDictDataService extends IService<SysDictData> {
     void deleteDictData(Long id);
 
     void deleteDictDataBatch(DeleteRequest request);
+
+    boolean existCode(String code);
 }

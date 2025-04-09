@@ -4,10 +4,10 @@ import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
-import com.soft.base.resultapi.R;
-import com.soft.base.service.SysPermissionService;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.PermissionsVo;
+import com.soft.base.resultapi.R;
+import com.soft.base.service.SysPermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +53,10 @@ public class SysPermissionController {
     @PreAuthorize(value = "@cps.hasPermission('sys_pms_add')")
     @PostMapping
     @Operation(summary = "添加权限")
-    public R savePermission(@RequestBody SavePermissionRequest request) {
+    public R<Object> savePermission(@RequestBody SavePermissionRequest request) {
+        if (sysPermissionService.existCode(request.getCode())) {
+            R.fail("权限编码已存在");
+        }
         try {
             sysPermissionService.savePermission(request);
             return R.ok();

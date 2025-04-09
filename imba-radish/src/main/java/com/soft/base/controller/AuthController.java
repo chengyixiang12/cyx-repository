@@ -10,9 +10,9 @@ import com.soft.base.exception.CaptChaErrorException;
 import com.soft.base.exception.InvalidLoginMethodException;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.request.RegisterRequest;
+import com.soft.base.model.vo.LoginVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.AuthService;
-import com.soft.base.model.vo.LoginVo;
 import com.soft.base.service.SysUsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -112,6 +112,9 @@ public class AuthController {
         }
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
+        }
+        if (sysUsersService.existsUsername(request.getUsername())) {
+            return R.fail("用户名已注册");
         }
         if (StringUtils.isBlank(request.getPassword())) {
             return R.fail("密码不能为空");

@@ -148,7 +148,7 @@
         su.del_flag = '1'
         AND su.`id` = #{id}
     </select>
-    <select id="existsEmail" resultType="java.lang.Long">
+    <select id="existsEmail" resultType="java.lang.Boolean">
         SELECT
         COUNT( * )
         FROM

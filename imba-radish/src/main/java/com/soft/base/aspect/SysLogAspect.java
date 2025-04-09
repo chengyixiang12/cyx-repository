@@ -2,8 +2,8 @@ package com.soft.base.aspect;
 
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.annotation.SysLog;
-import com.soft.base.model.dto.LogDto;
 import com.soft.base.enums.LogLevelEnum;
+import com.soft.base.model.dto.LogDto;
 import com.soft.base.rabbitmq.producer.SysLogProduce;
 import com.soft.base.resultapi.R;
 import com.soft.base.utils.SecurityUtil;

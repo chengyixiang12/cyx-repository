@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -58,7 +59,16 @@ public class SysMenuController {
     @PreAuthorize(value = "@cps.hasPermission('sys_menu_add')")
     @PostMapping
     @Operation(summary = "添加菜单")
-    public R saveMenu(@RequestBody SaveMenuRequest request) {
+    public R<Object> saveMenu(@RequestBody SaveMenuRequest request) {
+        if (StringUtils.isBlank(request.getName())) {
+            return R.fail("菜单名称不能为空");
+        }
+        if (StringUtils.isBlank(request.getPath())) {
+            return R.fail("菜单路径不能为空");
+        }
+        if (StringUtils.isBlank(request.getType())) {
+            return R.fail("菜单类型不能为空");
+        }
         try {
             sysMenuService.saveMenu(request);
             return R.ok();
@@ -75,6 +85,15 @@ public class SysMenuController {
     public R editMenu(@RequestBody EditMenuRequest request) {
         if (request.getId() == null) {
             return R.fail("主键不能不能为空");
+        }
+        if (StringUtils.isBlank(request.getName())) {
+            return R.fail("菜单名称不能为空");
+        }
+        if (StringUtils.isBlank(request.getPath())) {
+            return R.fail("菜单路径不能为空");
+        }
+        if (StringUtils.isBlank(request.getType())) {
+            return R.fail("菜单类型不能为空");
         }
         try {
             sysMenuService.editMenu(request);

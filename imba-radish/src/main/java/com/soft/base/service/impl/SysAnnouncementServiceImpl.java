@@ -2,8 +2,8 @@ package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysAnnouncement;
-import com.soft.base.service.SysAnnouncementService;
 import com.soft.base.mapper.SysAnnouncementMapper;
+import com.soft.base.service.SysAnnouncementService;
 import org.springframework.stereotype.Service;
 
 /**

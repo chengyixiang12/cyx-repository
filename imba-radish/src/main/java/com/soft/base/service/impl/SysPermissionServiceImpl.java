@@ -1,6 +1,7 @@
 package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
@@ -8,9 +9,9 @@ import com.soft.base.entity.SysPermission;
 import com.soft.base.mapper.SysPermissionMapper;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
-import com.soft.base.service.SysPermissionService;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.PermissionsVo;
+import com.soft.base.service.SysPermissionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +59,11 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     @Override
     public List<String> getPermissionsByRoleCodes(List<String> roleCodes) {
         return sysPermissionMapper.getPermissionsByRoleCodes(roleCodes);
+    }
+
+    @Override
+    public boolean existCode(String code) {
+        return sysPermissionMapper.exists(Wrappers.lambdaQuery(SysPermission.class).eq(SysPermission::getCode, code));
     }
 }
 

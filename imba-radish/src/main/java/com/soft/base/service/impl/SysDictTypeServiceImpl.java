@@ -1,14 +1,15 @@
 package com.soft.base.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysDictType;
 import com.soft.base.mapper.SysDictTypeMapper;
 import com.soft.base.model.request.EditDictTypeRequest;
 import com.soft.base.model.request.SaveDictTypeRequest;
-import com.soft.base.service.SysDictTypeService;
 import com.soft.base.model.vo.DictTypeVo;
 import com.soft.base.model.vo.DictTypesVo;
+import com.soft.base.service.SysDictTypeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +63,11 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     @Override
     public void deleteDictTypeBatch(List<Long> ids) {
         sysDictTypeMapper.deleteByIds(ids);
+    }
+
+    @Override
+    public boolean existDictType(String dictType) {
+        return sysDictTypeMapper.exists(Wrappers.lambdaQuery(SysDictType.class).eq(SysDictType::getDictType, dictType));
     }
 }
 
