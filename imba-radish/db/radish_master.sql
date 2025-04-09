@@ -5,17 +5,40 @@
  Source Server Type    : MySQL
  Source Server Version : 80039
  Source Host           : 192.168.226.130:3306
- Source Schema         : mysql_study
+ Source Schema         : radish_master
 
  Target Server Type    : MySQL
  Target Server Version : 80039
  File Encoding         : 65001
 
- Date: 18/02/2025 14:16:52
+ Date: 09/04/2025 11:32:39
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for sys_announcement
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_announcement`;
+CREATE TABLE `sys_announcement`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `sort_order` int NULL DEFAULT NULL COMMENT '排序',
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '修改人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '修改时间',
+  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公告标题',
+  `publish_time` datetime NULL DEFAULT NULL COMMENT '公布时间',
+  `context` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '公告内容',
+  `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '状态；1：发布；0：草稿',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '公告表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_announcement
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for sys_dept
@@ -32,38 +55,38 @@ CREATE TABLE `sys_dept`  (
   `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '部门编码',
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '部门名称',
   `parent_id` bigint NULL DEFAULT NULL COMMENT '父级id',
-  `level` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '层级',
+  `level` tinyint NULL DEFAULT NULL COMMENT '层级',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `code_uk`(`code` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '部门表' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_sys_dept_code`(`code` ASC) USING BTREE COMMENT '部门编码普通索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '部门表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dept
 -- ----------------------------
-INSERT INTO `sys_dept` VALUES (1, 1, 1, '2024-10-26 10:58:36', 1, '2024-10-26 10:58:36', '1', '1', '互联网公司', NULL, '1');
-INSERT INTO `sys_dept` VALUES (2, 2, 1, '2024-10-26 11:28:40', 1, '2024-10-26 11:28:40', '1', '2', '产品与研发部门', 1, '2');
-INSERT INTO `sys_dept` VALUES (3, 3, 1, '2024-10-26 11:29:15', 1, '2024-10-26 11:29:15', '1', '3', '市场与运营部门', 1, '2');
-INSERT INTO `sys_dept` VALUES (4, 4, 1, '2024-10-26 11:29:30', 1, '2024-10-26 11:29:30', '1', '4', '支持部门', 1, '2');
-INSERT INTO `sys_dept` VALUES (5, 5, 1, '2024-10-26 11:29:42', 1, '2024-10-26 11:29:42', '1', '5', '战略与新业务部门', 1, '2');
-INSERT INTO `sys_dept` VALUES (6, 6, 1, '2024-10-26 11:30:02', 1, '2024-10-26 11:30:02', '1', '6', '高级管理层', 1, '2');
-INSERT INTO `sys_dept` VALUES (7, 7, 1, '2024-10-26 11:30:33', 1, '2024-10-26 11:30:33', '1', '7', '产品部', 2, '3');
-INSERT INTO `sys_dept` VALUES (8, 8, 1, '2024-10-26 11:31:10', 1, '2024-10-26 11:31:10', '1', '8', '技术研发部', 2, '3');
-INSERT INTO `sys_dept` VALUES (9, 9, 1, '2024-10-26 11:33:43', 1, '2024-10-26 11:33:43', '1', '9', '测试部', 2, '3');
-INSERT INTO `sys_dept` VALUES (10, 10, 1, '2024-10-26 11:34:19', 1, '2024-10-26 11:34:19', '1', '10', '运维部', 2, '3');
-INSERT INTO `sys_dept` VALUES (11, 11, 1, '2024-10-26 11:34:33', 1, '2024-10-26 11:34:33', '1', '11', '大数据与算法部', 2, '3');
-INSERT INTO `sys_dept` VALUES (12, 12, 1, '2024-10-26 11:34:43', 1, '2024-10-26 11:34:43', '1', '12', 'AI与机器学习部', 2, '3');
-INSERT INTO `sys_dept` VALUES (13, 13, 1, '2024-10-26 11:34:53', 1, '2024-10-26 11:34:53', '1', '13', '架构部', 2, '3');
-INSERT INTO `sys_dept` VALUES (14, 14, 1, '2024-10-26 11:35:39', 1, '2024-10-26 11:35:39', '1', '14', '市场部', 3, '3');
-INSERT INTO `sys_dept` VALUES (15, 15, 1, '2024-10-26 11:36:02', 1, '2024-10-26 11:36:02', '1', '15', '运营部', 3, '3');
-INSERT INTO `sys_dept` VALUES (16, 16, 1, '2024-10-26 11:36:13', 1, '2024-10-26 11:36:13', '1', '16', '销售部', 3, '3');
-INSERT INTO `sys_dept` VALUES (17, 17, 1, '2024-10-26 11:36:23', 1, '2024-10-26 11:36:23', '1', '17', '客户支持部', 3, '3');
-INSERT INTO `sys_dept` VALUES (18, 18, 1, '2024-10-26 11:36:46', 1, '2024-10-26 11:36:46', '1', '18', '人力资源部（HR）', 4, '3');
-INSERT INTO `sys_dept` VALUES (19, 19, 1, '2024-10-26 11:37:02', 1, '2024-10-26 11:37:02', '1', '19', '财务部', 4, '3');
-INSERT INTO `sys_dept` VALUES (20, 20, 1, '2024-10-26 11:37:15', 1, '2024-10-26 11:37:15', '1', '20', '行政部', 4, '3');
-INSERT INTO `sys_dept` VALUES (21, 21, 1, '2024-10-26 11:37:29', 1, '2024-10-26 11:37:29', '1', '21', '法务部', 4, '3');
-INSERT INTO `sys_dept` VALUES (22, 22, 1, '2024-10-26 11:37:59', 1, '2024-10-26 11:37:59', '1', '22', '战略部', 5, '3');
-INSERT INTO `sys_dept` VALUES (23, 23, 1, '2024-10-26 11:38:41', 1, '2024-10-26 11:38:41', '1', '23', '新业务拓展部', 5, '3');
-INSERT INTO `sys_dept` VALUES (24, 24, 1, '2024-10-26 11:38:51', 1, '2024-10-26 11:38:51', '1', '24', '投资与并购部', 5, '3');
+INSERT INTO `sys_dept` VALUES (1, 1, 1, '2024-10-26 10:58:36', 1, '2024-10-26 10:58:36', '1', '1', '互联网公司', NULL, 1);
+INSERT INTO `sys_dept` VALUES (2, 2, 1, '2024-10-26 11:28:40', 1, '2024-10-26 11:28:40', '1', '2', '产品与研发部门', 1, 2);
+INSERT INTO `sys_dept` VALUES (3, 3, 1, '2024-10-26 11:29:15', 1, '2024-10-26 11:29:15', '1', '3', '市场与运营部门', 1, 2);
+INSERT INTO `sys_dept` VALUES (4, 4, 1, '2024-10-26 11:29:30', 1, '2024-10-26 11:29:30', '1', '4', '支持部门', 1, 2);
+INSERT INTO `sys_dept` VALUES (5, 5, 1, '2024-10-26 11:29:42', 1, '2024-10-26 11:29:42', '1', '5', '战略与新业务部门', 1, 2);
+INSERT INTO `sys_dept` VALUES (6, 6, 1, '2024-10-26 11:30:02', 1, '2024-10-26 11:30:02', '1', '6', '高级管理层', 1, 2);
+INSERT INTO `sys_dept` VALUES (7, 7, 1, '2024-10-26 11:30:33', 1, '2024-10-26 11:30:33', '1', '7', '产品部', 2, 3);
+INSERT INTO `sys_dept` VALUES (8, 8, 1, '2024-10-26 11:31:10', 1, '2024-10-26 11:31:10', '1', '8', '技术研发部', 2, 3);
+INSERT INTO `sys_dept` VALUES (9, 9, 1, '2024-10-26 11:33:43', 1, '2024-10-26 11:33:43', '1', '9', '测试部', 2, 3);
+INSERT INTO `sys_dept` VALUES (10, 10, 1, '2024-10-26 11:34:19', 1, '2024-10-26 11:34:19', '1', '10', '运维部', 2, 3);
+INSERT INTO `sys_dept` VALUES (11, 11, 1, '2024-10-26 11:34:33', 1, '2024-10-26 11:34:33', '1', '11', '大数据与算法部', 2, 3);
+INSERT INTO `sys_dept` VALUES (12, 12, 1, '2024-10-26 11:34:43', 1, '2024-10-26 11:34:43', '1', '12', 'AI与机器学习部', 2, 3);
+INSERT INTO `sys_dept` VALUES (13, 13, 1, '2024-10-26 11:34:53', 1, '2024-10-26 11:34:53', '1', '13', '架构部', 2, 3);
+INSERT INTO `sys_dept` VALUES (14, 14, 1, '2024-10-26 11:35:39', 1, '2024-10-26 11:35:39', '1', '14', '市场部', 3, 3);
+INSERT INTO `sys_dept` VALUES (15, 15, 1, '2024-10-26 11:36:02', 1, '2024-10-26 11:36:02', '1', '15', '运营部', 3, 3);
+INSERT INTO `sys_dept` VALUES (16, 16, 1, '2024-10-26 11:36:13', 1, '2024-10-26 11:36:13', '1', '16', '销售部', 3, 3);
+INSERT INTO `sys_dept` VALUES (17, 17, 1, '2024-10-26 11:36:23', 1, '2024-10-26 11:36:23', '1', '17', '客户支持部', 3, 3);
+INSERT INTO `sys_dept` VALUES (18, 18, 1, '2024-10-26 11:36:46', 1, '2024-10-26 11:36:46', '1', '18', '人力资源部（HR）', 4, 3);
+INSERT INTO `sys_dept` VALUES (19, 19, 1, '2024-10-26 11:37:02', 1, '2024-10-26 11:37:02', '1', '19', '财务部', 4, 3);
+INSERT INTO `sys_dept` VALUES (20, 20, 1, '2024-10-26 11:37:15', 1, '2024-10-26 11:37:15', '1', '20', '行政部', 4, 3);
+INSERT INTO `sys_dept` VALUES (21, 21, 1, '2024-10-26 11:37:29', 1, '2024-10-26 11:37:29', '1', '21', '法务部', 4, 3);
+INSERT INTO `sys_dept` VALUES (22, 22, 1, '2024-10-26 11:37:59', 1, '2024-10-26 11:37:59', '1', '22', '战略部', 5, 3);
+INSERT INTO `sys_dept` VALUES (23, 23, 1, '2024-10-26 11:38:41', 1, '2024-10-26 11:38:41', '1', '23', '新业务拓展部', 5, 3);
+INSERT INTO `sys_dept` VALUES (24, 24, 1, '2024-10-26 11:38:51', 1, '2024-10-26 11:38:51', '1', '24', '投资与并购部', 5, 3);
 
 -- ----------------------------
 -- Table structure for sys_dict_data
@@ -87,8 +110,8 @@ CREATE TABLE `sys_dict_data`  (
   `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '状态；1：启用；0：停用',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uk_sys_dict_data_code`(`code` ASC) USING BTREE COMMENT '字典编码索引'
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '字典数据表' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_sys_dict_data_code`(`code` ASC) USING BTREE COMMENT '字典编码普通索引'
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '字典数据表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dict_data
@@ -111,8 +134,8 @@ CREATE TABLE `sys_dict_type`  (
   `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '状态；1：启用；0：停用',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uk_sys_dict_type`(`dict_type` ASC) USING BTREE COMMENT '字典类型索引'
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '字典类型表' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_sys_dict_type`(`dict_type` ASC) USING BTREE COMMENT '字典类型索引'
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '字典类型表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_dict_type
@@ -135,12 +158,9 @@ CREATE TABLE `sys_file`  (
   `object_key` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '文件路径',
   `file_suffix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '文件后缀；示例：.txt、.jpg',
   `file_size` bigint NULL DEFAULT NULL COMMENT '文件大小；单位：B',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of sys_file
--- ----------------------------
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_sys_file_key`(`file_key` ASC) USING BTREE COMMENT '存储文件名普通索引'
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '文件表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_log
@@ -166,11 +186,7 @@ CREATE TABLE `sys_log`  (
   `os_browser_info` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '操作系统/浏览器信息',
   `type` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '日志类型',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '日志表' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of sys_log
--- ----------------------------
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -178,7 +194,7 @@ CREATE TABLE `sys_log`  (
 DROP TABLE IF EXISTS `sys_menu`;
 CREATE TABLE `sys_menu`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '菜单唯一标识符，主键',
-  `parent_id` bigint NULL DEFAULT 0 COMMENT '父菜单ID，顶级菜单的父ID通常为0',
+  `parent_id` bigint NULL DEFAULT NULL COMMENT '父菜单ID，顶级菜单的父ID通常为0',
   `create_by` bigint NULL DEFAULT NULL COMMENT '创建人',
   `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_by` bigint NULL DEFAULT NULL COMMENT '修改人',
@@ -194,19 +210,19 @@ CREATE TABLE `sys_menu`  (
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注信息',
   `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_parent_id`(`parent_id` ASC) USING BTREE,
-  INDEX `idx_type`(`type` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单信息表' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_sys_menu_parent_id`(`parent_id` ASC) USING BTREE COMMENT '父级菜单普通索引',
+  INDEX `idx_sys_menu_type`(`type` ASC) USING BTREE COMMENT '菜单类型普通索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单信息表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_menu
 -- ----------------------------
-INSERT INTO `sys_menu` VALUES (1, NULL, 1, '2024-11-16 03:25:27', 1, '2024-11-16 04:48:48', '系统管理', NULL, NULL, 'setting', '0', 1, 1, 1, '系统管理顶级菜单', '1');
-INSERT INTO `sys_menu` VALUES (2, NULL, 1, '2024-11-16 03:25:27', 1, '2024-11-16 04:48:48', '内容管理', NULL, NULL, 'folder', '0', 2, 1, 1, '内容管理顶级菜单', '1');
-INSERT INTO `sys_menu` VALUES (3, NULL, 1, '2024-11-16 03:25:27', 1, '2024-11-16 04:48:49', '统计分析', NULL, NULL, 'chart', '0', 3, 1, 1, '统计分析顶级菜单', '1');
-INSERT INTO `sys_menu` VALUES (4, 1, 1, '2024-11-16 03:25:27', 1, '2024-11-27 12:59:55', '用户管理', '/user', 'views/UserList.vue', 'user', '1', 1, 1, 1, '管理用户信息', '1');
-INSERT INTO `sys_menu` VALUES (5, 1, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '角色管理', '/role/list', 'views/RoleList.vue', 'team', '1', 2, 1, 1, '管理角色信息', '1');
-INSERT INTO `sys_menu` VALUES (6, 1, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '菜单管理', '/menu/list', 'views/MenuList.vue', 'menu', '1', 3, 1, 1, '管理菜单信息', '1');
+INSERT INTO `sys_menu` VALUES (1, NULL, 1, '2024-11-16 03:25:27', 1, '2025-03-31 09:50:41', '系统管理', '/system', NULL, 'setting', '0', 1, 1, 1, '系统管理顶级菜单', '1');
+INSERT INTO `sys_menu` VALUES (2, NULL, 1, '2024-11-16 03:25:27', 1, '2025-03-31 05:41:13', '内容管理', '/content', NULL, 'folder', '0', 2, 1, 1, '内容管理顶级菜单', '1');
+INSERT INTO `sys_menu` VALUES (3, NULL, 1, '2024-11-16 03:25:27', 1, '2025-03-31 05:41:23', '统计分析', '/total', NULL, 'chart', '0', 3, 1, 1, '统计分析顶级菜单', '1');
+INSERT INTO `sys_menu` VALUES (4, 1, 1, '2024-11-16 03:25:27', 1, '2025-03-31 09:55:59', '用户管理', '/user', 'system/User', 'user', '1', 1, 1, 1, '管理用户信息', '1');
+INSERT INTO `sys_menu` VALUES (5, 1, 1, '2024-11-16 03:25:27', 1, '2025-04-04 16:21:46', '角色管理', '/role', 'views/RoleList', 'avatar', '1', 2, 1, 1, '管理角色信息', '1');
+INSERT INTO `sys_menu` VALUES (6, 1, 1, '2024-11-16 03:25:27', 1, '2025-04-04 15:39:24', '菜单管理', '/menu', 'system/MenuList', 'menu', '1', 3, 1, 1, '管理菜单信息', '1');
 INSERT INTO `sys_menu` VALUES (7, 2, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '文章管理', '/article/list', 'views/ArticleList.vue', 'file', '1', 1, 1, 1, '管理文章内容', '1');
 INSERT INTO `sys_menu` VALUES (8, 2, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '分类管理', '/category/list', 'views/CategoryList.vue', 'tags', '1', 2, 1, 1, '管理文章分类', '1');
 INSERT INTO `sys_menu` VALUES (9, 2, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '标签管理', '/tag/list', 'views/TagList.vue', 'tag', '1', 3, 1, 1, '管理文章标签', '1');
@@ -230,8 +246,8 @@ CREATE TABLE `sys_permission`  (
   `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '状态；1：启用；0：禁用',
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uk_sys_permission_code`(`code` ASC) USING BTREE COMMENT '权限编码索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限表' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_sys_permission_code`(`code` ASC) USING BTREE COMMENT '权限编码普通索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 30 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_permission
@@ -263,6 +279,7 @@ INSERT INTO `sys_permission` VALUES (24, 1, '2024-11-20 21:58:58', 1, '2024-11-2
 INSERT INTO `sys_permission` VALUES (25, 1, '2024-11-20 21:59:34', 1, '2024-11-20 21:59:34', '1', '添加用户', 'sys_user_add', '2', '1', NULL);
 INSERT INTO `sys_permission` VALUES (27, 1, '2024-11-20 22:01:40', 1, '2024-11-20 22:01:40', '1', '编辑用户', 'sys_user_edit', '2', '1', NULL);
 INSERT INTO `sys_permission` VALUES (28, 1, '2024-11-26 19:23:51', 1, '2024-11-26 19:23:51', '1', '生成密钥', 'sys_secret_key_generate', '2', '1', NULL);
+INSERT INTO `sys_permission` VALUES (29, 1, '2025-03-28 11:00:40', 1, '2025-03-28 11:00:40', '1', '删除用户', 'sys_user_delete', '2', '1', '');
 
 -- ----------------------------
 -- Table structure for sys_role
@@ -283,8 +300,8 @@ CREATE TABLE `sys_role`  (
   `is_default` tinyint NULL DEFAULT NULL COMMENT '是否标记为系统默认角色；1：是；0：不是',
   `fix_role` tinyint NULL DEFAULT NULL COMMENT '是否为固定角色（固定角色无法被删除）；1：是；0：不是',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `code_uk`(`code` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_code`(`code` ASC) USING BTREE COMMENT '角色编码普通索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_role
@@ -305,7 +322,7 @@ CREATE TABLE `sys_role_menu`  (
   `role_id` bigint NOT NULL COMMENT '角色id',
   `menu_id` bigint NOT NULL COMMENT '菜单id',
   UNIQUE INDEX `uk_sys_role_menu`(`role_id` ASC, `menu_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色菜单表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色菜单表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_role_menu
@@ -330,7 +347,7 @@ CREATE TABLE `sys_role_permission`  (
   `role_id` bigint NOT NULL COMMENT '角色主键',
   `permission_id` bigint NOT NULL COMMENT '权限主键',
   UNIQUE INDEX `uk_sys_role_permission`(`role_id` ASC, `permission_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色权限表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色权限表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_role_permission
@@ -363,6 +380,7 @@ INSERT INTO `sys_role_permission` VALUES (1, 25);
 INSERT INTO `sys_role_permission` VALUES (1, 26);
 INSERT INTO `sys_role_permission` VALUES (1, 27);
 INSERT INTO `sys_role_permission` VALUES (1, 28);
+INSERT INTO `sys_role_permission` VALUES (1, 29);
 
 -- ----------------------------
 -- Table structure for sys_secret_key
@@ -380,8 +398,8 @@ CREATE TABLE `sys_secret_key`  (
   `type` tinyint NOT NULL COMMENT '类型',
   `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uk_sys_secret_key_type`(`type` ASC) USING BTREE COMMENT '类型唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '密钥' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_sys_secret_key_type`(`type` ASC) USING BTREE COMMENT '类型普通索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '密钥' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_secret_key
@@ -409,16 +427,16 @@ CREATE TABLE `sys_user`  (
   `credentials_non_expired` tinyint(1) NULL DEFAULT 1 COMMENT '凭证是否过期；1：正常；0：过期',
   `account_non_expired` tinyint(1) NULL DEFAULT 1 COMMENT '账户是否过期；1：正常；0：过期',
   `dept_id` bigint NULL DEFAULT NULL COMMENT '部门id',
+  `avatar` bigint NULL DEFAULT NULL COMMENT '用户头像',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uk_sys_user_username`(`username` ASC) USING BTREE,
-  UNIQUE INDEX `uk_sys_user_email`(`email` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
+  INDEX `idx_sys_user_email`(`email` ASC) USING BTREE COMMENT '用户邮箱普通索引',
+  INDEX `idx_sys_user_username`(`username` ASC) USING BTREE COMMENT '用户名普通索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1, 1, '2024-10-24 07:25:34', 1, '2024-11-16 04:29:52', '1', 'admin', '$2a$10$7GBeWjeLbS1OUOFl18nvMeiww0cAtVQRCnNOQJBVgzoJX.KMaezSy', '程益祥', '1907452460@qq.com', '13235423290', 1, 1, 1, 1, 1);
-INSERT INTO `sys_user` VALUES (2, 1, '2024-11-09 23:31:22', 1, '2024-11-16 12:20:40', '1', 'zjy001', '$2a$10$toTWMK/I76kY2SwHPKX2k.EQqYcjG14PWjJ.H4dkGPIzE.joJ0x3a', '张佳耀', '3332951238@qq.com', NULL, 1, 1, 1, 1, 1);
+INSERT INTO `sys_user` VALUES (1, 1, '2024-10-24 07:25:34', 1, '2025-04-05 18:02:00', '1', 'admin', '$2a$10$7GBeWjeLbS1OUOFl18nvMeiww0cAtVQRCnNOQJBVgzoJX.KMaezSy', '程益祥', '1907452460@qq.com', '13235423290', 1, 1, 1, 1, 1, 9);
 
 -- ----------------------------
 -- Table structure for sys_user_role
@@ -428,12 +446,13 @@ CREATE TABLE `sys_user_role`  (
   `role_id` bigint NOT NULL COMMENT '角色主键',
   `user_id` bigint NOT NULL COMMENT '用户主键',
   UNIQUE INDEX `uk_role_user`(`role_id` ASC, `user_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户角色表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_user_role
 -- ----------------------------
 INSERT INTO `sys_user_role` VALUES (1, 1);
 INSERT INTO `sys_user_role` VALUES (1, 2);
+INSERT INTO `sys_user_role` VALUES (2, 11);
 
 SET FOREIGN_KEY_CHECKS = 1;
