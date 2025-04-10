@@ -55,7 +55,7 @@ mybatis-plus:
       logic-delete-value: 0
       logic-not-delete-value: 1
       logic-delete-field: delFlag
-  type-aliases-package: com.soft.base.model.entity, com.soft.base.model.request, com.soft.base.model.vo, com.soft.base.model.dto
+  type-aliases-package: com.soft.base.entity, com.soft.base.model.request, com.soft.base.model.vo, com.soft.base.model.dto
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:

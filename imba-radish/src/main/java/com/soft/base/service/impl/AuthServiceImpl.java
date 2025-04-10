@@ -123,10 +123,10 @@ public class AuthServiceImpl implements AuthService {
                     sysUsersService.lockUser(request.getUsername());
                     throw new LockedException("登录次数用完，您的账号已锁定");
                 }
-                redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), --errorTime);
+
+                errorTime = redisTemplate.opsForValue().decrement(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());
             } else {
-                errorTime = BaseConstant.MAX_LOGIN_ERROR_TIME;
-                redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), errorTime);
+                redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), BaseConstant.MAX_LOGIN_ERROR_TIME);
             }
             throw new BadCredentialsException(e.getMessage() + "，您还有" + errorTime + "次登录机会");
         } catch (DisabledException e) {

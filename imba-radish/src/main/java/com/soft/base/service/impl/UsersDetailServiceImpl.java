@@ -24,6 +24,7 @@ import java.util.List;
 */
 @Service
 @Slf4j
+@CacheConfig(cacheNames = "cyx:users")
 public class UsersDetailServiceImpl implements UserDetailsService{
 
     private final SysUsersMapper sysUsersMapper;
@@ -37,8 +38,9 @@ public class UsersDetailServiceImpl implements UserDetailsService{
     }
 
     @Override
+    @Cacheable(key = "#username")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUser sysUser = sysUsersMapper.loadUserByUsername(username);
+        SysUser sysUser = sysUsersMapper.loadUser(username);
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户不存在");
         }

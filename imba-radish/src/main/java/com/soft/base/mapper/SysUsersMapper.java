@@ -44,7 +44,7 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
 
     String getUsername(@Param("id") Long id);
 
-    SysUser loadUserByUsername(@Param("param") String param);
+    SysUser loadUser(@Param("param") String param);
 }
 
 

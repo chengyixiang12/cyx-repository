@@ -166,7 +166,7 @@
         WHERE
         su.id = #{id}
     </select>
-    <select id="loadUserByUsername" parameterType="java.lang.String" resultType="SysUser">
+    <select id="loadUser" parameterType="java.lang.String" resultType="SysUser">
         SELECT
             su.id,
             su.username,

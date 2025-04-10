@@ -68,7 +68,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
         String level = sysDeptMapper.getLevel(request.getParentId());
         SysDept sysDept = new SysDept();
         BeanUtils.copyProperties(request, sysDept);
-        sysDept.setLevel(level + BaseConstant.DEPT_LEVEL_ADD_ONE);
+        sysDept.setLevel(String.valueOf(Integer.parseInt(level) + BaseConstant.DEPT_LEVEL_ADD_ONE));
         sysDeptMapper.insert(sysDept);
     }
 

@@ -5,12 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.time.Duration;
 
 /**
  * @Author: cyx
@@ -26,12 +28,12 @@ public class RedisConfig {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
-        // 使用 JdkSerializationRedisSerializer 进行二进制序列化/反序列化
-        JdkSerializationRedisSerializer jdkSerializer = new JdkSerializationRedisSerializer();
+        // 使用 GenericJackson2JsonRedisSerializer 进行二进制序列化/反序列化
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
 
         // 设置序列化方式
-        template.setValueSerializer(jdkSerializer);
-        template.setHashValueSerializer(jdkSerializer);
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(serializer);
 
         // 设置 key 的序列化方式
         template.setKeySerializer(new StringRedisSerializer());
@@ -41,15 +43,21 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        // 使用 JdkSerializationRedisSerializer 进行二进制序列化
-        RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new JdkSerializationRedisSerializer())) // 设置值的序列化方式为二进制
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())); // 设置键的序列化方式为 String
+    public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
+        // UserDetails专用配置（使用JDK序列化）
+        RedisCacheConfiguration userDetailsCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new JdkSerializationRedisSerializer()))
+                .entryTtl(Duration.ofMinutes(30));  // 设置30分钟过期
 
-        // 创建 RedisCacheManager 并返回
-        return RedisCacheManager.builder(RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory))
-                .cacheDefaults(defaultCacheConfig)
+        // 默认配置（使用JSON序列化）
+        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+
+        return RedisCacheManager.builder(factory)
+                .withCacheConfiguration("cyx:users", userDetailsCacheConfig) // 特定缓存配置
+                .cacheDefaults(defaultConfig) // 默认配置
                 .build();
     }
 }
