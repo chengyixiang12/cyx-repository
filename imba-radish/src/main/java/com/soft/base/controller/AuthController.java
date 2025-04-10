@@ -96,7 +96,6 @@ public class AuthController {
                  | AccountExpiredException
                  | CaptChaErrorException
                  | InvalidLoginMethodException e) {
-            log.error(e.getMessage(), e);
             return R.fail(e.getMessage());
         } catch (Exception e) {
             log.error(e.getMessage(), e);

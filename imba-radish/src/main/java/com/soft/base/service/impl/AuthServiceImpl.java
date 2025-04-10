@@ -18,10 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -44,19 +46,23 @@ public class AuthServiceImpl implements AuthService {
 
     private final SecretKeyService secretKeyService;
 
+    private final StringRedisTemplate stringRedisTemplate;
+
     @Autowired
     public AuthServiceImpl(PasswordEncoder passwordEncoder,
                            RSAUtil rsaUtil,
                            SysUsersService sysUsersService,
                            AuthenticationManager authenticationManager,
                            RedisTemplate<String,Object> redisTemplate,
-                           SecretKeyService secretKeyService) {
+                           SecretKeyService secretKeyService,
+                           StringRedisTemplate stringRedisTemplate) {
         this.passwordEncoder = passwordEncoder;
         this.rsaUtil = rsaUtil;
         this.sysUsersService = sysUsersService;
         this.authenticationManager = authenticationManager;
         this.redisTemplate = redisTemplate;
         this.secretKeyService = secretKeyService;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     @Override
@@ -117,15 +123,16 @@ public class AuthServiceImpl implements AuthService {
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (BadCredentialsException e) {
-            Long errorTime = (Long) redisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());;
-            if (errorTime != null) {
+            Long errorTime;
+            try {
+                errorTime = Long.parseLong(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername())));
                 if (BaseConstant.LONG_INIT_VAL.equals(errorTime)) {
                     sysUsersService.lockUser(request.getUsername());
                     throw new LockedException("登录次数用完，您的账号已锁定");
                 }
-
                 errorTime = redisTemplate.opsForValue().decrement(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());
-            } else {
+            } catch (NullPointerException en) {
+                errorTime = BaseConstant.MAX_LOGIN_ERROR_TIME;
                 redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), BaseConstant.MAX_LOGIN_ERROR_TIME);
             }
             throw new BadCredentialsException(e.getMessage() + "，您还有" + errorTime + "次登录机会");
