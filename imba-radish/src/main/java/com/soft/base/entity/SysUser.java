@@ -4,6 +4,7 @@ package com.soft.base.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.apache.ibatis.type.Alias;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName(value ="sys_user")
+@Alias(value = "SysUser")
 public class SysUser implements Serializable {
     /**
      * 主键

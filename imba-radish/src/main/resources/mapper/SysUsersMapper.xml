@@ -166,4 +166,23 @@
         WHERE
         su.id = #{id}
     </select>
+    <select id="loadUserByUsername" parameterType="java.lang.String" resultType="SysUser">
+        SELECT
+            su.id,
+            su.username,
+            su.`password`,
+            su.enabled,
+            su.account_non_locked,
+            su.credentials_non_expired,
+            su.account_non_expired,
+            su.email,
+            su.phone,
+            su.nickname
+        FROM
+            sys_user su
+        WHERE
+                    su.del_flag = '1'
+                AND su.username = #{param}
+           OR su.email = #{param}
+    </select>
 </mapper>
