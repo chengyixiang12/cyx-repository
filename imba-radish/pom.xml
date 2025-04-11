@@ -34,6 +34,7 @@
         <kaptcha.vesion>2.3.2</kaptcha.vesion>
         <jansi.version>2.4.0</jansi.version>
         <spring.ai.version>1.0.0-SNAPSHOT</spring.ai.version>
+        <dotenv.version>3.0.0</dotenv.version>
     </properties>
 
     <dependencies>
@@ -172,6 +173,11 @@
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
             <version>${jansi.version}</version> <!-- 或最新版本 -->
+        </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>${dotenv.version}</version>
         </dependency>
     </dependencies>
 
