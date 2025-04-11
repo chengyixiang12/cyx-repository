@@ -42,7 +42,6 @@ public class WebsocketSessionTimer {
                     .getKeys()
                     .stream()
                     .filter(item -> !keys.contains(item))
-                    .collect(Collectors.toSet())
                     .forEach(item -> WebSocketSessionManager
                             .removeSession(Long.parseLong(item)));
         }
