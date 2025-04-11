@@ -172,7 +172,7 @@
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
-            <version>${jansi.version}</version> <!-- 或最新版本 -->
+            <version>${jansi.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.cdimascio</groupId>
