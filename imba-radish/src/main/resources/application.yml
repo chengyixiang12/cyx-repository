@@ -24,9 +24,9 @@ spring:
     host: smtp.qq.com
     port: 587
     #发送方邮箱
-    username:
+    username: ${}
     #授权码
-    password:
+    password: ${}
     properties:
       mail:
         smtp:
