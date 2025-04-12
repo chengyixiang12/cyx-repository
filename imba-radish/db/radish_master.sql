@@ -11,7 +11,7 @@
  Target Server Version : 80039
  File Encoding         : 65001
 
- Date: 09/04/2025 11:32:39
+ Date: 12/04/2025 18:22:29
 */
 
 SET NAMES utf8mb4;
@@ -219,15 +219,15 @@ CREATE TABLE `sys_menu`  (
 -- ----------------------------
 INSERT INTO `sys_menu` VALUES (1, NULL, 1, '2024-11-16 03:25:27', 1, '2025-03-31 09:50:41', '系统管理', '/system', NULL, 'setting', '0', 1, 1, 1, '系统管理顶级菜单', '1');
 INSERT INTO `sys_menu` VALUES (2, NULL, 1, '2024-11-16 03:25:27', 1, '2025-03-31 05:41:13', '内容管理', '/content', NULL, 'folder', '0', 2, 1, 1, '内容管理顶级菜单', '1');
-INSERT INTO `sys_menu` VALUES (3, NULL, 1, '2024-11-16 03:25:27', 1, '2025-03-31 05:41:23', '统计分析', '/total', NULL, 'chart', '0', 3, 1, 1, '统计分析顶级菜单', '1');
+INSERT INTO `sys_menu` VALUES (3, NULL, 1, '2024-11-16 03:25:27', 1, '2025-04-09 22:00:39', '统计分析', '/total', NULL, 'chart', '0', 3, 1, 1, '统计分析顶级菜单', '0');
 INSERT INTO `sys_menu` VALUES (4, 1, 1, '2024-11-16 03:25:27', 1, '2025-03-31 09:55:59', '用户管理', '/user', 'system/User', 'user', '1', 1, 1, 1, '管理用户信息', '1');
 INSERT INTO `sys_menu` VALUES (5, 1, 1, '2024-11-16 03:25:27', 1, '2025-04-04 16:21:46', '角色管理', '/role', 'views/RoleList', 'avatar', '1', 2, 1, 1, '管理角色信息', '1');
 INSERT INTO `sys_menu` VALUES (6, 1, 1, '2024-11-16 03:25:27', 1, '2025-04-04 15:39:24', '菜单管理', '/menu', 'system/MenuList', 'menu', '1', 3, 1, 1, '管理菜单信息', '1');
 INSERT INTO `sys_menu` VALUES (7, 2, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '文章管理', '/article/list', 'views/ArticleList.vue', 'file', '1', 1, 1, 1, '管理文章内容', '1');
 INSERT INTO `sys_menu` VALUES (8, 2, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '分类管理', '/category/list', 'views/CategoryList.vue', 'tags', '1', 2, 1, 1, '管理文章分类', '1');
-INSERT INTO `sys_menu` VALUES (9, 2, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '标签管理', '/tag/list', 'views/TagList.vue', 'tag', '1', 3, 1, 1, '管理文章标签', '1');
-INSERT INTO `sys_menu` VALUES (10, 3, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '用户统计', '/stat/user', 'views/UserStat.vue', 'bar-chart', '1', 1, 1, 1, '统计用户相关数据', '1');
-INSERT INTO `sys_menu` VALUES (11, 3, 1, '2024-11-16 03:25:27', 1, '2024-11-16 03:26:43', '系统访问统计', '/stat/system', 'views/SystemStat.vue', 'line-chart', '1', 2, 1, 1, '统计系统访问数据', '1');
+INSERT INTO `sys_menu` VALUES (9, 2, 1, '2024-11-16 03:25:27', 1, '2025-04-09 22:53:13', '标签管理', '/tag/list', 'views/TagList.vue', 'tag', '1', 3, 1, 1, '管理文章标签', '0');
+INSERT INTO `sys_menu` VALUES (10, 3, 1, '2024-11-16 03:25:27', 1, '2025-04-09 22:00:39', '用户统计', '/stat/user', 'views/UserStat.vue', 'bar-chart', '1', 1, 1, 1, '统计用户相关数据', '0');
+INSERT INTO `sys_menu` VALUES (11, 3, 1, '2024-11-16 03:25:27', 1, '2025-04-09 22:00:39', '系统访问统计', '/stat/system', 'views/SystemStat.vue', 'line-chart', '1', 2, 1, 1, '统计系统访问数据', '0');
 
 -- ----------------------------
 -- Table structure for sys_permission
@@ -429,15 +429,14 @@ CREATE TABLE `sys_user`  (
   `dept_id` bigint NULL DEFAULT NULL COMMENT '部门id',
   `avatar` bigint NULL DEFAULT NULL COMMENT '用户头像',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_sys_user_email`(`email` ASC) USING BTREE COMMENT '用户邮箱普通索引',
-  INDEX `idx_sys_user_username`(`username` ASC) USING BTREE COMMENT '用户名普通索引'
+  INDEX `idx_sys_user_username`(`username` ASC) USING BTREE COMMENT '用户名普通索引',
+  INDEX `idx_sys_user_email`(`email` ASC) USING BTREE COMMENT '邮箱普通索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1, 1, '2024-10-24 07:25:34', 1, '2025-04-05 18:02:00', '1', 'admin', '$2a$10$7GBeWjeLbS1OUOFl18nvMeiww0cAtVQRCnNOQJBVgzoJX.KMaezSy', '程益祥', '1907452460@qq.com', '13235423290', 1, 1, 1, 1, 1, 9);
-
+INSERT INTO `sys_user` VALUES (1, 1, '2024-10-24 07:25:34', 1, '2025-04-11 08:49:41', '1', 'admin', '$2a$10$7GBeWjeLbS1OUOFl18nvMeiww0cAtVQRCnNOQJBVgzoJX.KMaezSy', '程益祥', '1907452460@qq.com', '13235423290', 1, 1, 1, 1, 1, 9);
 -- ----------------------------
 -- Table structure for sys_user_role
 -- ----------------------------
@@ -454,5 +453,6 @@ CREATE TABLE `sys_user_role`  (
 INSERT INTO `sys_user_role` VALUES (1, 1);
 INSERT INTO `sys_user_role` VALUES (1, 2);
 INSERT INTO `sys_user_role` VALUES (2, 11);
+INSERT INTO `sys_user_role` VALUES (2, 12);
 
 SET FOREIGN_KEY_CHECKS = 1;
