@@ -1,5 +1,6 @@
 package com.soft.base.controller;
 
+import com.soft.base.annotation.Lock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RegexConstant;
@@ -39,6 +40,7 @@ public class SysRoleController {
         this.sysRoleService = sysRoleService;
     }
 
+    @Lock(value = "role")
     @SysLog(value = "添加角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_add')")
     @PostMapping
@@ -73,6 +75,7 @@ public class SysRoleController {
         }
     }
 
+    @Lock(value = "role")
     @SysLog(value = "编辑角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_edit')")
     @PutMapping
@@ -215,6 +218,7 @@ public class SysRoleController {
         }
     }
 
+    @Lock(value = "role")
     @SysLog(value = "设置默认角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_set_def')")
     @GetMapping(value = "/setDefaultRole/{id}")

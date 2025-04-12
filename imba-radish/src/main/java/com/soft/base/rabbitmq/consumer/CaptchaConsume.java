@@ -46,10 +46,10 @@ public class CaptchaConsume {
     @Value(value = "${spring.mail.username}")
     private String fromEmail;
 
-    @Value(value = "${manage-system.captcha.topic}")
+    @Value(value = "${radish.captcha.topic}")
     private String topic;
 
-    @Value(value = "${manage-system.captcha.expire-time}")
+    @Value(value = "${radish.captcha.expire-time}")
     private Long expireTime;
 
     @Autowired

@@ -102,7 +102,7 @@ permit:
     - /favicon.ico
 
 #登录验证码
-manage-system:
+radish:
   captcha:
     #主题
     topic: 管理系统登录验证码
@@ -114,6 +114,13 @@ manage-system:
   token:
     #token过期时间（秒）
     expire-time: 36000
+  lock:
+    #锁过期时间（秒）
+    expire: 10
+    #最大重试次数
+    max-retry: 5
+    #重试间隔时间（毫秒）
+    retry-interval-time: 2000
 #webclient配置
 web-client:
   #响应超时；单位：秒

@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class AuthController {
 
-    @Value(value = "${manage-system.graphics.expire-time}")
+    @Value(value = "${radish.graphics.expire-time}")
     private Long graphicsCaptchaExpireTime;
 
     private final AuthService authService;

@@ -87,4 +87,9 @@ public class RedisConstant {
      * 分片文件hash
      */
     public final static String SLICE_FILE_INFO = "cyx:slice:hash:";
+
+    /**
+     * 锁key
+     */
+    public final static String LOCK_KEY = "cyx:lock:";
 }

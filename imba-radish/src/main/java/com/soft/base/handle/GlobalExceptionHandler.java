@@ -1,5 +1,6 @@
 package com.soft.base.handle;
 
+import com.soft.base.exception.LockFailException;
 import com.soft.base.resultapi.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<R<Object>> noResourceFoundException(NoResourceFoundException ex) {
         log.error(ex.getLocalizedMessage());
         return new ResponseEntity<>(R.fail("未找到资源"), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(LockFailException.class)
+    public ResponseEntity<R<Object>> lockFailException(LockFailException ex) {
+        log.error(ex.getLocalizedMessage());
+        return new ResponseEntity<>(R.fail(), HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)
