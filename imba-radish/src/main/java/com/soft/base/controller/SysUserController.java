@@ -1,6 +1,6 @@
 package com.soft.base.controller;
 
-import com.soft.base.annotation.Lock;
+import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
@@ -119,7 +119,7 @@ public class SysUserController {
         }
     }
 
-    @Lock(value = "user")
+    @SysLock(value = "user")
     @SysLog(value = "添加用户", module = LogModuleEnum.USER)
     @PreAuthorize(value = "@cps.hasPermission('sys_user_add')")
     @PostMapping
@@ -152,7 +152,7 @@ public class SysUserController {
         }
     }
 
-    @Lock(value = "user")
+    @SysLock(value = "user")
     @SysLog(value = "编辑用户", module = LogModuleEnum.USER)
     @PreAuthorize(value = "@cps.hasPermission('sys_user_edit')")
     @PutMapping
@@ -249,7 +249,7 @@ public class SysUserController {
         }
     }
 
-    @Lock(value = "user")
+    @SysLock(value = "user")
     @PutMapping(value = "/resetUsername")
     @Operation(summary = "重置用户名")
     public R resetUsername(@RequestBody ResetUsernameRequest request) {

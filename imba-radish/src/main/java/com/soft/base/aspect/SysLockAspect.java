@@ -1,7 +1,6 @@
 package com.soft.base.aspect;
 
-import com.soft.base.annotation.Lock;
-import com.soft.base.annotation.SysLog;
+import com.soft.base.annotation.SysLock;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.exception.LockFailException;
@@ -15,8 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Slf4j
 @Component
-public class LockAspect {
+public class SysLockAspect {
 
     @Value("${radish.lock.expire}")
     private Long lockExpire;
@@ -44,14 +41,14 @@ public class LockAspect {
     private final UniversalUtil universalUtil;
 
     @Autowired
-    public LockAspect(RedisTemplate<String, Object> redisTemplate, UniversalUtil universalUtil) {
+    public SysLockAspect(RedisTemplate<String, Object> redisTemplate, UniversalUtil universalUtil) {
         this.redisTemplate = redisTemplate;
         this.universalUtil = universalUtil;
     }
 
-    @Around("@annotation(lock)")
-    public Object around(ProceedingJoinPoint joinPoint, Lock lock) throws Throwable {
-        String key = lock.value();
+    @Around("@annotation(sysLock)")
+    public Object around(ProceedingJoinPoint joinPoint, SysLock sysLock) throws Throwable {
+        String key = sysLock.value();
         int retryCount = BaseConstant.INTEGER_INIT_VAL;
         String lockFlag = universalUtil.fileKeyGen();
         boolean locked = false;

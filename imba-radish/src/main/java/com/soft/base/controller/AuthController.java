@@ -1,7 +1,7 @@
 package com.soft.base.controller;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.soft.base.annotation.Lock;
+import com.soft.base.annotation.SysLock;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
@@ -104,7 +104,7 @@ public class AuthController {
         }
     }
 
-    @Lock("user")
+    @SysLock("user")
     @PostMapping(value = "/register")
     @Operation(summary = "注册")
     public R register(@RequestBody RegisterRequest request) {
