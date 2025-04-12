@@ -8,10 +8,17 @@
                     <Expand v-if="isCollapsed" />
                     <Fold v-else />
                 </el-icon>
-                <!-- <img src="@/assets/logo.png" class="logo" alt="Logo"> -->
                 <span class="system-name">萝卜系统</span>
+                <img src="../assets/dashboard.png" class="logo" alt="Logo">
             </div>
             <div class="header-right">
+                <!-- 消息图标 -->
+                <div class="message-icon-wrapper">
+                    <el-icon class="message-icon" @click="handleMessageClick">
+                        <Bell />
+                        <span v-if="unreadCount > 0" class="message-dot"></span>
+                    </el-icon>
+                </div>
                 <!-- 新增带提示的首页图标 -->
                 <el-tooltip content="首页" placement="bottom" effect="light">
                     <el-icon class="home-icon" @click="goHome">
@@ -67,7 +74,7 @@
                             <el-icon v-if="menu.icon">
                                 <component :is="menu.icon" />
                             </el-icon>
-                            <span>{{ menu.title }}</span>
+                            <span>{{ menu.name }}</span>
                         </el-menu-item>
                     </template>
                 </el-menu>
@@ -97,13 +104,15 @@ import {
     SwitchButton,
     Expand,
     Fold,
-    House
+    House,
+    Bell
 } from '@element-plus/icons-vue';
 import { clearCache } from '../utils/clearCache';
 import { UserInfoVo } from '@/types/login';
 import { logouted } from '@/api/login';
 import { ElTooltip } from 'element-plus';
 import type { MenuItem } from '@/types/menu';
+import { getMessageNumApi } from '@/api/message';
 
 const router = useRouter();
 const user = ref({
@@ -111,6 +120,8 @@ const user = ref({
     avatar: ''
 });
 const isCollapsed = ref(false);
+const unreadCount = ref(5) // 未读消息数
+
 
 const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value
@@ -146,10 +157,19 @@ const getNicname = async () => {
     user.value.name = userInfo.nickname;
 }
 
+const handleMessageClick = async () => {
+    // 跳转到消息界面
+}
+
+// 获取消息数量
+const getMessageNum = async () => {
+    unreadCount.value = await getMessageNumApi();
+}
 
 onMounted(() => {
     loadMenu();
     getNicname();
+    getMessageNum();
 })
 </script>
 
@@ -217,12 +237,12 @@ onMounted(() => {
 }
 
 .user-info {
+    outline: none !important;
     display: flex;
     align-items: center;
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 4px;
-    border: 1px solid rgb(255, 255, 255);
     transition: all 0.3s;
 }
 
@@ -254,13 +274,53 @@ onMounted(() => {
     font-size: 20px;
     cursor: pointer;
     transition: color 0.3s;
-    color: #4879b1;
+    color: #e6e7e8;
 }
 
 .home-icon:hover {
     color: #409EFF;
 }
 
+/* 消息图标容器 */
+.message-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-right: 20px;
+  margin-top: 17px; /* 保持与其他图标对齐 */
+}
+
+/* 消息图标基础样式 */
+.message-icon {
+  font-size: 20px;
+  color: #e6e7e8;
+  cursor: pointer;
+  transition: color 0.3s;
+  position: relative; /* 为红点定位做准备 */
+}
+
+.message-icon:hover {
+  color: #409eff;
+}
+
+/* 小红点样式 */
+.message-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  background-color: #f56c6c;
+  border-radius: 50%;
+  border: 1px solid #b3b9bf; /* 与header背景色一致 */
+  box-sizing: border-box;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
 .collapse-icon {
     margin-right: 15px;
     font-size: 20px;

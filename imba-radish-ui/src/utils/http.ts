@@ -38,9 +38,7 @@ instance.interceptors.request.use(
 
 // 响应拦截器
 instance.interceptors.response.use(
-  (response) => response.config.responseType !== 'json'
-    ? response
-    : parseResponse(response),
+  (response) => response.config.responseType !== 'blob' ? parseResponse(response) : response,
   (error) => handleResponseError(error)
 );
 
@@ -53,7 +51,7 @@ function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
       config: response.config,
     } as unknown as ApiError;
   }
-  return response.data.data;
+  return response;
 }
 
 // 错误统一处理

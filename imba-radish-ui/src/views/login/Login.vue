@@ -110,7 +110,7 @@ const forceUpdate = () => {
 // 获取验证码
 const refreshCaptcha = async () => {
   try {
-    const { blob, uuid } = await getGraphicCaptcha(loginForm.value.username);
+    const { blob, uuid } = await getGraphicCaptcha(loginForm.value.uuid);
     loginForm.value.uuid = uuid;
     captchaUrl.value = URL.createObjectURL(blob);
   } catch (error) {

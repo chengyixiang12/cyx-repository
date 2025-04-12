@@ -9,7 +9,7 @@
               <span>组织架构</span>
             </div>
           </template>
-          <el-tree :data="deptTree" :props="treeProps" node-key="id" highlight-current @node-click="handleDeptClick"
+          <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current @node-click="handleDeptClick" :default-expanded-keys="[firstNodeKey]"
             class="custom-tree">
             <template #default="{ node }">
               <el-tooltip effect="dark" :content="node.label" placement="top-start"
@@ -97,7 +97,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTree } from '@/api/dept'
 import { getUserList, addUser, updateUser, deleteUserById } from '@/api/user'
 import type { AllUserVo } from '@/types/user'
@@ -180,9 +180,9 @@ const loadDeptTree = async () => {
   try {
     const res = await getDeptTree()
     deptTree.value = res || []
-    nextTick(() => {
-      // 确保 DOM 更新后能正确计算宽度
-    })
+    if (deptTree.value.length > 0) {
+      await nextTick();
+    }
   } catch (error) {
     console.error('加载部门树失败:', error)
   }
@@ -228,6 +228,10 @@ const handleSizeChange = (size: number) => {
   pagination.value.size = size
   loadUsers()
 }
+
+const firstNodeKey = computed(() => {
+  return deptTree.value[0]?.id || 0;
+})
 
 // 初始化加载
 onMounted(() => {
