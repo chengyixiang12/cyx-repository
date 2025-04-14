@@ -17,5 +17,5 @@ public @interface SysLock {
      * 唯一键
      * @return
      */
-    String name() default "";
+    String name();
 }
