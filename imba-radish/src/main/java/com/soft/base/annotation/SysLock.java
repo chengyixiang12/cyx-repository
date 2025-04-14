@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * @Author: cyx
- * @Description: 锁注解
+ * @Description: 全局锁注解
  * @DateTime: 2025/4/12 16:23
  **/
 
@@ -14,8 +14,8 @@ import java.lang.annotation.*;
 public @interface SysLock {
 
     /**
-     * 锁值
+     * 唯一键
      * @return
      */
-    String value() default "";
+    String name() default "";
 }

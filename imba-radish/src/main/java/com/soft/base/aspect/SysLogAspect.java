@@ -15,6 +15,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,7 @@ import static com.soft.base.constants.BaseConstant.LEFT_SLASH;
 @Slf4j
 @Aspect
 @Component
+@Order(9)
 public class SysLogAspect {
 
     @Value(value = "${log.enable}")
@@ -59,9 +61,9 @@ public class SysLogAspect {
 
     @Around("@annotation(sysLog)")
     public Object around(ProceedingJoinPoint joinPoint, SysLog sysLog) throws Throwable {
+        long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
         if (logEnable) {
-            long start = System.currentTimeMillis();
             LogDto logDto = new LogDto();
             try {
                 logDto.setModuleName(sysLog.module().getName());

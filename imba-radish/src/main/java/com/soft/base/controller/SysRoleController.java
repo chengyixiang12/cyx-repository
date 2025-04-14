@@ -40,7 +40,7 @@ public class SysRoleController {
         this.sysRoleService = sysRoleService;
     }
 
-    @SysLock(value = "role")
+    @SysLock(name = "role")
     @SysLog(value = "添加角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_add')")
     @PostMapping
@@ -75,7 +75,7 @@ public class SysRoleController {
         }
     }
 
-    @SysLock(value = "role")
+    @SysLock(name = "role")
     @SysLog(value = "编辑角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_edit')")
     @PutMapping
@@ -218,7 +218,7 @@ public class SysRoleController {
         }
     }
 
-    @SysLock(value = "role")
+    @SysLock(name = "role")
     @SysLog(value = "设置默认角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_set_def')")
     @GetMapping(value = "/setDefaultRole/{id}")

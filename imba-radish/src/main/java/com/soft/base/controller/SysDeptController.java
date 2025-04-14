@@ -67,7 +67,7 @@ public class SysDeptController {
         }
     }
 
-    @SysLock(value = "dept")
+    @SysLock(name = "dept")
     @SysLog(value = "添加部门", module = LogModuleEnum.DEPT)
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_add')")
     @PostMapping
@@ -100,7 +100,7 @@ public class SysDeptController {
         }
     }
 
-    @SysLock(value = "dept")
+    @SysLock(name = "dept")
     @SysLog(value = "编辑部门", module = LogModuleEnum.DEPT)
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_edit')")
     @PutMapping

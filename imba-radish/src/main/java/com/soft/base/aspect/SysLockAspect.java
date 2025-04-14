@@ -11,6 +11,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Slf4j
 @Component
+@Order(1)
 public class SysLockAspect {
 
     @Value("${radish.lock.expire}")
@@ -48,7 +50,7 @@ public class SysLockAspect {
 
     @Around("@annotation(sysLock)")
     public Object around(ProceedingJoinPoint joinPoint, SysLock sysLock) throws Throwable {
-        String key = sysLock.value();
+        String key = sysLock.name();
         int retryCount = BaseConstant.INTEGER_INIT_VAL;
         String lockFlag = universalUtil.fileKeyGen();
         boolean locked = false;

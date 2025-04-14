@@ -104,7 +104,7 @@ public class AuthController {
         }
     }
 
-    @SysLock("user")
+    @SysLock(name = "user")
     @PostMapping(value = "/register")
     @Operation(summary = "注册")
     public R register(@RequestBody RegisterRequest request) {

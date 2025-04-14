@@ -119,7 +119,7 @@ public class SysUserController {
         }
     }
 
-    @SysLock(value = "user")
+    @SysLock(name = "user")
     @SysLog(value = "添加用户", module = LogModuleEnum.USER)
     @PreAuthorize(value = "@cps.hasPermission('sys_user_add')")
     @PostMapping
@@ -152,7 +152,7 @@ public class SysUserController {
         }
     }
 
-    @SysLock(value = "user")
+    @SysLock(name = "user")
     @SysLog(value = "编辑用户", module = LogModuleEnum.USER)
     @PreAuthorize(value = "@cps.hasPermission('sys_user_edit')")
     @PutMapping
@@ -249,7 +249,7 @@ public class SysUserController {
         }
     }
 
-    @SysLock(value = "user")
+    @SysLock(name = "user")
     @PutMapping(value = "/resetUsername")
     @Operation(summary = "重置用户名")
     public R resetUsername(@RequestBody ResetUsernameRequest request) {
