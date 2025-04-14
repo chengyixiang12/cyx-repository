@@ -9,8 +9,8 @@
               <span>组织架构</span>
             </div>
           </template>
-          <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current @node-click="handleDeptClick" :default-expanded-keys="[firstNodeKey]"
-            class="custom-tree">
+          <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current
+            @node-click="handleDeptClick" :default-expanded-keys="[firstNodeKey]" class="custom-tree">
             <template #default="{ node }">
               <el-tooltip effect="dark" :content="node.label" placement="top-start"
                 v-if="shouldShowTooltip(node.label)">
@@ -27,16 +27,43 @@
         <el-card>
           <template #header>
             <div class="list-header">
-              <span>用户管理</span>
+              <span class="header-title">用户管理</span>
               <div>
-                <el-button type="primary" @click="handleAdd">新增用户</el-button>
+                <el-button type="primary" @click="handleAdd" class="header-button">新增用户</el-button>
               </div>
             </div>
           </template>
 
+          <!-- 搜索条件 -->
+          <div class="search-container">
+            <el-form :inline="true" :model="searchForm" class="search-form">
+              <el-form-item label="关键字:">
+                <el-input v-model="searchForm.nameLikeQry" placeholder="用户名/昵称" clearable  class="keyword-input"/>
+              </el-form-item>
+              <el-form-item label="状态:">
+                <el-select v-model="searchForm.enabled" placeholder="请选择" clearable
+                  style="width: 120px">
+                  <el-option label="启用" :value="1" />
+                  <el-option label="禁用" :value="0" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="账户状态:">
+                <el-select v-model="searchForm.accountNonLocked" placeholder="请选择" clearable
+                  style="width: 120px">
+                  <el-option label="正常" :value="1" />
+                  <el-option label="锁定" :value="0" />
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="handleSearch">查询</el-button>
+                <el-button type="primary" @click="resetSearch">重置</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+
           <!-- 用户表格 -->
           <div class="list-table">
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading" use-virtual>
+            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading">
               <el-table-column label="序号" width="80" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
@@ -117,6 +144,14 @@ const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const userId = ref<number>(0)
 
+// 搜索表单
+const searchForm = ref({
+  nameLikeQry: '',
+  enabled: undefined as number | undefined,
+  accountNonLocked: undefined as number | undefined
+})
+
+
 // 新增用户
 const handleAdd = () => {
   addDialogVisible.value = true
@@ -195,7 +230,10 @@ const loadUsers = async () => {
     const params = {
       pageNum: pagination.value.current,
       pageSize: pagination.value.size,
-      deptId: selectedDept.value
+      deptId: selectedDept.value,
+      nameLikeQry: searchForm.value.nameLikeQry,
+      enabled: searchForm.value.enabled,
+      accountNonLocked: searchForm.value.accountNonLocked
     }
     const res = await getUserList(params)
     userList.value = res.result || []
@@ -233,6 +271,19 @@ const firstNodeKey = computed(() => {
   return deptTree.value[0]?.id || 0;
 })
 
+// 搜索
+const handleSearch = () => {
+  pagination.value.current = 1
+  loadUsers()
+}
+
+const resetSearch = () => {
+  searchForm.value.accountNonLocked = undefined
+  searchForm.value.enabled = undefined
+  searchForm.value.nameLikeQry = ''
+  loadUsers()
+}
+
 // 初始化加载
 onMounted(() => {
   loadDeptTree()
@@ -241,43 +292,118 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.tree-card {
+.unified-list-container {
   height: 100%;
+  padding: 16px;
+  background-color: #f5f7fa;
 }
 
-.custom-tree .tree-node-label {
+/* 树形卡片样式 */
+.tree-card {
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* 头部样式优化 */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #303133;
+}
+
+/* 卡片样式优化 */
+.el-card {
+  height: 100%;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+:deep(.el-card__header) {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+/* 搜索区域优化 */
+.search-container {
+  padding: 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.keyword-input {
+  width: 200px !important;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 0;
+  margin-right: 16px;
+}
+
+:deep(.el-form-item__label) {
+  padding-right: 8px;
+  color: #606266;
+}
+
+/* 树形节点样式优化 */
+.custom-tree {
+  padding: 8px 12px;
+}
+
+.tree-node-label {
   display: inline-block;
-  max-width: 180px;
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  vertical-align: middle;
+  font-size: 13px;
 }
 
-/* 覆盖全局样式中的部分样式以适应这个特定页面 */
-:deep(.el-card__body) {
-  flex: 1;
-  overflow: auto;
-  padding: 0 !important;
-}
-
-.el-col {
-  height: 100%;
-}
-
-.el-card {
-  height: 100%;
+/* 分页样式优化 */
+.list-pagination {
+  padding: 12px 16px;
   display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
+  border-top: 1px solid #ebeef5;
 }
 
+/* 部门卡片头部优化 */
 .dept-card-header {
   display: flex;
   justify-content: center;
-  /* 水平居中 */
   align-items: center;
-  /* 垂直居中 */
-  height: 40px;
-  /* 设置合适的高度 */
+  height: 32px;
+  font-weight: 500;
+  color: #303133;
+}
+
+/* 按钮样式微调 */
+.header-button {
+  height: 32px;
+  padding: 7px 15px;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .search-form {
+    gap: 12px;
+  }
+  
+  :deep(.el-form-item) {
+    margin-right: 12px;
+  }
 }
 </style>

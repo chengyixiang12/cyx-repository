@@ -1,9 +1,8 @@
 <template>
   <div class="unified-list-container">
     <el-card shadow="hover" class="compact-card">
-      <!-- 使用统一的header样式 -->
       <template #header>
-        <div class="unified-header compact-header">
+        <div class="list-header compact-header">
           <span class="header-title">菜单列表</span>
           <div class="header-actions">
             <el-button size="small" @click="refreshList">刷新</el-button>
@@ -11,10 +10,8 @@
         </div>
       </template>
 
-      <!-- 表格使用统一样式 -->
-      <div class="unified-table">
-        <el-table :data="menuList" border style="width: 100%" v-loading="loading"
-          :default-sort="{ prop: 'orderNum', order: 'ascending' }" class="compact-table">
+      <div class="list-table">
+        <el-table :data="menuList" border style="width: 100%" v-loading="loading" size="small">
           <!-- 表格列保持不变 -->
           <el-table-column label="序号" align="center">
             <template #default="scope">
@@ -59,8 +56,7 @@
         </el-table>
       </div>
 
-      <!-- 分页使用统一样式 -->
-      <div class="unified-pagination compact-pagination">
+      <div class="list-pagination">
         <el-pagination v-model:current-page="pagination.current" v-model:page-size="pagination.size"
           :total="pagination.total" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
           size="small" @size-change="handleSizeChange" @current-change="handlePageChange" />
@@ -177,6 +173,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+.unified-list-container {
+  height: 100%;
+  padding: 16px;
+  background-color: #f5f7fa;
+}
+
 .compact-card {
   :deep(.el-card__header) {
     padding: 8px 16px;
@@ -185,75 +188,6 @@ onMounted(() => {
 
   :deep(.el-card__body) {
     padding: 12px;
-  }
-}
-
-.unified-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 32px;
-
-  .header-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--el-text-color-primary);
-  }
-}
-
-/* 统一搜索栏样式 */
-.unified-search {
-  margin-bottom: 12px;
-
-  :deep(.el-input) {
-    width: 100%;
-    max-width: 400px;
-  }
-}
-
-/* 统一表格样式 */
-.unified-table {
-  :deep(.el-table) {
-    font-size: 13px;
-
-    th {
-      padding: 8px 0;
-      background-color: var(--el-bg-color);
-
-      .cell {
-        font-weight: 500;
-      }
-    }
-
-    td {
-      padding: 8px 0;
-    }
-  }
-}
-
-/* 统一分页样式 */
-.unified-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* 紧凑调整 */
-.compact-table {
-  :deep(.el-table__header th) {
-    height: 36px;
-  }
-
-  :deep(.el-table__row td) {
-    height: 40px;
-  }
-}
-
-.compact-pagination {
-  :deep(.el-pagination) {
-    --el-pagination-button-width: 28px;
-    --el-pagination-button-height: 28px;
-    font-size: 12px;
   }
 }
 </style>
