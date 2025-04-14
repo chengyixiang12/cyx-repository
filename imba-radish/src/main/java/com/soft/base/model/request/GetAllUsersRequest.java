@@ -17,4 +17,13 @@ public class GetAllUsersRequest extends PageRequest {
 
     @Schema(description = "部门id")
     private Long deptId;
+
+    @Schema(description = "关键字检索")
+    private String nameLikeQry;
+
+    @Schema(description = "用户是否被启用；1：启用；0：禁用")
+    private Integer enabled;
+
+    @Schema(description = "账户是否被锁定；1：正常；0：锁定")
+    private Integer accountNonLocked;
 }

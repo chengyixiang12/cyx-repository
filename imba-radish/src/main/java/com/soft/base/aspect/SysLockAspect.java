@@ -66,6 +66,7 @@ public class SysLockAspect {
             }
 
             if (!locked) {
+                log.debug("获取锁失败，请稍后重试：{}", key);
                 throw new LockFailException("获取锁失败，请稍后重试：" + key);
             }
 

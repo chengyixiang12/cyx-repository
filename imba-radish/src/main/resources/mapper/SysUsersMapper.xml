@@ -61,6 +61,16 @@
         <if test="request.deptId != null">
             AND u.dept_id = #{request.deptId}
         </if>
+        <if test="request.nameLikeQry != null and request.nameLikeQry != ''">
+            AND ( u.username LIKE CONCAT('%', #{request.nameLikeQry}, '%')
+            OR u.nickname LIKE CONCAT('%', #{request.nameLikeQry}, '%') )
+        </if>
+        <if test="request.enabled != null">
+            AND u.enabled = #{request.enabled}
+        </if>
+        <if test="request.accountNonLocked != null">
+            u.account_non_locked = #{request.accountNonLocked}
+        </if>
     </select>
     <select id="getAllUser" resultType="DeptUserVo">
         SELECT
