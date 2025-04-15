@@ -89,6 +89,12 @@ public class SysFile implements Serializable {
     @TableField(value = "file_size")
     private Long fileSize;
 
+    /**
+     * 文件hash
+     */
+    @TableField(value = "file_hash")
+    private String fileHash;
+
     @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

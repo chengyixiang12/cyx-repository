@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysFile;
 import com.soft.base.model.dto.FileDetailDto;
+import com.soft.base.model.dto.FileHashDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,9 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
     FileDetailDto getFileDetailById(@Param("id") Long id);
 
     IPage<FilesVo> getFiles(IPage<FilesVo> page, @Param("request") FilesRequest request);
+
+    FileHashDto getFileByHash(@Param("hashCode") String hashCode);
+
 }
 
 

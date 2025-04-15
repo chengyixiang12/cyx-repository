@@ -51,4 +51,14 @@
         sf.del_flag = '1'
         ORDER BY sf.create_time DESC
     </select>
+    <select id="getFileByHash" parameterType="java.lang.String">
+        SELECT
+            sf.id,
+            sf.original_name
+        FROM
+            sys_file sf
+        WHERE
+            sf.del_flag = '1'
+          AND sf.file_hash = #{hashCode}
+    </select>
 </mapper>

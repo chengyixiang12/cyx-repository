@@ -1,6 +1,7 @@
 package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
@@ -8,6 +9,7 @@ import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.model.dto.FileDetailDto;
+import com.soft.base.model.dto.FileHashDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
@@ -20,6 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigInteger;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 
 /**
 * @author cyq
@@ -46,39 +52,47 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     @Override
     public UploadFileVo uploadFile(MultipartFile multipartFile) throws GlobalException {
+        UploadFileVo uploadFileVo = new UploadFileVo();
         try {
             String originalFilename = multipartFile.getOriginalFilename();
             if (StringUtils.isBlank(originalFilename)) {
                 throw new GlobalException("文件名不能为空");
             }
 
-//            MessageDigest digest = MessageDigest.getInstance("SHA-265");
-//            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
-//                byte[] buffer = new byte[8192];
-//                while (dis.read(buffer) != -1) {
-//                    // 读取流数据，自动计算 Hash
-//                }
-//            }
-//            byte[] hashBytes = digest.digest();
-//            String hashCode = new BigInteger(1, hashBytes).toString(16);
+            MessageDigest digest = MessageDigest.getInstance("SHA-255");
+            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
+                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
+                int length = BaseConstant.BUFFER_SIZE;
+                while (length != BaseConstant.FILE_OVER_SIGN) {
+                    length = dis.read(buffer);
+                }
+            }
+            byte[] hashBytes = digest.digest();
+            String hashCode = new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
 
-            long fileSize = multipartFile.getSize();
-            String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
+            FileHashDto fileHashDto = sysFileMapper.getFileByHash(hashCode);
 
-            String fileKey = universalUtil.fileKeyGen();
-            String objectKey = minioUtil.upload(multipartFile.getInputStream(), fileKey, fileSuffix, fileSize);
-            SysFile sysFile = new SysFile();
-            sysFile.setFileKey(fileKey);
-            sysFile.setFileSuffix(fileSuffix);
-            sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
-            sysFile.setObjectKey(objectKey);
-            sysFile.setOriginalName(originalFilename);
-            sysFile.setFileSize(fileSize);
-            sysFileMapper.insert(sysFile);
+            if (fileHashDto != null) {
+                uploadFileVo.setFileId(fileHashDto.getId());
+                uploadFileVo.setFileName(fileHashDto.getOriginalName());
+            } else {
+                long fileSize = multipartFile.getSize();
+                String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
 
-            UploadFileVo uploadFileVo = new UploadFileVo();
-            uploadFileVo.setFileId(sysFile.getId());
-            uploadFileVo.setFileName(sysFile.getOriginalName());
+                String fileKey = universalUtil.fileKeyGen();
+                String objectKey = minioUtil.upload(multipartFile.getInputStream(), fileKey, fileSuffix, fileSize);
+                SysFile sysFile = new SysFile();
+                sysFile.setFileKey(fileKey);
+                sysFile.setFileSuffix(fileSuffix);
+                sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
+                sysFile.setObjectKey(objectKey);
+                sysFile.setOriginalName(originalFilename);
+                sysFile.setFileSize(fileSize);
+                sysFileMapper.insert(sysFile);
+                uploadFileVo.setFileId(sysFile.getId());
+                uploadFileVo.setFileName(sysFile.getOriginalName());
+            }
+
             return uploadFileVo;
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());

@@ -227,4 +227,14 @@ public class BaseConstant {
      * 部门层级加1
      */
     public final static Integer DEPT_LEVEL_ADD_ONE = 1;
+
+    /**
+     * 十六进制
+     */
+    public final static Integer SCALE_SIXTEEN = 16;
+
+    /**
+     * signum标识——正数
+     */
+    public final static Integer SIGN_NUM_POSITIVE = 1;
 }
