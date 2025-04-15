@@ -34,15 +34,6 @@ spring:
           starttls:
             enable: true
     default-encoding: UTF-8
-  rabbitmq:
-    host: 192.168.226.130
-    port: 5672
-    username: root
-    password: 123456
-    virtual-host: /
-  jmx:
-    # 启动JMX监控，jconsole
-    enabled: true
 #mybatis配置
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
@@ -83,12 +74,6 @@ jwt:
   secret-key: abcdefghijklmnopq123456789
   #单位秒；1小时过期
   expire: 3600000
-#minio对象存储
-minio:
-  url: http://192.168.226.130:9002
-  accessKey: admin
-  secretKey: 123456789
-  bucket: cyx
 #不鉴权url
 permit:
   urls:

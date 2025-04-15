@@ -34,14 +34,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
             sendParams.setMessage("websocket连接异常，指令为空");
-            log.error("websocket连接异常，指令为空");
+            log.debug("websocket连接异常，指令为空");
             return;
         }
         if (!WebSocketOrderEnum.exist(order)) {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
             sendParams.setMessage("无效的指令");
-            log.error("无效的指令");
+            log.debug("无效的指令");
             return;
         }
 
@@ -54,7 +54,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         try {
-            log.info("received file, start process...");
+            log.debug("received file, start process...");
             @SuppressWarnings("unchecked")
             WebSocketConcreteHandler<ByteBuffer> webSocketConcreteHandler = (WebSocketConcreteHandler<ByteBuffer>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FILE_TRANSFER.toString());
             webSocketConcreteHandler.handle(session, message);

@@ -67,7 +67,7 @@ public class CaptchaConsume {
     public void sendLoginCaptcha(Message message, Channel channel) {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         try {
-            log.info("start consume message...");
+            log.debug("start consume message...");
             String username = new String(message.getBody());
 
             String email = sysUsersService.getEmail(username);
@@ -92,7 +92,7 @@ public class CaptchaConsume {
     public void sendRegistCaptcha(Message message, Channel channel) {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         try {
-            log.info("start consume message...");
+            log.debug("start consume message...");
             String email = new String(message.getBody());
             String captChat = universalUtil.generate(BaseConstant.LOGIN_CAPTCHA_LENGTH);
             redisTemplate.opsForValue().set(RedisConstant.EMAIL_CAPTCHA_KEY + email, captChat, expireTime, TimeUnit.SECONDS);

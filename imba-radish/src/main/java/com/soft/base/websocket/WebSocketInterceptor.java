@@ -41,14 +41,14 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
             String token = servletRequest.getServletRequest().getParameter(WebSocketConstant.AUTHORIZATION);
             String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
             if (StringUtils.isEmpty(username)) {
-                log.error("token is expire...");
+                log.debug("token is expire...");
                 return false;
             }
             UserDto user = (UserDto) userDetailsService.loadUserByUsername(username);
             attributes.put(WebSocketConstant.WEBSOCKET_USER, user);
             attributes.put(WebSocketConstant.AUTHORIZATION, token);
         } else {
-            log.info("request is not ServletServerHttpRequest type");
+            log.debug("request is not ServletServerHttpRequest type");
             return false;
         }
         return true;

@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<R<Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         log.error(ex.getLocalizedMessage());
-        return new ResponseEntity<>(R.fail("非法日期格式"), HttpStatus.OK);
+        return new ResponseEntity<>(R.fail("请求数据解析失败"), HttpStatus.OK);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

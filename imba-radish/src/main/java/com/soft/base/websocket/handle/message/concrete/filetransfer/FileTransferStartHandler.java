@@ -52,7 +52,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         String username = userDto.getUsername();
         FileTransferStartRecParams fileTransferStartRecParams = JSON.parseObject(message.getPayload(), FileTransferStartRecParams.class);
         String fileKey = universalUtil.fileKeyGen();
-        log.info("fileKey: {}", fileKey);
+        log.debug("fileKey: {}", fileKey);
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey;
         File file = new File(filePath);
         boolean isCreate = file.mkdirs();
@@ -62,17 +62,17 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
             sendParams.setStatus(false);
             sendParams.setMessage("文件夹创建失败");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
-            log.info("文件夹创建失败，{}", filePath);
+            log.debug("文件夹创建失败，{}", filePath);
             return;
         }
 
-        log.info("文件夹创建成功");
+        log.debug("文件夹创建成功");
         redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_KEY + username, fileKey);
-        log.info("分片文件key缓存成功");
+        log.debug("分片文件key缓存成功");
         redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INDEX_KEY + username, BaseConstant.INTEGER_INIT_VAL);
-        log.info("分片文件索引缓存成功");
+        log.debug("分片文件索引缓存成功");
         redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INFO + username, fileTransferStartRecParams.getFileHash());
-        log.info("分片文件hash缓存成功");
+        log.debug("分片文件hash缓存成功");
 
         sendParams.setStatus(true);
         sendParams.setMessage("文件夹创建成功");

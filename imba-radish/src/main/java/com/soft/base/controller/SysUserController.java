@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping(value = "/user")
 @Slf4j
-@Tag(name = "用户接口")
+@Tag(name = "用户")
 public class SysUserController {
 
     private final SysUsersService sysUsersService;

@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping(value = "/role")
-@Tag(name = "角色接口")
+@Tag(name = "角色")
 @Slf4j
 public class SysRoleController {
 

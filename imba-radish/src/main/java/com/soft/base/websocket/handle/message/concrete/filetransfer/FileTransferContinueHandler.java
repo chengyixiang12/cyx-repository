@@ -51,7 +51,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
             return;
         }
         Integer currIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
-        log.info("当前索引为：{}", currIndex);
+        log.debug("当前索引为：{}", currIndex);
         FileTransferContinueSendParams fileTransferContinueSendParams = new FileTransferContinueSendParams();
         fileTransferContinueSendParams.setStatus(true);
         fileTransferContinueSendParams.setIndex(currIndex);

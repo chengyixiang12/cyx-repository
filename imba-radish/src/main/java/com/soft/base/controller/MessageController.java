@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping(value = "/message")
 @Slf4j
-@Tag(name = "消息队列")
+@Tag(name = "消息")
 public class MessageController {
 
     private final CaptchaProduce captchaProduce;

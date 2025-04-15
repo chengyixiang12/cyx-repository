@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx
- * @Description: 本地缓存
+ * @Description: 本地缓存（不建议使用，会占用jvm内存）
  * @DateTime: 2024/12/7 8:47
  **/
 @Component

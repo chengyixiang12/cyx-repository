@@ -23,8 +23,6 @@ spring:
       max-lifetime: 180000
       # 连接池名称
       pool-name: cyx-datasource-pool
-      # 数据性能监测jconsole
-      register-mbeans: true
       # 连接验证的 SQL 查询
       connection-test-query: SELECT 1
       # 连接验证的超时时间（单位：毫秒）
@@ -52,6 +50,24 @@ spring:
           min-idle: 4
           # 连接池获取连接的最大等待时间（单位：毫秒）
           max-wait: 5000
+  rabbitmq:
+    host: 192.168.226.130
+    port: 5672
+    username: root
+    password: 123456
+    virtual-host: /
+#minio对象存储
+minio:
+  url: http://192.168.226.130:9002
+  accessKey: admin
+  secretKey: 123456789
+  bucket: cyx
+#启用api文档
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
 #日志
 logging:
   level:
@@ -83,3 +99,6 @@ rate-limit:
 storage:
   big-file:
     location: /app/bigFile
+#启用knife4j文档
+knife4j:
+  enable: false
