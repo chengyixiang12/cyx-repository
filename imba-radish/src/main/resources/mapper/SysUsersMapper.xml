@@ -69,7 +69,7 @@
             AND u.enabled = #{request.enabled}
         </if>
         <if test="request.accountNonLocked != null">
-            u.account_non_locked = #{request.accountNonLocked}
+            AND u.account_non_locked = #{request.accountNonLocked}
         </if>
     </select>
     <select id="getAllUser" resultType="DeptUserVo">

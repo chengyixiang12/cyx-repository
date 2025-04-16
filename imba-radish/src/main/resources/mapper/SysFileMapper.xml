@@ -51,10 +51,15 @@
         sf.del_flag = '1'
         ORDER BY sf.create_time DESC
     </select>
-    <select id="getFileByHash" parameterType="java.lang.String">
+    <select id="getFileByHash" parameterType="java.lang.String" resultType="FileHashDto">
         SELECT
             sf.id,
-            sf.original_name
+            sf.original_name,
+            sf.file_key,
+            sf.location,
+            sf.object_key,
+            sf.file_suffix,
+            sf.file_size
         FROM
             sys_file sf
         WHERE

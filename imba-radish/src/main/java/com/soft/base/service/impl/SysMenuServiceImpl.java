@@ -75,7 +75,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         IPage<GetMenuListVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         sysMenuMapper.getMenuList(page, request);
         PageVo<GetMenuListVo> pageVo = new PageVo<>();
-        pageVo.setResult(page.getRecords());
+        pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }

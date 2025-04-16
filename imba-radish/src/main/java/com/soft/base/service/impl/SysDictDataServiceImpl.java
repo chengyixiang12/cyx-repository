@@ -40,7 +40,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
         page = sysDictDataMapper.getDictDatas(page, request);
         PageVo<DictDatasVo> pageVo = new PageVo<>();
         pageVo.setTotal(page.getTotal());
-        pageVo.setResult(page.getRecords());
+        pageVo.setRecords(page.getRecords());
         return pageVo;
     }
 

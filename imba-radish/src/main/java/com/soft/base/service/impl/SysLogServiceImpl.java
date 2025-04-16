@@ -40,7 +40,7 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog>
         IPage<LogsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysLogMapper.getLogs(page, request);
         PageVo<LogsVo> pageVo = new PageVo<>();
-        pageVo.setResult(page.getRecords());
+        pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }

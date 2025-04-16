@@ -74,7 +74,7 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_add')")
     @PostMapping
     @Operation(summary = "添加字典数据")
-    public R saveDictData(@RequestBody SaveDictDataRequest request) {
+    public R<Object> saveDictData(@RequestBody SaveDictDataRequest request) {
         if (StringUtils.isBlank(request.getDictType())) {
             return R.fail("字典类型不能为空");
         }
@@ -100,7 +100,7 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_edit')")
     @PutMapping
     @Operation(summary = "编辑字典数据")
-    public R editDictData(@RequestBody EditDictDataRequest request) {
+    public R<Object> editDictData(@RequestBody EditDictDataRequest request) {
         if (request.getId() == null) {
             return R.fail("主键不能为空");
         }
@@ -130,7 +130,7 @@ public class SysDictDataController {
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除字典数据")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R deleteDictData(@PathVariable(value = "id") Long id) {
+    public R<Object> deleteDictData(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
@@ -147,7 +147,7 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_del')")
     @DeleteMapping(value = "/deleteDictDataBatch")
     @Operation(summary = "批量删除字典数据")
-    public R deleteDictDataBatch(@RequestBody DeleteRequest request) {
+    public R<Object> deleteDictDataBatch(@RequestBody DeleteRequest request) {
         if (request.getIds() == null || request.getIds().isEmpty()) {
             return R.fail("主键不能为空");
         }

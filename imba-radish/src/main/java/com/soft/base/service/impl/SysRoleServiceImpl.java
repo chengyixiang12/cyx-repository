@@ -65,7 +65,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
         page = sysRoleMapper.getRoles(page, request);
 
-        pageVo.setResult(page.getRecords());
+        pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }

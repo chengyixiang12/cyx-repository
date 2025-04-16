@@ -19,13 +19,16 @@ import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.UniversalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
 * @author cyq
@@ -51,52 +54,51 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public UploadFileVo uploadFile(MultipartFile multipartFile) throws GlobalException {
+    public UploadFileVo uploadFile(MultipartFile multipartFile) throws IOException, NoSuchAlgorithmException {
         UploadFileVo uploadFileVo = new UploadFileVo();
-        try {
-            String originalFilename = multipartFile.getOriginalFilename();
-            if (StringUtils.isBlank(originalFilename)) {
-                throw new GlobalException("文件名不能为空");
-            }
-
-            MessageDigest digest = MessageDigest.getInstance("SHA-255");
-            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
-                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
-                int length = BaseConstant.BUFFER_SIZE;
-                while (length != BaseConstant.FILE_OVER_SIGN) {
-                    length = dis.read(buffer);
-                }
-            }
-            byte[] hashBytes = digest.digest();
-            String hashCode = new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
-
-            FileHashDto fileHashDto = sysFileMapper.getFileByHash(hashCode);
-
-            if (fileHashDto != null) {
-                uploadFileVo.setFileId(fileHashDto.getId());
-                uploadFileVo.setFileName(fileHashDto.getOriginalName());
-            } else {
-                long fileSize = multipartFile.getSize();
-                String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
-
-                String fileKey = universalUtil.fileKeyGen();
-                String objectKey = minioUtil.upload(multipartFile.getInputStream(), fileKey, fileSuffix, fileSize);
-                SysFile sysFile = new SysFile();
-                sysFile.setFileKey(fileKey);
-                sysFile.setFileSuffix(fileSuffix);
-                sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
-                sysFile.setObjectKey(objectKey);
-                sysFile.setOriginalName(originalFilename);
-                sysFile.setFileSize(fileSize);
-                sysFileMapper.insert(sysFile);
-                uploadFileVo.setFileId(sysFile.getId());
-                uploadFileVo.setFileName(sysFile.getOriginalName());
-            }
-
-            return uploadFileVo;
-        } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+        SysFile sysFile = new SysFile();
+        String originalFilename = multipartFile.getOriginalFilename();
+        if (StringUtils.isBlank(originalFilename)) {
+            throw new GlobalException("文件名不能为空");
         }
+
+        MessageDigest digest = MessageDigest.getInstance(BaseConstant.TYPE_ALGORITHM);
+        try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
+            byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
+            int length = BaseConstant.BUFFER_SIZE;
+            while (length != BaseConstant.FILE_OVER_SIGN) {
+                length = dis.read(buffer);
+            }
+        }
+        byte[] hashBytes = digest.digest();
+        String hashCode = new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
+
+        FileHashDto fileHashDto = sysFileMapper.getFileByHash(hashCode);
+
+        if (fileHashDto != null) {
+            BeanUtils.copyProperties(fileHashDto, sysFile);
+            if (!originalFilename.equals(fileHashDto.getOriginalName())) {
+                sysFileMapper.insert(sysFile);
+            }
+        } else {
+            long fileSize = multipartFile.getSize();
+            String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
+            String fileKey = universalUtil.fileKeyGen();
+            String objectKey = minioUtil.upload(multipartFile.getInputStream(), fileKey, fileSuffix, fileSize);
+
+            sysFile.setFileKey(fileKey);
+            sysFile.setFileSuffix(fileSuffix);
+            sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
+            sysFile.setObjectKey(objectKey);
+            sysFile.setOriginalName(originalFilename);
+            sysFile.setFileSize(fileSize);
+            sysFileMapper.insert(sysFile);
+
+        }
+        uploadFileVo.setFileId(sysFile.getId());
+        uploadFileVo.setFileName(sysFile.getOriginalName());
+
+        return uploadFileVo;
     }
 
     @Override
@@ -115,7 +117,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         page = sysFileMapper.getFiles(page, request);
         PageVo<FilesVo> pageVo = new PageVo<>();
         pageVo.setTotal(page.getTotal());
-        pageVo.setResult(page.getRecords());
+        pageVo.setRecords(page.getRecords());
         return pageVo;
     }
 }

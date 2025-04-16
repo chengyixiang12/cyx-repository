@@ -1,5 +1,6 @@
 package com.soft.base.controller;
 
+import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.DeleteRequest;
@@ -51,11 +52,12 @@ public class SysDictTypeController {
         }
     }
 
+    @SysLock(name = "dictType")
     @SysLog(value = "添加字典类型", module = LogModuleEnum.DICT_TYPE)
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_add')")
     @PostMapping
     @Operation(summary = "添加字典类型")
-    public R saveDictType(@RequestBody SaveDictTypeRequest request) {
+    public R<Object> saveDictType(@RequestBody SaveDictTypeRequest request) {
         if (StringUtils.isBlank(request.getDictName())) {
             return R.fail("字典名称不能为空");
         }
@@ -74,11 +76,12 @@ public class SysDictTypeController {
         }
     }
 
+    @SysLock(name = "dictType")
     @SysLog(value = "编辑字典类型", module = LogModuleEnum.DICT_TYPE)
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_edit')")
     @PutMapping
     @Operation(summary = "编辑字典类型")
-    public R editDictType(@RequestBody EditDictTypeRequest request) {
+    public R<Object> editDictType(@RequestBody EditDictTypeRequest request) {
         if (request.getId() == null) {
             return R.fail("主键不能为空");
         }
@@ -118,7 +121,7 @@ public class SysDictTypeController {
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除字典类型")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R deleteDictType(@PathVariable(value = "id") Long id) {
+    public R<Object> deleteDictType(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }

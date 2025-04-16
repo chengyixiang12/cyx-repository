@@ -237,4 +237,9 @@ public class BaseConstant {
      * signum标识——正数
      */
     public final static Integer SIGN_NUM_POSITIVE = 1;
+
+    /**
+     * 哈希算法类型
+     */
+    public final static String TYPE_ALGORITHM = "SHA-256";
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public class PageVo<T> {
 
     @Schema(description = "响应结果")
-    private List<T> result;
+    private List<T> records;
 
     @Schema(description = "总数", example = "10")
     private Long total;

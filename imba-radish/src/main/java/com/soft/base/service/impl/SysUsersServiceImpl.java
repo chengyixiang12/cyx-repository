@@ -91,7 +91,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         IPage<AllUserVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         Page<AllUserVo> allUsers = sysUsersMapper.getAllUsers(page, request);
         PageVo<AllUserVo> pageVo = new PageVo<>();
-        pageVo.setResult(allUsers.getRecords());
+        pageVo.setRecords(allUsers.getRecords());
         pageVo.setTotal(allUsers.getTotal());
         return pageVo;
     }

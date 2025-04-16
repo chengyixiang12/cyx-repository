@@ -4,6 +4,7 @@ import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.enums.LogModuleEnum;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.exception.ResourceNotExistException;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
@@ -69,7 +70,9 @@ public class SysFileController {
         try {
             UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
             return R.ok(uploadFileVo);
-        } catch (Exception e) {
+        } catch (GlobalException e) {
+            return R.fail(e.getMessage());
+        }catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
         }

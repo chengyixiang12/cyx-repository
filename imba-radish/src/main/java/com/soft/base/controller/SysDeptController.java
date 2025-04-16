@@ -72,7 +72,7 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_add')")
     @PostMapping
     @Operation(summary = "添加部门")
-    public R saveDept(@RequestBody SaveDeptRequest request) {
+    public R<Object> saveDept(@RequestBody SaveDeptRequest request) {
         if (StringUtils.isBlank(request.getCode())) {
             return R.fail("部门编码不能为空");
         }
@@ -105,7 +105,7 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_edit')")
     @PutMapping
     @Operation(summary = "编辑部门")
-    public R editDept(@RequestBody EditDeptRequest request) {
+    public R<Object> editDept(@RequestBody EditDeptRequest request) {
         if (request.getId() == null) {
             return R.fail("id不能为空");
         }
@@ -132,7 +132,7 @@ public class SysDeptController {
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除部门")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R deleteDept(@PathVariable(value = "id") Long id) {
+    public R<Object> deleteDept(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("id不能为空");
         }
@@ -149,7 +149,7 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_del')")
     @DeleteMapping(value = "/deleteRoleBatch")
     @Operation(summary = "批量删除部门")
-    public R deleteRoleBatch(@RequestBody DeleteRequest request) {
+    public R<Object> deleteRoleBatch(@RequestBody DeleteRequest request) {
         if (request.getIds() == null || request.getIds().isEmpty()) {
             return R.fail("id不能为空");
         }
