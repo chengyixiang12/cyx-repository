@@ -4,7 +4,7 @@ import { PaginatedData, PaginatedResponse } from '@/types/api'
 import { ApiResponse } from '@/types/login';
 
 export async function getUserList(data: any): Promise<PaginatedData<AllUserVo>> {
-   const res = await post<PaginatedData<AllUserVo>>('/user/getAllUsers', data, { flag: true });
+   const res = await post<PaginatedData<AllUserVo>>('/user/getUsers', data, { flag: true });
    return res.data;
 }
 
@@ -42,4 +42,36 @@ export async function getUser(param: number): Promise<GetUserVo> {
  */
 export async function deleteUserById(param: number): Promise<ApiResponse<any>> {
    return await del('/user', { params: { id: param }, flag: true })
+}
+
+/**
+ * 锁定用户
+ * @param id 
+ */
+export async function lockUserApi(id: number) {
+   await get(`/user/lockUser/${id}`, { flag: true })
+}
+
+/**
+ * 解锁用户
+ * @param id 
+ */
+export async function unlockUserApi(id: number) {
+   await get(`/user/unlockUser/${id}`, { flag: true })
+}
+
+/**
+ * 启用用户
+ * @param id 
+ */
+export async function enableUserApi(id: number) {
+   await get(`/user/enableUser/${id}`, { flag: true })
+}
+
+/**
+ * 禁用用户
+ * @param id 
+ */
+export async function forbiddenUser(id: number) {
+   await get(`/user/forbiddenUser/${id}`, { flag: true })
 }

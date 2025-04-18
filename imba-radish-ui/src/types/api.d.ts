@@ -12,7 +12,7 @@ export interface ApiResponse<T = any> {
  * 分页数据结构
  */
 export interface PaginatedData<T> {
-  result: T[];
+  records: T[];
   total: number;
 }
 

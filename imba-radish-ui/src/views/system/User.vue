@@ -1,5 +1,5 @@
 <template>
-  <div class="unified-list-container">
+  <div class="list-container">
     <el-row :gutter="20">
       <!-- 左侧组织架构树 -->
       <el-col :span="4">
@@ -9,11 +9,20 @@
               <span>组织架构</span>
             </div>
           </template>
-          <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current
-            @node-click="handleDeptClick" :default-expanded-keys="[firstNodeKey]" class="custom-tree">
+          <el-tree
+            v-if="deptTree.length > 0"
+            :data="deptTree"
+            :props="treeProps"
+            node-key="id"
+            highlight-current
+            @node-click="handleDeptClick"
+            @expand-change="handleExpandChange"
+            :default-expanded-keys="[firstNodeKey]"
+            class="custom-tree"
+            :expand-on-click-node="false"
+          >
             <template #default="{ node }">
-              <el-tooltip effect="dark" :content="node.label" placement="top-start"
-                v-if="shouldShowTooltip(node.label)">
+              <el-tooltip effect="dark" :content="node.label" placement="top-start" v-if="shouldShowTooltip(node.label)">
                 <span class="tree-node-label">{{ node.label }}</span>
               </el-tooltip>
               <span v-else class="tree-node-label">{{ node.label }}</span>
@@ -38,18 +47,16 @@
           <div class="search-container">
             <el-form :inline="true" :model="searchForm" class="search-form">
               <el-form-item label="关键字:">
-                <el-input v-model="searchForm.nameLikeQry" placeholder="用户名/昵称" clearable  class="keyword-input"/>
+                <el-input v-model="searchForm.nameLikeQry" placeholder="用户名/昵称" clearable class="keyword-input" />
               </el-form-item>
               <el-form-item label="状态:">
-                <el-select v-model="searchForm.enabled" placeholder="请选择" clearable
-                  style="width: 120px">
+                <el-select v-model="searchForm.enabled" placeholder="请选择" clearable style="width: 100px">
                   <el-option label="启用" :value="1" />
                   <el-option label="禁用" :value="0" />
                 </el-select>
               </el-form-item>
               <el-form-item label="账户状态:">
-                <el-select v-model="searchForm.accountNonLocked" placeholder="请选择" clearable
-                  style="width: 120px">
+                <el-select v-model="searchForm.accountNonLocked" placeholder="请选择" clearable style="width: 100px">
                   <el-option label="正常" :value="1" />
                   <el-option label="锁定" :value="0" />
                 </el-select>
@@ -73,32 +80,29 @@
               <el-table-column prop="phone" label="手机号码" show-overflow-tooltip />
               <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
               <el-table-column prop="nickname" label="昵称" show-overflow-tooltip />
-              <el-table-column prop="enabled" label="状态" align="center">
+              <el-table-column prop="deptName" label="部门" show-overflow-tooltip />
+              <el-table-column prop="enabled" label="状态" align="center" width="100">
                 <template #default="scope">
-                  <el-tag :type="scope.row.enabled ? 'success' : 'danger'">
-                    {{ scope.row.enabled ? '启用' : '禁用' }}
-                  </el-tag>
+                  <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                    inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column prop="accountNonLocked" label="账户" align="center">
+
+              <el-table-column prop="accountNonLocked" label="账户" align="center" width="100">
                 <template #default="scope">
-                  <el-tag :type="scope.row.enabled ? 'success' : 'danger'">
-                    {{ scope.row.enabled ? '正常' : '锁定' }}
-                  </el-tag>
+                  <el-switch v-model="scope.row.accountNonLocked" :active-value="1" :inactive-value="0"
+                    active-color="#13ce66" inactive-color="#ff4949" @change="handleLockChange(scope.row)" />
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="180" align="center">
                 <template #default="scope">
-                  <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
+                  <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
                   <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
-                      <el-button size="small" type="danger">
-                        删除
-                      </el-button>
+                      <el-button size="small" type="danger" :icon="Delete" circle />
                     </template>
                   </el-popconfirm>
-
                 </template>
               </el-table-column>
             </el-table>
@@ -126,11 +130,21 @@
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTree } from '@/api/dept'
-import { getUserList, addUser, updateUser, deleteUserById } from '@/api/user'
+import { Edit, Delete } from '@element-plus/icons-vue'
+import {
+  getUserList,
+  addUser,
+  updateUser,
+  deleteUserById,
+  lockUserApi,
+  unlockUserApi,
+  enableUserApi,
+  forbiddenUser
+} from '@/api/user'
 import type { AllUserVo } from '@/types/user'
 import type { DeptTreeVo } from '@/types/dept'
 import UserFormDialog from '@/components/system/UserFormDialog.vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElTooltip } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa';
 import { getPublicKey } from '@/api/auth'
 
@@ -164,39 +178,29 @@ const handleEdit = (row: AllUserVo) => {
 }
 
 const shouldShowTooltip = (label: string) => {
-  return label.length > 10
+  return label.length > 5
 }
 
 // 提交新增用户
 const handleAddSubmit = async (formData: any) => {
-  try {
-    const publicKey = await getPublicKey(0)
-    formData.password = RSAUtil.encrypt(formData.password, publicKey);
-    await addUser(formData)
-    ElMessage.success('新增用户成功')
-    loadUsers()
-  } catch (error) {
-    console.error('新增用户失败:', error)
-  }
+  const publicKey = await getPublicKey(0)
+  formData.password = RSAUtil.encrypt(formData.password, publicKey);
+  await addUser(formData)
+  loadUsers()
 }
 
 // 提交编辑用户
 const handleEditSubmit = async (formData: any) => {
-  try {
-    await updateUser({
-      id: userId.value,
-      nickname: formData.nickname,
-      deptId: formData.deptId,
-      email: formData.email,
-      phone: formData.phone,
-      avatar: formData.avatar,
-      roleIds: formData.roleIds
-    })
-    ElMessage.success('更新用户成功')
-    loadUsers()
-  } catch (error) {
-    console.error('更新用户失败:', error)
-  }
+  await updateUser({
+    id: userId.value,
+    nickname: formData.nickname,
+    deptId: formData.deptId,
+    email: formData.email,
+    phone: formData.phone,
+    avatar: formData.avatar,
+    roleIds: formData.roleIds
+  })
+  loadUsers()
 }
 
 const treeProps = {
@@ -236,7 +240,7 @@ const loadUsers = async () => {
       accountNonLocked: searchForm.value.accountNonLocked
     }
     const res = await getUserList(params)
-    userList.value = res.result || []
+    userList.value = res.records || []
     pagination.value.total = res.total || 0
   } catch (error) {
     console.error('加载用户列表失败:', error)
@@ -250,6 +254,18 @@ const handleDeptClick = (data: DeptTreeVo) => {
   selectedDept.value = data.id
   pagination.value.current = 1
   loadUsers()
+}
+
+// 部门树展开/收起事件
+const handleExpandChange = (node: DeptTreeVo, expanded: boolean) => {
+  console.log(`节点 ${node.name} 的展开状态是：${expanded ? '展开' : '收起'}`);
+  if (expanded) {
+    // 展开时的处理逻辑
+    console.log('展开了该节点');
+  } else {
+    // 收起时的处理逻辑
+    console.log('收起了该节点');
+  }
 }
 
 const handleDelete = async (id: number) => {
@@ -284,6 +300,26 @@ const resetSearch = () => {
   loadUsers()
 }
 
+// 账户变更
+const handleLockChange = async (row: AllUserVo) => {
+  if (row.accountNonLocked === 1) {
+    await unlockUserApi(row.id);
+  } else {
+    await lockUserApi(row.id);
+  }
+  await loadUsers()
+}
+
+// 用户状态
+const handleStatusChange = async (row: AllUserVo) => {
+  if (row.enabled === 1) {
+    await enableUserApi(row.id);
+  } else {
+    await forbiddenUser(row.id);
+  }
+  await loadUsers()
+}
+
 // 初始化加载
 onMounted(() => {
   loadDeptTree()
@@ -292,33 +328,40 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.unified-list-container {
+.list-container {
   height: 100%;
-  padding: 16px;
+  padding: 12px;
   background-color: #f5f7fa;
 }
 
-/* 树形卡片样式 */
-.tree-card {
-  height: 100%;
-  border-radius: 6px;
+.list-table {
+  width: 100%;
+  overflow-x: auto;
+  padding-top: 12px;
 }
 
-/* 头部样式优化 */
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 32px;
+/* 优化左侧树样式 */
+.tree-card {
+  height: calc(100vh - 130px);
+  overflow-y: auto;
+  padding: 4px;
+  box-sizing: border-box;
 }
 
 .header-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: #303133;
 }
 
-/* 卡片样式优化 */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+}
+
 .el-card {
   height: 100%;
   border-radius: 6px;
@@ -326,13 +369,13 @@ onMounted(() => {
 }
 
 :deep(.el-card__header) {
-  padding: 12px 16px;
+  padding: 8px 12px !important;
+  min-height: 36px !important;
   border-bottom: 1px solid #ebeef5;
 }
 
-/* 搜索区域优化 */
 .search-container {
-  padding: 16px;
+  padding: 12px;
   background-color: #fafafa;
   border-bottom: 1px solid #ebeef5;
 }
@@ -358,26 +401,26 @@ onMounted(() => {
   color: #606266;
 }
 
-/* 树形节点样式优化 */
 .custom-tree {
-  padding: 8px 12px;
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 .tree-node-label {
   display: inline-block;
-  max-width: 160px;
+  max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  vertical-align: middle;
   font-size: 13px;
+  color: #303133;
 }
 
-/* 分页样式优化 */
 .list-pagination {
-  padding: 12px 16px;
+  margin-top: 16px;
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid #ebeef5;
 }
 
 /* 部门卡片头部优化 */
@@ -390,20 +433,9 @@ onMounted(() => {
   color: #303133;
 }
 
-/* 按钮样式微调 */
 .header-button {
-  height: 32px;
-  padding: 7px 15px;
-}
-
-/* 响应式调整 */
-@media (max-width: 1200px) {
-  .search-form {
-    gap: 12px;
-  }
-  
-  :deep(.el-form-item) {
-    margin-right: 12px;
-  }
+  padding: 4px 12px;
+  font-size: 13px;
+  height: 28px;
 }
 </style>

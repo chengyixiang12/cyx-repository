@@ -3,6 +3,7 @@ import { ApiResponse, ApiError, RequestConfig } from '../types/method';
 import router from '@/router/routers';
 import { showNotify } from '@/utils/notify';
 import { clearCache } from '@/utils/clearCache';
+import { ElMessage } from 'element-plus';
 
 const instance = axios.create({
   baseURL: '/api',
@@ -45,11 +46,7 @@ instance.interceptors.response.use(
 // 响应数据处理
 function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
   if (response.data.code !== 2001) {
-    throw {
-      message: response.data.msg,
-      response: { data: response.data },
-      config: response.config,
-    } as unknown as ApiError;
+    showCustomMessage(response.data.msg, response.data.code);
   }
   return response;
 }
@@ -82,7 +79,7 @@ function handleErrorCode(data: ApiResponse) {
   } else if (data.code === 5003) {
     router.push('/403');
   }
-  showNotify(data.msg || '请求失败', 'error');
+  showCustomMessage(data.msg, data.code)
 }
 
 // 核心请求方法（重载版本）
@@ -211,6 +208,21 @@ export async function del<T = any>(
   }
 ): Promise<ApiResponse<T>> {
   return request('DELETE', url, config);
+}
+
+/**
+ * 自定义位置和颜色的消息提示
+ * @param {string} message 提示消息内容
+ * @param {number} code 状态码
+ */
+function showCustomMessage(message: string, code: number) {
+  ElMessage({
+    message: message,
+    type: code === 2001 ? 'success' : 'error',
+    customClass: 'custom-message',
+    duration: 3000,
+    offset: 80 // 控制垂直位置，数值越大位置越往下
+  })
 }
 
 export default instance;

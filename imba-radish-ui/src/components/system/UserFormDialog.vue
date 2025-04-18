@@ -1,47 +1,47 @@
 <template>
-    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" :close-on-click-modal="false"
-        @closed="handleClose">
+    <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" :close-on-click-modal="false" @closed="handleClose">
+      <el-card class="form-card">
         <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" label-position="right">
-            <el-form-item label="用户名" prop="username" v-if="isAdd">
-                <el-input v-model="formData.username" placeholder="请输入用户名" />
-            </el-form-item>
-            <el-form-item label="用户名" v-else>
-                <el-input v-model="formData.username" disabled />
-            </el-form-item>
-
-            <el-form-item label="密码" prop="password" v-if="isAdd">
-                <el-input v-model="formData.password" type="password" placeholder="请输入密码" show-password />
-            </el-form-item>
-
-            <el-form-item label="昵称" prop="nickname">
-                <el-input v-model="formData.nickname" placeholder="请输入昵称" />
-            </el-form-item>
-
-            <el-form-item label="邮箱" prop="email">
-                <el-input v-model="formData.email" placeholder="请输入邮箱" />
-            </el-form-item>
-
-            <el-form-item label="手机号">
-                <el-input v-model="formData.phone" placeholder="请输入手机号" />
-            </el-form-item>
-
-            <el-form-item label="部门">
-                <el-popover placement="bottom-start" :width="300" trigger="click" popper-class="dept-tree-popper">
-                    <template #reference>
-                        <el-input v-model="formData.deptName" placeholder="请选择部门" readonly />
-                    </template>
-                    <el-tree :data="deptTree" :props="treeProps" node-key="id" highlight-current
-                        style="max-height: 300px; overflow-y: auto;" @node-click="handleDeptSelect" />
-                </el-popover>
-            </el-form-item>
+          <el-form-item label="用户名" prop="username" v-if="isAdd">
+            <el-input v-model="formData.username" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="用户名" v-else>
+            <el-input v-model="formData.username" disabled />
+          </el-form-item>
+          <el-form-item label="部门">
+            <el-popover placement="bottom-start" :width="300" trigger="click" popper-class="dept-tree-popper">
+              <template #reference>
+                <el-input v-model="formData.deptName" placeholder="请选择部门" readonly />
+              </template>
+              <el-tree :data="deptTree" :props="treeProps" node-key="id" highlight-current
+                style="max-height: 300px; overflow-y: auto;" @node-click="handleDeptSelect" />
+            </el-popover>
+          </el-form-item>
+  
+          <el-form-item label="密码" prop="password" v-if="isAdd">
+            <el-input v-model="formData.password" type="password" placeholder="请输入密码" show-password />
+          </el-form-item>
+  
+          <el-form-item label="昵称" prop="nickname">
+            <el-input v-model="formData.nickname" placeholder="请输入昵称" />
+          </el-form-item>
+  
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="formData.email" placeholder="请输入邮箱" />
+          </el-form-item>
+  
+          <el-form-item label="手机号">
+            <el-input v-model="formData.phone" placeholder="请输入手机号" />
+          </el-form-item>
         </el-form>
-
-        <template #footer>
-            <el-button @click="dialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit">确定</el-button>
-        </template>
+      </el-card>
+  
+      <template #footer>
+        <el-button class="btn-cancel" @click="dialogVisible = false">取消</el-button>
+        <el-button class="btn-submit" type="primary" @click="handleSubmit">确定</el-button>
+      </template>
     </el-dialog>
-</template>
+  </template>
 
 <script lang="ts" setup>
 import { ref, computed, defineProps, defineEmits, watch, onMounted, PropType, onUnmounted } from 'vue'
@@ -210,8 +210,60 @@ watch(() => props.userId, async (val) => {
 </script>
 
 <style scoped>
+.form-card {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.el-form-item {
+  margin-bottom: 20px;
+}
+
+.el-input, .el-button {
+  border-radius: 8px;
+}
+
+.el-input::placeholder {
+  color: #999;
+}
+
+.el-button {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.el-button:hover {
+  transform: translateY(-2px);
+}
+
+.el-button:active {
+  background-color: #409EFF;
+  transform: translateY(1px);
+}
+
 .dept-tree-popper {
-    max-height: 300px;
-    overflow-y: auto;
+  max-height: 60vh;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.btn-cancel {
+  background-color: #f0f0f0;
+  color: #555;
+  border-radius: 8px;
+}
+
+.btn-cancel:hover {
+  background-color: #e0e0e0;
+}
+
+.btn-submit {
+  background-color: #409EFF;
+  color: white;
+  border-radius: 8px;
+}
+
+.btn-submit:hover {
+  background-color: #3386c5;
 }
 </style>

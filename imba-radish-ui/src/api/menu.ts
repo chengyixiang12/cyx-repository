@@ -1,9 +1,9 @@
-import type { GetMenuListVo, GetMenuListRequest, GetMenuVo, MenuItem } from '@/types/menu'
+import type { GetMenuListRequest, GetMenuVo, MenuItem } from '@/types/menu'
 import { get, post, del } from '@/utils/http'
-import { PaginatedData } from '@/types/api'
+import { ApiResponse } from '@/types/api'
 
-export async function getMenuList(params: GetMenuListRequest): Promise<PaginatedData<GetMenuListVo>> {
-    const res = await post<PaginatedData<GetMenuListVo>>('/menu/getMenuList', params, { flag: true });
+export async function getMenuList(params: GetMenuListRequest): Promise<ApiResponse> {
+    const res = await post<ApiResponse>('/menu/getMenuList', params, { flag: true });
     return res.data;
 }
 
@@ -19,4 +19,8 @@ export async function getMenuTreeApi(): Promise<MenuItem[]> {
 
 export async function deleteMenuApi(param: number) {
     await del(`/menu/${param}`, { flag: true });
+}
+
+export async function updateMenuStatusApi(id:number, status: number) {
+    
 }

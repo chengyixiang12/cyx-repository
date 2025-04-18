@@ -19,9 +19,10 @@ export interface GetMenuListVo {
 }
 
 export interface GetMenuListRequest {
-  menuName: string;
   pageNum: number;
   pageSize: number;
+  menuName: string;
+  status: number | undefined;
 }
 
 export enum MenuType {
