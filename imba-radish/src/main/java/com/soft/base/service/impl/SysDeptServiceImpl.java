@@ -107,6 +107,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
         return sysDeptMapper.getDepts(page, request);
     }
 
+    @Override
+    public List<Long> getChildDeptIds(List<Long> deptIds) {
+        return sysDeptMapper.getChildDeptIds(deptIds);
+    }
+
     /**
      * 组织架构树
      * @param departments

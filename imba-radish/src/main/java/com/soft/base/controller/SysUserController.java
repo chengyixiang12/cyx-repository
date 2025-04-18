@@ -6,7 +6,7 @@ import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.model.request.*;
-import com.soft.base.model.vo.AllUserVo;
+import com.soft.base.model.vo.UsersVo;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UserInfoVo;
@@ -64,11 +64,11 @@ public class SysUserController {
         this.sysPermissionService = sysPermissionService;
     }
 
-    @PostMapping(value = "/getAllUsers")
-    @Operation(summary = "获取所有用户")
-    public R<PageVo<AllUserVo>> getAllUsers(@RequestBody GetAllUsersRequest request) {
+    @PostMapping(value = "/getUsers")
+    @Operation(summary = "获取用户（复）")
+    public R<PageVo<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
         try {
-            PageVo<AllUserVo> allUsers = sysUsersService.getAllUsers(request);
+            PageVo<UsersVo> allUsers = sysUsersService.getUsers(request);
             return R.ok(allUsers);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -235,7 +235,7 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_unlock')")
     @Operation(summary = "解锁用户")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R unLockUser(@PathVariable(value = "id") Long id) {
+    public R<Object> unLockUser(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
@@ -252,7 +252,7 @@ public class SysUserController {
     @SysLock(name = "user")
     @PutMapping(value = "/resetUsername")
     @Operation(summary = "重置用户名")
-    public R resetUsername(@RequestBody ResetUsernameRequest request) {
+    public R<Object> resetUsername(@RequestBody ResetUsernameRequest request) {
         if (request.getId() == null) {
             return R.fail("主键不能为空");
         }
@@ -286,6 +286,42 @@ public class SysUserController {
         try {
             String username = sysUsersService.getUsername(id);
             sysUsersService.deleteUser(id, username);
+            return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/enableUser/{id}")
+    @Operation(summary = "启用用户")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_enable')")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    public R<Object> enableUser(@PathVariable(value = "id") Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            String username = sysUsersService.getUsername(id);
+            sysUsersService.enableUser(username);
+            return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/forbiddenUser/{id}")
+    @Operation(summary = "禁用用户")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_forbidden')")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    public R<Object> forbiddenUser(@PathVariable(value = "id") Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            String username = sysUsersService.getUsername(id);
+            sysUsersService.forbiddenUser(username);
             return R.ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);

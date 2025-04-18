@@ -3,7 +3,7 @@ package com.soft.base.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysUser;
 import com.soft.base.model.request.*;
-import com.soft.base.model.vo.AllUserVo;
+import com.soft.base.model.vo.UsersVo;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
 
@@ -15,7 +15,7 @@ import java.io.IOException;
 * @createDate 2024-09-30 15:49:52
 */
 public interface SysUsersService extends IService<SysUser> {
-    PageVo<AllUserVo> getAllUsers(GetAllUsersRequest request);
+    PageVo<UsersVo> getUsers(GetUsersRequest request);
 
     void editPassword(String targetPass, Long id);
 
@@ -48,4 +48,8 @@ public interface SysUsersService extends IService<SysUser> {
     void deleteUser(Long id, String username) throws IOException;
 
     String getUsername(Long id);
+
+    void enableUser(String username);
+
+    void forbiddenUser(String username);
 }

@@ -45,7 +45,7 @@
 <!--        AND u.username = #{username}-->
 <!--    </select>-->
 
-    <select id="getAllUsers" resultType="AllUserVo">
+    <select id="getUsers" parameterType="GetUsersDto" resultType="UsersVo">
         SELECT
         u.id,
         u.username,
@@ -53,36 +53,30 @@
         u.email,
         u.nickname,
         u.enabled,
-        u.account_non_locked
+        u.account_non_locked,
+        sd.name as deptName
         FROM
         `sys_user` u
+        JOIN sys_dept sd
+        ON u.dept_id = sd.id
         WHERE
         u.del_flag = '1'
-        <if test="request.deptId != null">
-            AND u.dept_id = #{request.deptId}
+        <if test="getUsersDto.deptIds != null and getUsersDto.deptIds.size > 0">
+            AND u.dept_id IN
+            <foreach collection="getUsersDto.deptIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
-        <if test="request.nameLikeQry != null and request.nameLikeQry != ''">
-            AND ( u.username LIKE CONCAT('%', #{request.nameLikeQry}, '%')
-            OR u.nickname LIKE CONCAT('%', #{request.nameLikeQry}, '%') )
+        <if test="getUsersDto.nameLikeQry != null and getUsersDto.nameLikeQry != ''">
+            AND ( u.username LIKE CONCAT('%', #{getUsersDto.nameLikeQry}, '%')
+            OR u.nickname LIKE CONCAT('%', #{getUsersDto.nameLikeQry}, '%') )
         </if>
-        <if test="request.enabled != null">
-            AND u.enabled = #{request.enabled}
+        <if test="getUsersDto.enabled != null">
+            AND u.enabled = #{getUsersDto.enabled}
         </if>
-        <if test="request.accountNonLocked != null">
-            AND u.account_non_locked = #{request.accountNonLocked}
+        <if test="getUsersDto.accountNonLocked != null">
+            AND u.account_non_locked = #{getUsersDto.accountNonLocked}
         </if>
-    </select>
-    <select id="getAllUser" resultType="DeptUserVo">
-        SELECT
-        su.id,
-        su.nickname,
-        su.dept_id AS "deptId"
-        FROM
-        sys_user su
-        WHERE
-        su.del_flag = '1'
-        AND su.enabled = 1
-        AND su.account_non_locked = 1
     </select>
     <select id="getManager" parameterType="java.lang.String" resultType="java.lang.Long">
         SELECT
@@ -195,4 +189,22 @@
                 AND su.username = #{param}
            OR su.email = #{param}
     </select>
+    <update id="enableUser" parameterType="java.lang.String">
+        UPDATE
+            sys_user
+        SET
+            enable = 1
+        WHERE
+            del_flag = '1'
+          AND username = #{username}
+    </update>
+    <update id="forbiddenUser" parameterType="java.lang.String">
+        UPDATE
+            sys_user
+        SET
+            enable = 0
+        WHERE
+            del_flag = '1'
+          AND username = #{username}
+    </update>
 </mapper>

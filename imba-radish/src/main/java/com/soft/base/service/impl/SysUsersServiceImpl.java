@@ -1,5 +1,6 @@
 package com.soft.base.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,8 +16,9 @@ import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.model.dto.GetUserDto;
 import com.soft.base.model.dto.GetUserRoleDto;
+import com.soft.base.model.dto.GetUsersDto;
 import com.soft.base.model.request.*;
-import com.soft.base.model.vo.AllUserVo;
+import com.soft.base.model.vo.UsersVo;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.*;
@@ -45,6 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author cyq
@@ -87,10 +90,22 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
-    public PageVo<AllUserVo> getAllUsers(GetAllUsersRequest request) {
-        IPage<AllUserVo> page = new Page<>(request.getPageNum(), request.getPageSize());
-        Page<AllUserVo> allUsers = sysUsersMapper.getAllUsers(page, request);
-        PageVo<AllUserVo> pageVo = new PageVo<>();
+    public PageVo<UsersVo> getUsers(GetUsersRequest request) {
+        IPage<UsersVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+        List<Long> deptIds = new ArrayList<>();
+        GetUsersDto getUsersDto = new GetUsersDto();
+
+        // 获取部门id集合
+        Long deptId = request.getDeptId();
+        if (deptId != null) {
+            getChildDeptIds(Stream.of(deptId).toList(), deptIds);
+            deptIds.add(deptId);
+        }
+
+        BeanUtils.copyProperties(request, getUsersDto);
+        getUsersDto.setDeptIds(deptIds);
+        Page<UsersVo> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
+        PageVo<UsersVo> pageVo = new PageVo<>();
         pageVo.setRecords(allUsers.getRecords());
         pageVo.setTotal(allUsers.getTotal());
         return pageVo;
@@ -296,6 +311,16 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         return sysUsersMapper.getUsername(id);
     }
 
+    @Override
+    public void enableUser(String username) {
+        sysUsersMapper.enableUser(username);
+    }
+
+    @Override
+    public void forbiddenUser(String username) {
+        sysUsersMapper.forbiddenUser(username);
+    }
+
     /**
      * 调用websocket发送强制下线消息
      * @param id
@@ -310,6 +335,21 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         forceOfflineParam.put("receiver", id);
         TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
         webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
+    }
+
+    /**
+     * 获取当前部门下的所有部门
+     * @param deptIds
+     * @param childDeptIds
+     * @return
+     */
+    private void getChildDeptIds(List<Long> deptIds, List<Long> childDeptIds) {
+        if (CollectionUtil.isEmpty(deptIds)) {
+            return;
+        }
+        List<Long> tmpList = sysDeptService.getChildDeptIds(deptIds);
+        childDeptIds.addAll(tmpList);
+        getChildDeptIds(tmpList, childDeptIds);
     }
 }
 

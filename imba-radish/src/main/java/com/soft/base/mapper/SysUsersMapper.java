@@ -5,9 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysUser;
 import com.soft.base.model.dto.GetUserDto;
+import com.soft.base.model.dto.GetUsersDto;
 import com.soft.base.model.dto.UserEmailDto;
-import com.soft.base.model.request.GetAllUsersRequest;
-import com.soft.base.model.vo.AllUserVo;
+import com.soft.base.model.request.GetUsersRequest;
+import com.soft.base.model.vo.UsersVo;
 import com.soft.base.model.vo.DeptUserVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,10 +21,8 @@ import java.util.List;
 * @Entity com.soft.entity.Users
 */
 public interface SysUsersMapper extends BaseMapper<SysUser> {
-    Page<AllUserVo> getAllUsers(@Param("page") IPage<AllUserVo> page,
-                                @Param("request") GetAllUsersRequest request);
-
-    List<DeptUserVo> getAllUser();
+    Page<UsersVo> getUsers(@Param("page") IPage<UsersVo> page,
+                           @Param("getUsersDto") GetUsersDto getUsersDto);
 
     Long getManager(@Param("roleCode") String managerRoleCode);
 
@@ -45,6 +44,10 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
     String getUsername(@Param("id") Long id);
 
     SysUser loadUser(@Param("param") String param);
+
+    void enableUser(@Param("username") String username);
+
+    void forbiddenUser(@Param("username") String username);
 }
 
 

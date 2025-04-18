@@ -123,4 +123,16 @@
         </if>
         ORDER BY sd.create_time DESC
     </select>
+    <select id="getChildDeptIds" parameterType="java.util.List" resultType="java.lang.Long">
+        SELECT
+            sd.id
+        FROM
+            sys_dept sd
+        WHERE
+            sd.del_flag = '1'
+          AND sd.parent_id IN
+        <foreach collection="deptIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

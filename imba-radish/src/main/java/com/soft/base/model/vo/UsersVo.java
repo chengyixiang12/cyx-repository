@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "所有用户相应参数")
-@Alias(value = "AllUserVo")
-public class AllUserVo {
+@Alias(value = "UsersVo")
+public class UsersVo {
 
     @Schema(description = "主键")
     private Long id;
@@ -35,4 +35,7 @@ public class AllUserVo {
 
     @Schema(description = "账户是否被锁定；1：正常；0：锁定")
     private Integer accountNonLocked;
+
+    @Schema(description = "部门名称")
+    private String deptName;
 }

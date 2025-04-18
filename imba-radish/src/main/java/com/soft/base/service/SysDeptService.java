@@ -38,4 +38,6 @@ public interface SysDeptService extends IService<SysDept> {
     List<ExportDeptDto> exportDept(ExportDeptRequest request);
 
     PageVo<GetDeptsVo> getDepts(GetDeptsRequest request);
+
+    List<Long> getChildDeptIds(List<Long> deptIds);
 }

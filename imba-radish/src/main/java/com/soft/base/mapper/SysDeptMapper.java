@@ -37,6 +37,8 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
 
     PageVo<GetDeptsVo> getDepts(@Param("page") IPage<GetDeptsVo> page,
                                 @Param("request") GetDeptsRequest request);
+
+    List<Long> getChildDeptIds(@Param("deptIds") List<Long> deptIds);
 }
 
 

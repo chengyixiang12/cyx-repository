@@ -1,22 +1,24 @@
-package com.soft.base.model.request;
+package com.soft.base.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.apache.ibatis.type.Alias;
+
+import java.util.List;
 
 /**
  * @Author: cyx
  * @Description: TODO
- * @DateTime: 2025/4/1 16:34
+ * @DateTime: 2025/4/18 16:41
  **/
 
-@EqualsAndHashCode(callSuper = false)
-@Schema(description = "获取所有用户请求参数")
 @Data
-public class GetAllUsersRequest extends PageRequest {
+@Schema(description = "获取用户（复）传输参数")
+@Alias(value = "GetUsersDto")
+public class GetUsersDto {
 
-    @Schema(description = "部门id")
-    private Long deptId;
+    @Schema(description = "部门ids")
+    private List<Long> deptIds;
 
     @Schema(description = "关键字检索")
     private String nameLikeQry;
