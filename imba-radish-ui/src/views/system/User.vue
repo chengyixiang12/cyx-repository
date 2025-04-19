@@ -423,7 +423,6 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-/* 部门卡片头部优化 */
 .dept-card-header {
   display: flex;
   justify-content: center;

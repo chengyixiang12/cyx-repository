@@ -21,8 +21,9 @@ export interface GetMenuListVo {
 export interface GetMenuListRequest {
   pageNum: number;
   pageSize: number;
-  menuName: string;
+  keyword: string;
   status: number | undefined;
+  type: string | undefined;
 }
 
 export enum MenuType {
@@ -33,7 +34,7 @@ export enum MenuType {
 
 export interface GetMenuVo {
   id: number;
-  parentId: number;
+  parentId: number | null;
   name: string;
   path: string;
   component: string | null;
@@ -43,4 +44,34 @@ export interface GetMenuVo {
   status: number;
   visible: number;
   remark: string;
+}
+
+export interface SaveMenuRequest {
+  parentId?: number;
+  name: string;
+  path: string;
+  component: string;
+  icon: string;
+  type: string;
+  orderNum: number;
+  visible: number;
+  remark?: string;
+}
+
+export interface EditMenuRequest {
+  id: number;
+  parentId?: number;
+  name: string;
+  path: string;
+  component: string;
+  icon: string;
+  type: string;
+  orderNum: number;
+  visible: number;
+  remark?: string;
+}
+
+export interface GetSelectMenuVo {
+  id: number;
+  name: string;
 }

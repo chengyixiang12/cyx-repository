@@ -45,7 +45,7 @@ instance.interceptors.response.use(
 
 // 响应数据处理
 function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
-  if (response.data.code !== 2001) {
+  if (response.data.msg !== '') {
     showCustomMessage(response.data.msg, response.data.code);
   }
   return response;

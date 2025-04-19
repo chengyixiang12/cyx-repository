@@ -222,7 +222,7 @@ onMounted(refreshCaptcha)
 }
 
 .captcha-img {
-  width: 120px;
+  width: 150px;
   height: 40px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;

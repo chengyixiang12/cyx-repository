@@ -1,26 +1,72 @@
-import type { GetMenuListRequest, GetMenuVo, MenuItem } from '@/types/menu'
-import { get, post, del } from '@/utils/http'
-import { ApiResponse } from '@/types/api'
+import { PaginatedData } from '@/types/api';
+import type { EditMenuRequest, GetMenuListRequest, GetMenuListVo, GetMenuVo, GetSelectMenuVo, SaveMenuRequest } from '@/types/menu'
+import { get, post, del, put } from '@/utils/http'
 
-export async function getMenuList(params: GetMenuListRequest): Promise<ApiResponse> {
-    const res = await post<ApiResponse>('/menu/getMenuList', params, { flag: true });
+/**
+ * 获取菜单列表
+ * @param params 
+ * @returns 
+ */
+export async function getMenuList(params: GetMenuListRequest): Promise<PaginatedData<GetMenuListVo>> {
+    const res = await post<PaginatedData<GetMenuListVo>>('/menu/getMenuList', params, { flag: true });
     return res.data;
 }
 
+/**
+ * 获取菜单详情
+ * @param id 
+ * @returns 
+ */
 export async function getMenuApi(id: number): Promise<GetMenuVo> {
     const res = await get<GetMenuVo>('menu/getMenu', { params: { id }, flag: true });
     return res.data;
 }
 
-export async function getMenuTreeApi(): Promise<MenuItem[]> {
-    const res = await get<MenuItem[]>('/menu/getMenuTree', { flag: true })
+/**
+ * 获取菜单树结构
+ * @returns 
+ */
+export async function getSelectMenu(type?: string): Promise<GetSelectMenuVo[]> {
+    const res = await get<GetSelectMenuVo[]>('/menu/getSelectMenu', { flag: true, params: { type } })
     return res.data;
 }
 
+/**
+ * 删除菜单
+ * @param param 
+ */
 export async function deleteMenuApi(param: number) {
     await del(`/menu/${param}`, { flag: true });
 }
 
-export async function updateMenuStatusApi(id:number, status: number) {
-    
+/**
+ * 编辑菜单
+ * @param data 
+ */
+export async function updateMenuStatusApi(data: EditMenuRequest) {
+    await put('/menu', data, { flag: true })
+}
+
+/**
+ * 新增菜单
+ * @param data 
+ */
+export async function addMenuStatusApi(data: SaveMenuRequest) {
+    await post('/menu', data, { flag: true })
+}
+
+/**
+ * 启用菜单
+ * @param id 
+ */
+export async function enableMenuApi(id:number) {
+    await get(`/menu/enableMenu/${id}`, { flag: true })
+}
+
+/**
+ * 禁用菜单
+ * @param id 
+ */
+export async function disableMenuApi(id:number) {
+    await get(`/menu/disableMenu/${id}`, { flag: true })
 }
