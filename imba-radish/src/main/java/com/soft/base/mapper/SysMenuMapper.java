@@ -6,6 +6,7 @@ import com.soft.base.entity.SysMenu;
 import com.soft.base.model.request.GetMenuListRequest;
 import com.soft.base.model.vo.GetMenuListVo;
 import com.soft.base.model.vo.GetMenuVo;
+import com.soft.base.model.vo.GetSelectMenuVo;
 import com.soft.base.model.vo.MenusVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,7 +20,7 @@ import java.util.List;
 */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<MenusVo> getMenuTree(@Param("userId") Long userId);
+    List<MenusVo> getMenuRoute(@Param("userId") Long userId);
 
     IPage<GetMenuListVo> getMenuList(@Param("page") IPage<GetMenuListVo> page,
                      @Param("request") GetMenuListRequest request);
@@ -27,6 +28,12 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     GetMenuVo getMenu(@Param("id") Long id);
 
     List<Long> getByIds(@Param("ids") List<Long> ids);
+
+    void enableMenu(@Param("id") Integer id);
+
+    void disableMenu(@Param("id") Integer id);
+
+    List<GetSelectMenuVo> getSelectMenu(@Param("type") String type);
 }
 
 

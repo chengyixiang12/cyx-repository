@@ -17,6 +17,12 @@ import org.apache.ibatis.type.Alias;
 @Alias(value = "GetMenuListRequest")
 public class GetMenuListRequest extends PageRequest{
 
-    @Schema(description = "菜单名称")
-    private String menuName;
+    @Schema(description = "关键字")
+    private String keyword;
+
+    @Schema(description = "状态")
+    private Integer status;
+
+    @Schema(description = "菜单类型")
+    private String type;
 }

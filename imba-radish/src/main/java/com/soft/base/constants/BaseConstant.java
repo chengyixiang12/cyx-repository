@@ -242,4 +242,19 @@ public class BaseConstant {
      * 哈希算法类型
      */
     public final static String TYPE_ALGORITHM = "SHA-256";
+
+    /**
+     * 菜单类型——目录
+     */
+    public final static String MENU_TYPE_DIRECTORY = "0";
+
+    /**
+     * 菜单类型——菜单
+     */
+    public final static String MENU_TYPE_MENU = "1";
+
+    /**
+     * 菜单类型——按钮
+     */
+    public final static String MENU_TYPE_BUTTON = "2";
 }

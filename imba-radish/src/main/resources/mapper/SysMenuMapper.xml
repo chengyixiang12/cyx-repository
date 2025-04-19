@@ -32,7 +32,7 @@
         update_by,del_flag
     </sql>
 
-    <select id="getMenuTree" parameterType="java.util.List" resultType="MenusVo">
+    <select id="getMenuRoute" parameterType="java.util.List" resultType="MenusVo">
         SELECT
         sm.id,
         sm.`name`,
@@ -49,6 +49,9 @@
         JOIN sys_user_role sur ON sur.role_id = sr.id
         WHERE
         sur.user_id = #{userId}
+        AND sm.status = 1
+        AND sm.visible = 1
+        AND sm.type IN ('0', '1')
         ORDER BY sm.order_num
     </select>
     <select id="getMenuList" parameterType="GetMenuListRequest" resultType="GetMenuListVo">
@@ -58,11 +61,25 @@
             sm.type,
             sm.`status`,
             sm.order_num,
-            sm.icon
+            sm.icon,
+            sm.path,
+            sm.component,
+            smp.`name` AS parentName
         FROM
             `sys_menu` sm
+        LEFT JOIN `sys_menu` smp
+        ON sm.parent_id = smp.id
         WHERE
             sm.del_flag = '1'
+        <if test="request.keyword != null and request.keyword != ''">
+            AND ( sm.name LIKE concat('%', #{request.keyword}, '%') OR sm.path LIKE concat('%', #{request.keyword}, '%')
+        </if>
+        <if test="request.status != null">
+            AND sm.status = #{request.status}
+        </if>
+        <if test="request.type != null and request.type != ''">
+            AND sm.type = #{request.type}
+        </if>
         ORDER BY sm.create_time DESC
     </select>
     <select id="getMenu" parameterType="java.lang.Long" resultType="GetMenuVo">
@@ -95,5 +112,27 @@
         <foreach collection="ids" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </select>
+    <update id="enableMenu" parameterType="java.lang.Integer">
+        UPDATE sys_menu
+        SET status = 1
+        WHERE del_flag = '1'
+        AND id = #{id}
+    </update>
+    <update id="disableMenu" parameterType="java.lang.Integer">
+        UPDATE sys_menu
+        SET status = 0
+        WHERE del_flag = '1'
+          AND id = #{id}
+    </update>
+    <select id="getSelectMenu" parameterType="java.lang.String" resultType="GetSelectMenuVo">
+        SELECT
+            sm.id,
+            sm.`name`
+        FROM
+            sys_menu sm
+        WHERE
+            sm.del_flag = '1'
+        AND sm.type = #{type}
     </select>
 </mapper>

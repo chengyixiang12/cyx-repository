@@ -224,7 +224,7 @@ public class SysUserController {
         try {
             String username = sysUsersService.getUsername(id);
             sysUsersService.lockUser(username);
-            return R.ok();
+            return R.ok("用户已锁定");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -242,7 +242,7 @@ public class SysUserController {
         try {
             String username = sysUsersService.getUsername(id);
             sysUsersService.unlockUser(username);
-            return R.ok();
+            return R.ok("用户已解锁");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -304,7 +304,7 @@ public class SysUserController {
         try {
             String username = sysUsersService.getUsername(id);
             sysUsersService.enableUser(username);
-            return R.ok();
+            return R.ok("用户已启用");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -322,7 +322,7 @@ public class SysUserController {
         try {
             String username = sysUsersService.getUsername(id);
             sysUsersService.forbiddenUser(username);
-            return R.ok();
+            return R.ok("用户已禁用");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

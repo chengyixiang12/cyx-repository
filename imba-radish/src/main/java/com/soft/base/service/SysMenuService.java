@@ -5,10 +5,7 @@ import com.soft.base.entity.SysMenu;
 import com.soft.base.model.request.EditMenuRequest;
 import com.soft.base.model.request.GetMenuListRequest;
 import com.soft.base.model.request.SaveMenuRequest;
-import com.soft.base.model.vo.GetMenuListVo;
-import com.soft.base.model.vo.GetMenuVo;
-import com.soft.base.model.vo.MenusVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.*;
 
 import java.util.List;
 
@@ -19,7 +16,7 @@ import java.util.List;
 */
 public interface SysMenuService extends IService<SysMenu> {
 
-    List<MenusVo> getMenuTree();
+    List<GetSelectMenuVo> getSelectMenu(String type);
 
     void saveMenu(SaveMenuRequest request);
 
@@ -30,4 +27,10 @@ public interface SysMenuService extends IService<SysMenu> {
     GetMenuVo getMenu(Long id);
 
     void deleteMenu(Long id);
+
+    void enableMenu(Integer id);
+
+    void disableMenu(Integer id);
+
+    List<MenusVo> getMenuRoute();
 }

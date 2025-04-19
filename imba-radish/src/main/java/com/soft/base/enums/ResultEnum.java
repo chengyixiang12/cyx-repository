@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ResultEnum {
 
-    SUCCESS(2001, "成功"),
+    SUCCESS(2001, ""),
     FAIL_NORMAL(5001, "服务异常，请联系管理员"),
     AUTHENTICATION_FAIL(5002, "认证过期，请重新登录"),
     PERMISSION_NOT_ENOUGH(5003, "权限不足"),

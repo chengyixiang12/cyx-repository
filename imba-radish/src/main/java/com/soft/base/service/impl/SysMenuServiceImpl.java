@@ -1,17 +1,17 @@
 package com.soft.base.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysMenu;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysMenuMapper;
 import com.soft.base.model.request.EditMenuRequest;
 import com.soft.base.model.request.GetMenuListRequest;
 import com.soft.base.model.request.SaveMenuRequest;
-import com.soft.base.model.vo.GetMenuListVo;
-import com.soft.base.model.vo.GetMenuVo;
-import com.soft.base.model.vo.MenusVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.*;
 import com.soft.base.service.SysMenuService;
 import com.soft.base.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
@@ -44,16 +44,22 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public List<MenusVo> getMenuTree() {
-        Long userId = securityUtil.getUserInfo().getId();
-        if (userId == null) {
-            return new ArrayList<>();
+    public List<GetSelectMenuVo> getSelectMenu(String type) {
+        switch (type) {
+            case BaseConstant.MENU_TYPE_MENU: {
+                type = BaseConstant.MENU_TYPE_DIRECTORY;
+                break;
+            }
+            case BaseConstant.MENU_TYPE_BUTTON: {
+                type = BaseConstant.MENU_TYPE_MENU;
+                break;
+            }
+            default: {
+                throw new GlobalException("未知的菜单类型");
+            }
         }
-        List<MenusVo> menus = sysMenuMapper.getMenuTree(userId);
-        if (menus != null && !menus.isEmpty()) {
-            return buildTree(menus);
-        }
-        return menus;
+
+        return sysMenuMapper.getSelectMenu(type);
     }
 
     @Override
@@ -97,8 +103,32 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         sysMenuMapper.deleteByIds(tmpList);
     }
 
+    @Override
+    public void enableMenu(Integer id) {
+        sysMenuMapper.enableMenu(id);
+    }
+
+    @Override
+    public void disableMenu(Integer id) {
+        sysMenuMapper.disableMenu(id);
+    }
+
+    @Override
+    public List<MenusVo> getMenuRoute() {
+        Long userId = securityUtil.getUserInfo().getId();
+        if (userId == null) {
+            return new ArrayList<>();
+        }
+        List<MenusVo> menus = sysMenuMapper.getMenuRoute(userId);
+        if (menus != null && !menus.isEmpty()) {
+            return buildTree(menus);
+        }
+
+        return menus;
+    }
+
     /**
-     * 菜单架构树
+     * 菜单结构树
      * @param menusVos
      * @return
      */
@@ -121,6 +151,16 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
                 if (parent != null) {
                     parent.getChildren().add(menu);
                 }
+            }
+        }
+
+        // 如果1级菜单的子集为null，则移除
+        for (int i = 0; i < tree.size();) {
+            MenusVo menusVo = tree.get(i);
+            if (CollectionUtil.isEmpty(menusVo.getChildren())) {
+                tree.remove(i);
+            } else {
+                i++;
             }
         }
 

@@ -21,6 +21,9 @@ public class GetMenuListVo {
     @Schema(description = "菜单名称")
     private String name;
 
+    @Schema(description = "父级菜单名称")
+    private String parentName;
+
     @Schema(description = "菜单类型")
     private String type;
 
@@ -32,4 +35,10 @@ public class GetMenuListVo {
 
     @Schema(description = "图标")
     private String icon;
+
+    @Schema(description = "前端路由路径")
+    private String path;
+
+    @Schema(description = "前端组件路径")
+    private String component;
 }
