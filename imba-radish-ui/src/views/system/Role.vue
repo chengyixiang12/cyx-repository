@@ -62,9 +62,13 @@
               <el-table-column label="操作" width="180" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
-                  <el-button size="small" type="primary" @click="handleAssignPermission(scope.row.id)" :icon="Edit"
+                  <el-tooltip class="item" effect="dark" content="赋予权限" placement="top">
+                    <el-button size="small" type="primary" @click="handleAssignPermission(scope.row.id)" :icon="Key"
                     circle />
-                  <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" :icon="Menu" circle />
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="赋予菜单" placement="top">
+                    <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" :icon="Menu" circle />
+                  </el-tooltip>
                   <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
@@ -98,7 +102,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { Edit, Delete, Menu } from '@element-plus/icons-vue'
+import { Edit, Delete, Menu, Key } from '@element-plus/icons-vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
 import RoleFormDialog from '@/components/system/RoleFormDialog.vue'
 import { EditRoleRequest, GetRolesRequest, SaveRoleRequest, SysRolesVo, SysRoleVo } from '@/types/role'
@@ -212,7 +216,6 @@ const handleIsDefaultChange = async (row: SysRoleVo) => {
 
 // 固定角色变更
 const handleFixRoleChange = async (row: SysRoleVo) => {
-  console.log(row)
   if (row.fixRole === 1) {
     await setFixRoleApi(row.id);
   } else {

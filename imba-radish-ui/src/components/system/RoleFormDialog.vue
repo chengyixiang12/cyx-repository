@@ -29,6 +29,10 @@
             inactive-color="#ff4949" />
         </el-form-item>
 
+        <el-form-item label="排序" prop="fixRole">
+          <el-input v-model="formData.sortOrder" placeholder="请填写序号" />
+        </el-form-item>
+
         <el-form-item label="备注" prop="remark">
           <el-input v-model="formData.description" type="textarea" placeholder="请输入备注" :rows="3" />
         </el-form-item>
@@ -59,10 +63,10 @@ const emit = defineEmits(['update:visible', 'submit'])
 const visible = ref(props.visible)
 const formRef = ref<FormInstance>()
 const formData = ref<SysRoleVo>({
-  id: null,
+  id: 0,
+  name: null,
   sortOrder: null,
   code: null,
-  name: null,
   description: null,
   status: null,
   isDefault: null,
@@ -118,7 +122,7 @@ onMounted(() => {
 }
 
 .scrollable-form {
-  max-height: 55vh;
+  max-height: 50vh;
   overflow-y: auto;
   padding: 25px;
 }
