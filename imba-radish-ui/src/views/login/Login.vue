@@ -143,19 +143,6 @@ const handleLogin = async () => {
     // 存储用户信息
     sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
 
-    // 查询当前用户菜单
-    const menus = await fetchMenuList()
-
-    // 存储菜单
-    sessionStorage.setItem('menus', JSON.stringify(menus))
-
-    // 登录成功处理
-    // if (rememberMe.value) {
-    //   localStorage.setItem('token', data.token)
-    // } else {
-    //   sessionStorage.setItem('token', data.token)
-    // }
-
     // 跳转首页
     router.push('/dashboard')
 

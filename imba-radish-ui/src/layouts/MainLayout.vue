@@ -113,6 +113,7 @@ import { logouted } from '@/api/login';
 import { ElTooltip } from 'element-plus';
 import type { MenuItem } from '@/types/menu';
 import { getMessageNumApi } from '@/api/message';
+import { fetchMenuList } from '@/api/dashboard';
 
 const router = useRouter();
 const user = ref({
@@ -147,8 +148,7 @@ const menuList = ref<MenuItem[]>([])
 
 // 组件挂载时加载菜单
 const loadMenu = async () => {
-    const menus: MenuItem[] = JSON.parse(sessionStorage.getItem('menus') || '');
-    menuList.value = menus;
+    menuList.value = await fetchMenuList();
 }
 
 // 组件挂载时获取用户昵称

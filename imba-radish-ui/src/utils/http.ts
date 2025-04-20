@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
 import { ApiResponse, ApiError, RequestConfig } from '../types/method';
 import router from '@/router/routers';
-import { showNotify } from '@/utils/notify';
 import { clearCache } from '@/utils/clearCache';
 import { ElMessage } from 'element-plus';
 
