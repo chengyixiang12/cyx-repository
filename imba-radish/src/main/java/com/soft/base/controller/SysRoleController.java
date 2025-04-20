@@ -10,6 +10,7 @@ import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
+import com.soft.base.model.vo.SysRolesVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysRoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -97,10 +98,10 @@ public class SysRoleController {
 
     @SysLog(value = "删除角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_del')")
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping
     @Operation(summary = "删除角色")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R deleteRole(@PathVariable(value = "id") Long id) {
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> deleteRole(@RequestParam(value = "id", required = false) Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
@@ -172,9 +173,9 @@ public class SysRoleController {
 
     @PostMapping(value = "/getRoles")
     @Operation(summary = "获取角色（复）")
-    public R<PageVo<SysRoleVo>> getRoles(@RequestBody GetRolesRequest request) {
+    public R<PageVo<SysRolesVo>> getRoles(@RequestBody GetRolesRequest request) {
         try {
-            PageVo<SysRoleVo> resultPage = sysRoleService.getRoles(request);
+            PageVo<SysRolesVo> resultPage = sysRoleService.getRoles(request);
             return R.ok(resultPage);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -182,12 +183,13 @@ public class SysRoleController {
         }
     }
 
+    @SysLock(name = "role")
     @SysLog(value = "启用", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_enable')")
     @GetMapping(value = "/enableRole/{id}")
     @Operation(summary = "启用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R enableRole(@PathVariable(value = "id") Long id) {
+    public R<Object> enableRole(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
@@ -200,12 +202,13 @@ public class SysRoleController {
         }
     }
 
+    @SysLock(name = "role")
     @SysLog(value = "禁用", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_fbn')")
     @GetMapping(value = "/forbiddenRole/{id}")
     @Operation(summary = "禁用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R forbiddenRole(@PathVariable(value = "id") Long id) {
+    public R<Object> forbiddenRole(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
@@ -224,13 +227,13 @@ public class SysRoleController {
     @GetMapping(value = "/setDefaultRole/{id}")
     @Operation(summary = "设置默认角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R setDefaultRole(@PathVariable(value = "id") Long id) {
+    public R<Object> setDefaultRole(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
         try {
             sysRoleService.setDefaultRole(id);
-            return R.ok();
+            return R.ok("设置成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -241,7 +244,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_set_menu')")
     @PostMapping(value = "/setMenus")
     @Operation(summary = "赋予菜单")
-    public R setMenus(@RequestBody SetMenusRequest request) {
+    public R<Object> setMenus(@RequestBody SetMenusRequest request) {
         if (request.getRoleId() == null) {
             return R.fail("角色主键不能为空");
         }
@@ -261,7 +264,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_set_per')")
     @PostMapping(value = "/setPermissions")
     @Operation(summary = "赋予权限")
-    public R setPermissions(@RequestBody SetPermissionsRequest request) {
+    public R<Object> setPermissions(@RequestBody SetPermissionsRequest request) {
         if (request.getRoleId() == null) {
             return R.fail("角色主键不能为空");
         }
@@ -271,6 +274,42 @@ public class SysRoleController {
         try {
             sysRoleService.setPermissions(request);
             return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @SysLog(value = "设置固定角色", module = LogModuleEnum.ROLE)
+    @SysLock(name = "role")
+    @GetMapping(value = "/setFixRole")
+    @Operation(summary = "设置固定角色")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> setFixRole(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysRoleService.setFixRole(id);
+            return R.ok("设置成功", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @SysLog(value = "取消固定角色", module = LogModuleEnum.ROLE)
+    @SysLock(name = "role")
+    @GetMapping(value = "/cancelFixRole")
+    @Operation(summary = "取消固定角色")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> cancelFixRole(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysRoleService.cancelFixRole(id);
+            return R.ok("取消成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

@@ -11,6 +11,7 @@ import com.soft.base.model.request.GetRolesRequest;
 import com.soft.base.model.request.SetMenusRequest;
 import com.soft.base.model.request.SetPermissionsRequest;
 import com.soft.base.model.vo.SysRoleVo;
+import com.soft.base.model.vo.SysRolesVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -27,8 +28,8 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     SysRoleVo getRole(@Param("id") Long id);
 
-    Page<SysRoleVo> getRoles(IPage<SysRoleVo> page,
-                             @Param("request") GetRolesRequest request);
+    Page<SysRolesVo> getRoles(IPage<SysRolesVo> page,
+                              @Param("request") GetRolesRequest request);
 
     void enableRole(@Param("id") Long id);
 
@@ -55,6 +56,10 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     List<String> getRoleCodesByUserId(@Param("userId") Long userId);
 
     Long getDefaultRole(@Param("defaultRoleFlag") Integer defaultRoleFlag);
+
+    void setFixRole(@Param("id") Long id);
+
+    void cancelFixRole(@Param("id") Long id);
 }
 
 

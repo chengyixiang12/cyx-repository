@@ -39,7 +39,7 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
             UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
             // 重新设置用户在线状态
             redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
-            log.debug("{} keep-live...", userDto.getUsername());
+            log.info("{} keep-live...", userDto.getUsername());
             SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
             sendParams.setOrder(WebSocketOrderEnum.HEART_BEAT.toString());

@@ -50,7 +50,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
                 return;
             }
             if (!token.startsWith(TokenConstant.TOKEN_PREFIX)) {
-                log.debug("非法鉴权：{}", token);
+                log.info("非法鉴权：{}", token);
                 ResponseUtil.writeMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
                 return;
             }
@@ -58,7 +58,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             token = token.substring(TokenConstant.TOKEN_PREFIX_LENGTH);
             String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
             if (StringUtils.isEmpty(username)) {
-                log.debug("{}，鉴权过期", token);
+                log.info("{}，鉴权过期", token);
                 ResponseUtil.writeMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.AUTHENTICATION_FAIL.getCode(), ResultEnum.AUTHENTICATION_FAIL.getMessage()));
                 return;
             }

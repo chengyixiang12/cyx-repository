@@ -59,16 +59,16 @@ public class SysLockAspect {
                 Boolean success = redisTemplate.opsForValue().setIfAbsent(RedisConstant.LOCK_KEY + key, lockFlag, lockExpire, TimeUnit.SECONDS);
                 if (Boolean.TRUE.equals(success)) {
                     locked = true;
-                    log.debug("获取到锁: {}", key);
+                    log.info("获取到锁: {}", key);
                     break;
                 }
                 retryCount++;
-                log.debug("获取锁失败，尝试第 {} 次: {}", retryCount, key);
+                log.info("获取锁失败，尝试第 {} 次: {}", retryCount, key);
                 TimeUnit.MILLISECONDS.sleep(retryIntervalTime);
             }
 
             if (!locked) {
-                log.debug("获取锁失败，请稍后重试：{}", key);
+                log.info("获取锁失败，请稍后重试：{}", key);
                 throw new LockFailException("获取锁失败，请稍后重试：" + key);
             }
 
@@ -76,9 +76,9 @@ public class SysLockAspect {
 
         } finally {
             // 释放锁时确保是当前线程加的锁
-            if (locked && lockFlag.equals(redisTemplate.opsForValue().get(key))) {
-                redisTemplate.delete(key);
-                log.debug("释放锁成功: {}", key);
+            if (locked && lockFlag.equals(redisTemplate.opsForValue().get(RedisConstant.LOCK_KEY + key))) {
+                redisTemplate.delete(RedisConstant.LOCK_KEY + key);
+                log.info("释放锁成功: {}", key);
             }
         }
     }

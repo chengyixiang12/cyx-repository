@@ -76,10 +76,10 @@ springdoc:
 #日志
 logging:
   level:
-    com.baomidou.mybatisplus: debug
-    org.mybatis: debug
-    com.soft.base.mapper: debug
-    com.soft.cyx.mapper: debug
+    com.baomidou.mybatisplus: info
+    org.mybatis: info
+    com.soft.base.mapper: info
+    com.soft.cyx.mapper: info
     root: info
   config: classpath:logback-spring.xml
 log:

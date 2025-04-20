@@ -30,17 +30,12 @@ public class R<T> {
         return setR(code, message, null);
     }
 
-    @Deprecated
     public static <T> R<T> ok(String message, T data) {
         return setR(SUCCESS.getCode(), message, data);
     }
 
     public static <T> R<T> ok(T data) {
         return setR(SUCCESS.getCode(), SUCCESS.getMessage(), data);
-    }
-
-    public static <T> R<T> ok(String msg) {
-        return setR(SUCCESS.getCode(), msg, null);
     }
 
     public static <T> R<T> fail(String msg) {

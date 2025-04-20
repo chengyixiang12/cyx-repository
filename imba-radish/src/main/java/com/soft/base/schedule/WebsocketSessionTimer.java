@@ -33,7 +33,7 @@ public class WebsocketSessionTimer {
      */
     @Scheduled(cron = "0 0 0 * * ?")
     public void cleanUserSession() {
-        log.debug("session clear...");
+        log.info("session clear...");
         Set<String> keys = redisTemplate.keys(RedisConstant.WS_USER_SESSION + RedisConstant.WILDCARD_CHARACTER);
         if (keys == null || keys.isEmpty()) {
             WebSocketSessionManager.clear();

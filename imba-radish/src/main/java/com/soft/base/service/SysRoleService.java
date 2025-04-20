@@ -10,6 +10,7 @@ import com.soft.base.model.request.SetMenusRequest;
 import com.soft.base.model.request.SetPermissionsRequest;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
+import com.soft.base.model.vo.SysRolesVo;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public interface SysRoleService extends IService<SysRole> {
 
     SysRoleVo getRole(Long id);
 
-    PageVo<SysRoleVo> getRoles(GetRolesRequest request);
+    PageVo<SysRolesVo> getRoles(GetRolesRequest request);
 
     void enableRole(Long id);
 
@@ -47,4 +48,8 @@ public interface SysRoleService extends IService<SysRole> {
     List<String> getRoleCodesByUserId(Long userId);
 
     Long getDefaultRole(Integer defaultRoleFlag);
+
+    void setFixRole(Long id);
+
+    void cancelFixRole(Long id);
 }

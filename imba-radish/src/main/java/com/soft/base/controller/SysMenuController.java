@@ -169,7 +169,7 @@ public class SysMenuController {
         }
         try {
             sysMenuService.enableMenu(id);
-            return R.ok("启用成功");
+            return R.ok("启用成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -185,7 +185,7 @@ public class SysMenuController {
         }
         try {
             sysMenuService.disableMenu(id);
-            return R.ok("禁用成功");
+            return R.ok("禁用成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

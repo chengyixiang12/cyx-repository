@@ -57,21 +57,25 @@
         sr.del_flag = '1'
         AND sr.id = #{id}
     </select>
-    <select id="getRoles" parameterType="GetRolesRequest" resultType="SysRoleVo">
+    <select id="getRoles" parameterType="GetRolesRequest" resultType="SysRolesVo">
         SELECT
         sr.id,
-        sr.sort_order AS "sortOrder",
+        sr.sort_order,
         sr.`code`,
         sr.`name`,
         sr.description,
         sr.`status`,
-        sr.is_default AS "isDefault"
+        sr.is_default,
+        sr.fix_role
         FROM
         sys_role sr
         WHERE
         sr.del_flag = '1'
-        <if test="request.name != null and request.name != ''">
-            AND sr.`name` = #{request.name}
+        <if test="request.keyword != null and request.keyword != ''">
+            AND sr.`name` = #{request.keyword}
+        </if>
+        <if test="request.status != null">
+            AND sr.status = #{request.status}
         </if>
         <choose>
             <when test="request.startTime != null and request.endTime != null">
@@ -197,4 +201,22 @@
         WHERE
             sr.is_default = #{defaultRoleFlag}
     </select>
+    <update id="setFixRole" parameterType="java.lang.Long">
+        UPDATE
+            sys_role
+        SET
+            fix_role = 1
+        WHERE
+            del_flag = '1'
+          AND id = #{id}
+    </update>
+    <update id="cancelFixRole" parameterType="java.lang.Long">
+        UPDATE
+            sys_role
+        SET
+            fix_role = 0
+        WHERE
+            del_flag = '1'
+          AND id = #{id}
+    </update>
 </mapper>

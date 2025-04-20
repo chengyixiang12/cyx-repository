@@ -15,6 +15,7 @@ import com.soft.base.model.request.SetMenusRequest;
 import com.soft.base.model.request.SetPermissionsRequest;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
+import com.soft.base.model.vo.SysRolesVo;
 import com.soft.base.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,9 +60,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public PageVo<SysRoleVo> getRoles(GetRolesRequest request) {
-        PageVo<SysRoleVo> pageVo = new PageVo<>();
-        IPage<SysRoleVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVo<SysRolesVo> getRoles(GetRolesRequest request) {
+        PageVo<SysRolesVo> pageVo = new PageVo<>();
+        IPage<SysRolesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
 
         page = sysRoleMapper.getRoles(page, request);
 
@@ -119,6 +120,16 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Override
     public Long getDefaultRole(Integer defaultRoleFlag) {
         return sysRoleMapper.getDefaultRole(defaultRoleFlag);
+    }
+
+    @Override
+    public void setFixRole(Long id) {
+        sysRoleMapper.setFixRole(id);
+    }
+
+    @Override
+    public void cancelFixRole(Long id) {
+        sysRoleMapper.cancelFixRole(id);
     }
 }
 

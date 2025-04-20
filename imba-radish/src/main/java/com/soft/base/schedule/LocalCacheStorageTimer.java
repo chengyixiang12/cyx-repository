@@ -28,7 +28,7 @@ public class LocalCacheStorageTimer {
      */
     @Scheduled(cron = "0 0 1 * * ?")
     public void clearExpireLocalCache() {
-        log.debug("localCache clear...");
+        log.info("localCache clear...");
         long currentTime = System.currentTimeMillis();
         localCacheUtil.getAllExpire().forEach((k,v) -> {
             if (v > currentTime) {

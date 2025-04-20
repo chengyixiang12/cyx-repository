@@ -38,7 +38,7 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         }
         // 添加用户缓存
         redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
-        log.debug("{} connect...", userDto.getUsername());
+        log.info("{} connect...", userDto.getUsername());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         redisTemplate.delete(RedisConstant.WS_USER_SESSION + userDto.getId());
         // 移除用户会话
         WebSocketSessionManager.removeSession(userDto.getId());
-        log.debug("{} connect closed...", userDto.getUsername());
+        log.info("{} connect closed...", userDto.getUsername());
     }
 
 

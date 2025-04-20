@@ -81,7 +81,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         if (maxIndex == null) {
             sendParams.setMessage("分片文件索引为空");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
-            log.debug("分片文件索引为空，{}", originalName);
+            log.info("分片文件索引为空，{}", originalName);
             return;
         }
 
@@ -90,12 +90,12 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         if (!file.exists()) {
             if (file.getParentFile() != null && !file.getParentFile().mkdirs()) {
                 sendParams.setMessage("文件夹创建失败");
-                log.debug("文件夹创建失败，{}", file.getParent());
+                log.info("文件夹创建失败，{}", file.getParent());
                 return;
             }
             if (!file.createNewFile()) {
                 sendParams.setMessage("文件创建失败");
-                log.debug("文件创建失败，{}", file.getName());
+                log.info("文件创建失败，{}", file.getName());
                 return;
             }
         }
@@ -111,7 +111,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
                 index++;
             }
             os.flush();
-            log.debug("文件写入完成，{}", file.getName());
+            log.info("文件写入完成，{}", file.getName());
 
             LocalDateTime now = LocalDateTime.now();
             SysFile sysFile = new SysFile();
@@ -129,13 +129,13 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             sysFileService.save(sysFile);
             log.info("start save file data to database...");
 
-            log.debug("start remove cache...");
+            log.info("start remove cache...");
             redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
-            log.debug("删除{}的分片文件key缓存", username);
+            log.info("删除{}的分片文件key缓存", username);
             redisTemplate.delete(RedisConstant.SLICE_FILE_INDEX_KEY + username);
-            log.debug("删除{}的分片文件index缓存", username);
+            log.info("删除{}的分片文件index缓存", username);
             redisTemplate.delete(RedisConstant.SLICE_FILE_INFO + username);
-            log.debug("删除{}的文件hash", username);
+            log.info("删除{}的文件hash", username);
 
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toJsonString()));

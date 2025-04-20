@@ -43,7 +43,7 @@ public class SysLogConsume {
         String key = null;
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         try {
-            log.debug("start consume message...");
+            log.info("start consume message...");
             key = new String(message.getBody());
 
             LogDto logDto = (LogDto) redisTemplate.opsForValue().get(key);

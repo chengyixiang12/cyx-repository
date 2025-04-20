@@ -15,8 +15,11 @@ import java.time.LocalDateTime;
 @Alias(value = "GetRolesRequest")
 public class GetRolesRequest extends PageRequest {
 
-    @Schema(description = "角色名称")
-    private String name;
+    @Schema(description = "关键字")
+    private String keyword;
+
+    @Schema(description = "状态")
+    private Integer status;
 
     @Schema(description = "开始时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

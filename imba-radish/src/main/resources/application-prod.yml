@@ -75,7 +75,7 @@ logging:
     org.mybatis: info
     com.soft.base.mapper: info
     com.soft.cyx.mapper: info
-    root: info
+    root: warn
   config: classpath:logback-spring.xml
 log:
   #是否开启日志记录
