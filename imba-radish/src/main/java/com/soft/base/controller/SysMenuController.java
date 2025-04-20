@@ -1,5 +1,6 @@
 package com.soft.base.controller;
 
+import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.EditMenuRequest;
@@ -160,6 +161,7 @@ public class SysMenuController {
         }
     }
 
+    @SysLog(value = "启用菜单", module = LogModuleEnum.MENU)
     @GetMapping(value = "/enableMenu/{id}")
     @Operation(summary = "启用菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
@@ -176,6 +178,7 @@ public class SysMenuController {
         }
     }
 
+    @SysLog(value = "禁用菜单", module = LogModuleEnum.MENU)
     @GetMapping(value = "/disableMenu/{id}")
     @Operation(summary = "禁用菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)

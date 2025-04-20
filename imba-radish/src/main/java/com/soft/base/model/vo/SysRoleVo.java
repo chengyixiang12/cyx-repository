@@ -29,4 +29,7 @@ public class SysRoleVo {
 
     @Schema(description = "是否标记为系统默认角色；1：是；0：不是")
     private Integer isDefault;
+
+    @Schema(description = "固定角色；1：是；0：不是")
+    private Integer fixRole;
 }

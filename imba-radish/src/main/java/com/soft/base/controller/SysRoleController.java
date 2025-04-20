@@ -46,7 +46,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_add')")
     @PostMapping
     @Operation(summary = "添加角色")
-    public R saveRole(@RequestBody SaveRoleRequest request) {
+    public R<Object> saveRole(@RequestBody SaveRoleRequest request) {
         if (StringUtils.isBlank(request.getCode())) {
             return R.fail("角色编码不能为空");
         }
@@ -54,7 +54,7 @@ public class SysRoleController {
             return R.fail("无效的角色编码");
         }
         if (sysRoleService.existCode(request.getCode())) {
-            R.fail("角色编码已存在");
+            return R.fail("角色编码已存在");
         }
         if (request.getStatus() == null) {
             request.setStatus(BaseConstant.DEF_STATUS);
@@ -85,10 +85,20 @@ public class SysRoleController {
         if (request.getId() == null) {
             return R.fail("主键不能为空");
         }
+        if (StringUtils.isBlank(request.getCode())) {
+            return R.fail("角色编码不能为空");
+        }
+        if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
+            return R.fail("无效的角色编码");
+        }
+        if (sysRoleService.existCode(request.getCode())) {
+            return R.fail("角色编码已存在");
+        }
+        if (request.getStatus() == null) {
+            request.setStatus(BaseConstant.DEF_STATUS);
+        }
         try {
-            SysRole sysRole = new SysRole();
-            BeanUtils.copyProperties(request, sysRole);
-            sysRoleService.updateById(sysRole);
+            sysRoleService.editRole(request);
             return R.ok("编辑成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -183,7 +193,6 @@ public class SysRoleController {
         }
     }
 
-    @SysLock(name = "role")
     @SysLog(value = "启用", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_enable')")
     @GetMapping(value = "/enableRole/{id}")
@@ -195,14 +204,13 @@ public class SysRoleController {
         }
         try {
             sysRoleService.enableRole(id);
-            return R.ok();
+            return R.ok("启用成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
         }
     }
 
-    @SysLock(name = "role")
     @SysLog(value = "禁用", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_fbn')")
     @GetMapping(value = "/forbiddenRole/{id}")
@@ -214,7 +222,7 @@ public class SysRoleController {
         }
         try {
             sysRoleService.forbiddenRole(id);
-            return R.ok();
+            return R.ok("禁用成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -281,7 +289,6 @@ public class SysRoleController {
     }
 
     @SysLog(value = "设置固定角色", module = LogModuleEnum.ROLE)
-    @SysLock(name = "role")
     @GetMapping(value = "/setFixRole")
     @Operation(summary = "设置固定角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
@@ -299,7 +306,6 @@ public class SysRoleController {
     }
 
     @SysLog(value = "取消固定角色", module = LogModuleEnum.ROLE)
-    @SysLock(name = "role")
     @GetMapping(value = "/cancelFixRole")
     @Operation(summary = "取消固定角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)

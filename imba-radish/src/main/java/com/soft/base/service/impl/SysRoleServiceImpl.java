@@ -9,14 +9,12 @@ import com.soft.base.entity.SysRole;
 import com.soft.base.mapper.SysRoleMapper;
 import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.dto.GetUserRoleDto;
-import com.soft.base.model.request.DeleteRequest;
-import com.soft.base.model.request.GetRolesRequest;
-import com.soft.base.model.request.SetMenusRequest;
-import com.soft.base.model.request.SetPermissionsRequest;
+import com.soft.base.model.request.*;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
 import com.soft.base.service.SysRoleService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,6 +128,16 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Override
     public void cancelFixRole(Long id) {
         sysRoleMapper.cancelFixRole(id);
+    }
+
+    @Override
+    public void editRole(EditRoleRequest request) {
+        if (BaseConstant.DEFAULT_ROLE_FLAG.equals(request.getIsDefault())) {
+            sysRoleMapper.cancelDefaultRole();
+        }
+        SysRole sysRole = new SysRole();
+        BeanUtils.copyProperties(request, sysRole);
+        sysRoleMapper.updateById(sysRole);
     }
 }
 

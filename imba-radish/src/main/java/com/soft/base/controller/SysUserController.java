@@ -213,6 +213,7 @@ public class SysUserController {
         }
     }
 
+    @SysLog(value = "锁定用户", module = LogModuleEnum.USER)
     @GetMapping(value = "/lockUser/{id}")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_lock')")
     @Operation(summary = "锁定用户")
@@ -231,6 +232,7 @@ public class SysUserController {
         }
     }
 
+    @SysLog(value = "解锁用户", module = LogModuleEnum.USER)
     @GetMapping(value = "/unlockUser/{id}")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_unlock')")
     @Operation(summary = "解锁用户")
@@ -249,6 +251,7 @@ public class SysUserController {
         }
     }
 
+    @SysLog(value = "重置用户名", module = LogModuleEnum.USER)
     @SysLock(name = "user")
     @PutMapping(value = "/resetUsername")
     @Operation(summary = "重置用户名")
@@ -275,6 +278,7 @@ public class SysUserController {
         }
     }
 
+    @SysLog(value = "删除用户", module = LogModuleEnum.USER)
     @DeleteMapping
     @PreAuthorize(value = "@cps.hasPermission('sys_user_delete')")
     @Operation(summary = "删除用户")
@@ -293,6 +297,7 @@ public class SysUserController {
         }
     }
 
+    @SysLog(value = "启用用户", module = LogModuleEnum.USER)
     @GetMapping(value = "/enableUser/{id}")
     @Operation(summary = "启用用户")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_enable')")
@@ -311,6 +316,7 @@ public class SysUserController {
         }
     }
 
+    @SysLog(value = "禁用用户", module = LogModuleEnum.USER)
     @GetMapping(value = "/forbiddenUser/{id}")
     @Operation(summary = "禁用用户")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_forbidden')")

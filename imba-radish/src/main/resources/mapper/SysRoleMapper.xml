@@ -42,15 +42,12 @@
         SELECT
         sr.id,
         sr.sort_order AS "sortOrder",
-        sr.create_by AS "createBy",
-        sr.create_time AS "createTime",
-        sr.update_by AS "updateBy",
-        sr.update_time AS "updateTime",
         sr.`code`,
         sr.`name`,
         sr.description,
         sr.`status`,
-        sr.is_default AS "isDefault"
+        sr.is_default,
+        sr.fix_role
         FROM
         sys_role sr
         WHERE
