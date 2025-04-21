@@ -203,7 +203,7 @@ const handleIsDefaultChange = async (row: SysRoleVo) => {
   if (row.isDefault === 1) {
     await setDefaultRoleApi(row.id);
   } else {
-    showMessage('非法操作', 'error');
+    showMessage('非法操作', 'warning');
     row.isDefault = 0;
   }
   await loadRoles();
