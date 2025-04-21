@@ -3,6 +3,7 @@ package com.soft.base.aspect;
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogLevelEnum;
+import com.soft.base.enums.ResultEnum;
 import com.soft.base.model.dto.LogDto;
 import com.soft.base.rabbitmq.producer.SysLogProduce;
 import com.soft.base.resultapi.R;
@@ -73,7 +74,6 @@ public class SysLogAspect {
                 logDto.setRequestMethod(servletRequest.getMethod());
                 logDto.setRequestUrl(servletRequest.getRequestURI());
                 logDto.setIpAddress(servletRequest.getRemoteAddr());
-                logDto.setLogLevel(LogLevelEnum.INFO.getCode());
 
                 // 是否记录请求和响应参数
                 if (recordParam) {
@@ -81,11 +81,19 @@ public class SysLogAspect {
                     logDto.setResponseResult(result != null ? result.toString() : null);
                 }
 
-                // 记录接口响应代码
                 if (result != null) {
                     @SuppressWarnings("unchecked")
-                    Integer code = ((R<Object>) result).getCode();
+                    R<Object> r = (R<Object>) result;
+                    Integer code = r.getCode();
+
                     logDto.setStatusCode(code);
+
+                    if (ResultEnum.SUCCESS.getCode().equals(code)) {
+                        logDto.setLogLevel(LogLevelEnum.INFO.getCode());
+                    } else {
+                        logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
+                        logDto.setExceptionInfo(r.getMsg());
+                    }
                 }
 
                 // 获取 User-Agent
@@ -96,10 +104,6 @@ public class SysLogAspect {
                 logDto.setOsBrowserInfo(osName + LEFT_SLASH + browserName);
 
                 logDto.setCreateBy(securityUtil.getUserInfo().getId());
-            } catch (Throwable throwable) {
-                logDto.setExceptionInfo(throwable.getMessage());
-                logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
-                throw throwable;
             } finally {
                 logDto.setExecutionTime(System.currentTimeMillis() - start);
                 sysLogProduce.sendSysLog(logDto);

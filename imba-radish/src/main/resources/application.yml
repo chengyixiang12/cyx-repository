@@ -3,7 +3,12 @@ server:
   servlet:
     context-path: /
   tomcat:
+    #连接超时（毫秒）
     connection-timeout: 10000
+    #保持连接时长（秒）
+    keep-alive-timeout: 30
+    #最大连接数
+    max-connections: 1024
 spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}

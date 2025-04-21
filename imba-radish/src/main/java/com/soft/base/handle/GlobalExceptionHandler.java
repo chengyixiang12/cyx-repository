@@ -1,6 +1,7 @@
 package com.soft.base.handle;
 
 import com.soft.base.enums.ResultEnum;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.exception.LockFailException;
 import com.soft.base.resultapi.R;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<R<Object>> lockFailException(LockFailException ex) {
         log.error(ex.getLocalizedMessage());
         return new ResponseEntity<>(R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(GlobalException.class)
+    public ResponseEntity<R<Object>> globalException(GlobalException ex) {
+        log.error(ex.getLocalizedMessage());
+        return new ResponseEntity<>(R.fail(ResultEnum.FAIL_NORMAL.getCode(), ex.getMessage()), HttpStatus.OK);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

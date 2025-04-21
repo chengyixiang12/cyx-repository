@@ -1,9 +1,11 @@
 package com.soft.base.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.enums.LogModuleEnum;
+import com.soft.base.exception.GlobalException;
 import com.soft.base.model.dto.ExportDeptDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.DeptTreeVo;
@@ -29,6 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -180,11 +183,11 @@ public class SysDeptController {
 
     @PostMapping(value = "/exportDept")
     @Operation(summary = "导出部门")
-    public ResponseEntity<Object> exportDept(@RequestBody ExportDeptRequest request) {
+    public ResponseEntity<byte[]> exportDept(@RequestBody ExportDeptRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        if (request.getIds() == null || request.getIds().isEmpty()) {
-            return ResponseEntity.ok().body(R.fail("部门id数组不能为空"));
+        if (CollectionUtil.isEmpty(request.getIds())) {
+            throw new GlobalException("部门id数组不能为空");
         }
         String fileName = request.getFileName();
         if (StringUtils.isBlank(fileName)) {
@@ -205,21 +208,22 @@ public class SysDeptController {
                 row.createCell(3).setCellValue(exportDeptDto.getParentName());
             }
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            workbook.write(byteArrayOutputStream);
-            byte[] excelBytes = byteArrayOutputStream.toByteArray();
+            ByteArrayOutputStream bis = new ByteArrayOutputStream();
+            workbook.write(bis);
+
+            byte[] byteArray = bis.toByteArray();
 
             // 设置响应头
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // 设置文件类型
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileName.endsWith(BaseConstant.EXCEL_SUFFIX) ? fileName : fileName + BaseConstant.EXCEL_SUFFIX, StandardCharsets.UTF_8)).build()); // 设置文件名
+            headers.setContentLength(byteArray.length);
 
             // 返回 ResponseEntity，带上文件内容和响应头
             return ResponseEntity.ok()
                     .headers(headers)
-                    .body(excelBytes);
+                    .body(byteArray);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.ok().body(R.fail());
+            throw new GlobalException(e.getMessage());
         }
     }
 

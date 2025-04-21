@@ -81,23 +81,24 @@ public class SysFileController {
     @GetMapping (value = "/downloadFile")
     @Operation(summary = "下载文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public ResponseEntity<Object> downloadFile(@RequestParam(value = "id", required = false) Long id) {
+    public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) Long id) {
         HttpHeaders headers = new HttpHeaders();
 
         if (id == null) {
-            return ResponseEntity.ok().headers(headers).body(R.fail("主键不能为空"));
+            throw new GlobalException("主键不能为空");
         }
 
         try {
             FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
             if (fileDetail == null) {
-                return ResponseEntity.status(HttpStatusCode.valueOf(HttpConstant.SUCCESS)).headers(headers).body(R.fail("不存在的文件"));
+                throw new ResourceNotExistException("不存在的文件");
             }
 
             // 设置响应头
             String mimeType = Files.probeContentType(Paths.get(fileDetail.getOriginalName()));
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
             headers.setContentType(MediaType.parseMediaType(mimeType != null ? mimeType : MediaType.APPLICATION_OCTET_STREAM_VALUE));
+            headers.setContentLength(fileDetail.getFileSize());
 
             //流式传输
             StreamingResponseBody responseBody = outputStream -> {
@@ -127,8 +128,8 @@ public class SysFileController {
 
                 while ((bytesRead = is.read(buffer)) != BaseConstant.FILE_OVER_SIGN) {
                     outputStream.write(buffer, BaseConstant.INTEGER_INIT_VAL, bytesRead);
-                    outputStream.flush();
                 }
+                outputStream.flush();
                 is.close();
             };
 
@@ -137,11 +138,9 @@ public class SysFileController {
                     .headers(headers)
                     .body(responseBody);
         } catch (ResourceNotExistException e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.ok().headers(headers).body(R.fail(e.getMessage()));
+            throw new ResourceNotExistException(e.getMessage());
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.ok().headers(headers).body(R.fail());
+            throw new GlobalException(e.getMessage());
         }
     }
 
