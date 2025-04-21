@@ -79,7 +79,7 @@ public class SysUserController {
     @SysLog(value = "修改密码", module = LogModuleEnum.USER)
     @PutMapping(value = "/editPassword")
     @Operation(summary = "修改密码")
-    public R editPassword(@RequestBody EditPasswordRequest request) {
+    public R<Object> editPassword(@RequestBody EditPasswordRequest request) {
         if (StringUtils.isBlank(request.getOriginalPass())) {
             return R.fail("原密码不能为空");
         }
@@ -106,7 +106,7 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_reset')")
     @PutMapping(value = "/resetPassword")
     @Operation(summary = "重置密码")
-    public R resetPassword(@RequestBody ResetPasswordRequest request) {
+    public R<Object> resetPassword(@RequestBody ResetPasswordRequest request) {
         if (StringUtils.isBlank(request.getPassword())) {
             return R.fail("新密码不能为空");
         }
@@ -124,7 +124,7 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_add')")
     @PostMapping
     @Operation(summary = "添加用户")
-    public R saveUser(@RequestBody SaveUserRequest request) {
+    public R<Object> saveUser(@RequestBody SaveUserRequest request) {
         if (StringUtils.isBlank(request.getUsername())) {
             return R.fail("用户名不能为空");
         }
@@ -157,7 +157,7 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_edit')")
     @PutMapping
     @Operation(summary = "编辑用户")
-    public R editUser(@RequestBody EditUserRequest request) {
+    public R<Object> editUser(@RequestBody EditUserRequest request) {
         if (request.getId() == null) {
             return R.fail("id不能为空");
         }
