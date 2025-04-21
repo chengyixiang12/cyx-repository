@@ -30,4 +30,6 @@ public interface SysDictDataService extends IService<SysDictData> {
     void deleteDictDataBatch(DeleteRequest request);
 
     boolean existCode(String code);
+
+    boolean existCode(String code, Long id);
 }

@@ -69,6 +69,11 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     public boolean existDictType(String dictType) {
         return sysDictTypeMapper.exists(Wrappers.lambdaQuery(SysDictType.class).eq(SysDictType::getDictType, dictType));
     }
+
+    @Override
+    public boolean existDictType(String dictType, Long id) {
+        return sysDictTypeMapper.exists(Wrappers.lambdaQuery(SysDictType.class).eq(SysDictType::getDictType, dictType).ne(SysDictType::getId, id));
+    }
 }
 
 

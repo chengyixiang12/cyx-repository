@@ -110,7 +110,7 @@ public class SysDictDataController {
         if (StringUtils.isBlank(request.getCode())) {
             return R.fail("字典编码不能为空");
         }
-        if (sysDictDataService.existCode(request.getCode())) {
+        if (sysDictDataService.existCode(request.getCode(), request.getId())) {
             return R.fail("字典编码已存在");
         }
         if (StringUtils.isBlank(request.getValue())) {

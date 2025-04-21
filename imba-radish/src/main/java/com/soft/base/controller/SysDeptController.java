@@ -115,7 +115,7 @@ public class SysDeptController {
         if (StringUtils.isBlank(request.getCode())) {
             return R.fail("部门编码不能为空");
         }
-        if (sysDeptService.existCode(request.getCode())) {
+        if (sysDeptService.existCode(request.getCode(), request.getId())) {
             return R.fail("部门编码已存在");
         }
         if (StringUtils.isBlank(request.getName())) {

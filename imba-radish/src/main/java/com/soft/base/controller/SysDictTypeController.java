@@ -88,7 +88,7 @@ public class SysDictTypeController {
         if (StringUtils.isBlank(request.getDictType())) {
             return R.fail("字典类型不能为空");
         }
-        if (sysDictTypeService.existDictType(request.getDictType())) {
+        if (sysDictTypeService.existDictType(request.getDictType(), request.getId())) {
             return R.fail("字典类型已存在");
         }
         try {

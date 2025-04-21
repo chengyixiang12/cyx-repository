@@ -4,19 +4,22 @@ import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
+import com.soft.base.model.vo.GetAssignPerVo;
+import com.soft.base.model.vo.GetAllPermissionVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.PermissionsVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysPermissionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author: cyx
@@ -65,4 +68,34 @@ public class SysPermissionController {
             return R.fail();
         }
     }
+
+    @GetMapping(value = "/getAllPermission")
+    @Operation(summary = "获取所有权限")
+    public R<List<GetAllPermissionVo>> getAllPermission() {
+        try {
+            List<GetAllPermissionVo> notAssignPerVos = sysPermissionService.getAllPermission();
+            return R.ok(notAssignPerVos);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/getAssignPer")
+    @Operation(summary = "获取被赋予的权限")
+    @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
+    public R<List<GetAssignPerVo>> getAssignPer(@RequestParam(value = "roleId", required = false) Long roleId) {
+        if (roleId == null) {
+            return R.fail("角色id不能为空");
+        }
+        try {
+            List<GetAssignPerVo> notAssignPerVos = sysPermissionService.getAssignPer(roleId);
+            return R.ok(notAssignPerVos);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+
 }

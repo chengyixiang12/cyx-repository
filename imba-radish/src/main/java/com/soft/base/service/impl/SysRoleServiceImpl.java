@@ -1,5 +1,6 @@
 package com.soft.base.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,6 +14,7 @@ import com.soft.base.model.request.*;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
+import com.soft.base.resultapi.R;
 import com.soft.base.service.SysRoleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Override
     public Boolean existCode(String code) {
         return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getCode, code));
+    }
+
+    @Override
+    public Boolean existCode(String code, Long id) {
+        return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getCode, code).ne(SysRole::getId, id));
     }
 
     @Override
@@ -102,6 +109,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Transactional(rollbackFor = Exception.class)
     public void setPermissions(SetPermissionsRequest request) {
         sysRoleMapper.deleteRolePermissions(request);
+        if (CollectionUtil.isEmpty(request.getPermissionIds())) {
+            return;
+        }
         sysRoleMapper.setPermissions(request);
     }
 

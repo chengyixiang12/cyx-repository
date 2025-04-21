@@ -20,6 +20,8 @@ public interface SysRoleService extends IService<SysRole> {
 
     Boolean existCode(String code);
 
+    Boolean existCode(String code, Long id);
+
     void deleteRoleBatch(DeleteRequest request);
 
     Boolean fixRoleFlag(Long id);

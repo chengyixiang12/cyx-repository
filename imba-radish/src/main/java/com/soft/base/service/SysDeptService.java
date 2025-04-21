@@ -23,6 +23,8 @@ public interface SysDeptService extends IService<SysDept> {
 
     Boolean existCode(String code);
 
+    Boolean existCode(String code, Long id);
+
     Boolean isNotEmpty();
 
     void saveDept(SaveDeptRequest request);

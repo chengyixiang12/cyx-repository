@@ -9,6 +9,8 @@ import com.soft.base.entity.SysPermission;
 import com.soft.base.mapper.SysPermissionMapper;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
+import com.soft.base.model.vo.GetAssignPerVo;
+import com.soft.base.model.vo.GetAllPermissionVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.PermissionsVo;
 import com.soft.base.service.SysPermissionService;
@@ -64,6 +66,16 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     @Override
     public boolean existCode(String code) {
         return sysPermissionMapper.exists(Wrappers.lambdaQuery(SysPermission.class).eq(SysPermission::getCode, code));
+    }
+
+    @Override
+    public List<GetAllPermissionVo> getAllPermission() {
+        return sysPermissionMapper.getAllPermission();
+    }
+
+    @Override
+    public List<GetAssignPerVo> getAssignPer(Long roleId) {
+        return sysPermissionMapper.getAssignPer(roleId);
     }
 }
 

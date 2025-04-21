@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysPermission;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
+import com.soft.base.model.vo.GetAssignPerVo;
+import com.soft.base.model.vo.GetAllPermissionVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.PermissionsVo;
 
@@ -25,4 +27,8 @@ public interface SysPermissionService extends IService<SysPermission> {
     List<String> getPermissionsByRoleCodes(List<String> roleCodes);
 
     boolean existCode(String code);
+
+    List<GetAllPermissionVo> getAllPermission();
+
+    List<GetAssignPerVo> getAssignPer(Long roleId);
 }

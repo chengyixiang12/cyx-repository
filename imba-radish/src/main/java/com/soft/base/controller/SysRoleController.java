@@ -1,5 +1,6 @@
 package com.soft.base.controller;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
@@ -91,7 +92,7 @@ public class SysRoleController {
         if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
             return R.fail("无效的角色编码");
         }
-        if (sysRoleService.existCode(request.getCode())) {
+        if (sysRoleService.existCode(request.getCode(), request.getId())) {
             return R.fail("角色编码已存在");
         }
         if (request.getStatus() == null) {
@@ -276,12 +277,9 @@ public class SysRoleController {
         if (request.getRoleId() == null) {
             return R.fail("角色主键不能为空");
         }
-        if (request.getPermissionIds() == null || request.getPermissionIds().isEmpty()) {
-            return R.fail("权限主键不能为空");
-        }
         try {
             sysRoleService.setPermissions(request);
-            return R.ok();
+            return R.ok("权限赋予成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

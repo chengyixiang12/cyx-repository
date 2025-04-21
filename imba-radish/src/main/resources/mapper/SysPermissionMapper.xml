@@ -65,4 +65,23 @@
             #{item}
         </foreach>
     </select>
+    <select id="getAllPermission" parameterType="java.lang.Long" resultType="GetAllPermissionVo">
+        SELECT
+        sp.id ,
+        sp.name
+        FROM
+        sys_permission sp
+        WHERE
+        sp.del_flag = '1'
+    </select>
+    <select id="getAssignPer" parameterType="java.lang.Long" resultType="GetAssignPerVo">
+        SELECT sp.id,
+               sp.name
+        FROM sys_permission sp
+                 JOIN sys_role_permission srp
+                      ON
+                          sp.id = srp.permission_id
+        WHERE sp.del_flag = '1'
+          AND srp.role_id = #{roleId}
+    </select>
 </mapper>

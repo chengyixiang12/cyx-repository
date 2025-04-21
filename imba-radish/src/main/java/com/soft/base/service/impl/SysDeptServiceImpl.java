@@ -59,6 +59,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
+    public Boolean existCode(String code, Long id) {
+        return sysDeptMapper.exists(Wrappers.lambdaQuery(SysDept.class).eq(SysDept::getCode, code).ne(SysDept::getId, id));
+    }
+
+    @Override
     public Boolean isNotEmpty() {
         return sysDeptMapper.selectCount(Wrappers.lambdaQuery(SysDept.class)) > 0;
     }

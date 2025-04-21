@@ -77,6 +77,11 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     public boolean existCode(String code) {
         return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getCode, code));
     }
+
+    @Override
+    public boolean existCode(String code, Long id) {
+        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getCode, code).ne(SysDictData::getId, id));
+    }
 }
 
 

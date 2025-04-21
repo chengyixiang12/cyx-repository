@@ -158,10 +158,12 @@
         sys_role_permission
         WHERE
         role_id = #{request.roleId}
-        AND permission_id IN
-        <foreach collection="request.permissionIds" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        <if test="request.getPermissionIds() != null and request.getPermissionIds().size > 0">
+            AND permission_id IN
+            <foreach collection="request.permissionIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </delete>
     <insert id="setPermissions" parameterType="SetPermissionsRequest">
         INSERT INTO sys_role_permission ( role_id, permission_id )
