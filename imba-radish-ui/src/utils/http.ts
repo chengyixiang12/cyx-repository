@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
-import { ApiResponse, ApiError, RequestConfig } from '../types/method';
+import { ApiResponse, ApiError, RequestConfig } from '@/types/method';
 import router from '@/router/routers';
 import { clearCache } from '@/utils/clearCache';
-import { ElMessage } from 'element-plus';
+import { showMessage } from './message';
 
 const instance = axios.create({
   baseURL: '/api',
@@ -215,13 +215,7 @@ export async function del<T = any>(
  * @param {number} code 状态码
  */
 function showCustomMessage(message: string, code: number) {
-  ElMessage({
-    message: message,
-    type: code === 2001 ? 'success' : 'error',
-    customClass: 'custom-message',
-    duration: 3000,
-    offset: 80 // 控制垂直位置，数值越大位置越往下
-  })
+  showMessage(message, code === 2001 ? 'success' : 'error')
 }
 
 export default instance;

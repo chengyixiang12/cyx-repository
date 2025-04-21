@@ -106,7 +106,7 @@ import { Edit, Delete, Menu, Key } from '@element-plus/icons-vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
 import RoleFormDialog from '@/components/system/RoleFormDialog.vue'
 import { EditRoleRequest, GetRolesRequest, SaveRoleRequest, SysRolesVo, SysRoleVo } from '@/types/role'
-import { ElMessage } from 'element-plus';
+import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
 const roleList = ref<SysRolesVo[]>([])
@@ -203,13 +203,8 @@ const handleIsDefaultChange = async (row: SysRoleVo) => {
   if (row.isDefault === 1) {
     await setDefaultRoleApi(row.id);
   } else {
-    ElMessage({
-    message: '设置失败',
-    type: 'error',
-    customClass: 'custom-message',
-    duration: 3000,
-    offset: 80 // 控制垂直位置，数值越大位置越往下
-  })
+    showMessage('非法操作', 'error');
+    row.isDefault = 0;
   }
   await loadRoles();
 }

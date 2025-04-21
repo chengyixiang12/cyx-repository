@@ -1,0 +1,27 @@
+.el-message {
+    border-radius: 10px;
+    font-size: 14px;
+    padding: 16px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #333;
+  }
+  
+  .el-message--success {
+    background-color: #f0f9eb;
+    color: #67c23a;
+  }
+  
+  .el-message--error {
+    background-color: #fef0f0;
+    color: #f56c6c;
+  }
+  
+  .el-message--warning {
+    background-color: #fdf6ec;
+    color: #e6a23c;
+  }
+  
+  .el-message--info {
+    background-color: #f4f4f5;
+    color: #909399;
+  }
