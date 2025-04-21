@@ -22,7 +22,7 @@
             :expand-on-click-node="false"
           >
             <template #default="{ node }">
-              <el-tooltip effect="dark" :content="node.label" placement="top-start" v-if="shouldShowTooltip(node.label)">
+              <el-tooltip effect="dark" :content="node.label" placement="right-start" v-if="shouldShowTooltip(node.label)">
                 <span class="tree-node-label">{{ node.label }}</span>
               </el-tooltip>
               <span v-else class="tree-node-label">{{ node.label }}</span>

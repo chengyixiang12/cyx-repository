@@ -64,10 +64,11 @@
                   <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
                   <el-tooltip class="item" effect="dark" content="赋予权限" placement="top">
                     <el-button size="small" type="primary" @click="handleAssignPermission(scope.row.id)" :icon="Key"
-                    circle />
+                      circle />
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="赋予菜单" placement="top">
-                    <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" :icon="Menu" circle />
+                    <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" :icon="Menu"
+                      circle />
                   </el-tooltip>
                   <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
@@ -98,22 +99,29 @@
   <!-- 编辑角色弹窗 -->
   <role-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :roleId="roleId"
     @submit="handleEditSubmit" />
+
+  <role-permission-dialog v-model="assignPermissionVisible" :role-id="roleId" v-if="assignPermissionVisible"
+    @submit="handleAssignPermissionSubmit" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { Edit, Delete, Menu, Key } from '@element-plus/icons-vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
+import { updateRolePermissionsApi } from '@/api/permission'
 import RoleFormDialog from '@/components/system/RoleFormDialog.vue'
 import { EditRoleRequest, GetRolesRequest, SaveRoleRequest, SysRolesVo, SysRoleVo } from '@/types/role'
 import { showMessage } from '@/utils/message'
+import RolePermissionDialog from '@/components/system/RolePermissionDialog.vue'
+import { SetPermissionsRequest } from '@/types/permissionts'
 
 const loading = ref(false)
 const roleList = ref<SysRolesVo[]>([])
 
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
-const roleId = ref<number>()
+const assignPermissionVisible = ref(false)
+const roleId = ref<number>(0)
 
 const searchForm = ref<GetRolesRequest>({
   keyword: null,
@@ -146,6 +154,11 @@ const loadRoles = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 保存被赋予的权限
+const handleAssignPermissionSubmit = async (request: SetPermissionsRequest) => {
+  await updateRolePermissionsApi(request)
 }
 
 // 新增角色
@@ -221,7 +234,8 @@ const handleFixRoleChange = async (row: SysRoleVo) => {
 
 // 赋予权限
 const handleAssignPermission = (id: number) => {
-
+  roleId.value = id;
+  assignPermissionVisible.value = true;
 }
 
 // 赋予菜单
