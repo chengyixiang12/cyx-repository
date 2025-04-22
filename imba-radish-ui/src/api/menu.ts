@@ -1,5 +1,5 @@
 import { PaginatedData } from '@/types/api';
-import type { EditMenuRequest, GetMenuListRequest, GetMenuListVo, GetMenuVo, GetSelectMenuVo, SaveMenuRequest } from '@/types/menu'
+import type { EditMenuRequest, GetAssignedMenuVo, GetMenuListRequest, GetMenuListVo, GetMenuTreeVo, GetMenuVo, GetSelectMenuVo, SaveMenuRequest } from '@/types/menu'
 import { get, post, del, put } from '@/utils/http'
 
 /**
@@ -69,4 +69,21 @@ export async function enableMenuApi(id:number) {
  */
 export async function disableMenuApi(id:number) {
     await get(`/menu/disableMenu/${id}`, { flag: true })
+}
+
+/**
+ * 获取所有的菜单
+ */
+export async function getAllMenuTreeApi(): Promise<GetMenuTreeVo[]> {
+    const res = await get<GetMenuTreeVo[]>('/menu/getMenuTree', { flag: true })
+    return res.data;
+}
+
+/**
+ * 获取已赋予的菜单
+ * @param roleId 
+ */
+export async function getAssignedMenuApi(roleId: number): Promise<GetAssignedMenuVo[]> {
+    const res = await get<GetAssignedMenuVo[]>('/menu/getAssignedMenu', { flag: true, params: { roleId } });
+    return res.data;
 }

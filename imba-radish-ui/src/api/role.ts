@@ -1,5 +1,6 @@
 import { PaginatedData } from '@/types/api';
-import { EditRoleRequest, GetRolesRequest, SaveRoleRequest, SysRoleVo, SysRolesVo } from '@/types/role';
+import { SetPermissionsRequest } from '@/types/permissionts';
+import { EditRoleRequest, GetRoleSelectVo, GetRolesRequest, SaveRoleRequest, SetMenusRequest, SysRoleVo, SysRolesVo } from '@/types/role';
 import { get, post, put, del } from '@/utils/http';
 
 /**
@@ -84,4 +85,28 @@ export async function setFixRoleApi(id :number) {
  */
 export async function cancelFixRoleApi(id :number) {
     await get('/role/cancelFixRole', { flag: true, params: { id } })
+}
+
+/**
+ * 赋予权限
+ * @param data 
+ */
+export async function updateRolePermissionsApi(data: SetPermissionsRequest) {
+    await post('/role/setPermissions', data, { flag: true })
+}
+
+/**
+ * 赋予菜单
+ * @param data 
+ */
+export async function updateRoleMenusApi(data: SetMenusRequest) {
+    await post('/role/setMenus', data, { flag: true })
+}
+
+/**
+ * 获取角色的下拉框数据
+ */
+export async function getRoleSelectApi(): Promise<GetRoleSelectVo[]> {
+    const res = await get<GetRoleSelectVo[]>('/role/getRoleSelect', { flag: true })
+    return res.data
 }

@@ -28,18 +28,8 @@ export interface GetUserVo {
     email: string;
     phone: string;
     avatar: number;
-    getUserDeptDto: GetUserDeptDto;
-    getUserRoleDtoList: GetUserRoleDto[];
-}
-
-export interface GetUserDeptDto {
-    value: number;
-    label: string;
-}
-
-export interface GetUserRoleDto {
-    value: number;
-    label: string;
+    deptId: number;
+    roleIds: number[];
 }
 
 export interface AllUserVo {

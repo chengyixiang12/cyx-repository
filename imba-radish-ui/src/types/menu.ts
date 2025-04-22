@@ -75,3 +75,14 @@ export interface GetSelectMenuVo {
   id: number;
   name: string;
 }
+
+export interface GetMenuTreeVo {
+  id: number;
+  name: string;
+  parentId: number;
+  children: GetMenuTreeVo[];
+}
+
+export interface GetAssignedMenuVo {
+  id: number
+}

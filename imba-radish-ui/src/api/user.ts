@@ -1,6 +1,6 @@
 import { get, post, put, del } from '@/utils/http';
 import { SaveUserRequest, EditUserRequest, GetUserVo, AllUserVo } from '@/types/user';
-import { PaginatedData, PaginatedResponse } from '@/types/api'
+import { PaginatedData } from '@/types/api'
 import { ApiResponse } from '@/types/login';
 
 export async function getUserList(data: any): Promise<PaginatedData<AllUserVo>> {

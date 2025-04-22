@@ -42,3 +42,13 @@ export interface SysRolesVo {
     isDefault: number | null;
     fixRole: number | null;
 }
+
+export interface SetMenusRequest {
+    roleId: number;
+    menuIds: number[];
+}
+
+export interface GetRoleSelectVo {
+    id: number;
+    name: string;
+}

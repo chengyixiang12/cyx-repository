@@ -8,11 +8,11 @@
           <el-input v-model="formData.name" placeholder="请输入菜单名称" />
         </el-form-item>
 
-        <el-form-item label="路径" prop="path">
+        <el-form-item label="路由" prop="path">
           <el-input v-model="formData.path" placeholder="请输入菜单路径" />
         </el-form-item>
 
-        <el-form-item label="组件路径" prop="component">
+        <el-form-item label="组件" prop="component">
           <el-input v-model="formData.component" placeholder="请输入组件路径" />
         </el-form-item>
 

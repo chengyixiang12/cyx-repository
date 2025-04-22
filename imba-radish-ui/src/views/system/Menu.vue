@@ -62,7 +62,7 @@
               <el-table-column prop="type" label="类型" :formatter="formatType" show-overflow-tooltip />
               <el-table-column prop="path" label="路由" show-overflow-tooltip />
               <el-table-column prop="component" label="组件" show-overflow-tooltip />
-              <el-table-column prop="orderNum" label="排序" width="50" />
+              <el-table-column prop="orderNum" label="排序" width="50" sortable />
               <el-table-column prop="status" label="菜单状态" align="center" width="100">
                 <template #default="scope">
                   <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
@@ -99,8 +99,8 @@
     @submit="handleAddSubmit" />
 
   <!-- 编辑菜单弹窗 -->
-  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :menuId="menuId" :type="type"
-    @submit="handleEditSubmit" />
+  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :menuId="menuId"
+    :type="type" @submit="handleEditSubmit" />
 </template>
 
 <script lang="ts" setup>
@@ -163,10 +163,10 @@ Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
 
 const getIconComponent = (iconName: string) => {
   if (!iconName) return null
-  
+
   // 统一处理图标名称格式
   const normalizedName = iconName.toLowerCase().replace(/^el-icon-/, '')
-  
+
   // 从映射中查找图标
   return iconsMap.get(normalizedName) || null
 }

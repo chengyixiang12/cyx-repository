@@ -41,6 +41,7 @@
               </el-table-column>
               <el-table-column prop="name" label="角色名称" show-overflow-tooltip />
               <el-table-column prop="code" label="角色编码" show-overflow-tooltip />
+              <el-table-column prop="sortOrder" label="排序" :width="50" sortable />
               <el-table-column prop="status" label="状态" align="center" width="100">
                 <template #default="scope">
                   <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
@@ -102,17 +103,21 @@
 
   <role-permission-dialog v-model="assignPermissionVisible" :role-id="roleId" v-if="assignPermissionVisible"
     @submit="handleAssignPermissionSubmit" />
+    
+  <role-menu-dialog v-model="assignMenuVisible" :role-id="roleId" v-if="assignMenuVisible"
+    @submit="handleAssignMenuSubmit" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { Edit, Delete, Menu, Key } from '@element-plus/icons-vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
-import { updateRolePermissionsApi } from '@/api/permission'
+import { updateRoleMenusApi, updateRolePermissionsApi } from '@/api/role'
 import RoleFormDialog from '@/components/system/RoleFormDialog.vue'
 import { EditRoleRequest, GetRolesRequest, SaveRoleRequest, SysRolesVo, SysRoleVo } from '@/types/role'
 import { showMessage } from '@/utils/message'
 import RolePermissionDialog from '@/components/system/RolePermissionDialog.vue'
+import RoleMenuDialog from '@/components/system/RoleMenuDialog.vue'
 import { SetPermissionsRequest } from '@/types/permissionts'
 
 const loading = ref(false)
@@ -121,6 +126,7 @@ const roleList = ref<SysRolesVo[]>([])
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const assignPermissionVisible = ref(false)
+const assignMenuVisible = ref(false)
 const roleId = ref<number>(0)
 
 const searchForm = ref<GetRolesRequest>({
@@ -159,6 +165,12 @@ const loadRoles = async () => {
 // 保存被赋予的权限
 const handleAssignPermissionSubmit = async (request: SetPermissionsRequest) => {
   await updateRolePermissionsApi(request)
+}
+
+const handleAssignMenuSubmit = async (data: { roleId: number, menuIds: number[] }) => {
+  await updateRoleMenusApi(data)
+  assignMenuVisible.value = false
+  await loadRoles()
 }
 
 // 新增角色
@@ -240,7 +252,8 @@ const handleAssignPermission = (id: number) => {
 
 // 赋予菜单
 const handleAssignMenu = (id: number) => {
-
+  roleId.value = id;
+  assignMenuVisible.value = true;
 }
 
 onMounted(() => {
