@@ -4,15 +4,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysUser;
-import com.soft.base.model.dto.GetUserDto;
 import com.soft.base.model.dto.GetUsersDto;
 import com.soft.base.model.dto.UserEmailDto;
-import com.soft.base.model.request.GetUsersRequest;
+import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.UsersVo;
-import com.soft.base.model.vo.DeptUserVo;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
 * @author cyq
@@ -30,7 +26,7 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
 
     String getEmail(@Param("username") String username);
 
-    GetUserDto getUser(@Param("id") Long id);
+    GetUserVo getUser(@Param("id") Long id);
 
     void lockUser(@Param("username") String username);
 

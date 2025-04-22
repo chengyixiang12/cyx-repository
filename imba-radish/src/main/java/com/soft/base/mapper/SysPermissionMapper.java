@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysPermission;
 import com.soft.base.model.request.PermissionsRequest;
-import com.soft.base.model.vo.GetAssignPerVo;
 import com.soft.base.model.vo.GetAllPermissionVo;
+import com.soft.base.model.vo.GetAssignPerVo;
 import com.soft.base.model.vo.PermissionsVo;
 import org.apache.ibatis.annotations.Param;
 

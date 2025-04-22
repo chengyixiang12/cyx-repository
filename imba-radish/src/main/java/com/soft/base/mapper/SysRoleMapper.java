@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysRole;
 import com.soft.base.model.dto.FixRolesDto;
-import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.GetRolesRequest;
 import com.soft.base.model.request.SetMenusRequest;
 import com.soft.base.model.request.SetPermissionsRequest;
+import com.soft.base.model.vo.GetRoleSelectVo;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
 import org.apache.ibatis.annotations.Param;
@@ -45,13 +45,13 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     void setMenus(@Param("request") SetMenusRequest request);
 
-    void deleteRoleMenus(@Param("request") SetMenusRequest request);
+    void deleteRoleMenus(@Param("roleId") Long roleId);
 
     void deleteRolePermissions(@Param("request") SetPermissionsRequest request);
 
     void setPermissions(@Param("request") SetPermissionsRequest request);
 
-    List<GetUserRoleDto> getUserRole(@Param("userId") Long userId);
+    List<Long> getUserRole(@Param("userId") Long userId);
 
     List<String> getRoleCodesByUserId(@Param("userId") Long userId);
 
@@ -60,6 +60,8 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     void setFixRole(@Param("id") Long id);
 
     void cancelFixRole(@Param("id") Long id);
+
+    List<GetRoleSelectVo> getRoleSelect();
 }
 
 

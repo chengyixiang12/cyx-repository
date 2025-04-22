@@ -1,5 +1,6 @@
 package com.soft.base.model.vo;
 
+import com.soft.base.model.ctf.MenuTree;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 @Schema(description = "获取菜单响应参数")
 @Alias(value = "MenusVo")
-public class MenusVo {
+public class MenusVo implements MenuTree<MenusVo> {
 
     @Schema(description = "菜单唯一标识")
     private Long id;

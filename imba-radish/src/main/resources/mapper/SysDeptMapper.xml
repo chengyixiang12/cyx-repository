@@ -69,16 +69,6 @@
         sd.del_flag = '1'
         AND sd.id = #{id}
     </select>
-    <select id="getUserDept" parameterType="java.lang.Long" resultType="GetUserDeptDto">
-        SELECT
-        sd.id AS "value",
-        sd.`name` AS "label"
-        FROM
-        sys_dept sd
-        WHERE
-        sd.del_flag = '1'
-        AND sd.id = #{deptId}
-    </select>
     <select id="exportDept" parameterType="java.util.List" resultType="ExportDeptDto">
         SELECT
         sd.id,

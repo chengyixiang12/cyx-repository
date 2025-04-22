@@ -8,8 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.util.concurrent.CompletableFuture;
-
 @SpringBootApplication
 @MapperScan({"com.soft.cyx.mapper","com.soft.base.mapper"})
 @EnableCaching

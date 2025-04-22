@@ -3,7 +3,6 @@ package com.soft.base.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysDept;
 import com.soft.base.model.dto.ExportDeptDto;
-import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
@@ -34,8 +33,6 @@ public interface SysDeptService extends IService<SysDept> {
     void deleteDeptBatch(DeleteRequest request);
 
     DeptVo getDept(Long id);
-
-    GetUserDeptDto getUserDept(Long deptId);
 
     List<ExportDeptDto> exportDept(ExportDeptRequest request);
 

@@ -9,12 +9,11 @@ import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysRole;
 import com.soft.base.mapper.SysRoleMapper;
 import com.soft.base.model.dto.FixRolesDto;
-import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.model.request.*;
+import com.soft.base.model.vo.GetRoleSelectVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
-import com.soft.base.resultapi.R;
 import com.soft.base.service.SysRoleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +100,10 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void setMenus(SetMenusRequest request) {
-        sysRoleMapper.deleteRoleMenus(request);
+        sysRoleMapper.deleteRoleMenus(request.getRoleId());
+        if (CollectionUtil.isEmpty(request.getMenuIds())) {
+            return;
+        }
         sysRoleMapper.setMenus(request);
     }
 
@@ -116,7 +118,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public List<GetUserRoleDto> getUserRole(Long userId) {
+    public List<Long> getUserRole(Long userId) {
         return sysRoleMapper.getUserRole(userId);
     }
 
@@ -148,6 +150,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         SysRole sysRole = new SysRole();
         BeanUtils.copyProperties(request, sysRole);
         sysRoleMapper.updateById(sysRole);
+    }
+
+    @Override
+    public List<GetRoleSelectVo> getRoleSelect() {
+        return sysRoleMapper.getRoleSelect();
     }
 }
 

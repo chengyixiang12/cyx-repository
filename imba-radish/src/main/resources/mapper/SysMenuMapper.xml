@@ -135,4 +135,24 @@
             sm.del_flag = '1'
         AND sm.type = #{type}
     </select>
+    <select id="getMenuTree" resultType="GetMenuTreeVo">
+        SELECT
+            sm.id,
+            sm.name,
+            sm.parent_id
+        FROM
+            sys_menu sm
+        WHERE
+            sm.del_flag = '1'
+          AND sm.status = 1
+          AND sm.type IN ('0','1')
+    </select>
+    <select id="getAssignedMenu" parameterType="java.lang.Long" resultType="GetAssignedMenuVo">
+        SELECT srm.menu_id AS id
+        FROM sys_role_menu srm
+                 JOIN sys_menu sm ON
+                    srm.menu_id = sm.id
+                AND sm.`type` = '1'
+        WHERE srm.role_id = #{roleId}
+    </select>
 </mapper>

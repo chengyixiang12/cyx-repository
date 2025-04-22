@@ -114,15 +114,14 @@
         AND su.username = #{username}
         OR su.email = #{username}
     </select>
-    <select id="getUser" parameterType="java.lang.Long" resultType="GetUserDto">
+    <select id="getUser" parameterType="java.lang.Long" resultType="GetUserVo">
         SELECT
         su.id,
         su.username,
         su.nickname,
         su.email,
         su.phone,
-        su.dept_id,
-        su.avatar
+        su.dept_id
         FROM
         sys_user su
         WHERE

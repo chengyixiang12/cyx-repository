@@ -1,6 +1,5 @@
 package com.soft.base.controller;
 
-import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.EditMenuRequest;
@@ -189,6 +188,34 @@ public class SysMenuController {
         try {
             sysMenuService.disableMenu(id);
             return R.ok("禁用成功", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/getMenuTree")
+    @Operation(summary = "获取菜单树")
+    public R<List<GetMenuTreeVo>> getMenuTree() {
+        try {
+            List<GetMenuTreeVo> menuTreeVos = sysMenuService.getMenuTree();
+            return R.ok(menuTreeVos);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/getAssignedMenu")
+    @Operation(summary = "获取已分配的菜单")
+    @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
+    public R<List<GetAssignedMenuVo>> getAssignedMenu(@RequestParam(value = "roleId", required = false) Long roleId) {
+        if (roleId == null) {
+            return R.fail("角色id不能为空");
+        }
+        try {
+            List<GetAssignedMenuVo> menuIds = sysMenuService.getAssignedMenu(roleId);
+            return R.ok(menuIds);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

@@ -3,8 +3,8 @@ package com.soft.base.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysRole;
 import com.soft.base.model.dto.FixRolesDto;
-import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.model.request.*;
+import com.soft.base.model.vo.GetRoleSelectVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
@@ -42,7 +42,7 @@ public interface SysRoleService extends IService<SysRole> {
 
     void setPermissions(SetPermissionsRequest request);
 
-    List<GetUserRoleDto> getUserRole(Long userId);
+    List<Long> getUserRole(Long userId);
 
     List<String> getRoleCodesByUserId(Long userId);
 
@@ -53,4 +53,6 @@ public interface SysRoleService extends IService<SysRole> {
     void cancelFixRole(Long id);
 
     void editRole(EditRoleRequest request);
+
+    List<GetRoleSelectVo> getRoleSelect();
 }

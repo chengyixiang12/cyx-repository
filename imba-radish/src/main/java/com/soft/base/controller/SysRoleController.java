@@ -1,6 +1,5 @@
 package com.soft.base.controller;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
@@ -9,6 +8,7 @@ import com.soft.base.entity.SysRole;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.request.*;
+import com.soft.base.model.vo.GetRoleSelectVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
@@ -262,7 +262,7 @@ public class SysRoleController {
         }
         try {
             sysRoleService.setMenus(request);
-            return R.ok();
+            return R.ok("菜单赋予成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -314,6 +314,18 @@ public class SysRoleController {
         try {
             sysRoleService.cancelFixRole(id);
             return R.ok("取消成功", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/getRoleSelect")
+    @Operation(summary = "获取角色的下拉框数据")
+    public R<List<GetRoleSelectVo>> getRoleSelect() {
+        try {
+            List<GetRoleSelectVo> roleSelectVos = sysRoleService.getRoleSelect();
+            return R.ok(roleSelectVos);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

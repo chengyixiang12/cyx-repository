@@ -8,6 +8,7 @@ import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysMenu;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysMenuMapper;
+import com.soft.base.model.ctf.MenuTree;
 import com.soft.base.model.request.EditMenuRequest;
 import com.soft.base.model.request.GetMenuListRequest;
 import com.soft.base.model.request.SaveMenuRequest;
@@ -120,11 +121,34 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
             return new ArrayList<>();
         }
         List<MenusVo> menus = sysMenuMapper.getMenuRoute(userId);
-        if (menus != null && !menus.isEmpty()) {
-            return buildTree(menus);
+        if (CollectionUtil.isNotEmpty(menus)) {
+            menus = buildTree(menus);
+            // 如果1级菜单的子集为null，则移除
+            for (int i = 0; i < menus.size();) {
+                MenusVo menusVo = menus.get(i);
+                if (CollectionUtil.isEmpty(menusVo.getChildren())) {
+                    menus.remove(i);
+                } else {
+                    i++;
+                }
+            }
         }
 
         return menus;
+    }
+
+    @Override
+    public List<GetMenuTreeVo> getMenuTree() {
+        List<GetMenuTreeVo> menuTreeVos = sysMenuMapper.getMenuTree();
+        if (CollectionUtil.isNotEmpty(menuTreeVos)) {
+            return buildTree(menuTreeVos);
+        }
+        return menuTreeVos;
+    }
+
+    @Override
+    public List<GetAssignedMenuVo> getAssignedMenu(Long roleId) {
+        return sysMenuMapper.getAssignedMenu(roleId);
     }
 
     /**
@@ -132,35 +156,25 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
      * @param menusVos
      * @return
      */
-    private List<MenusVo> buildTree(List<MenusVo> menusVos) {
+    private <T extends MenuTree<T>> List<T> buildTree(List<T> menusVos) {
 
-        Map<Long, MenusVo> map = new HashMap<>();
-        List<MenusVo> tree = new ArrayList<>();
+        Map<Long, T> map = new HashMap<>();
+        List<T> tree = new ArrayList<>();
 
         // 将菜单存入映射
-        for (MenusVo menu : menusVos) {
+        for (T menu : menusVos) {
             map.put(menu.getId(), menu);
         }
 
         // 构建树结构
-        for (MenusVo menu : menusVos) {
+        for (T menu : menusVos) {
             if (menu.getParentId() == null) {
                 tree.add(menu);
             } else {
-                MenusVo parent = map.get(menu.getParentId());
+                T parent = map.get(menu.getParentId());
                 if (parent != null) {
                     parent.getChildren().add(menu);
                 }
-            }
-        }
-
-        // 如果1级菜单的子集为null，则移除
-        for (int i = 0; i < tree.size();) {
-            MenusVo menusVo = tree.get(i);
-            if (CollectionUtil.isEmpty(menusVo.getChildren())) {
-                tree.remove(i);
-            } else {
-                i++;
             }
         }
 

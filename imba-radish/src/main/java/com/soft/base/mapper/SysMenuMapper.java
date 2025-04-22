@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysMenu;
 import com.soft.base.model.request.GetMenuListRequest;
-import com.soft.base.model.vo.GetMenuListVo;
-import com.soft.base.model.vo.GetMenuVo;
-import com.soft.base.model.vo.GetSelectMenuVo;
-import com.soft.base.model.vo.MenusVo;
+import com.soft.base.model.vo.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -34,6 +31,10 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     void disableMenu(@Param("id") Integer id);
 
     List<GetSelectMenuVo> getSelectMenu(@Param("type") String type);
+
+    List<GetMenuTreeVo> getMenuTree();
+
+    List<GetAssignedMenuVo> getAssignedMenu(@Param("roleId") Long roleId);
 }
 
 

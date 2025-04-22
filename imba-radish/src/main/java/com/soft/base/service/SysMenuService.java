@@ -33,4 +33,8 @@ public interface SysMenuService extends IService<SysMenu> {
     void disableMenu(Integer id);
 
     List<MenusVo> getMenuRoute();
+
+    List<GetMenuTreeVo> getMenuTree();
+
+    List<GetAssignedMenuVo> getAssignedMenu(Long roleId);
 }

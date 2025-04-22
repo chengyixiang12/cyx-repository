@@ -13,14 +13,11 @@ import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.mapper.SysUsersMapper;
-import com.soft.base.model.dto.GetUserDeptDto;
-import com.soft.base.model.dto.GetUserDto;
-import com.soft.base.model.dto.GetUserRoleDto;
 import com.soft.base.model.dto.GetUsersDto;
 import com.soft.base.model.request.*;
-import com.soft.base.model.vo.UsersVo;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.UsersVo;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
@@ -244,13 +241,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     public GetUserVo getUser(Long id) {
-        GetUserDto getUserDto = sysUsersMapper.getUser(id);
-        GetUserDeptDto getUserDeptDto = sysDeptService.getUserDept(getUserDto.getDeptId());
-        List<GetUserRoleDto> getUserRoleDto = sysRoleService.getUserRole(id);
-        GetUserVo getUserVo = new GetUserVo();
-        BeanUtils.copyProperties(getUserDto, getUserVo);
-        getUserVo.setGetUserDeptDto(getUserDeptDto);
-        getUserVo.setGetUserRoleDtoList(getUserRoleDto);
+        GetUserVo getUserVo = sysUsersMapper.getUser(id);
+        getUserVo.setRoleIds(sysRoleService.getUserRole(id));
         return getUserVo;
     }
 

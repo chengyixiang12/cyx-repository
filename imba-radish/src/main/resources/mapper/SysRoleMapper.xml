@@ -146,11 +146,7 @@
         FROM
         sys_role_menu
         WHERE
-        role_id = #{request.roleId}
-        AND menu_id IN
-        <foreach collection="request.menuIds" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        role_id = #{roleId}
     </delete>
     <delete id="deleteRolePermissions" parameterType="SetPermissionsRequest">
         DELETE
@@ -171,10 +167,9 @@
             (#{request.roleId},#{item})
         </foreach>
     </insert>
-    <select id="getUserRole" parameterType="java.lang.Long" resultType="GetUserRoleDto">
+    <select id="getUserRole" parameterType="java.lang.Long" resultType="Long">
         SELECT
-        sr.id AS "value",
-        sr.`name` AS "label"
+        sr.id
         FROM
         sys_role sr
         JOIN sys_user_role sur ON sr.id = sur.role_id
@@ -218,4 +213,14 @@
             del_flag = '1'
           AND id = #{id}
     </update>
+    <select id="getRoleSelect" resultType="GetRoleSelectVo">
+        SELECT
+            sr.id,
+            sr.name
+        FROM
+            sys_role sr
+        WHERE
+            sr.del_flag = '1'
+          AND sr.status = 1
+    </select>
 </mapper>

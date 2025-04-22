@@ -1,7 +1,5 @@
 package com.soft.base.model.vo;
 
-import com.soft.base.model.dto.GetUserDeptDto;
-import com.soft.base.model.dto.GetUserRoleDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -31,10 +29,9 @@ public class GetUserVo {
     @Schema(description = "手机号码")
     private String phone;
 
-    @Schema(description = "用户头像")
-    private Long avatar;
+    @Schema(description = "部门id")
+    private Long deptId;
 
-    private GetUserDeptDto getUserDeptDto;
-
-    private List<GetUserRoleDto> getUserRoleDtoList;
+    @Schema(description = "角色id")
+    private List<Long> roleIds;
 }

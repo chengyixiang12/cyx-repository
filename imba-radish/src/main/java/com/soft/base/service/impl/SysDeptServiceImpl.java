@@ -10,7 +10,6 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysDeptMapper;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.model.dto.ExportDeptDto;
-import com.soft.base.model.dto.GetUserDeptDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
@@ -94,11 +93,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     @Override
     public DeptVo getDept(Long id) {
         return sysDeptMapper.getDept(id);
-    }
-
-    @Override
-    public GetUserDeptDto getUserDept(Long deptId) {
-        return sysDeptMapper.getUserDept(deptId);
     }
 
     @Override
