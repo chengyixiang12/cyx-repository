@@ -22,4 +22,10 @@ public class DictTypesVo {
 
     @Schema(description = "字典类型")
     private String dictType;
+
+    @Schema(description = "状态；1：启用；0：禁用")
+    private Integer status;
+
+    @Schema(description = "排序")
+    private Integer sortOrder;
 }

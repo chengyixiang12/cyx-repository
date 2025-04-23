@@ -3,9 +3,11 @@ package com.soft.base.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysDictType;
 import com.soft.base.model.request.EditDictTypeRequest;
+import com.soft.base.model.request.GetDictTypesRequest;
 import com.soft.base.model.request.SaveDictTypeRequest;
 import com.soft.base.model.vo.DictTypeVo;
 import com.soft.base.model.vo.DictTypesVo;
+import com.soft.base.model.vo.PageVo;
 
 import java.util.List;
 
@@ -16,7 +18,7 @@ import java.util.List;
 */
 public interface SysDictTypeService extends IService<SysDictType> {
 
-    List<DictTypesVo> getdictTypes();
+    PageVo<DictTypesVo> getdictTypes(GetDictTypesRequest request);
 
     void saveDictType(SaveDictTypeRequest request);
 
@@ -31,4 +33,8 @@ public interface SysDictTypeService extends IService<SysDictType> {
     boolean existDictType(String dictType);
 
     boolean existDictType(String dictType, Long id);
+
+    void enableDictType(Long id);
+
+    void forbiddenDictType(Long id);
 }

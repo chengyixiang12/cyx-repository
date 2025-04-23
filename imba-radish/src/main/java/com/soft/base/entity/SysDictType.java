@@ -75,7 +75,7 @@ public class SysDictType implements Serializable {
      * 状态；1：启用；0：停用
      */
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
     /**
      * 备注

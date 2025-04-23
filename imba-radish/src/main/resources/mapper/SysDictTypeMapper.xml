@@ -14,7 +14,7 @@
             <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
             <result property="dictName" column="dict_name" jdbcType="VARCHAR"/>
             <result property="dictType" column="dict_type" jdbcType="VARCHAR"/>
-            <result property="status" column="status" jdbcType="CHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
             <result property="remark" column="remark" jdbcType="VARCHAR"/>
     </resultMap>
 
@@ -28,20 +28,28 @@
     <select id="getdictTypes" resultType="DictTypesVo">
         SELECT
         sdt.id,
-        sdt.dict_name AS "dictName",
-        sdt.dict_type AS "dictType",
-        sdt.`status`
+        sdt.dict_name,
+        sdt.dict_type,
+        sdt.`status`,
+        sdt.sort_order
         FROM
         sys_dict_type sdt
         WHERE
         sdt.del_flag = '1'
+        <if test="request.keyword != null and request.keyword != ''">
+            AND ( sdt.dict_name LIKE concat('%', #{request.keyword}, '%') OR sdt.dict_type LIKE concat('%', #{request.keyword}, '%') )
+        </if>
+        <if test="request.status != null">
+            AND sdt.status = #{request.status}
+        </if>
     </select>
     <select id="getDictType" parameterType="java.lang.Long" resultType="DictTypeVo">
         SELECT
         sdt.id,
-        sdt.dict_name AS "dict_name",
-        sdt.dict_type AS "dict_type",
-        sdt.sort_order AS "sort_order",
+        sdt.dict_name,
+        sdt.dict_type,
+        sdt.sort_order,
+        sdt.status,
         sdt.remark
         FROM
         sys_dict_type sdt
@@ -58,5 +66,17 @@
         <foreach collection="ids" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </update>
+    <update id="enableDictType" parameterType="java.lang.Long">
+        UPDATE sys_dict_type
+        SET status = 1
+        WHERE del_flag = '1'
+        AND id = #{id}
+    </update>
+    <update id="forbiddenDictType" parameterType="java.lang.Long">
+        UPDATE sys_dict_type
+        SET status = 0
+        WHERE del_flag = '1'
+          AND id = #{id}
     </update>
 </mapper>

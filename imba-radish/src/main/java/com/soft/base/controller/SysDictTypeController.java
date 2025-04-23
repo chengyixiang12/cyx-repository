@@ -5,9 +5,11 @@ import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.EditDictTypeRequest;
+import com.soft.base.model.request.GetDictTypesRequest;
 import com.soft.base.model.request.SaveDictTypeRequest;
 import com.soft.base.model.vo.DictTypeVo;
 import com.soft.base.model.vo.DictTypesVo;
+import com.soft.base.model.vo.PageVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDictTypeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,11 +42,11 @@ public class SysDictTypeController {
         this.sysDictTypeService = sysDictTypeService;
     }
 
-    @GetMapping
-    @Operation(summary = "获取字典类型")
-    public R<List<DictTypesVo>> getDictTypes() {
+    @PostMapping(value = "/getDictTypes")
+    @Operation(summary = "获取字典类型（复）")
+    public R<PageVo<DictTypesVo>> getDictTypes(@RequestBody GetDictTypesRequest request) {
         try {
-            List<DictTypesVo> dictTypesVos = sysDictTypeService.getdictTypes();
+            PageVo<DictTypesVo> dictTypesVos = sysDictTypeService.getdictTypes(request);
             return R.ok(dictTypesVos);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -145,6 +147,38 @@ public class SysDictTypeController {
         try {
             sysDictTypeService.deleteDictTypeBatch(request.getIds());
             return R.ok();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/enableDictType")
+    @Operation(summary = "启用字典类型")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> enableDictType(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysDictTypeService.enableDictType(id);
+            return R.ok("启用成功", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/forbiddenDictType")
+    @Operation(summary = "禁用字典类型")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> forbiddenDictType(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysDictTypeService.forbiddenDictType(id);
+            return R.ok("禁用成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

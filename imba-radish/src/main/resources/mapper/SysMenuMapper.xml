@@ -50,7 +50,6 @@
         WHERE
         sur.user_id = #{userId}
         AND sm.status = 1
-        AND sm.visible = 1
         AND sm.type IN ('0', '1')
         ORDER BY sm.order_num
     </select>
@@ -60,6 +59,7 @@
             sm.`name`,
             sm.type,
             sm.`status`,
+            sm.visible,
             sm.order_num,
             sm.icon,
             sm.path,
@@ -79,6 +79,9 @@
         </if>
         <if test="request.type != null and request.type != ''">
             AND sm.type = #{request.type}
+        </if>
+        <if test="request.visible != null">
+            AND sm.visible = #{request.visible}
         </if>
         ORDER BY sm.create_time DESC
     </select>
@@ -154,5 +157,45 @@
                     srm.menu_id = sm.id
                 AND sm.`type` = '1'
         WHERE srm.role_id = #{roleId}
+    </select>
+    <update id="menuShow" parameterType="java.lang.Long">
+        UPDATE
+            sys_menu
+        SET
+            visible = 1
+        WHERE
+            del_flag = '1'
+          AND id = #{id}
+    </update>
+    <update id="menuHide" parameterType="java.lang.Long">
+        UPDATE
+            sys_menu
+        SET
+            visible = 0
+        WHERE
+            del_flag = '1'
+          AND id = #{id}
+    </update>
+    <select id="getLeftMenus" parameterType="java.lang.Long" resultType="MenusVo">
+        SELECT
+            sm.id,
+            sm.`name`,
+            sm.icon,
+            sm.path,
+            sm.component,
+            sm.parent_id AS "parentId"
+        FROM
+            sys_menu sm
+                JOIN sys_role_menu srm ON sm.id = srm.menu_id
+                AND sm.del_flag = '1'
+                JOIN sys_role sr ON srm.role_id = sr.id
+                AND sr.del_flag = '1'
+                JOIN sys_user_role sur ON sur.role_id = sr.id
+        WHERE
+            sur.user_id = #{userId}
+          AND sm.status = 1
+          AND sm.visible = 1
+          AND sm.type IN ('0', '1')
+        ORDER BY sm.order_num
     </select>
 </mapper>

@@ -35,6 +35,12 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     List<GetMenuTreeVo> getMenuTree();
 
     List<GetAssignedMenuVo> getAssignedMenu(@Param("roleId") Long roleId);
+
+    void menuShow(@Param("id") Long id);
+
+    void menuHide(@Param("id") Long id);
+
+    List<MenusVo> getLeftMenus(@Param("userId") Long userId);
 }
 
 

@@ -30,6 +30,9 @@ public class GetMenuListVo {
     @Schema(description = "菜单状态")
     private Integer status;
 
+    @Schema(description = "显示状态")
+    private Integer visible;
+
     @Schema(description = "排序")
     private Integer orderNum;
 

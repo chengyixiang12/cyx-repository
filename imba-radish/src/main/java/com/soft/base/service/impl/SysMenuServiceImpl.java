@@ -151,6 +151,39 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         return sysMenuMapper.getAssignedMenu(roleId);
     }
 
+    @Override
+    public void menuShow(Long id) {
+        sysMenuMapper.menuShow(id);
+    }
+
+    @Override
+    public void menuHide(Long id) {
+        sysMenuMapper.menuHide(id);
+    }
+
+    @Override
+    public List<MenusVo> getLeftMenus() {
+        Long userId = securityUtil.getUserInfo().getId();
+        if (userId == null) {
+            return new ArrayList<>();
+        }
+        List<MenusVo> menus = sysMenuMapper.getLeftMenus(userId);
+        if (CollectionUtil.isNotEmpty(menus)) {
+            menus = buildTree(menus);
+            // 如果1级菜单的子集为null，则移除
+            for (int i = 0; i < menus.size();) {
+                MenusVo menusVo = menus.get(i);
+                if (CollectionUtil.isEmpty(menusVo.getChildren())) {
+                    menus.remove(i);
+                } else {
+                    i++;
+                }
+            }
+        }
+
+        return menus;
+    }
+
     /**
      * 菜单结构树
      * @param menusVos

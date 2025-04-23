@@ -41,7 +41,7 @@ public class SysMenuController {
 
 
     @GetMapping(value = "/getMenuRoute")
-    @Operation(summary = "获取当前用户的菜单")
+    @Operation(summary = "获取菜单路由")
     public R<List<MenusVo>> getMenuRoute() {
         try {
             List<MenusVo> pageVo = sysMenuService.getMenuRoute();
@@ -216,6 +216,50 @@ public class SysMenuController {
         try {
             List<GetAssignedMenuVo> menuIds = sysMenuService.getAssignedMenu(roleId);
             return R.ok(menuIds);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/menuShow")
+    @Operation(summary = "显示菜单")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> menuShow(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysMenuService.menuShow(id);
+            return R.ok("菜单已显示", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/menuHide")
+    @Operation(summary = "隐藏菜单")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> menuHide(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysMenuService.menuHide(id);
+            return R.ok("菜单已隐藏", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/getLeftMenus")
+    @Operation(summary = "获取左侧菜单")
+    public R<List<MenusVo>> getLeftMenus() {
+        try {
+            List<MenusVo> menusVos = sysMenuService.getLeftMenus();
+            return R.ok(menusVos);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

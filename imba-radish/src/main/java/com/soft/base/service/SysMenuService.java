@@ -37,4 +37,10 @@ public interface SysMenuService extends IService<SysMenu> {
     List<GetMenuTreeVo> getMenuTree();
 
     List<GetAssignedMenuVo> getAssignedMenu(Long roleId);
+
+    void menuShow(Long id);
+
+    void menuHide(Long id);
+
+    List<MenusVo> getLeftMenus();
 }

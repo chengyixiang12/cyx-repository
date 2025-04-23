@@ -80,6 +80,9 @@ public class AuthController {
         if (StringUtils.isBlank(request.getGraphicsCaptcha())) {
             return R.fail("图形验证码不能为空");
         }
+        if (StringUtils.isBlank(request.getUuid())) {
+            return R.fail("唯一标识不能为空");
+        }
         try {
             String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + request.getUuid());
             if (StringUtils.isBlank(graphicsCaptcha)) {

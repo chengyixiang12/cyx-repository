@@ -27,7 +27,7 @@ public class EditDictTypeRequest {
     private String dictType;
 
     @Schema(description = "状态")
-    private String status;
+    private Integer status;
 
     @Schema(description = "备注")
     private String remark;
