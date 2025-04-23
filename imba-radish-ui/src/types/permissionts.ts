@@ -9,6 +9,6 @@ export interface GetAssignPerVo {
 }
 
 export interface SetPermissionsRequest {
-    roleId: number,
+    roleId: number | null,
     permissionIds: number[]
 }

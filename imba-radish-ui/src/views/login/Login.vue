@@ -10,7 +10,8 @@
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" @submit.prevent="handleLogin">
         <!-- 用户名 -->
         <el-form-item prop="username">
-          <el-input v-model="loginForm.username" placeholder="用户名/手机号" prefix-icon="User" size="large" @input="forceUpdate" />
+          <el-input v-model="loginForm.username" placeholder="用户名/手机号" prefix-icon="User" size="large"
+            @input="forceUpdate" />
         </el-form-item>
 
         <!-- 密码 -->
@@ -22,7 +23,8 @@
         <!-- 验证码 -->
         <el-form-item prop="graphicsCaptcha">
           <div class="captcha-wrapper">
-            <el-input v-model="loginForm.graphicsCaptcha" placeholder="请输入验证码" prefix-icon="Picture" size="large" @input="forceUpdate" />
+            <el-input v-model="loginForm.graphicsCaptcha" placeholder="请输入验证码" prefix-icon="Picture" size="large"
+              @input="forceUpdate" />
             <div class="captcha-img" @click="refreshCaptcha">
               <img v-if="captchaUrl" :src="captchaUrl" alt="验证码">
               <span v-else class="captcha-loading">加载中...</span>
@@ -71,9 +73,9 @@ import { getGraphicCaptcha, login, getUserInfo } from '@/api/login';
 import { RSAUtil } from '@/utils/rsa';
 import { getPublicKey } from '@/api/auth';
 import router from '@/router/routers';
-import { fetchMenuList } from '@/api/dashboard';
+import { LoginRequest } from '@/types/login';
 
-const loginForm = ref({
+const loginForm = ref<LoginRequest>({
   username: '',
   password: '',
   graphicsCaptcha: '',
@@ -104,7 +106,7 @@ const loginRules: FormRules = {
 
 const forceUpdate = () => {
   // 强制更新视图
-  loginForm.value = {...loginForm.value};
+  loginForm.value = { ...loginForm.value };
 }
 
 // 获取验证码
@@ -123,16 +125,22 @@ const handleLogin = async () => {
   try {
     const valid = await loginFormRef.value?.validate();
     if (!valid) return // 验证不通过时停止执行
-    
+
     loading.value = true
 
     const publicKey: string = await getPublicKey(0);
     // 加密密码
-    loginForm.value.password = RSAUtil.encrypt(loginForm.value.password, publicKey);
+    const passEncode = RSAUtil.encrypt(loginForm.value.password, publicKey);
+
+    const loginParam: LoginRequest = {
+      username: loginForm.value.username,
+      password: passEncode,
+      loginMethod: loginForm.value.loginMethod,
+      graphicsCaptcha: loginForm.value.graphicsCaptcha,
+      uuid: loginForm.value.uuid
+    };
     // 登录
-    const data = await login({
-      ...loginForm.value,
-    });
+    const data = await login(loginParam);
 
     // 存储token
     sessionStorage.setItem('Authorization', data.token);
@@ -147,12 +155,8 @@ const handleLogin = async () => {
     router.push('/dashboard')
 
   } catch (error: any) {
-    console.error('登录失败:', error)
-    if (error.message?.includes('验证码')) {
-      refreshCaptcha();
-      loginForm.value.graphicsCaptcha = '';
-      loginForm.value.password = ''
-    }
+    refreshCaptcha();
+    loginForm.value.graphicsCaptcha = '';
   } finally {
     loading.value = false
   }

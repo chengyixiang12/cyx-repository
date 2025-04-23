@@ -1,5 +1,5 @@
 import { PaginatedData } from '@/types/api';
-import type { EditMenuRequest, GetAssignedMenuVo, GetMenuListRequest, GetMenuListVo, GetMenuTreeVo, GetMenuVo, GetSelectMenuVo, SaveMenuRequest } from '@/types/menu'
+import type { EditMenuRequest, GetAssignedMenuVo, GetMenuListRequest, GetMenuListVo, GetMenuTreeVo, GetMenuVo, GetSelectMenuVo, MenuItem, SaveMenuRequest } from '@/types/menu'
 import { get, post, del, put } from '@/utils/http'
 
 /**
@@ -85,5 +85,30 @@ export async function getAllMenuTreeApi(): Promise<GetMenuTreeVo[]> {
  */
 export async function getAssignedMenuApi(roleId: number): Promise<GetAssignedMenuVo[]> {
     const res = await get<GetAssignedMenuVo[]>('/menu/getAssignedMenu', { flag: true, params: { roleId } });
+    return res.data;
+}
+
+/**
+ * 显示菜单
+ * @param id 
+ */
+export async function menuShowApi(id: number) {
+    await get('/menu/menuShow', { flag: true, params: { id } })
+}
+
+/**
+ * 隐藏菜单
+ * @param id 
+ */
+export async function menuHideApi(id: number) {
+    await get('/menu/menuHide', { flag: true, params: { id } })
+}
+
+/**
+ * 获取路由
+ * @returns 
+ */
+export async function getMenuRouteApi(): Promise<MenuItem[]> {
+    const res = await get<MenuItem[]>('/menu/getMenuRoute', { flag: true });
     return res.data;
 }

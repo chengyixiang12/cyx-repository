@@ -1,50 +1,50 @@
 export interface GetRolesRequest {
-    keyword?: string | null;
-    status?: number | null;
+    keyword: string;
+    status: number | null;
     pageNum: number;
     pageSize: number;
 }
 
 export interface SysRoleVo {
     id: number;
-    sortOrder: number | null;
-    code: string | null;
-    name: string | null;
-    description: string | null;
-    status: number | null;
-    isDefault: number | null;
-    fixRole: number | null;
+    sortOrder: number;
+    code: string;
+    name: string;
+    description: string;
+    status: number;
+    isDefault: number;
+    fixRole: number;
 }
 
 export interface SaveRoleRequest {
-    sortOrder: number | null;
-    code: string | null;
-    name: string | null;
-    description: string | null;
-    status: number | null;
+    sortOrder: number;
+    code: string;
+    name: string;
+    description: string;
+    status: number;
 }
 
 export interface EditRoleRequest {
     id: number | null;
-    sortOrder: number | null;
-    name: string | null;
-    description: string | null;
-    status: number | null;
+    sortOrder: number;
+    name: string;
+    description: string;
+    status: number;
 }
 
 export interface SysRolesVo {
-    id: number | null;
-    sortOrder: number | null;
-    code: string | null;
-    name: string | null;
-    description: string | null;
-    status: number | null;
-    isDefault: number | null;
-    fixRole: number | null;
+    id: number;
+    sortOrder: number;
+    code: string;
+    name: string;
+    description: string;
+    status: number;
+    isDefault: number;
+    fixRole: number;
 }
 
 export interface SetMenusRequest {
-    roleId: number;
+    roleId: number | null;
     menuIds: number[];
 }
 

@@ -16,14 +16,16 @@ export interface GetMenuListVo {
   status: number;
   orderNum: number;
   icon: string;
+  visible: number;
 }
 
 export interface GetMenuListRequest {
   pageNum: number;
   pageSize: number;
   keyword: string;
-  status: number | undefined;
-  type: string | undefined;
+  status: number | null;
+  type: string;
+  visible: number | null
 }
 
 export enum MenuType {

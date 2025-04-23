@@ -52,10 +52,16 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { getRoleApi } from '@/api/role'
 import { SysRoleVo } from '@/types/role'
 
-const props = defineProps({
-  visible: { type: Boolean, required: true },
-  isAdd: { type: Boolean, default: false, required: true },
-  roleId: { type: Number, default: null }
+interface FatherParam {
+  visible: boolean;
+  isAdd: boolean;
+  roleId?: number | null
+}
+
+const props = withDefaults(defineProps<FatherParam>(), {
+  visible: false,
+  isAdd: false,
+  roleId: null,
 })
 
 const emit = defineEmits(['update:visible', 'submit'])

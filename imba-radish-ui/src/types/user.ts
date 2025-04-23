@@ -12,12 +12,11 @@ export interface SaveUserRequest {
 }
 
 export interface EditUserRequest {
-    id: number;
+    id: number | null;
     nickname: string;
     deptId: number;
     email: string;
     phone: string;
-    avatar: number;
     roleIds: number[];
 }
 
@@ -27,7 +26,6 @@ export interface GetUserVo {
     nickname: string;
     email: string;
     phone: string;
-    avatar: number;
     deptId: number;
     roleIds: number[];
 }

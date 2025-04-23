@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import MainLayout from '../layouts/MainLayout.vue'
 import { MenuItem } from '../types/menu'
-import { fetchMenuList } from '@/api/dashboard'
+import { getMenuRouteApi } from '@/api/menu'
 
 
 // 2. 基础路由
@@ -151,7 +151,7 @@ router.beforeEach(async (to, from, next) => {
   // 处理动态路由
   if (token && (!dynamicRoutesAdded || to.name === '404')) {
     try {
-      const menus = await fetchMenuList();
+      const menus = await getMenuRouteApi();
       if (menus.length > 0) {
         await addDynamicRoutes(menus)
         // 重定向到原始路径

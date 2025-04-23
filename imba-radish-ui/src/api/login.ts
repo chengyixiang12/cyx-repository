@@ -17,12 +17,11 @@ export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uu
 
 /**
  * 用户登录
- * @param params 登录参数
+ * @param data 登录参数
+ * @param passEncode 加密密码
  */
-export async function login(
-  params: LoginRequest
-): Promise<LoginVo> {
-  const res = await post<LoginVo>('/auth/login', params, { flag: false, silent: true });
+export async function login(data: LoginRequest): Promise<LoginVo> {
+  const res = await post<LoginVo>('/auth/login', data, { flag: false, silent: true });
   return res.data;
 }
 

@@ -22,7 +22,7 @@
                 <!-- 新增带提示的首页图标 -->
                 <el-tooltip content="首页" placement="bottom" effect="light">
                     <el-icon class="home-icon" @click="goHome">
-                        <House />
+                        <HomeFilled />
                     </el-icon>
                 </el-tooltip>
                 <el-dropdown>
@@ -104,7 +104,7 @@ import {
     SwitchButton,
     Expand,
     Fold,
-    House,
+    HomeFilled,
     Bell
 } from '@element-plus/icons-vue';
 import { clearCache } from '../utils/clearCache';
@@ -113,7 +113,7 @@ import { logouted } from '@/api/login';
 import { ElTooltip } from 'element-plus';
 import type { MenuItem } from '@/types/menu';
 import { getMessageNumApi } from '@/api/message';
-import { fetchMenuList } from '@/api/dashboard';
+import { getLeftMenusApi } from '@/api/dashboard';
 
 const router = useRouter();
 const user = ref({
@@ -148,7 +148,7 @@ const menuList = ref<MenuItem[]>([])
 
 // 组件挂载时加载菜单
 const loadMenu = async () => {
-    menuList.value = await fetchMenuList();
+    menuList.value = await getLeftMenusApi();
 }
 
 // 组件挂载时获取用户昵称

@@ -8,7 +8,7 @@
             <div class="list-header">
               <span class="header-title">菜单管理</span>
               <div>
-                <el-button type="primary" @click="handleAdd" class="header-button">新增菜单</el-button>
+                <el-button type="primary" @click="handleAdd">新增</el-button>
               </div>
             </div>
           </template>
@@ -25,6 +25,14 @@
                   <el-option label="禁用" :value="0" />
                 </el-select>
               </el-form-item>
+
+              <el-form-item label="菜单显示:">
+                <el-select v-model="searchForm.visible" placeholder="请选择" clearable style="width: 100px">
+                  <el-option label="显示" :value="1" />
+                  <el-option label="隐藏" :value="0" />
+                </el-select>
+              </el-form-item>
+
               <el-form-item label="菜单类型:">
                 <el-select v-model="searchForm.type" placeholder="请选择" clearable style="width: 100px">
                   <el-option label="目录" :value="0" />
@@ -32,6 +40,7 @@
                   <el-option label="按钮" :value="2" />
                 </el-select>
               </el-form-item>
+
               <el-form-item>
                 <el-button type="primary" @click="handleSearch">查询</el-button>
                 <el-button type="primary" @click="resetSearch">重置</el-button>
@@ -44,7 +53,7 @@
             <el-table :data="menuList" border size="small" style="width: 100%" v-loading="loading">
               <el-table-column label="序号" width="80" align="center">
                 <template #default="scope">
-                  {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
+                  {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
               <el-table-column prop="name" label="菜单名称" show-overflow-tooltip />
@@ -69,10 +78,16 @@
                     inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
+              <el-table-column prop="visible" label="显示状态" align="center" width="100">
+                <template #default="scope">
+                  <el-switch v-model="scope.row.visible" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                    inactive-color="#ff4949" @change="handleVisibleChange(scope.row)" />
+                </template>
+              </el-table-column>
               <el-table-column label="操作" width="180" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
-                  <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
+                  <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
                       <el-button size="small" type="danger" :icon="Delete" circle />
@@ -85,7 +100,7 @@
 
           <!-- 分页 -->
           <div class="list-pagination">
-            <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
+            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
               :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
               @current-change="handlePageChange" @size-change="handleSizeChange" size="small" />
           </div>
@@ -99,7 +114,7 @@
     @submit="handleAddSubmit" />
 
   <!-- 编辑菜单弹窗 -->
-  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :menuId="menuId"
+  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :menu-id="menuId"
     :type="type" @submit="handleEditSubmit" />
 </template>
 
@@ -113,10 +128,12 @@ import {
   updateMenuStatusApi,
   deleteMenuApi,
   enableMenuApi,
-  disableMenuApi
+  disableMenuApi,
+  menuShowApi,
+  menuHideApi
 } from '@/api/menu'
 import MenuFormDialog from '@/components/system/MenuFormDialog.vue'
-import type { EditMenuRequest, GetMenuListVo, SaveMenuRequest } from '@/types/menu'
+import type { EditMenuRequest, GetMenuListRequest, GetMenuListVo, SaveMenuRequest } from '@/types/menu'
 
 const loading = ref(false)
 const menuList = ref<GetMenuListVo[]>([])
@@ -124,20 +141,18 @@ const menuList = ref<GetMenuListVo[]>([])
 // 弹窗相关状态
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
-const menuId = ref<number>(0)
+const menuId = ref<number | null>(null)
 const type = ref<string>('')
+const total = ref(0)
 
 // 搜索表单
-const searchForm = ref({
+const searchForm = ref<GetMenuListRequest>({
   keyword: '',
-  status: undefined as number | undefined,
-  type: '' as string | undefined
-})
-
-const pagination = ref({
-  current: 1,
-  size: 10,
-  total: 0
+  status: null,
+  type: '',
+  visible: null,
+  pageNum: 1,
+  pageSize: 10,
 })
 
 const formatType = (row: any, column: any, cellValue: string) => {
@@ -175,16 +190,9 @@ const getIconComponent = (iconName: string) => {
 const loadMenus = async () => {
   try {
     loading.value = true
-    const params = {
-      pageNum: pagination.value.current,
-      pageSize: pagination.value.size,
-      keyword: searchForm.value.keyword,
-      status: searchForm.value.status,
-      type: searchForm.value.type
-    }
-    const res = await getMenuList(params)
+    const res = await getMenuList(searchForm.value)
     menuList.value = res.records || []
-    pagination.value.total = res.total || 0
+    total.value = res.total || 0
   } catch (error) {
     console.error('加载菜单列表失败:', error)
   } finally {
@@ -226,6 +234,16 @@ const handleStatusChange = async (row: GetMenuListVo) => {
   await loadMenus();
 }
 
+// 菜单显示状态变更
+const handleVisibleChange = async (row: GetMenuListVo) => {
+  if (row.visible === 1) {
+    await menuShowApi(row.id);
+  } else {
+    await menuHideApi(row.id);
+  }
+  await loadMenus();
+}
+
 // 删除菜单
 const handleDelete = async (id: number) => {
   await deleteMenuApi(id)
@@ -234,12 +252,12 @@ const handleDelete = async (id: number) => {
 
 // 分页变化
 const handlePageChange = (page: number) => {
-  pagination.value.current = page
+  searchForm.value.pageNum = page
   loadMenus()
 }
 
 const handleSizeChange = (size: number) => {
-  pagination.value.size = size
+  searchForm.value.pageSize = size
   loadMenus()
 }
 
@@ -249,12 +267,12 @@ onMounted(() => {
 
 // 搜索
 const handleSearch = () => {
-  pagination.value.current = 1
+  searchForm.value.pageNum = 1
   loadMenus()
 }
 
 const resetSearch = () => {
-  searchForm.value.status = undefined
+  searchForm.value.status = null
   searchForm.value.type = ''
   searchForm.value.keyword = ''
   loadMenus()

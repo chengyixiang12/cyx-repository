@@ -24,10 +24,15 @@ import { ref, watch } from 'vue'
 import { getAllPermissionsApi, getAssignPerApi } from '@/api/permission'
 import { GetAllPermissionVo, SetPermissionsRequest } from '@/types/permissionts';
 
-const props = defineProps<{
-    modelValue: boolean
-    roleId: number
-}>()
+interface FatherParam {
+    modelValue: boolean;
+    roleId: number | null;
+}
+
+const props = withDefaults(defineProps<FatherParam>(), {
+    modelValue: false,
+    roleId: null
+})
 
 const emit = defineEmits(['update:modelValue', 'submit'])
 
@@ -51,19 +56,19 @@ const loadPermissions = async (id: number) => {
 
 const handleSubmit = async () => {
     const request: SetPermissionsRequest = { roleId: props.roleId, permissionIds: selectedPermissions.value }
-    
+
     emit('submit', request)
     visible.value = false
 }
 
 watch(
-  () => [visible.value, props.roleId],
-  async ([vis, id]) => {
-    if (vis && typeof id === 'number') {
-      await loadPermissions(id)
-    }
-  },
-  { immediate: true }
+    () => [visible.value, props.roleId],
+    async ([vis, id]) => {
+        if (vis && typeof id === 'number') {
+            await loadPermissions(id)
+        }
+    },
+    { immediate: true }
 )
 
 </script>

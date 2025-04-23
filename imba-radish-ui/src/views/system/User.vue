@@ -38,7 +38,7 @@
             <div class="list-header">
               <span class="header-title">用户管理</span>
               <div>
-                <el-button type="primary" @click="handleAdd" class="header-button">新增用户</el-button>
+                <el-button type="primary" @click="handleAdd">新增</el-button>
               </div>
             </div>
           </template>
@@ -141,7 +141,7 @@ import {
   enableUserApi,
   forbiddenUser
 } from '@/api/user'
-import type { AllUserVo } from '@/types/user'
+import type { AllUserVo, SaveUserRequest } from '@/types/user'
 import type { DeptTreeVo } from '@/types/dept'
 import UserFormDialog from '@/components/system/UserFormDialog.vue'
 import { ElTooltip } from 'element-plus'
@@ -156,7 +156,7 @@ const selectedDept = ref<string | number>('')
 // 弹窗相关状态
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
-const userId = ref<number>(0)
+const userId = ref<number | null>(null)
 
 // 搜索表单
 const searchForm = ref({
@@ -182,25 +182,24 @@ const shouldShowTooltip = (label: string) => {
 }
 
 // 提交新增用户
-const handleAddSubmit = async (formData: any) => {
+const handleAddSubmit = async (formData: SaveUserRequest) => {
   const publicKey = await getPublicKey(0)
   formData.password = RSAUtil.encrypt(formData.password, publicKey);
   await addUser(formData)
-  loadUsers()
+  await loadUsers()
 }
 
 // 提交编辑用户
-const handleEditSubmit = async (formData: any) => {
+const handleEditSubmit = async (formData: SaveUserRequest) => {
   await updateUser({
     id: userId.value,
     nickname: formData.nickname,
     deptId: formData.deptId,
     email: formData.email,
     phone: formData.phone,
-    avatar: formData.avatar,
     roleIds: formData.roleIds
   })
-  loadUsers()
+  await loadUsers()
 }
 
 const treeProps = {

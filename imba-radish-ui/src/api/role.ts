@@ -18,7 +18,7 @@ export async function getRolesApi(data: GetRolesRequest): Promise<PaginatedData<
  * @param id 
  * @returns 
  */
-export async function getRoleApi(id: number): Promise<SysRoleVo> {
+export async function getRoleApi(id: number | null): Promise<SysRoleVo> {
     const res = await get<SysRoleVo>(`/role/${id}`, { flag: true})
     return res.data;
 }

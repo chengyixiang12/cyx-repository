@@ -21,10 +21,15 @@ import { getAllMenuTreeApi, getAssignedMenuApi } from '@/api/menu'
 import type { GetMenuTreeVo } from '@/types/menu'
 import { SetMenusRequest } from '@/types/role';
 
-const props = defineProps<{
-  modelValue: boolean
-  roleId: number
-}>()
+interface FatherParam {
+  modelValue: boolean;
+  roleId: number | null;
+}
+
+const props = withDefaults(defineProps<FatherParam>(), {
+  modelValue: false,
+  roleId: null
+})
 
 const emit = defineEmits(['update:modelValue', 'submit'])
 

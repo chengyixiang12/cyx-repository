@@ -1,0 +1,11 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "vue.features.codeActions": true,
+  "volar.takeOverMode.enabled": true,
+  "editor.snippetSuggestions": "top"
+
+}

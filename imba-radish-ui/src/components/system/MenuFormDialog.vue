@@ -103,11 +103,18 @@ Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
   iconsMap.set(`el-icon-${key.toLowerCase()}`, component)
 })
 
-const props = defineProps({
-  visible: { type: Boolean, required: true },
-  isAdd: { type: Boolean, default: false, required: true },
-  menuId: { type: Number, default: null },
-  type: { type: String, default: '' }
+interface FatherParam {
+  visible: boolean;
+  isAdd: boolean;
+  menuId?: number | null;
+  type?: string;
+}
+
+const props = withDefaults(defineProps<FatherParam>(), {
+  isAdd: false,
+  menuId: null,
+  type: '',
+  visible: false
 })
 
 const emit = defineEmits(['update:visible', 'submit'])

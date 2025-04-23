@@ -78,18 +78,18 @@ import { getUser } from '@/api/user'
 import { getRoleSelectApi } from '@/api/role'
 import { GetRoleSelectVo } from '@/types/role'
 
-const props = defineProps({
-  visible: Boolean,
-  isAdd: Boolean,
-  deptTree: {
-    type: Array as () => DeptTreeVo[],
-    required: true,
-    default: () => []
-  },
-  userId: {
-    type: Number,
-    default: null
-  }
+interface FatherParam {
+  visible: boolean;
+  isAdd: boolean;
+  deptTree: DeptTreeVo[];
+  userId?: number | null;
+}
+
+const props = withDefaults(defineProps<FatherParam>(),{
+  visible: false,
+  isAdd: false,
+  deptTree: () => [],
+  userId: null
 })
 
 const emit = defineEmits(['update:visible', 'submit'])
@@ -139,6 +139,7 @@ const handleClose = () => {
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
+    console.log('aaa', formData.value)
     emit('submit', formData.value)
     dialogVisible.value = false
   } catch (e) {

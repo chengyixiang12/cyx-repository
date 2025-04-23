@@ -7,7 +7,7 @@
             <div class="list-header">
               <span class="header-title">角色管理</span>
               <div>
-                <el-button type="primary" @click="handleAdd" class="header-button">新增角色</el-button>
+                <el-button type="primary" @click="handleAdd">新增</el-button>
               </div>
             </div>
           </template>
@@ -36,7 +36,7 @@
             <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading">
               <el-table-column label="序号" width="80" align="center">
                 <template #default="scope">
-                  {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
+                  {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
               <el-table-column prop="name" label="角色名称" show-overflow-tooltip />
@@ -71,7 +71,7 @@
                     <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" :icon="Menu"
                       circle />
                   </el-tooltip>
-                  <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
+                  <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
                       <el-button size="small" type="danger" :icon="Delete" circle />
@@ -84,7 +84,7 @@
 
           <!-- 分页 -->
           <div class="list-pagination">
-            <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
+            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
               :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
               @current-change="handlePageChange" @size-change="handleSizeChange" size="small" />
           </div>
@@ -127,34 +127,29 @@ const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const assignPermissionVisible = ref(false)
 const assignMenuVisible = ref(false)
-const roleId = ref<number>(0)
+const roleId = ref<number | null>(null)
 
 const searchForm = ref<GetRolesRequest>({
-  keyword: null,
+  keyword: '',
   status: null,
   pageNum: 1,
   pageSize: 10
 })
-
-const pagination = ref({
-  current: 1,
-  size: 10,
-  total: 0
-})
+const total = ref<number>(0)
 
 // 加载角色列表
 const loadRoles = async () => {
   try {
     loading.value = true
     const params = {
-      pageNum: pagination.value.current,
-      pageSize: pagination.value.size,
+      pageNum: searchForm.value.pageNum,
+      pageSize: searchForm.value.pageSize,
       keyword: searchForm.value.keyword,
       status: searchForm.value.status
     }
     const res = await getRolesApi(params)
     roleList.value = res.records || []
-    pagination.value.total = res.total || 0
+    total.value = res.total || 0
   } catch (error) {
     console.error('加载角色列表失败:', error)
   } finally {
@@ -204,12 +199,12 @@ const handleDelete = async (id: number) => {
 
 // 分页变化
 const handlePageChange = (page: number) => {
-  pagination.value.current = page
+  searchForm.value.pageNum = page
   loadRoles()
 }
 
 const handleSizeChange = (size: number) => {
-  pagination.value.size = size
+  searchForm.value.pageSize = size
   loadRoles()
 }
 
@@ -262,13 +257,13 @@ onMounted(() => {
 
 // 搜索
 const handleSearch = () => {
-  pagination.value.current = 1
+  searchForm.value.pageNum = 1
   loadRoles()
 }
 
 const resetSearch = () => {
   searchForm.value.status = null
-  searchForm.value.keyword = null
+  searchForm.value.keyword = ''
   loadRoles()
 }
 </script>
