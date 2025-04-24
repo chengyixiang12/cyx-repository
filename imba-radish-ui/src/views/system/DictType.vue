@@ -5,8 +5,9 @@
         <el-card>
           <template #header>
             <div class="list-header">
-              <span class="header-title">字典类型管理</span>
-              <el-button type="primary" @click="handleAddType">新增</el-button>
+              <div class="right-header">
+                <el-button type="primary" @click="handleAddType">新增</el-button>
+              </div>
             </div>
           </template>
 
@@ -136,12 +137,8 @@ const handleAddSubmit = async (formData: SaveDictTypeRequest) => {
 // 编辑提交
 const handleEditSubmit = async (formData: SaveDictTypeRequest) => {
   await editDictTypeApi({
+    ...formData,
     id: dictTypeId.value,
-    dictName: formData.dictName,
-    dictType: formData.dictType,
-    sortOrder: formData.sortOrder,
-    status: formData.status,
-    remark: formData.remark
   })
   await handleSearch()
 }
@@ -188,10 +185,8 @@ onMounted(() => {
   padding: 0 12px;
 }
 
-.header-title {
-  font-size: 15px;
-  font-weight: 500;
-  color: #303133;
+.right-header {
+  margin-left: auto;
 }
 
 .header-button {

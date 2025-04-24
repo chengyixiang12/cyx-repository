@@ -5,7 +5,7 @@
         <el-card>
           <template #header>
             <div class="list-header">
-              <el-button type="text" icon="ArrowLeft" @click="goBack">返回</el-button>
+              <el-button link icon="ArrowLeft" @click="goBack">返回</el-button>
               <span class="header-title">{{ route.query.dictName }}</span>
               <el-button type="primary" @click="handleAddData">新增</el-button>
             </div>
@@ -15,7 +15,7 @@
           <div class="search-container">
             <el-form :inline="true" :model="searchForm" class="search-form">
               <el-form-item label="关键字:">
-                <el-input v-model="searchForm.keyword" placeholder="标签/值" clearable class="keyword-input" />
+                <el-input v-model="searchForm.keyword" placeholder="标签/编码" clearable class="keyword-input" />
               </el-form-item>
               <el-form-item label="状态:">
                 <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
@@ -35,13 +35,12 @@
             <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading">
               <el-table-column label="序号" width="80" align="center">
                 <template #default="scope">
-                  {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
+                  {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
               <el-table-column prop="code" label="编码" />
               <el-table-column prop="label" label="标签" />
               <el-table-column prop="value" label="值" />
-              <el-table-column prop="dictType" label="字典类型" />
               <el-table-column prop="isDefault" label="默认" width="80" align="center">
                 <template #default="scope">
                   <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" />
@@ -69,7 +68,7 @@
 
           <!-- 分页 -->
           <div class="list-pagination">
-            <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
+            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
               layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
               @size-change="handleSizeChange" size="small" />
           </div>
@@ -77,39 +76,105 @@
       </el-col>
     </el-row>
   </div>
+
+  <!--新增弹窗-->
+  <dict-data-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" @submit="handleAddSubmit" />
+  <!--编辑弹窗-->
+  <dict-data-form-dialog v-model:visible="editDialogVisible" :is-add="false" :dict-data-id="dictDataId" v-if="editDialogVisible" @submit="handleEditSubmit" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Edit, Delete } from '@element-plus/icons-vue'
+import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
+import DictDataFormDialog from '@/components/system/DictDataFormDialog.vue'
+import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi } from '@/api/dictData'
 
 const router = useRouter()
 const route = useRoute()
 const loading = ref(false)
+const total = ref<number>(0)
+const dictDataId = ref<number | null>(null)
+const addDialogVisible = ref<boolean>(false)
+const editDialogVisible = ref<boolean>(false)
+const dictType = ref<string>(route.query.dictType as string)
 
-const dictDataList = ref<any[]>([])
-const pagination = ref({ current: 1, size: 10, total: 0 })
-const searchForm = ref({ keyword: '', status: undefined })
+const dictDataList = ref<DictDatasVo[]>([])
+const searchForm = ref<DictDatasRequest>({
+  keyword: '',
+  status: null,
+  pageNum: 1,
+  pageSize: 10,
+  dictType: dictType.value
+})
 
+// 返回字典类型模块
 const goBack = () => {
   router.push({ name: '/dict' })
 }
 
-const handleAddData = () => { /* 新增数据弹窗 */ }
-const editData = (row: any) => { /* 编辑数据弹窗 */ }
-const deleteData = async (id: number) => { /* 删除数据接口 */ }
-const changeStatus = async (row: any) => { /* 状态切换接口 */ }
-
-const handleSearch = () => { /* 查询 */ }
-const resetSearch = () => {
-  searchForm.value = { keyword: '', status: undefined }
+// 新增
+const handleAddData = async () => {
+  addDialogVisible.value = true
 }
-const handlePageChange = (val: number) => { pagination.value.current = val }
-const handleSizeChange = (val: number) => { pagination.value.size = val }
+
+// 编辑
+const editData = async (row: DictDatasVo) => {
+  editDialogVisible.value = true
+  dictDataId.value = row.id
+}
+
+// 新增数据提交
+const handleAddSubmit = async (formdata: SaveDictDataRequest) => {
+  formdata.dictType = dictType.value;
+  await saveDictDataApi(formdata)
+  await handleSearch()
+}
+
+// 编辑数据提交
+const handleEditSubmit = async (formdata: SaveDictDataRequest) => {
+  formdata.dictType = dictType.value;
+  await editDictDataApi({
+    ...formdata,
+    id: dictDataId.value
+  })
+}
+
+// 删除
+const deleteData = async (id: number) => {
+  await deleteDictDataApi(id)
+  await handleSearch()
+}
+
+// 修改状态
+const changeStatus = async (row: DictDatasVo) => {
+  if (row.status === 1) {
+    await enableDictDataApi(row.id)
+  } else {
+    await forbiddenDictDataApi(row.id)
+  }
+  await handleSearch();
+}
+
+// 列表条件查询
+const handleSearch = async () => {
+  const res = await getDictDatasApi(searchForm.value)
+  dictDataList.value = res.records
+  total.value = res.total
+}
+
+// 重置
+const resetSearch = () => {
+  searchForm.value.keyword = '';
+  searchForm.value.status = null;
+}
+
+const handlePageChange = (val: number) => { searchForm.value.pageNum = val }
+const handleSizeChange = (val: number) => { searchForm.value.pageSize = val }
 
 onMounted(() => {
-  // loadDictDataList(route.query.dictType)
+  handleSearch()
 })
 </script>
 <style scoped>

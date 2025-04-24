@@ -13,7 +13,7 @@ const constantRoutes: RouteRecordRaw[] = [
     redirect: '/dashboard',
     children: [
       {
-        path: 'dashboard',
+        path: '/dashboard',
         name: 'dashboard',
         component: () => import('../views/Dashboard.vue'),
         meta: { title: '首页', requiresAuth: true }

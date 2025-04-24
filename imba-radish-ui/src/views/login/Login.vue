@@ -74,6 +74,7 @@ import { RSAUtil } from '@/utils/rsa';
 import { getPublicKey } from '@/api/auth';
 import router from '@/router/routers';
 import { LoginRequest } from '@/types/login';
+import { showMessage } from '@/utils/message';
 
 const loginForm = ref<LoginRequest>({
   username: '',
@@ -149,16 +150,17 @@ const handleLogin = async () => {
     const userInfo = await getUserInfo();
 
     // 存储用户信息
-    sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
+    sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
 
     // 跳转首页
-    router.push('/dashboard')
+    router.push('/dashboard');
 
   } catch (error: any) {
     refreshCaptcha();
     loginForm.value.graphicsCaptcha = '';
   } finally {
     loading.value = false
+    showMessage('登录成功', 'success');
   }
 }
 

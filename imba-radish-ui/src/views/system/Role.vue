@@ -5,8 +5,7 @@
         <el-card>
           <template #header>
             <div class="list-header">
-              <span class="header-title">角色管理</span>
-              <div>
+              <div class="right-header">
                 <el-button type="primary" @click="handleAdd">新增</el-button>
               </div>
             </div>
@@ -101,9 +100,11 @@
   <role-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :roleId="roleId"
     @submit="handleEditSubmit" />
 
+  <!--赋予权限弹窗-->
   <role-permission-dialog v-model="assignPermissionVisible" :role-id="roleId" v-if="assignPermissionVisible"
     @submit="handleAssignPermissionSubmit" />
-    
+
+  <!--赋予菜单弹窗-->
   <role-menu-dialog v-model="assignMenuVisible" :role-id="roleId" v-if="assignMenuVisible"
     @submit="handleAssignMenuSubmit" />
 </template>
@@ -162,6 +163,7 @@ const handleAssignPermissionSubmit = async (request: SetPermissionsRequest) => {
   await updateRolePermissionsApi(request)
 }
 
+// 保存被赋予的菜单
 const handleAssignMenuSubmit = async (data: { roleId: number, menuIds: number[] }) => {
   await updateRoleMenusApi(data)
   assignMenuVisible.value = false
@@ -224,7 +226,7 @@ const handleIsDefaultChange = async (row: SysRoleVo) => {
     await setDefaultRoleApi(row.id);
   } else {
     showMessage('非法操作', 'warning');
-    row.isDefault = 0;
+    row.isDefault = 1;
   }
   await loadRoles();
 }
@@ -281,18 +283,16 @@ const resetSearch = () => {
   padding-top: 12px;
 }
 
-.header-title {
-  font-size: 15px;
-  font-weight: 500;
-  color: #303133;
-}
-
 .list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 36px;
   padding: 0 12px;
+}
+
+.right-header {
+  margin-left: auto;
 }
 
 .el-card {

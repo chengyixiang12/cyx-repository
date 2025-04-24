@@ -36,8 +36,7 @@
         <el-card>
           <template #header>
             <div class="list-header">
-              <span class="header-title">用户管理</span>
-              <div>
+              <div class="right-header">
                 <el-button type="primary" @click="handleAdd">新增</el-button>
               </div>
             </div>
@@ -347,18 +346,16 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
-.header-title {
-  font-size: 15px;
-  font-weight: 500;
-  color: #303133;
-}
-
 .list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 36px;
   padding: 0 12px;
+}
+
+.right-header {
+  margin-left: auto;
 }
 
 .el-card {

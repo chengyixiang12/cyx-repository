@@ -82,13 +82,12 @@
 
             <!-- 右侧内容区 -->
             <el-main class="main-content">
+                <!-- <module-tabs :tabs="cachedTabs" :active-path="activePath" @update:activePath="switchTab"
+                    @close="closeTab" /> -->
+
                 <div class="content-wrapper">
                     <router-view v-slot="{ Component }">
-                        <transition name="fade" mode="out-in">
-                            <div v-if="Component">
-                                <component :is="Component" />
-                            </div>
-                        </transition>
+                        <component :is="Component" v-if="Component" :key="$route.fullPath" />
                     </router-view>
                 </div>
             </el-main>
@@ -97,7 +96,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import {
     User,
@@ -114,6 +113,9 @@ import { ElTooltip } from 'element-plus';
 import type { MenuItem } from '@/types/menu';
 import { getMessageNumApi } from '@/api/message';
 import { getLeftMenusApi } from '@/api/dashboard';
+import ModuleTabs from '@/components/layout/ModuleTabs.vue';
+import { useRoute } from 'vue-router'
+import { CachedTabsType } from '@/types/layout';
 
 const router = useRouter();
 const user = ref({
@@ -123,10 +125,52 @@ const user = ref({
 const isCollapsed = ref(false);
 const unreadCount = ref(5) // 未读消息数
 
+const route = useRoute()
+const activePath = ref(route.path)
+
+const cachedTabs = ref<CachedTabsType[]>([
+    { path: route.path, title: route.meta.title as string }
+])
 
 const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value
 }
+
+const switchTab = (path: string) => {
+    activePath.value = path
+    console.log('aaa', path)
+    router.push({ path })
+}
+
+// 关闭标签
+const closeTab = (path: string) => {
+    const index = cachedTabs.value.findIndex(tab => tab.path === path)
+    cachedTabs.value.splice(index, 1)
+
+    if (activePath.value === path) {
+        const nextTab = cachedTabs.value[index - 1] || cachedTabs.value[0]
+        if (nextTab) {
+            activePath.value = nextTab.path
+            router.push({ path: nextTab.path })
+        }
+    }
+}
+
+// 当路由切换时自动添加 tab
+watch(
+    () => route.path,
+    () => {
+        const exists = cachedTabs.value.some(tab => tab.path === route.path)
+        if (!exists && route.meta.title) {
+            cachedTabs.value.push({
+                path: route.path,
+                title: route.meta.title as string
+            })
+        }
+        activePath.value = route.path
+    },
+    { immediate: true }
+)
 
 const goProfile = () => {
     router.push('/profile')
@@ -283,44 +327,56 @@ onMounted(() => {
 
 /* 消息图标容器 */
 .message-icon-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-right: 20px;
-  margin-top: 17px; /* 保持与其他图标对齐 */
+    position: relative;
+    display: inline-block;
+    margin-right: 20px;
+    margin-top: 17px;
+    /* 保持与其他图标对齐 */
 }
 
 /* 消息图标基础样式 */
 .message-icon {
-  font-size: 20px;
-  color: #e6e7e8;
-  cursor: pointer;
-  transition: color 0.3s;
-  position: relative; /* 为红点定位做准备 */
+    font-size: 20px;
+    color: #e6e7e8;
+    cursor: pointer;
+    transition: color 0.3s;
+    position: relative;
+    /* 为红点定位做准备 */
 }
 
 .message-icon:hover {
-  color: #409eff;
+    color: #409eff;
 }
 
 /* 小红点样式 */
 .message-dot {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 8px;
-  height: 8px;
-  background-color: #f56c6c;
-  border-radius: 50%;
-  border: 1px solid #b3b9bf; /* 与header背景色一致 */
-  box-sizing: border-box;
-  animation: pulse 1.5s infinite;
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 8px;
+    height: 8px;
+    background-color: #f56c6c;
+    border-radius: 50%;
+    border: 1px solid #b3b9bf;
+    /* 与header背景色一致 */
+    box-sizing: border-box;
+    animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
+
 .collapse-icon {
     margin-right: 15px;
     font-size: 20px;
@@ -338,9 +394,7 @@ onMounted(() => {
     flex-direction: column;
     min-height: 0;
     overflow: auto;
-    /* 允许内容滚动 */
     padding: 10px;
-    /* 内容内边距 */
     background: #f0f2f5;
     border-radius: 4px;
 }
