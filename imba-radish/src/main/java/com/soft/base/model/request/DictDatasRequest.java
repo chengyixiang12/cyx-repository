@@ -16,4 +16,10 @@ public class DictDatasRequest extends PageRequest {
 
     @Schema(description = "字典类型")
     private String dictType;
+
+    @Schema(description = "关键字")
+    private String keyword;
+
+    @Schema(description = "状态；1：启用；0：禁用")
+    private Integer status;
 }

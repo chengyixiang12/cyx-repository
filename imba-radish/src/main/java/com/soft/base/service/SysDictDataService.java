@@ -32,4 +32,8 @@ public interface SysDictDataService extends IService<SysDictData> {
     boolean existCode(String code);
 
     boolean existCode(String code, Long id);
+
+    void enableDictData(Long id);
+
+    void forbiddenDictData(Long id);
 }

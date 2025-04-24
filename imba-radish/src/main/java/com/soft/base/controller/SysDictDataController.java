@@ -159,4 +159,36 @@ public class SysDictDataController {
             return R.fail();
         }
     }
+
+    @GetMapping(value = "/enableDictData")
+    @Operation(summary = "启用字典数据")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> enableDictData(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysDictDataService.enableDictData(id);
+            return R.ok("启用成功", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @GetMapping(value = "/forbiddenDictData")
+    @Operation(summary = "禁用字典数据")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> forbiddenDictData(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysDictDataService.forbiddenDictData(id);
+            return R.ok("禁用成功", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
 }

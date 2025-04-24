@@ -99,13 +99,13 @@ public class SysDictData implements Serializable {
      * 是否默认；1：是 0：否
      */
     @TableField(value = "is_default")
-    private String isDefault;
+    private Integer isDefault;
 
     /**
      * 状态；1：启用；0：停用
      */
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
     /**
      * 备注

@@ -22,6 +22,10 @@ public interface SysDictDataMapper extends BaseMapper<SysDictData> {
     DictDataVo getDictData(@Param("id") Long id);
 
     void deleteDictDataBatch(@Param("request") DeleteRequest request);
+
+    void enableDictData(@Param("id") Long id);
+
+    void forbiddenDictData(@Param("id") Long id);
 }
 
 

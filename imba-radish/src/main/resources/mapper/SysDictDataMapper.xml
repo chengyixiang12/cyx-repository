@@ -18,8 +18,8 @@
             <result property="dictType" column="dict_type" jdbcType="VARCHAR"/>
             <result property="cssClass" column="css_class" jdbcType="VARCHAR"/>
             <result property="listClass" column="list_class" jdbcType="VARCHAR"/>
-            <result property="isDefault" column="is_default" jdbcType="CHAR"/>
-            <result property="status" column="status" jdbcType="CHAR"/>
+            <result property="isDefault" column="is_default" jdbcType="TINYINT"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
             <result property="remark" column="remark" jdbcType="VARCHAR"/>
     </resultMap>
 
@@ -37,13 +37,20 @@
         sdd.`code`,
         sdd.label,
         sdd.`value`,
-        sdd.is_default AS "isDefault",
+        sdd.is_default,
+        sdd.sort_order,
         sdd.`status`
         FROM
         sys_dict_data sdd
         WHERE
         sdd.del_flag = '1'
         AND sdd.dict_type = #{request.dictType}
+        <if test="request.keyword != null and request.keyword != ''">
+            AND ( sdd.code LIKE concat('%', #{request.keyword}, '%') OR sdd.label LIKE concat('%', #{request.keyword}, '$') )
+        </if>
+        <if test="request.status != null">
+            AND sdd.status = #{request.status}
+        </if>
     </select>
     <select id="getDictData" parameterType="java.lang.Long" resultType="DictDataVo">
         SELECT
@@ -51,13 +58,13 @@
         sdd.`code`,
         sdd.label,
         sdd.`value`,
-        sdd.is_default AS "is_default",
+        sdd.is_default,
         sdd.`status`,
-        sdd.css_class AS "css_class",
-        sdd.dict_type AS "dict_type",
-        sdd.list_class AS "list_class",
+        sdd.css_class,
+        sdd.dict_type,
+        sdd.list_class,
         sdd.remark,
-        sdd.sort_order AS "sort_order"
+        sdd.sort_order
         FROM
         sys_dict_data sdd
         WHERE
@@ -69,6 +76,21 @@
         SET del_flag = '0'
         WHERE
         del_flag = '1'
-        AND sdd.id = #{request.id}
+        AND sdd.id IN
+        <foreach collection="request.ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <update id="enableDictData" parameterType="java.lang.Long">
+        UPDATE sys_dict_data
+        SET status = 1
+        WHERE del_flag = '1'
+        AND id = #{id}
+    </update>
+    <update id="forbiddenDictData" parameterType="java.lang.Long">
+        UPDATE sys_dict_data
+        SET status = 0
+        WHERE del_flag = '1'
+          AND id = #{id}
     </update>
 </mapper>

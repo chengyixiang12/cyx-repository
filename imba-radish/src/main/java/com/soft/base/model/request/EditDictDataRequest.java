@@ -38,10 +38,10 @@ public class EditDictDataRequest {
     private String listClass;
 
     @Schema(description = "是否默认；1：是 0：否")
-    private String isDefault;
+    private Integer isDefault;
 
     @Schema(description = "状态；1：启用；0：停用")
-    private String status;
+    private Integer status;
 
     @Schema(description = "备注")
     private String remark;
