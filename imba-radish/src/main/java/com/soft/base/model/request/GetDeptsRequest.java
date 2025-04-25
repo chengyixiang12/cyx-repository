@@ -17,15 +17,6 @@ import org.apache.ibatis.type.Alias;
 @Alias(value = "GetDeptsRequest")
 public class GetDeptsRequest extends PageRequest {
 
-    @Schema(description = "部门名称")
-    private String deptName;
-
-    @Schema(description = "部门编码")
-    private String deptCode;
-
-    @Schema(description = "父级部门名称")
-    private String parentName;
-
-    @Schema(description = "父级部门编码")
-    private String parentCode;
+    @Schema(description = "关键字")
+    private String keyword;
 }

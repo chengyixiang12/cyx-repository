@@ -9,7 +9,6 @@ import com.soft.base.model.request.GetDeptsRequest;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
 import com.soft.base.model.vo.GetDeptsVo;
-import com.soft.base.model.vo.PageVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
 
     List<ExportDeptDto> exportDept(@Param("ids") List<Long> ids);
 
-    PageVo<GetDeptsVo> getDepts(@Param("page") IPage<GetDeptsVo> page,
+    IPage<GetDeptsVo> getDepts(@Param("page") IPage<GetDeptsVo> page,
                                 @Param("request") GetDeptsRequest request);
 
     List<Long> getChildDeptIds(@Param("deptIds") List<Long> deptIds);

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysDictData;
 import com.soft.base.mapper.SysDictDataMapper;
 import com.soft.base.model.request.DeleteRequest;
@@ -17,6 +18,7 @@ import com.soft.base.service.SysDictDataService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
 * @author cyq
@@ -51,6 +53,9 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     public void saveDictData(SaveDictDataRequest request) {
+        if (BaseConstant.DEF_STATUS.equals(request.getIsDefault())) {
+            sysDictDataMapper.setNotDefault(request.getDictType());
+        }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
         sysDictDataMapper.insert(sysDictData);
@@ -58,6 +63,9 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     public void editDictData(EditDictDataRequest request) {
+        if (BaseConstant.DEF_STATUS.equals(request.getIsDefault())) {
+            sysDictDataMapper.setNotDefault(request.getDictType());
+        }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
         sysDictDataMapper.updateById(sysDictData);
@@ -91,6 +99,13 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void forbiddenDictData(Long id) {
         sysDictDataMapper.forbiddenDictData(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void setDefaultData(Long id, String dictType) {
+        sysDictDataMapper.setNotDefault(dictType);
+        sysDictDataMapper.setDefaultData(id);
     }
 }
 

@@ -93,4 +93,20 @@
         WHERE del_flag = '1'
           AND id = #{id}
     </update>
+    <update id="setNotDefault" parameterType="java.lang.String">
+        UPDATE
+            sys_dict_data
+        SET
+            is_default = 0
+        WHERE is_default = 1
+           AND dict_type = #{dictType}
+    </update>
+    <update id="setDefaultData" parameterType="java.lang.Long">
+        UPDATE
+            sys_dict_data
+        SET
+            is_default = 1
+        WHERE
+            id = #{id}
+    </update>
 </mapper>

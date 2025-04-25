@@ -103,7 +103,11 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     @Override
     public PageVo<GetDeptsVo> getDepts(GetDeptsRequest request) {
         IPage<GetDeptsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
-        return sysDeptMapper.getDepts(page, request);
+        page = sysDeptMapper.getDepts(page, request);
+        PageVo<GetDeptsVo> pageVo = new PageVo<>();
+        pageVo.setTotal(page.getTotal());
+        pageVo.setRecords(page.getRecords());
+        return pageVo;
     }
 
     @Override

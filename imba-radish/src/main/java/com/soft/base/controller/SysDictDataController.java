@@ -1,5 +1,6 @@
 package com.soft.base.controller;
 
+import com.soft.base.annotation.SysLock;
 import com.soft.base.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.DeleteRequest;
@@ -13,6 +14,7 @@ import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDictDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +72,7 @@ public class SysDictDataController {
         }
     }
 
+    @SysLock(name = "dictData")
     @SysLog(value = "添加字典数据", module = LogModuleEnum.DICT_DATA)
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_add')")
     @PostMapping
@@ -96,6 +99,7 @@ public class SysDictDataController {
         }
     }
 
+    @SysLock(name = "dictData")
     @SysLog(value = "编辑字典数据", module = LogModuleEnum.DICT_DATA)
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_edit')")
     @PutMapping
@@ -160,8 +164,9 @@ public class SysDictDataController {
         }
     }
 
+    @SysLog(value = "启用", module = LogModuleEnum.DICT_DATA)
     @GetMapping(value = "/enableDictData")
-    @Operation(summary = "启用字典数据")
+    @Operation(summary = "启用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enableDictData(@RequestParam(value = "id", required = false) Long id) {
         if (id == null) {
@@ -176,8 +181,9 @@ public class SysDictDataController {
         }
     }
 
+    @SysLog(value = "禁用", module = LogModuleEnum.DICT_DATA)
     @GetMapping(value = "/forbiddenDictData")
-    @Operation(summary = "禁用字典数据")
+    @Operation(summary = "禁用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> forbiddenDictData(@RequestParam(value = "id", required = false) Long id) {
         if (id == null) {
@@ -186,6 +192,31 @@ public class SysDictDataController {
         try {
             sysDictDataService.forbiddenDictData(id);
             return R.ok("禁用成功", null);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @SysLog(value = "设置默认", module = LogModuleEnum.DICT_DATA)
+    @SysLock(name = "dictData")
+    @GetMapping(value = "/setDefaultData")
+    @Operation(summary = "设置默认")
+    @Parameters({
+            @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "dictType", description = "字典类型", required = true, in = ParameterIn.QUERY)
+    })
+    public R<Object> setDefaultData(@RequestParam(value = "id", required = false) Long id,
+                                    @RequestParam(value = "dictType", required = false) String dictType) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        if (StringUtils.isBlank(dictType)) {
+            return R.fail("字典类型不能为空");
+        }
+        try {
+            sysDictDataService.setDefaultData(id, dictType);
+            return R.ok("设置成功", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

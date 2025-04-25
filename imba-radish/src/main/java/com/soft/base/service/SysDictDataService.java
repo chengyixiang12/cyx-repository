@@ -36,4 +36,6 @@ public interface SysDictDataService extends IService<SysDictData> {
     void enableDictData(Long id);
 
     void forbiddenDictData(Long id);
+
+    void setDefaultData(Long id, String dictType);
 }

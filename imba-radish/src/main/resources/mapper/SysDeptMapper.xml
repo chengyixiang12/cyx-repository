@@ -99,17 +99,8 @@
                 LEFT JOIN `sys_dept` sd1 ON sd.parent_id = sd1.`id`
         WHERE
             sd.del_flag = '1'
-        <if test="request.deptCode != null and request.deptCode != ''">
-            sd.`code` = #{request.deptCode}
-        </if>
-        <if test="request.deptName != null and request.deptName != ''">
-            sd.`name` = #{request.deptName}
-        </if>
-        <if test="request.parentCode != null and request.parentCode != ''">
-            sd1.`code` = #{request.parentCode}
-        </if>
-        <if test="request.parentName != null and request.parentName != ''">
-            sd1.`name` = #{request.parentName}
+        <if test="request.keyword != null and request.keyword != ''">
+            AND ( sd.`code` LIKE concat('%', #{request.keyword}, '%') OR sd.`name` LIKE concat('%', #{request.keyword}, '%'))
         </if>
         ORDER BY sd.create_time DESC
     </select>

@@ -26,6 +26,10 @@ public interface SysDictDataMapper extends BaseMapper<SysDictData> {
     void enableDictData(@Param("id") Long id);
 
     void forbiddenDictData(@Param("id") Long id);
+
+    void setNotDefault(@Param("dictType") String dictType);
+
+    void setDefaultData(@Param("id") Long id);
 }
 
 

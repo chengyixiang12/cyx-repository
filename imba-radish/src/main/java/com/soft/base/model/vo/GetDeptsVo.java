@@ -30,5 +30,6 @@ public class GetDeptsVo {
     @Schema(description = "父级名称")
     private String parentName;
 
+    @Schema(description = "层级")
     private String level;
 }
