@@ -339,10 +339,4 @@ const resetSearch = () => {
   display: flex;
   justify-content: flex-end;
 }
-
-.header-button {
-  padding: 4px 12px;
-  font-size: 13px;
-  height: 28px;
-}
 </style>

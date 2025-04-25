@@ -43,7 +43,7 @@
               <el-table-column prop="value" label="值" />
               <el-table-column prop="isDefault" label="默认" width="80" align="center">
                 <template #default="scope">
-                  <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" />
+                  <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" @change="setDefault(scope.row)" />
                 </template>
               </el-table-column>
               <el-table-column prop="status" label="状态" width="80" align="center">
@@ -89,7 +89,8 @@ import { useRouter, useRoute } from 'vue-router'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
 import DictDataFormDialog from '@/components/system/DictDataFormDialog.vue'
-import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi } from '@/api/dictData'
+import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi, setDefaultRoleApi } from '@/api/dictData'
+import { dataType } from 'element-plus/es/components/table-v2/src/common'
 
 const router = useRouter()
 const route = useRoute()
@@ -168,6 +169,12 @@ const handleSearch = async () => {
 const resetSearch = () => {
   searchForm.value.keyword = '';
   searchForm.value.status = null;
+}
+
+// 设置默认
+const setDefault = async (row: DictDatasVo) => {
+  await setDefaultRoleApi(row.id, dictType.value);
+  await handleSearch();
 }
 
 const handlePageChange = (val: number) => { searchForm.value.pageNum = val }

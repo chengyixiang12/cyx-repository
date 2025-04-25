@@ -8,8 +8,11 @@
                     <el-input v-model="formData.dictName" placeholder="请输入字典名称" />
                 </el-form-item>
 
-                <el-form-item label="字典类型" prop="dictType">
+                <el-form-item label="字典类型" prop="dictType" v-if="isAdd">
                     <el-input v-model="formData.dictType" placeholder="请输入字典类型（唯一标识）" />
+                </el-form-item>
+                <el-form-item label="字典类型" prop="dictType" v-else>
+                    <el-input v-model="formData.dictType" disabled />
                 </el-form-item>
 
                 <el-form-item label="状态" prop="status">

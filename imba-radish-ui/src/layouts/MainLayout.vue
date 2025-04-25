@@ -82,12 +82,15 @@
 
             <!-- 右侧内容区 -->
             <el-main class="main-content">
-                <!-- <module-tabs :tabs="cachedTabs" :active-path="activePath" @update:activePath="switchTab"
-                    @close="closeTab" /> -->
+                <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab" />
 
                 <div class="content-wrapper">
                     <router-view v-slot="{ Component }">
-                        <component :is="Component" v-if="Component" :key="$route.fullPath" />
+                        <transition name="fade" mode="out-in">
+                            <div v-if="Component">
+                                <component :is="Component" />
+                            </div>
+                        </transition>
                     </router-view>
                 </div>
             </el-main>
@@ -122,14 +125,18 @@ const user = ref({
     name: '',
     avatar: ''
 });
-const isCollapsed = ref(false);
-const unreadCount = ref(5) // 未读消息数
-
 const route = useRoute()
-const activePath = ref(route.path)
+// 折叠菜单
+const isCollapsed = ref(false)
+// 未读消息数
+const unreadCount = ref(5)
+// 当前选择的菜单
+const activePath = ref<string>(route.path)
+// 菜单数据
+const menuList = ref<MenuItem[]>([])
 
 const cachedTabs = ref<CachedTabsType[]>([
-    { path: route.path, title: route.meta.title as string }
+    { path: route.path, title: route.meta.title as string, isClose: route.meta.isClose as boolean }
 ])
 
 const toggleCollapse = () => {
@@ -137,9 +144,7 @@ const toggleCollapse = () => {
 }
 
 const switchTab = (path: string) => {
-    activePath.value = path
-    console.log('aaa', path)
-    router.push({ path })
+    router.push(path)
 }
 
 // 关闭标签
@@ -164,7 +169,8 @@ watch(
         if (!exists && route.meta.title) {
             cachedTabs.value.push({
                 path: route.path,
-                title: route.meta.title as string
+                title: route.meta.title as string,
+                isClose: route.meta.isClose as boolean
             })
         }
         activePath.value = route.path
@@ -172,10 +178,12 @@ watch(
     { immediate: true }
 )
 
+// 个人中心
 const goProfile = () => {
     router.push('/profile')
 }
 
+// 退出登录
 const logout = () => {
     logouted().then(() => {
         clearCache();
@@ -183,12 +191,10 @@ const logout = () => {
     });
 }
 
+// 首页
 const goHome = () => {
     router.push('/');
 }
-
-// 菜单数据
-const menuList = ref<MenuItem[]>([])
 
 // 组件挂载时加载菜单
 const loadMenu = async () => {
@@ -210,10 +216,22 @@ const getMessageNum = async () => {
     unreadCount.value = await getMessageNumApi();
 }
 
+// 检测标签页中是否存在首页
+const existDashboard = () => {
+    if (!cachedTabs.value.some(item => item.path === '/dashboard')) {
+        cachedTabs.value.unshift({
+            path: '/dashboard',
+            title: '首页',
+            isClose: false
+        })
+    }
+}
+
 onMounted(() => {
     loadMenu();
     getNicname();
     getMessageNum();
+    existDashboard();
 })
 </script>
 
@@ -223,7 +241,6 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    /* 防止全局溢出 */
 }
 
 .main-body {
@@ -252,7 +269,6 @@ onMounted(() => {
     border-radius: 4px;
     margin-right: 10px;
     overflow: hidden;
-    /* 防止菜单溢出 */
 }
 
 .main-content {
@@ -262,6 +278,7 @@ onMounted(() => {
     overflow: hidden;
     padding: 0;
     margin-right: 5px;
+    min-height: 0;
 }
 
 .header-left {
@@ -390,12 +407,10 @@ onMounted(() => {
 
 .content-wrapper {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
     overflow: auto;
     padding: 10px;
     background: #f0f2f5;
     border-radius: 4px;
+    min-height: 0;
 }
 </style>

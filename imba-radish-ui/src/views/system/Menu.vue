@@ -289,6 +289,7 @@ const resetSearch = () => {
   width: 100%;
   overflow-x: auto;
   padding-top: 12px;
+  max-height: calc(100vh - 220px);
 }
 
 .list-header {

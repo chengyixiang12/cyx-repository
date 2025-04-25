@@ -59,3 +59,12 @@ export async function getDictDataApi(id: number): Promise<DictDataVo> {
     const res = await get(`/dictData/${id}`, { flag: true });
     return res.data;
 }
+
+/**
+ * 设置默认
+ * @param id 
+ * @param dictType 
+ */
+export async function setDefaultRoleApi(id: number, dictType: string) {
+    await get('/dictData/setDefaultData', { flag: true, params: { id, dictType } })
+}

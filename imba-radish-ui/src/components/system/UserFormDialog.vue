@@ -70,7 +70,7 @@
 
 
 <script lang="ts" setup>
-import { ref, computed, defineProps, defineEmits, watch, onMounted } from 'vue'
+import { ref, computed, defineEmits, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { DeptTreeVo } from '@/types/dept'
 import { SaveUserRequest } from '@/types/user'
