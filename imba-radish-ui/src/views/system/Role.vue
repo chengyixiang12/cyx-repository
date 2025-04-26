@@ -253,10 +253,6 @@ const handleAssignMenu = (id: number) => {
   assignMenuVisible.value = true;
 }
 
-onMounted(() => {
-  loadRoles()
-})
-
 // 搜索
 const handleSearch = () => {
   searchForm.value.pageNum = 1
@@ -268,6 +264,10 @@ const resetSearch = () => {
   searchForm.value.keyword = ''
   loadRoles()
 }
+
+onMounted(() => {
+  loadRoles()
+})
 </script>
 
 <style scoped>

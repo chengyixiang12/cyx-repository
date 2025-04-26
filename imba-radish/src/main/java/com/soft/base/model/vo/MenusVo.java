@@ -36,6 +36,9 @@ public class MenusVo implements MenuTree<MenusVo> {
     @Schema(description = "父菜单 ID")
     private Long parentId;
 
+    @Schema(description = "显示状态；1：显示；0：隐藏")
+    private Integer visible;
+
     @Schema(description = "子菜单列表")
     private List<MenusVo> children = new ArrayList<>();
 }

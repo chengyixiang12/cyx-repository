@@ -5,7 +5,7 @@ export interface SaveUserRequest {
     username: string;
     password: string;
     nickname: string;
-    deptId: number;
+    deptId: number | null;
     email: string;
     phone: string;
     roleIds: number[];

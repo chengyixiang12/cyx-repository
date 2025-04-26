@@ -5,7 +5,7 @@
         <el-card>
           <template #header>
             <div class="list-header">
-              <el-button link icon="ArrowLeft" @click="goBack">返回</el-button>
+              <el-button link icon="ArrowLeft" @click="goBack" class="go-back">返回</el-button>
               <span class="header-title">{{ route.query.dictName }}</span>
               <el-button type="primary" @click="handleAddData">新增</el-button>
             </div>
@@ -38,8 +38,8 @@
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="code" label="编码" />
               <el-table-column prop="label" label="标签" />
+              <el-table-column prop="code" label="编码" />
               <el-table-column prop="value" label="值" />
               <el-table-column prop="isDefault" label="默认" width="80" align="center">
                 <template #default="scope">
@@ -260,5 +260,9 @@ onMounted(() => {
   padding: 8px 12px !important;
   min-height: 36px !important;
   border-bottom: 1px solid #ebeef5;
+}
+
+.go-back {
+  font-size: small;
 }
 </style>

@@ -30,7 +30,7 @@
         </el-form-item>
 
         <el-form-item label="排序" prop="orderNum">
-          <el-input v-model="formData.orderNum" />
+          <el-input v-model="formData.orderNum" type="text" @input="handleSortInput" placeholder="请填写序号" />
         </el-form-item>
 
         <el-form-item label="图标" prop="icon">
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { Component } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { GetMenuVo, GetSelectMenuVo } from '@/types/menu'
@@ -119,7 +119,6 @@ const props = withDefaults(defineProps<FatherParam>(), {
 
 const emit = defineEmits(['update:visible', 'submit'])
 
-const visible = ref(props.visible)
 const formRef = ref<FormInstance>()
 const formData = ref<GetMenuVo>({
   id: 0,
@@ -129,7 +128,7 @@ const formData = ref<GetMenuVo>({
   component: '',
   icon: '',
   type: '0',  // 默认类型为目录
-  orderNum: 0,
+  orderNum: null,
   status: 1,
   visible: 1,
   remark: '',
@@ -151,6 +150,11 @@ const treeProps = {
   value: 'id',
   label: 'name',
 }
+
+const visible = computed({
+  get: () => props.visible,
+  set: (val) => emit('update:visible', val)
+})
 
 // 获取菜单树数据
 const getMenuTree = async (type: string) => {
@@ -206,13 +210,21 @@ const getMenu = async () => {
   await getMenuTree(formData.value.type)
 }
 
-watch(visible, (val) => {
-  emit('update:visible', val)
-})
-
 // 处理关闭事件
 const handleClose = () => {
   emit('update:visible', false)
+}
+
+// 排序表单输入校验
+const handleSortInput = (value: string) => {
+  // 替换掉所有非数字的字符，只保留数字
+  const numericValue = value.replace(/\D/g, '')
+  // 如果有输入，且转成了数字
+  if (numericValue) {
+    formData.value.orderNum = parseInt(numericValue, 10)
+  } else {
+    formData.value.orderNum = null
+  }
 }
 
 onMounted(() => {

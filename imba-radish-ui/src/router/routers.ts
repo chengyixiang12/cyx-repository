@@ -16,7 +16,7 @@ const constantRoutes: RouteRecordRaw[] = [
         path: '/dashboard',
         name: 'dashboard',
         component: () => import('../views/Dashboard.vue'),
-        meta: { title: '首页', requiresAuth: true, isClose: false }
+        meta: { title: '首页', requiresAuth: true, isClose: false, visible: 1 }
       }
     ]
   },
@@ -24,7 +24,7 @@ const constantRoutes: RouteRecordRaw[] = [
     path: '/login',
     name: 'login',
     component: () => import('../views/login/Login.vue'),
-    meta: { title: '登录', requiresAuth: false, isClose: false }
+    meta: { title: '登录', requiresAuth: false, isClose: false, visible: 1 }
   }
 ]
 
@@ -80,7 +80,8 @@ function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteReco
       icon: menu.icon,
       parentPath: parentPath,
       requiresAuth: true,
-      isClose: true
+      isClose: true,
+      visible: menu.visible
     }
   }
 }

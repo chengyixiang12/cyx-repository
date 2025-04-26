@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import { getAllMenuTreeApi, getAssignedMenuApi } from '@/api/menu'
 import type { GetMenuTreeVo } from '@/types/menu'
 import { SetMenusRequest } from '@/types/role';
@@ -33,9 +33,10 @@ const props = withDefaults(defineProps<FatherParam>(), {
 
 const emit = defineEmits(['update:modelValue', 'submit'])
 
-const visible = ref(props.modelValue)
-watch(() => props.modelValue, (val) => (visible.value = val))
-watch(() => visible.value, (val) => emit('update:modelValue', val))
+const visible = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val)
+})
 
 const menuTree = ref<GetMenuTreeVo[]>([])
 const selectedMenuIds = ref<number[]>([])

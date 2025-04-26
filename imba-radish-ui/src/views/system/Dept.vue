@@ -17,6 +17,9 @@
               <el-form-item label="关键字:">
                 <el-input v-model="searchForm.keyword" placeholder="部门名称/编码" clearable class="keyword-input" />
               </el-form-item>
+              <el-form-item label="父级:">
+                <el-input v-model="searchForm.parent" placeholder="部门名称/编码" clearable class="keyword-input" />
+              </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="handleSearch">查询</el-button>
                 <el-button type="primary" @click="resetSearch">重置</el-button>
@@ -36,7 +39,8 @@
               <el-table-column prop="code" label="部门编码" show-overflow-tooltip />
               <el-table-column prop="parentCode" label="父级部门编码" show-overflow-tooltip />
               <el-table-column prop="parentName" label="父级部门名称" show-overflow-tooltip />
-              <el-table-column prop="level" label="部门层级" show-overflow-tooltip />
+              <el-table-column prop="level" label="部门层级" />
+              <el-table-column prop="sortOrder" label="排序" sortable />
               <el-table-column label="操作" width="160" align="center">
                 <template #default="scope">
                   <el-button type="primary" size="small" :icon="Edit" @click="handleEdit(scope.row)" circle />
@@ -70,7 +74,6 @@
     @submit="handleEditSubmit" />
 </template>
 
-
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
@@ -93,6 +96,7 @@ const editDialogVisible = ref(false)
 
 const searchForm = ref<GetDeptsRequest>({
   keyword: '',
+  parent: '',
   pageNum: 1,
   pageSize: 10
 })
@@ -116,6 +120,7 @@ const handleSearch = () => {
 
 const resetSearch = () => {
   searchForm.value.keyword = ''
+  searchForm.value.parent = ''
   loadDepts()
 }
 
@@ -126,6 +131,8 @@ const handleAdd = () => {
 const handleEdit = (row: GetDeptsVo) => {
   deptId.value = row.id
   editDialogVisible.value = true
+  console.log('deptId', deptId.value)
+  console.log('editDialogVisible', editDialogVisible.value)
 }
 
 const handleDelete = async (id: number) => {

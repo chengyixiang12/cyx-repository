@@ -20,7 +20,7 @@
 
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { getAllPermissionsApi, getAssignPerApi } from '@/api/permission'
 import { GetAllPermissionVo, SetPermissionsRequest } from '@/types/permissionts';
 
@@ -36,9 +36,10 @@ const props = withDefaults(defineProps<FatherParam>(), {
 
 const emit = defineEmits(['update:modelValue', 'submit'])
 
-const visible = ref(props.modelValue)
-watch(() => props.modelValue, (val) => visible.value = val)
-watch(() => visible.value, val => emit('update:modelValue', val))
+const visible = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val)
+})
 
 const permissionOptions = ref<GetAllPermissionVo[]>([])
 const selectedPermissions = ref<number[]>([])

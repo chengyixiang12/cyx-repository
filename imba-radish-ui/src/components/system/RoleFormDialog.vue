@@ -30,7 +30,7 @@
         </el-form-item>
 
         <el-form-item label="排序" prop="fixRole">
-          <el-input v-model="formData.sortOrder" placeholder="请填写序号" />
+          <el-input v-model="formData.sortOrder" type="text" @input="handleSortInput" placeholder="请填写序号" />
         </el-form-item>
 
         <el-form-item label="备注" prop="remark">
@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { getRoleApi } from '@/api/role'
 import { SysRoleVo } from '@/types/role'
@@ -66,17 +66,16 @@ const props = withDefaults(defineProps<FatherParam>(), {
 
 const emit = defineEmits(['update:visible', 'submit'])
 
-const visible = ref(props.visible)
 const formRef = ref<FormInstance>()
 const formData = ref<SysRoleVo>({
   id: 0,
-  name: null,
+  name: '',
   sortOrder: null,
-  code: null,
-  description: null,
-  status: null,
-  isDefault: null,
-  fixRole: null,
+  code: '',
+  description: '',
+  status: 1,
+  isDefault: 0,
+  fixRole: 0,
 })
 
 const rules: FormRules = {
@@ -84,6 +83,11 @@ const rules: FormRules = {
   code: [{ required: true, message: '请输入角色编码', trigger: 'blur' }],
   status: [{ required: true, message: '请选择角色状态', trigger: 'blur' }]
 }
+
+const visible = computed({
+  get: () => props.visible,
+  set: (val) => emit('update:visible', val)
+})
 
 // 关闭弹窗事件
 const handleClose = () => {
@@ -104,6 +108,18 @@ const getRole = async () => {
   if (!props.isAdd) {
     const res = await getRoleApi(props.roleId)
     formData.value = res
+  }
+}
+
+// 排序表单输入校验
+const handleSortInput = (value: string) => {
+  // 替换掉所有非数字的字符，只保留数字
+  const numericValue = value.replace(/\D/g, '')
+  // 如果有输入，且转成了数字
+  if (numericValue) {
+    formData.value.sortOrder = parseInt(numericValue, 10)
+  } else {
+    formData.value.sortOrder = null
   }
 }
 

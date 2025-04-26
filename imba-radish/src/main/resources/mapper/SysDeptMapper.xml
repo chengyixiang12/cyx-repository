@@ -92,6 +92,7 @@
             sd.`code`,
             sd.`name`,
             sd.`level`,
+            sd.sort_order,
             sd1.`code` AS `parentCode`,
             sd1.`name` AS `parentName`
         FROM
@@ -102,7 +103,10 @@
         <if test="request.keyword != null and request.keyword != ''">
             AND ( sd.`code` LIKE concat('%', #{request.keyword}, '%') OR sd.`name` LIKE concat('%', #{request.keyword}, '%'))
         </if>
-        ORDER BY sd.create_time DESC
+        <if test="request.parent != null and request.parent != ''">
+            AND ( sd1.code LIKE concat('%', #{request.parent}, '%') OR sd1.name LIKE concat('%', #{request.parent}, '%'))
+        </if>
+        ORDER BY sd.sort_order, sd.create_time DESC
     </select>
     <select id="getChildDeptIds" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT

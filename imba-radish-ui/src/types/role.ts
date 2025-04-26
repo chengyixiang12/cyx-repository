@@ -7,7 +7,7 @@ export interface GetRolesRequest {
 
 export interface SysRoleVo {
     id: number;
-    sortOrder: number;
+    sortOrder: number | null;
     code: string;
     name: string;
     description: string;

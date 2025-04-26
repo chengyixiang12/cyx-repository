@@ -6,6 +6,7 @@ export interface MenuItem {
   icon?: string
   noAuth?: boolean   // 是否不需要认证
   parentId?: number
+  visible: number
   children?: MenuItem[]
 }
 
@@ -42,7 +43,7 @@ export interface GetMenuVo {
   component: string | null;
   icon: string;
   type: string;
-  orderNum: number;
+  orderNum: number | null;
   status: number;
   visible: number;
   remark: string;

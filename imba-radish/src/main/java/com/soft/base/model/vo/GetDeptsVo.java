@@ -32,4 +32,7 @@ public class GetDeptsVo {
 
     @Schema(description = "层级")
     private String level;
+
+    @Schema(description = "排序")
+    private Integer sortOrder;
 }

@@ -1,6 +1,8 @@
 <template>
-  <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" :close-on-click-modal="false" @closed="handleClose">
+  <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" :close-on-click-modal="false"
+    @closed="handleClose">
     <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" label-position="right">
+
       <!-- 用户名 -->
       <el-form-item label="用户名" prop="username" v-if="isAdd">
         <el-input v-model="formData.username" placeholder="请输入用户名" />
@@ -10,20 +12,9 @@
       </el-form-item>
 
       <!-- 部门 -->
-      <el-form-item label="部门">
-        <el-popover placement="bottom-start" :width="300" trigger="click" popper-class="dept-tree-popper">
-          <template #reference>
-            <el-input :model-value="deptName" placeholder="请选择部门" readonly />
-          </template>
-          <el-tree
-            :data="deptTree"
-            :props="treeProps"
-            node-key="id"
-            highlight-current
-            style="max-height: 300px; overflow-y: auto;"
-            @node-click="handleDeptSelect"
-          />
-        </el-popover>
+      <el-form-item label="部门" prop="deptId">
+        <el-tree-select v-model="formData.deptId" :data="deptTree" :props="treeProps" check-strictly placeholder="请选择部门"
+          clearable filterable :filter-node-method="filterNode" style="width: 100%;" />
       </el-form-item>
 
       <!-- 密码 -->
@@ -48,14 +39,8 @@
 
       <!-- 角色 -->
       <el-form-item label="角色">
-        <el-select
-          v-model="formData.roleIds"
-          multiple
-          placeholder="请选择角色"
-          filterable
-          collapse-tags
-          collapse-tags-tooltip
-        >
+        <el-select v-model="formData.roleIds" multiple placeholder="请选择角色" filterable collapse-tags
+          collapse-tags-tooltip>
           <el-option v-for="role in roleOptions" :key="role.id" :label="role.name" :value="role.id" />
         </el-select>
       </el-form-item>
@@ -67,7 +52,6 @@
     </template>
   </el-dialog>
 </template>
-
 
 <script lang="ts" setup>
 import { ref, computed, defineEmits, onMounted } from 'vue'
@@ -85,7 +69,7 @@ interface FatherParam {
   userId?: number | null;
 }
 
-const props = withDefaults(defineProps<FatherParam>(),{
+const props = withDefaults(defineProps<FatherParam>(), {
   visible: false,
   isAdd: false,
   deptTree: () => [],
@@ -101,7 +85,7 @@ const dialogVisible = computed({
 
 const dialogTitle = computed(() => props.isAdd ? '新增用户' : '编辑用户')
 
-const treeProps = { label: 'name', children: 'children' }
+const treeProps = { label: 'name', children: 'children', value: 'id' }
 
 const formRef = ref()
 const formData = ref<SaveUserRequest>({
@@ -110,7 +94,7 @@ const formData = ref<SaveUserRequest>({
   nickname: '',
   email: '',
   phone: '',
-  deptId: 0,
+  deptId: null,
   roleIds: []
 })
 
@@ -118,6 +102,7 @@ const formRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+  deptId: [{ required: true, message: '请选择部门', trigger: 'blur' }],
   email: [
     { required: true, message: '请输入邮箱', trigger: 'blur' },
     { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
@@ -127,57 +112,23 @@ const formRules = {
 const deptTree = ref<DeptTreeVo[]>([])
 const roleOptions = ref<GetRoleSelectVo[]>([])
 
-const handleDeptSelect = (node: DeptTreeVo) => {
-  formData.value.deptId = node.id
-}
-
 const handleClose = () => {
   formRef.value?.resetFields()
 }
 
-// 提交处理
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
-    console.log('aaa', formData.value)
     emit('submit', formData.value)
     dialogVisible.value = false
   } catch (e) {
-    ElMessage.error('请完善表单信息')
+    //
   }
 }
 
-const deptName = computed(() => {
-  const findDept = (tree: DeptTreeVo[], id: number): string => {
-    for (const node of tree) {
-      if (node.id === id) return node.name
-      if (node.children?.length) {
-        const name = findDept(node.children, id)
-        if (name) return name
-      }
-    }
-    return ''
-  }
-  return findDept(props.deptTree, formData.value.deptId)
-})
-
-// 查找部门名称
-const findDeptById = (tree: DeptTreeVo[], id: number): DeptTreeVo | null => {
-  for (const node of tree) {
-    if (node.id === id) return node
-    if (node.children?.length) {
-      const found = findDeptById(node.children, id)
-      if (found) return found
-    }
-  }
-  return null
-}
-
-// 获取用户详情
+// 获取用户
 const getUserById = async (id: number) => {
   const userInfo = await getUser(id)
-  const deptNode = findDeptById(props.deptTree, userInfo.deptId)
-
   formData.value = {
     username: userInfo.username,
     password: '',
@@ -189,7 +140,7 @@ const getUserById = async (id: number) => {
   }
 }
 
-// 加载角色
+// 加载角色数组
 const loadRoles = async () => {
   try {
     const res = await getRoleSelectApi()
@@ -197,6 +148,12 @@ const loadRoles = async () => {
   } catch (e) {
     console.error('加载角色失败', e)
   }
+}
+
+// 部门搜索过滤
+const filterNode = (value: string, data: DeptTreeVo) => {
+  if (!value) return true
+  return data.name.toLowerCase().includes(value.toLowerCase())
 }
 
 onMounted(async () => {
@@ -208,12 +165,14 @@ onMounted(async () => {
 })
 </script>
 
+
 <style scoped>
 .el-form-item {
   margin-bottom: 20px;
 }
 
-.el-input, .el-button {
+.el-input,
+.el-button {
   border-radius: 8px;
 }
 

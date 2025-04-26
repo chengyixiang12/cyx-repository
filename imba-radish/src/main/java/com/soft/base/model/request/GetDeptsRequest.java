@@ -19,4 +19,7 @@ public class GetDeptsRequest extends PageRequest {
 
     @Schema(description = "关键字")
     private String keyword;
+
+    @Schema(description = "父级")
+    private String parent;
 }

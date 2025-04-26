@@ -8,6 +8,7 @@ export interface DeptTreeVo {
 
 export interface GetDeptsRequest {
     keyword: string;
+    parent: string;
     pageNum: number;
     pageSize: number;
 }
@@ -34,4 +35,12 @@ export interface EditDeptRequest {
     code: string;
     name: string;
     parentId: number;
+}
+
+export interface DeptVo {
+    id: number;
+    sortOrder: number | null;
+    code: string;
+    name: string;
+    parentId: number | null;
 }

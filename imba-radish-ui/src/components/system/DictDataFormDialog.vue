@@ -31,7 +31,7 @@
                 </el-form-item>
 
                 <el-form-item label="排序" prop="sortOrder">
-                    <el-input v-model="formData.sortOrder" placeholder="请输入排序值（数字越小越靠前）" />
+                    <el-input v-model="formData.sortOrder" type="text" @input="handleSortInput" placeholder="请输入排序值（数字越小越靠前）" />
                 </el-form-item>
 
                 <el-form-item label="备注" prop="remark">
@@ -47,7 +47,7 @@
     </el-dialog>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { SaveDictDataRequest } from '@/types/dictData'
 import { getDictDataApi } from '@/api/dictData'
@@ -65,8 +65,6 @@ const props = withDefaults(defineProps<FatherParam>(), {
 })
 
 const emit = defineEmits(['update:visible', 'submit'])
-
-const visible = ref(props.visible)
 const formRef = ref<FormInstance>()
 const formData = ref<SaveDictDataRequest>({
     sortOrder: null,
@@ -87,6 +85,11 @@ const rules: FormRules = {
     value: [{ required: true, message: '请选择键值', trigger: 'blur' }]
 }
 
+const visible = computed({
+  get: () => props.visible,
+  set: (val) => emit('update:visible', val)
+})
+
 const handleClose = () => {
     emit('update:visible', false)
 }
@@ -104,6 +107,18 @@ const loadDictData = async () => {
         const res = await getDictDataApi(props.dictDataId)
         formData.value = res
     }
+}
+
+// 排序表单输入校验
+const handleSortInput = (value: string) => {
+  // 替换掉所有非数字的字符，只保留数字
+  const numericValue = value.replace(/\D/g, '')
+  // 如果有输入，且转成了数字
+  if (numericValue) {
+    formData.value.sortOrder = parseInt(numericValue, 10)
+  } else {
+    formData.value.sortOrder = null
+  }
 }
 
 onMounted(() => {

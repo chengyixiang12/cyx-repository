@@ -39,7 +39,8 @@
         sm.icon,
         sm.path,
         sm.component,
-        sm.parent_id AS "parentId"
+        sm.parent_id AS "parentId",
+        sm.visible
         FROM
         sys_menu sm
         JOIN sys_role_menu srm ON sm.id = srm.menu_id

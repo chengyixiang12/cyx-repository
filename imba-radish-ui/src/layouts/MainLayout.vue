@@ -136,7 +136,12 @@ const activePath = ref<string>(route.path)
 const menuList = ref<MenuItem[]>([])
 
 const cachedTabs = ref<CachedTabsType[]>([
-    { path: route.path, title: route.meta.title as string, isClose: route.meta.isClose as boolean }
+    {
+        path: route.path,
+        title: route.meta.title as string,
+        isClose: route.meta.isClose as boolean,
+        visible: route.meta.visible as number
+    }
 ])
 
 const toggleCollapse = () => {
@@ -165,12 +170,13 @@ const closeTab = (path: string) => {
 watch(
     () => route.path,
     () => {
-        const exists = cachedTabs.value.some(tab => tab.path === route.path)
-        if (!exists && route.meta.title) {
+        const exists = cachedTabs.value.some(tab => (tab.path === route.path))
+        if (route.meta.visible === 1 && !exists && route.meta.title) {
             cachedTabs.value.push({
                 path: route.path,
                 title: route.meta.title as string,
-                isClose: route.meta.isClose as boolean
+                isClose: route.meta.isClose as boolean,
+                visible: route.meta.visible as number
             })
         }
         activePath.value = route.path
@@ -222,7 +228,8 @@ const existDashboard = () => {
         cachedTabs.value.unshift({
             path: '/dashboard',
             title: '首页',
-            isClose: false
+            isClose: false,
+            visible: 1
         })
     }
 }

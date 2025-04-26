@@ -1,5 +1,5 @@
 import { post, get, put, del } from '@/utils/http';
-import { DeptTreeVo, EditDeptRequest, GetDeptsRequest, GetDeptsVo, SaveDeptRequest } from '@/types/dept';
+import { DeptTreeVo, DeptVo, EditDeptRequest, GetDeptsRequest, GetDeptsVo, SaveDeptRequest } from '@/types/dept';
 import { PaginatedData } from '@/types/api';
 
 /**
@@ -43,4 +43,13 @@ export async function saveDeptApi(data: SaveDeptRequest) {
  */
 export async function updateDeptApi(data: EditDeptRequest) {
   await put('/dept', data, { flag: true })
+}
+
+/**
+ * 获取部门（单）
+ * @param id 
+ */
+export async function getDeptApi(id: number): Promise<DeptVo> {
+  const res = await get(`/dept/${id}`, { flag: true })
+  return res.data;
 }
