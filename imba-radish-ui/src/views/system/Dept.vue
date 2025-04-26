@@ -6,6 +6,7 @@
           <template #header>
             <div class="list-header">
               <div class="right-header">
+                <el-button type="primary" @click="handleExport">导出</el-button>
                 <el-button type="primary" @click="handleAdd">新增</el-button>
               </div>
             </div>
@@ -29,7 +30,9 @@
 
           <!-- 角色表格 -->
           <div class="list-table">
-            <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading">
+            <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading"
+              @selection-change="handleSelectionChange">
+              <el-table-column type="selection" width="50" align="center" />
               <el-table-column label="序号" width="80" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -82,14 +85,18 @@ import {
   getDeptsApi,
   deleteDeptApi,
   saveDeptApi,
-  updateDeptApi
+  updateDeptApi,
+  exportDept
 } from '@/api/dept'
 import type { GetDeptsVo, GetDeptsRequest, SaveDeptRequest } from '@/types/dept'
+import { download } from '@/utils/download'
+import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
 const total = ref(0)
 const deptId = ref<number | null>(null)
 const deptList = ref<GetDeptsVo[]>([])
+const selectedIds = ref<number[]>([])
 
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
@@ -158,6 +165,19 @@ const handlePageChange = (val: number) => {
 const handleSizeChange = (val: number) => {
   searchForm.value.pageSize = val
   loadDepts()
+}
+
+const handleSelectionChange = (selection: GetDeptsVo[]) => {
+  selectedIds.value = selection.map(item => item.id)
+}
+
+const handleExport = async () => {
+  if (selectedIds.value.length === 0) {
+    showMessage('请至少选择一项', 'warning')
+    return
+  }
+  const { blob, filename } = await exportDept(selectedIds.value, '部门.xlsx')
+  download(blob, filename)
 }
 
 onMounted(() => {

@@ -173,6 +173,33 @@ export async function getBlob(
   return response.data;
 }
 
+// 获取二进制流
+export async function postBlob(
+  url: string,
+  data?: any,
+  config?: Omit<RequestConfig, 'responseType'>
+): Promise<{ blob: Blob; filename: string }> {
+  const response = await instance.post(url, data, {
+    ...config,
+    responseType: 'blob'
+  })
+
+  const contentDisposition = response.headers['content-disposition']
+  let filename = '下载文件'
+
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^"]+)"?/)
+    if (match && match[1]) {
+      filename = decodeURIComponent(match[1])
+    }
+  }
+
+  return {
+    blob: response.data,
+    filename
+  }
+}
+
 export async function post<T = any>(
   url: string,
   data?: any,

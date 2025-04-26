@@ -44,3 +44,8 @@ export interface DeptVo {
     name: string;
     parentId: number | null;
 }
+
+export interface ExportDeptVo {
+    blob: Blob;
+    filename: string;
+}
