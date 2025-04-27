@@ -7,6 +7,7 @@ import com.soft.base.entity.SysLog;
 import com.soft.base.mapper.SysLogMapper;
 import com.soft.base.model.dto.LogDto;
 import com.soft.base.model.request.LogsRequest;
+import com.soft.base.model.vo.GetLogVo;
 import com.soft.base.model.vo.LogsVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysLogService;
@@ -43,6 +44,16 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog>
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
+    }
+
+    @Override
+    public GetLogVo getLog(Long id) {
+        return sysLogMapper.getLog(id);
+    }
+
+    @Override
+    public void deleteLog(Long id) {
+        sysLogMapper.deleteById(id);
     }
 }
 

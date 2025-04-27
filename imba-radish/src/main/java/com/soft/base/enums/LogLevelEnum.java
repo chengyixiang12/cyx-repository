@@ -12,7 +12,7 @@ import lombok.Getter;
 public enum LogLevelEnum {
 
     /**
-     * 信息
+     * 普通
      */
     INFO("1", "info"),
 

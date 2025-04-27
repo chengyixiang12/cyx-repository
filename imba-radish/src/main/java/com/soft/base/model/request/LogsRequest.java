@@ -22,8 +22,11 @@ public class LogsRequest extends PageRequest {
     @Schema(description = "请求方式")
     private String requestMethod;
 
-    @Schema(description = "模块名称")
-    private String moduleName;
+    @Schema(description = "关键字")
+    private String keyword;
+
+    @Schema(description = "日志级别")
+    private String logLevel;
 
     @Schema(description = "状态码")
     private Integer statusCode;

@@ -90,7 +90,6 @@ import { Edit, Delete } from '@element-plus/icons-vue'
 import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
 import DictDataFormDialog from '@/components/system/DictDataFormDialog.vue'
 import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi, setDefaultRoleApi } from '@/api/dictData'
-import { dataType } from 'element-plus/es/components/table-v2/src/common'
 
 const router = useRouter()
 const route = useRoute()

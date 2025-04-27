@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysLog;
 import com.soft.base.model.request.LogsRequest;
+import com.soft.base.model.vo.GetLogVo;
 import com.soft.base.model.vo.LogsVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,6 +17,8 @@ import org.apache.ibatis.annotations.Param;
 public interface SysLogMapper extends BaseMapper<SysLog> {
 
     IPage<LogsVo> getLogs(IPage<LogsVo> page, @Param("request") LogsRequest request);
+
+    GetLogVo getLog(@Param("id") Long id);
 }
 
 

@@ -38,26 +38,30 @@
         SELECT
         sl.id,
         su.nickname,
-        sl.module_name AS "moduleName",
-        sl.request_method AS "requestMethod",
-        sl.status_code AS "statusCode",
-        sl.execution_time AS "executionTime",
-        sl.operation_desc AS "operationDesc"
+        sl.create_time,
+        sl.module_name,
+        sl.request_method,
+        sl.status_code,
+        sl.execution_time,
+        sl.operation_desc,
+        sl.log_level
         FROM
         sys_log sl
         JOIN sys_user su
         ON sl.create_by = su.id
         WHERE
         sl.del_flag = '1'
-        AND su.del_flag = '1'
         <if test="request.requestMethod != null and request.requestMethod != ''">
             AND sl.request_method = #{request.requestMethod}
         </if>
-        <if test="request.moduleName != null and request.moduleName != ''">
-            AND sl.module_name LIKE concat( '%', #{request.moduleName}, '%' )
+        <if test="request.keyword != null and request.keyword != ''">
+            AND sl.module_name LIKE concat( '%', #{request.keyword}, '%' )
         </if>
         <if test="request.statusCode != null and request.statusCode != ''">
             AND sl.status_code = #{request.statusCode}
+        </if>
+        <if test="request.logLevel != null and request.logLevel != ''">
+            AND sl.log_level = #{request.logLevel}
         </if>
         <if test="request.startTime != null and request.endTime != null">
             AND (
@@ -65,5 +69,30 @@
             AND #{request.endTime})
         </if>
         ORDER BY sl.create_time DESC
+    </select>
+    <select id="getLog" parameterType="java.lang.Long" resultType="GetLogVo">
+        SELECT
+            sl.id,
+            sl.create_time,
+            su.nickname,
+            sl.log_level,
+            sl.ip_address,
+            sl.request_url,
+            sl.request_method,
+            sl.request_params,
+            sl.response_result,
+            sl.operation_desc,
+            sl.execution_time,
+            sl.module_name,
+            sl.status_code,
+            sl.exception_info,
+            sl.os_browser_info
+        FROM
+            sys_log sl
+                JOIN sys_user su ON
+                sl.create_by = su.id
+        WHERE
+            sl.del_flag = '1'
+          AND sl.id = #{id}
     </select>
 </mapper>

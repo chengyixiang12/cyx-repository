@@ -1,7 +1,10 @@
 package com.soft.base.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @Author: cyx
@@ -15,6 +18,10 @@ public class LogsVo {
 
     @Schema(description = "主键")
     private Long id;
+
+    @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     @Schema(description = "创建人")
     private String nickname;
@@ -33,4 +40,7 @@ public class LogsVo {
 
     @Schema(description = "操作描述")
     private String operationDesc;
+
+    @Schema(description = "日志级别")
+    private String logLevel;
 }
