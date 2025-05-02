@@ -119,6 +119,7 @@ import { getLeftMenusApi } from '@/api/dashboard';
 import ModuleTabs from '@/components/layout/ModuleTabs.vue';
 import { useRoute } from 'vue-router'
 import { CachedTabsType } from '@/types/layout';
+import { getWebSocketInstance } from '@/utils/websocket';
 
 const router = useRouter();
 const user = ref({
@@ -190,8 +191,10 @@ const goProfile = () => {
 }
 
 // 退出登录
-const logout = () => {
+ const logout = () => {
     logouted().then(() => {
+        const ws = getWebSocketInstance();
+        ws.close();
         clearCache();
         router.push('/login');
     });
@@ -234,11 +237,20 @@ const existDashboard = () => {
     }
 }
 
+// 初始化websocket
+const initWebsocket = async () => {
+    const token = sessionStorage.getItem('Authorization') || '';
+    // 连接websocket
+    const ws = getWebSocketInstance()
+    ws.connect(token)
+}
+
 onMounted(() => {
     loadMenu();
     getNicname();
     getMessageNum();
     existDashboard();
+    initWebsocket();
 })
 </script>
 

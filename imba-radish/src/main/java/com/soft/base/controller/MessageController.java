@@ -92,4 +92,10 @@ public class MessageController {
             return R.fail();
         }
     }
+
+    @GetMapping(value = "/getMessage")
+    @Operation(summary = "获取消息")
+    private R<Void> getMessage() {
+        return R.ok();
+    }
 }

@@ -90,6 +90,7 @@ permit:
     - /secretKey/getPublicKey
     - /error
     - /favicon.ico
+    - /actuator/**
 
 #登录验证码
 radish:
@@ -117,3 +118,14 @@ web-client:
   response-timeout: 5
   #连接超时；单位：毫秒
   connect-timeout: 5000
+#性能监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        #暴露的监控端点
+        include: health, metrics, prometheus
+  endpoint:
+    health:
+      #显示详细信息
+      show-details: always

@@ -7,6 +7,7 @@ import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.entity.SysUser;
+import com.soft.base.enums.LogLevelEnum;
 import com.soft.base.exception.CaptChaErrorException;
 import com.soft.base.exception.InvalidLoginMethodException;
 import com.soft.base.model.request.LoginRequest;

@@ -93,15 +93,12 @@ const loginFormRef = ref<FormInstance>();
 const loginRules: FormRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    // { min: 3, max: 20, message: '长度在3到20个字符', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    // { min: 6, max: 20, message: '长度在6到20个字符', trigger: 'blur' }
   ],
   graphicsCaptcha: [
     { required: true, message: '请输入验证码', trigger: 'blur' },
-    // { len: 4, message: '验证码为4位字符', trigger: 'blur' }
   ]
 }
 
@@ -153,14 +150,13 @@ const handleLogin = async () => {
     sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
 
     // 跳转首页
-    router.push('/dashboard');
-
+    await router.push('/dashboard');
+    showMessage('登录成功', 'success');
   } catch (error: any) {
     refreshCaptcha();
     loginForm.value.graphicsCaptcha = '';
   } finally {
     loading.value = false
-    showMessage('登录成功', 'success');
   }
 }
 
