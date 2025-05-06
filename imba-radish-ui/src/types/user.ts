@@ -14,7 +14,7 @@ export interface SaveUserRequest {
 export interface EditUserRequest {
     id: number | null;
     nickname: string;
-    deptId: number;
+    deptId: number | null;
     email: string;
     phone: string;
     roleIds: number[];

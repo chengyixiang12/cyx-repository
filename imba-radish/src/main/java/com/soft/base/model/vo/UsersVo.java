@@ -38,4 +38,7 @@ public class UsersVo {
 
     @Schema(description = "部门名称")
     private String deptName;
+
+    @Schema(description = "是否在线")
+    private Integer isOnline;
 }

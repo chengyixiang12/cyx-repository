@@ -40,7 +40,7 @@
               </el-table-column>
               <el-table-column prop="name" label="角色名称" show-overflow-tooltip />
               <el-table-column prop="code" label="角色编码" show-overflow-tooltip />
-              <el-table-column prop="sortOrder" label="排序" :width="50" sortable />
+              <el-table-column prop="sortOrder" label="排序" :width="65" sortable />
               <el-table-column prop="status" label="状态" align="center" width="100">
                 <template #default="scope">
                   <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"

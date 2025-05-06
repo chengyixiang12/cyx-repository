@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysUser;
 import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
@@ -27,6 +28,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +71,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final SysUserRoleService sysUserRoleService;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
     public SysUsersServiceImpl(SysUsersMapper sysUsersMapper,
                                PasswordEncoder passwordEncoder,
@@ -76,7 +80,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
                                SecretKeyService secretKeyService,
                                SysDeptService sysDeptService,
                                SysRoleService sysRoleService,
-                               SysUserRoleService sysUserRoleService) {
+                               SysUserRoleService sysUserRoleService,
+                               RedisTemplate<String, Object> redisTemplate) {
         this.sysUsersMapper = sysUsersMapper;
         this.passwordEncoder = passwordEncoder;
         this.rsaUtil = rsaUtil;
@@ -84,6 +89,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         this.sysDeptService = sysDeptService;
         this.sysRoleService = sysRoleService;
         this.sysUserRoleService = sysUserRoleService;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -103,6 +109,9 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         getUsersDto.setDeptIds(deptIds);
         Page<UsersVo> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
         PageVo<UsersVo> pageVo = new PageVo<>();
+        allUsers.getRecords().forEach(item -> {
+            item.setIsOnline(Boolean.TRUE.equals(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId())) ? 1 : 0);
+        });
         pageVo.setRecords(allUsers.getRecords());
         pageVo.setTotal(allUsers.getTotal());
         return pageVo;
