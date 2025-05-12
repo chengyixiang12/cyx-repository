@@ -2,6 +2,7 @@ package com.soft.base.controller;
 
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.RegexConstant;
+import com.soft.base.entity.SysUser;
 import com.soft.base.exception.RepeatSendCaptChaException;
 import com.soft.base.rabbitmq.producer.CaptchaProduce;
 import com.soft.base.resultapi.R;
@@ -72,18 +73,21 @@ public class MessageController {
 
     @GetMapping(value = "/sendLoginCaptcha")
     @Operation(summary = "发送登录验证码")
-    @Parameter(name = "username", description = "用户名", required = true, in = ParameterIn.QUERY)
-    public R sendLoginCaptcha(@RequestParam(value = "username", required = false) String username) {
-        if (StringUtils.isBlank(username)) {
-            return R.fail("用户名不能为空");
+    @Parameter(name = "email", description = "邮箱", required = true, in = ParameterIn.QUERY)
+    public R sendLoginCaptcha(@RequestParam(value = "email", required = false) String email) {
+        if (StringUtils.isBlank(email)) {
+            return R.fail("邮箱不能为空");
         }
         try {
+            SysUser sysUser = sysUsersService.getUserByEmail(email);
+            if (sysUser == null) {
+                return R.fail("邮箱尚未注册，请前往注册");
+            }
+
+            String username = sysUser.getUsername();
+
             if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + username))) {
                 throw new RepeatSendCaptChaException("请勿重复发送验证码");
-            }
-            boolean flag = sysUsersService.checkUsernameExist(username);
-            if (!flag) {
-                return R.fail("用户不存在");
             }
             captchaProduce.sendLoginCaptcha(username);
             return R.ok("验证码已发送，请留意您的邮箱");

@@ -322,6 +322,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         sysUsersMapper.forbiddenUser(username);
     }
 
+    @Override
+    public SysUser getUserByEmail(String email) {
+        return sysUsersMapper.getUserByEmail(email);
+    }
+
     /**
      * 调用websocket发送强制下线消息
      * @param id

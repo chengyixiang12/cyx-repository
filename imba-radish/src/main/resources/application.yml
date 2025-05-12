@@ -101,7 +101,7 @@ radish:
     expire-time: 300
   graphics:
     #图形验证码过期时间（秒）
-    expire-time: 20
+    expire-time: 60
   token:
     #token过期时间（秒）
     expire-time: 36000

@@ -101,8 +101,10 @@ public class AuthServiceImpl implements AuthService {
                     break;
                 }
                 case BaseConstant.LOGIN_METHOD_EMAIL: {
-                    String captCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
-                    if (!request.getPassword().equals(captCha)) {
+                    SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
+                    request.setUsername(sysUser.getUsername());
+                    String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getUsername());
+                    if (!request.getEmailCaptcha().equals(emailCaptCha)) {
                         throw new CaptChaErrorException("验证码错误");
                     }
                     redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());

@@ -41,3 +41,11 @@ export async function logouted(): Promise<any> {
   const res = await get('/logout', { flag: true });
   return res.data
 }
+
+/**
+ * 发送登录验证码
+ * @param email 
+ */
+export async function sendCaptchaApi(email: string) {
+  await get('/message/sendLoginCaptcha', { flag: false, params: { email } })
+}

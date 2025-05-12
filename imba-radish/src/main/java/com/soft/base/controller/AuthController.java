@@ -69,28 +69,45 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "登录")
     public R<LoginVo> authenticate(@RequestBody LoginRequest request) {
-        if (StringUtils.isBlank(request.getUsername())) {
-            return R.fail("用户名不能为空");
-        }
-        if (StringUtils.isBlank(request.getPassword())) {
-            return R.fail("密码不能为空");
-        }
         if (StringUtils.isBlank(request.getLoginMethod())) {
             return R.fail("登录方式不能为空");
         }
-        if (StringUtils.isBlank(request.getGraphicsCaptcha())) {
-            return R.fail("图形验证码不能为空");
-        }
-        if (StringUtils.isBlank(request.getUuid())) {
-            return R.fail("唯一标识不能为空");
+        if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
+            if (StringUtils.isBlank(request.getGraphicsCaptcha())) {
+                return R.fail("图形验证码不能为空");
+            }
+            if (StringUtils.isBlank(request.getUsername())) {
+                return R.fail("用户名不能为空");
+            }
+            if (StringUtils.isBlank(request.getPassword())) {
+                return R.fail("密码不能为空");
+            }
+            if (StringUtils.isBlank(request.getUuid())) {
+                return R.fail("唯一标识不能为空");
+            }
+        } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
+            if (StringUtils.isBlank(request.getEmail())) {
+                return R.fail("邮箱不能为空");
+            }
+            if (StringUtils.isBlank(request.getEmailCaptcha())) {
+                return R.fail("邮箱验证码不能为空");
+            }
         }
         try {
-            String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + request.getUuid());
-            if (StringUtils.isBlank(graphicsCaptcha)) {
-                return R.fail("图形验证码过期");
-            }
-            if (!graphicsCaptcha.equalsIgnoreCase(request.getGraphicsCaptcha())) {
-                return R.fail("图形验证码错误");
+            if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
+                String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + request.getUuid());
+                if (StringUtils.isBlank(graphicsCaptcha)) {
+                    return R.fail("图形验证码过期");
+                }
+                if (!graphicsCaptcha.equalsIgnoreCase(request.getGraphicsCaptcha())) {
+                    return R.fail("图形验证码错误");
+                }
+            } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
+                SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
+                Boolean existEmailCaptcha = redisTemplate.hasKey(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getUsername());
+                if (existEmailCaptcha == null || !existEmailCaptcha) {
+                    return R.fail("邮箱验证码已过期");
+                }
             }
             LoginVo loginVo = authService.authenticate(request);
             return R.ok(loginVo);
@@ -111,7 +128,7 @@ public class AuthController {
     @SysLock(name = "user")
     @PostMapping(value = "/register")
     @Operation(summary = "注册")
-    public R register(@RequestBody RegisterRequest request) {
+    public R<Void> register(@RequestBody RegisterRequest request) {
         if (StringUtils.isBlank(request.getUsername())) {
             return R.fail("用户名不能为空");
         }

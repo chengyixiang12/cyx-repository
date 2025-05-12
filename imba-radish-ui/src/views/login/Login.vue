@@ -1,42 +1,56 @@
 <template>
   <div class="login-container">
     <div class="login-card">
+      <!-- 登录方式 Tabs 切换 -->
+      <el-tabs v-model="currentLoginType" stretch class="login-tabs">
+        <el-tab-pane label="密码登录" name="password" />
+        <el-tab-pane label="邮箱验证码登录" name="email" />
+      </el-tabs>
+
+      <!-- 登录标题 -->
       <div class="login-header">
-        <!-- <img src="@/assets/logo.png" alt="Logo" class="logo"> -->
         <h2>欢迎登录</h2>
-        <p>请输入您的账号和密码</p>
+        <p>请选择登录方式并输入信息</p>
       </div>
 
+      <!-- 登录表单 -->
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" @submit.prevent="handleLogin">
-        <!-- 用户名 -->
-        <el-form-item prop="username">
-          <el-input v-model="loginForm.username" placeholder="用户名/手机号" prefix-icon="User" size="large"
-            @input="forceUpdate" />
-        </el-form-item>
+        <!-- 密码登录表单 -->
+        <template v-if="currentLoginType === 'password'">
+          <el-form-item prop="username">
+            <el-input v-model="loginForm.username" placeholder="用户名/手机号" prefix-icon="User" size="large" />
+          </el-form-item>
 
-        <!-- 密码 -->
-        <el-form-item prop="password">
-          <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" show-password prefix-icon="Lock"
-            size="large" @input="forceUpdate" />
-        </el-form-item>
+          <el-form-item prop="password">
+            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" size="large" show-password />
+          </el-form-item>
 
-        <!-- 验证码 -->
-        <el-form-item prop="graphicsCaptcha">
-          <div class="captcha-wrapper">
-            <el-input v-model="loginForm.graphicsCaptcha" placeholder="请输入验证码" prefix-icon="Picture" size="large"
-              @input="forceUpdate" />
-            <div class="captcha-img" @click="refreshCaptcha">
-              <img v-if="captchaUrl" :src="captchaUrl" alt="验证码">
-              <span v-else class="captcha-loading">加载中...</span>
+          <el-form-item prop="graphicsCaptcha">
+            <div class="captcha-wrapper">
+              <el-input v-model="loginForm.graphicsCaptcha" placeholder="验证码" prefix-icon="Picture" size="large" />
+              <div class="captcha-img" @click="refreshCaptcha">
+                <img v-if="captchaUrl" :src="captchaUrl" alt="验证码" />
+                <span v-else class="captcha-loading">加载中...</span>
+              </div>
             </div>
-          </div>
-        </el-form-item>
+          </el-form-item>
+        </template>
 
-        <!-- 记住我 & 忘记密码 -->
-        <!-- <div class="login-options">
-          <el-checkbox v-model="rememberMe">记住我</el-checkbox>
-          <el-link type="primary" @click="showForgetDialog">忘记密码?</el-link>
-        </div> -->
+        <!-- 邮箱验证码登录表单 -->
+        <template v-else>
+          <el-form-item prop="email">
+            <el-input v-model="loginForm.email" placeholder="请输入邮箱" prefix-icon="Message" size="large" />
+          </el-form-item>
+
+          <el-form-item prop="emailCaptcha">
+            <div class="captcha-wrapper">
+              <el-input v-model="loginForm.emailCaptcha" placeholder="请输入验证码" prefix-icon="Key" size="large" />
+              <el-button @click="sendEmailCaptcha" :disabled="countdown > 0" size="large">
+                {{ countdown > 0 ? `${countdown}s 后重试` : '发送验证码' }}
+              </el-button>
+            </div>
+          </el-form-item>
+        </template>
 
         <!-- 登录按钮 -->
         <el-form-item>
@@ -45,123 +59,119 @@
           </el-button>
         </el-form-item>
       </el-form>
-
-      <!-- 其他登录方式 -->
-      <!-- <div class="other-login">
-        <el-divider>其他登录方式</el-divider>
-        <div class="login-methods">
-          <el-tooltip content="手机验证码登录">
-            <el-button circle @click="switchToSMS">
-              <el-icon><Message /></el-icon>
-            </el-button>
-          </el-tooltip>
-          <el-tooltip content="微信登录">
-            <el-button circle>
-              <el-icon><Iphone /></el-icon>
-            </el-button>
-          </el-tooltip>
-        </div>
-      </div>-->
     </div>
   </div>
 </template>
 
+
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { FormInstance, FormRules } from 'element-plus';
-import { getGraphicCaptcha, login, getUserInfo } from '@/api/login';
-import { RSAUtil } from '@/utils/rsa';
+import { getGraphicCaptcha, login, getUserInfo, sendCaptchaApi } from '@/api/login';
 import { getPublicKey } from '@/api/auth';
+import { RSAUtil } from '@/utils/rsa';
+import { showMessage } from '@/utils/message';
 import router from '@/router/routers';
 import { LoginRequest } from '@/types/login';
-import { showMessage } from '@/utils/message';
 
-const loginForm = ref<LoginRequest>({
+const currentLoginType = ref<'password' | 'email'>('password');
+const loginFormRef = ref<FormInstance>();
+const loading = ref(false);
+const captchaUrl = ref('');
+const countdown = ref(0);
+let timer: number;
+
+const loginForm = ref({
   username: '',
   password: '',
   graphicsCaptcha: '',
-  loginMethod: 'password', // 默认密码登录
+  email: '',
+  emailCaptcha: '',
+  loginMethod: 'password',
   uuid: ''
-})
+});
 
-// const rememberMe = ref(false)
-const loading = ref(false);
-const captchaUrl = ref('');
-const loginFormRef = ref<FormInstance>();
+const loginRules = computed<FormRules>(() => {
+  return currentLoginType.value === 'password'
+    ? {
+        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        graphicsCaptcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+      }
+    : {
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+        ],
+        emailCaptcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+      };
+});
 
-// 验证规则
-const loginRules: FormRules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-  ],
-  graphicsCaptcha: [
-    { required: true, message: '请输入验证码', trigger: 'blur' },
-  ]
-}
-
-const forceUpdate = () => {
-  // 强制更新视图
-  loginForm.value = { ...loginForm.value };
-}
-
-// 获取验证码
 const refreshCaptcha = async () => {
   try {
     const { blob, uuid } = await getGraphicCaptcha(loginForm.value.uuid);
     loginForm.value.uuid = uuid;
     captchaUrl.value = URL.createObjectURL(blob);
   } catch (error) {
-    console.error('获取验证码失败:', error)
+    console.error('获取验证码失败:', error);
   }
-}
+};
 
-// 登录提交
+const sendEmailCaptcha = async () => {
+  if (!loginForm.value.email) {
+    showMessage('请先输入邮箱地址', 'warning');
+    return;
+  }
+  try {
+    await sendCaptchaApi(loginForm.value.email);
+    showMessage('验证码已发送，请查收邮箱', 'success');
+    countdown.value = 60;
+    timer = setInterval(() => {
+      countdown.value--;
+      if (countdown.value <= 0) clearInterval(timer);
+    }, 1000);
+  } catch {
+    showMessage('发送验证码失败', 'error');
+  }
+};
+
 const handleLogin = async () => {
   try {
     const valid = await loginFormRef.value?.validate();
-    if (!valid) return // 验证不通过时停止执行
+    if (!valid) return;
 
-    loading.value = true
-
-    const publicKey: string = await getPublicKey(0);
-    // 加密密码
-    const passEncode = RSAUtil.encrypt(loginForm.value.password, publicKey);
-
+    loading.value = true;
     const loginParam: LoginRequest = {
-      username: loginForm.value.username,
-      password: passEncode,
-      loginMethod: loginForm.value.loginMethod,
-      graphicsCaptcha: loginForm.value.graphicsCaptcha,
-      uuid: loginForm.value.uuid
+      loginMethod: currentLoginType.value
     };
-    // 登录
+
+    if (currentLoginType.value === 'password') {
+      const publicKey = await getPublicKey(0);
+      loginParam.username = loginForm.value.username;
+      loginParam.password = RSAUtil.encrypt(loginForm.value.password, publicKey);
+      loginParam.graphicsCaptcha = loginForm.value.graphicsCaptcha;
+      loginParam.uuid = loginForm.value.uuid;
+    } else {
+      loginParam.email = loginForm.value.email;
+      loginParam.emailCaptcha = loginForm.value.emailCaptcha;
+    }
+
     const data = await login(loginParam);
-
-    // 存储token
     sessionStorage.setItem('Authorization', data.token);
-
-    // 查询登录用户信息
     const userInfo = await getUserInfo();
-
-    // 存储用户信息
     sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
-
-    // 跳转首页
     await router.push('/dashboard');
     showMessage('登录成功', 'success');
-  } catch (error: any) {
-    refreshCaptcha();
-    loginForm.value.graphicsCaptcha = '';
+  } catch (error) {
+    if (currentLoginType.value === 'password') refreshCaptcha();
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-// 初始化加载验证码
-onMounted(refreshCaptcha)
+onMounted(() => {
+  if (currentLoginType.value === 'password') refreshCaptcha();
+});
 </script>
 
 <style scoped>
@@ -183,15 +193,13 @@ onMounted(refreshCaptcha)
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+.login-tabs {
+  margin-bottom: 20px;
+}
+
 .login-header {
   text-align: center;
   margin-bottom: 30px;
-}
-
-.logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 15px;
 }
 
 .login-header h2 {
@@ -208,6 +216,7 @@ onMounted(refreshCaptcha)
 .captcha-wrapper {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .captcha-img {
@@ -233,30 +242,8 @@ onMounted(refreshCaptcha)
   font-size: 12px;
 }
 
-.login-options {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
 .login-btn {
   width: 100%;
   margin-top: 10px;
-}
-
-.other-login {
-  margin-top: 30px;
-}
-
-.login-methods {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.el-divider__text {
-  background-color: white;
-  padding: 0 10px;
-  color: #909399;
 }
 </style>

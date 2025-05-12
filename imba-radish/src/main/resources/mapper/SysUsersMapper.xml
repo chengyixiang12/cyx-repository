@@ -173,7 +173,8 @@
         SELECT
             su.id,
             su.username,
-            su.`password`,
+            su.password,
+            su.dept_id,
             su.enabled,
             su.account_non_locked,
             su.credentials_non_expired,
@@ -206,4 +207,13 @@
             del_flag = '1'
           AND username = #{username}
     </update>
+    <select id="getUserByEmail" parameterType="java.lang.String" resultType="SysUser">
+        SELECT
+            *
+        FROM
+            sys_user su
+        WHERE
+            su.del_flag = '1'
+          AND su.email = #{email}
+    </select>
 </mapper>

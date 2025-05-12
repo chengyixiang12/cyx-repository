@@ -23,4 +23,10 @@ public class LoginRequest {
 
     @Schema(description = "验证码唯一标识")
     private String uuid;
+
+    @Schema(description = "邮箱")
+    private String email;
+
+    @Schema(description = "验证码")
+    private String emailCaptcha;
 }

@@ -66,10 +66,10 @@
                   </el-icon>
                 </template>
               </el-table-column>
-              <el-table-column prop="parentName" label="父级菜单" show-overflow-tooltip />
               <el-table-column prop="type" label="类型" :formatter="formatType" show-overflow-tooltip />
               <el-table-column prop="path" label="路由" show-overflow-tooltip />
               <el-table-column prop="component" label="组件" show-overflow-tooltip />
+              <el-table-column prop="parentName" label="父级菜单" show-overflow-tooltip />
               <el-table-column prop="orderNum" label="排序" width="50" sortable />
               <el-table-column prop="status" label="菜单状态" align="center" width="100">
                 <template #default="scope">

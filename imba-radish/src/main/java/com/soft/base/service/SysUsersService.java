@@ -52,4 +52,6 @@ public interface SysUsersService extends IService<SysUser> {
     void enableUser(String username);
 
     void forbiddenUser(String username);
+
+    SysUser getUserByEmail(String email);
 }

@@ -1,10 +1,12 @@
 // 登录请求参数
 export interface LoginRequest {
-    username: string;
-    password: string;
-    loginMethod: string;  // 如："password", "sms"等
-    graphicsCaptcha: string; // 图形验证码
-    uuid: string;
+    username?: string;
+    password?: string;
+    loginMethod: string;
+    graphicsCaptcha?: string; // 图形验证码
+    uuid?: string;
+    email?: string;
+    emailCaptcha?: string;
   }
   
   // 登录成功响应

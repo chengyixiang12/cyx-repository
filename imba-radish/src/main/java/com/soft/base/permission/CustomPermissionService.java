@@ -3,6 +3,7 @@ package com.soft.base.permission;
 import com.soft.base.service.SysPermissionService;
 import com.soft.base.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
@@ -14,7 +15,7 @@ import java.util.List;
  * @Description: 权限校验
  * @DateTime: 2024/11/20 19:23
  **/
-@Service(value = "cps")
+@Component(value = "cps")
 public class CustomPermissionService {
 
     private final SecurityUtil securityUtil;
