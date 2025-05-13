@@ -4,6 +4,7 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
+import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.send.SendParams;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +40,7 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
             UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
             // 重新设置用户在线状态
             redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
-//            log.info("{} keep-live...", userDto.getUsername());
+            WebSocketSessionManager.addSession(userDto.getId(), session);
             SendParams sendParams = new SendParams();
             sendParams.setStatus(true);
             sendParams.setOrder(WebSocketOrderEnum.HEART_BEAT.toString());
