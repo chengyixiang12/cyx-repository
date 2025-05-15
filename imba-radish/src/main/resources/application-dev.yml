@@ -6,9 +6,9 @@ spring:
       max-request-size: 20MB
       file-size-threshold: 1MB
   datasource:
-    username: root
-    password: 123456
-    url: jdbc:mysql://192.168.226.130:3306/radish_master?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: ${DATASOURCE_USERNAME_MYSQL}
+    password: ${DATASOURCE_PASSWORD_MYSQL}
+    url: ${DATASOURCE_URL_MYSQL}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       # 连接池最大连接数
@@ -31,10 +31,10 @@ spring:
       validation-timeout: 5000
   data:
     redis:
-      host: 192.168.226.130
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
       # 密码，未配置密码可不填
-      password: 123456
+      password: ${REDIS_PASSWORD}
       # 数据源
       database: 15
       # 连接超时（单位：毫秒）
@@ -53,19 +53,19 @@ spring:
           # 连接池获取连接的最大等待时间（单位：毫秒）
           max-wait: 5000
   rabbitmq:
-    host: 192.168.226.130
-    port: 5672
-    username: root
-    password: 123456
+    host: ${RABBIT_MQ_HOST}
+    port: ${RABBIT_MQ_PORT}
+    username: ${RABBIT_MQ_USERNAME}
+    password: ${RABBIT_MQ_PASSWORD}
     virtual-host: /
   jmx:
     # 启动JMX监控，jconsole
     enabled: true
 #minio对象存储
 minio:
-  url: http://192.168.226.130:9002
-  accessKey: admin
-  secretKey: 123456789
+  url: ${MINIO_URL}
+  accessKey: ${MINIO_ACCESS_KEY}
+  secretKey: ${MINIO_SECRET_KEY}
   bucket: cyx
 #启用api文档
 springdoc:
