@@ -67,22 +67,24 @@
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="username" label="用户名" show-overflow-tooltip />
+              <el-table-column prop="username" label="用户名" show-overflow-tooltip width="80px">
+                <template #default="scope">
+                  <div style="display: flex; align-items: center; gap: 9px;">
+                    <span :style="{
+                      display: 'inline-block',
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: scope.row.isOnline === 1 ? '#13ce66' : '#c0c4cc'
+                    }" />
+                    <span>{{ scope.row.username }}</span>
+                  </div>
+                </template>
+              </el-table-column>
               <el-table-column prop="phone" label="手机号码" show-overflow-tooltip />
               <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
               <el-table-column prop="nickname" label="昵称" show-overflow-tooltip />
               <el-table-column prop="deptName" label="部门" show-overflow-tooltip />
-              <el-table-column label="在线状态" align="center" width="100">
-                <template #default="scope">
-                  <span :style="{
-                    display: 'inline-block',
-                    width: '10px',
-                    height: '10px',
-                    borderRadius: '50%',
-                    backgroundColor: scope.row.isOnline === 1 ? '#13ce66' : '#c0c4cc'
-                  }" />
-                </template>
-              </el-table-column>
               <el-table-column prop="enabled" label="状态" align="center" width="100">
                 <template #default="scope">
                   <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" active-color="#13ce66"
@@ -100,7 +102,8 @@
                 <template #default="scope">
                   <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
                   <el-tooltip class="item" effect="dark" content="强制下线" placement="top">
-                    <el-button size="small" type="primary" @click="forceOffline(scope.row)" :icon="RemoveFilled" circle />
+                    <el-button size="small" type="primary" @click="forceOffline(scope.row)" :icon="RemoveFilled"
+                      circle />
                   </el-tooltip>
                   <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">

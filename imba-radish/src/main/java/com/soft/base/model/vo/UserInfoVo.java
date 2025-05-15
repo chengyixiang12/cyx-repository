@@ -20,17 +20,17 @@ public class UserInfoVo {
     @Schema(description = "用户名")
     private String username;
 
-    @Schema(description = "部门id")
-    private Long deptId;
+//    @Schema(description = "部门id")
+//    private Long deptId;
 
     @Schema(description = "昵称")
     private String nickname;
 
-    @Schema(description = "手机号码")
-    private String phone;
+//    @Schema(description = "手机号码")
+//    private String phone;
 
-    @Schema(description = "邮箱")
-    private String email;
+//    @Schema(description = "邮箱")
+//    private String email;
 
     @Schema(description = "权限")
     private List<String> permissions;

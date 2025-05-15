@@ -19,4 +19,14 @@ public class RegexConstant {
      * 邮箱正则
      */
     public final static String EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+
+    /**
+     * 隐藏电话号码正则
+     */
+    public final static String PHONE_HIDDEN_REGEX = "(\\d{3})\\d{5}(\\d{3})";
+
+    /**
+     * 隐藏电话号码示例
+     */
+    public final static String PHONE_HIDDEN_EXP = "$1*****$2";
 }

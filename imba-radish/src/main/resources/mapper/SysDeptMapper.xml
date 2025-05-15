@@ -56,18 +56,19 @@
         </foreach>
     </update>
     <select id="getDept" parameterType="java.lang.Long" resultType="DeptVo">
-        SELECT
-        sd.id,
-        sd.sort_order AS "sortOrder",
-        sd.`code`,
-        sd.`name`,
-        sd.parent_id AS "parentId",
-        ( SELECT sd1.`name` FROM sys_dept sd1 WHERE sd1.del_flag = '1' AND sd1.id = sd.parent_id ) AS "parentName"
-        FROM
-        sys_dept sd
-        WHERE
-        sd.del_flag = '1'
-        AND sd.id = #{id}
+        SELECT sd.id,
+               sd.sort_order AS "sortOrder",
+               sd.`code`,
+               sd.`name`,
+               sd.parent_id  AS "parentId",
+               sd1.name      AS "parentName"
+        FROM sys_dept sd
+                 JOIN sys_dept sd1
+                      ON
+                                  sd.parent_id = sd1.id
+                              AND sd1.del_flag = '1'
+        WHERE sd.del_flag = '1'
+          AND sd.id = #{id}
     </select>
     <select id="exportDept" parameterType="java.util.List" resultType="ExportDeptDto">
         SELECT

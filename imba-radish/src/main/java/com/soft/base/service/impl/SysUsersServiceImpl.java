@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
+import com.soft.base.constants.RegexConstant;
 import com.soft.base.entity.SysUser;
 import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
@@ -111,6 +112,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         PageVo<UsersVo> pageVo = new PageVo<>();
         allUsers.getRecords().forEach(item -> {
             item.setIsOnline(Boolean.TRUE.equals(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId())) ? 1 : 0);
+            item.setPhone(item.getPhone().replaceAll(RegexConstant.PHONE_HIDDEN_REGEX, RegexConstant.PHONE_HIDDEN_EXP));
         });
         pageVo.setRecords(allUsers.getRecords());
         pageVo.setTotal(allUsers.getTotal());
