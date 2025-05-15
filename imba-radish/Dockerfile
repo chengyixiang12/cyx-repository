@@ -17,7 +17,7 @@ COPY /config/application-prod.yml /app/config/application-prod.yml
 COPY ./imba-radish-1.0-SNAPSHOT.jar /imba-radish-1.0-SNAPSHOT.jar
 
 # 设定容器启动时运行的命令
-ENTRYPOINT ["java", "-Dfile.encoding=utf-8", "-jar", "/imba-radish-1.0-SNAPSHOT.jar", "--SPRING_PROFILES_ACTIVE=prod"]
+ENTRYPOINT ["java", "-Dfile.encoding=utf-8", "-jar", "/imba-radish-1.0-SNAPSHOT.jar", "--spring.profiles.active=prod"]
 
 # 容器对外暴露的端口，通常是 8081
 EXPOSE 8081
