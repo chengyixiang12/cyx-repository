@@ -87,6 +87,17 @@ log:
 #临时文件存储路径
 tmp:
   path: /app/tmp
+#不鉴权url
+permit:
+  urls:
+    - /auth/**
+    - /doc.html
+    - /message/sendRegistCaptCha
+    - /message/sendLoginCaptcha
+    - /ws/**
+    - /secretKey/getPublicKey
+    - /error
+    - /favicon.ico
 #限流
 rate-limit:
   #是否开启限流

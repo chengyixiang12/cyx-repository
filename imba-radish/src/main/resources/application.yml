@@ -21,7 +21,7 @@ spring:
     async:
       request-timeout: 150000
   application:
-    name: cyx
+    name: radish
   servlet:
     multipart:
       enabled: true
@@ -79,19 +79,6 @@ jwt:
   secret-key: abcdefghijklmnopq123456789
   #单位秒；1小时过期
   expire: 3600000
-#不鉴权url
-permit:
-  urls:
-    - /auth/**
-    - /doc.html
-    - /message/sendRegistCaptCha
-    - /message/sendLoginCaptcha
-    - /ws/**
-    - /secretKey/getPublicKey
-    - /error
-    - /favicon.ico
-    - /actuator/**
-
 #登录验证码
 radish:
   captcha:
