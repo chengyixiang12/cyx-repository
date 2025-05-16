@@ -58,7 +58,7 @@ public class SysSecretKeyController {
     @GetMapping(value = "/generateKey")
     @Operation(summary = "生成密钥对")
     @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY)
-    public R generateKey(@RequestParam(value = "type", required = false) Integer type) {
+    public R<Object> generateKey(@RequestParam(value = "type", required = false) Integer type) {
         if (type == null) {
             return R.fail("类型不能为空");
         }

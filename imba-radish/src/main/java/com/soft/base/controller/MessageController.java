@@ -52,7 +52,7 @@ public class MessageController {
     @GetMapping(value = "/sendRegistCaptcha")
     @Operation(summary = "发送注册验证码")
     @Parameter(name = "email", description = "邮箱地址", required = true, in = ParameterIn.QUERY)
-    public R sendRegistCaptcha(@RequestParam(value = "email", required = false) String email) {
+    public R<Object> sendRegistCaptcha(@RequestParam(value = "email", required = false) String email) {
         if (StringUtils.isBlank(email)) {
             return R.fail("邮箱不能为空");
         }
@@ -74,7 +74,7 @@ public class MessageController {
     @GetMapping(value = "/sendLoginCaptcha")
     @Operation(summary = "发送登录验证码")
     @Parameter(name = "email", description = "邮箱", required = true, in = ParameterIn.QUERY)
-    public R sendLoginCaptcha(@RequestParam(value = "email", required = false) String email) {
+    public R<Object> sendLoginCaptcha(@RequestParam(value = "email", required = false) String email) {
         if (StringUtils.isBlank(email)) {
             return R.fail("邮箱不能为空");
         }
@@ -99,7 +99,7 @@ public class MessageController {
 
     @GetMapping(value = "/getMessage")
     @Operation(summary = "获取消息")
-    private R<Void> getMessage() {
+    private R<Object> getMessage() {
         return R.ok();
     }
 }

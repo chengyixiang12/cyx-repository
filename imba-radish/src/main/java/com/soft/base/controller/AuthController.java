@@ -130,7 +130,7 @@ public class AuthController {
     @SysLock(name = "user")
     @PostMapping(value = "/register")
     @Operation(summary = "注册")
-    public R<Void> register(@RequestBody RegisterRequest request) {
+    public R<Object> register(@RequestBody RegisterRequest request) {
         if (StringUtils.isBlank(request.getUsername())) {
             return R.fail("用户名不能为空");
         }

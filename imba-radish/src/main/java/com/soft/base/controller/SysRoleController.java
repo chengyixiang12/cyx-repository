@@ -133,7 +133,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_del')")
     @DeleteMapping(value = "/deleteRoleBatch")
     @Operation(summary = "批量删除角色")
-    public R deleteRoleBatch(@RequestBody DeleteRequest request) {
+    public R<Object> deleteRoleBatch(@RequestBody DeleteRequest request) {
         if (request.getIds() == null || request.getIds().isEmpty()) {
             return R.fail("主键不能为空");
         }

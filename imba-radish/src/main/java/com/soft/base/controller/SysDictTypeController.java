@@ -140,7 +140,7 @@ public class SysDictTypeController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_del')")
     @DeleteMapping(value = "/deleteDictTypeBatch")
     @Operation(summary = "批量删除字典类型")
-    public R deleteDictTypeBatch(@RequestBody DeleteRequest request) {
+    public R<Object> deleteDictTypeBatch(@RequestBody DeleteRequest request) {
         if (request.getIds() == null || request.getIds().isEmpty()) {
             return R.fail("主键集合不能为空");
         }

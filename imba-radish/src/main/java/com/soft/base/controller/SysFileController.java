@@ -151,7 +151,7 @@ public class SysFileController {
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R deleteFile(@PathVariable(value = "id") Long id) {
+    public R<Object> deleteFile(@PathVariable(value = "id") Long id) {
         if (id == null) {
             return R.fail("主键不能为空");
         }
