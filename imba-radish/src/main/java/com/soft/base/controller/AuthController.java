@@ -92,6 +92,8 @@ public class AuthController {
             if (StringUtils.isBlank(request.getEmailCaptcha())) {
                 return R.fail("邮箱验证码不能为空");
             }
+        } else {
+            return R.fail("未知的登录方式");
         }
         try {
             if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
