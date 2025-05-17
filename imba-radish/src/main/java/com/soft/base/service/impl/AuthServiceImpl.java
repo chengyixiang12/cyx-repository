@@ -12,6 +12,7 @@ import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.vo.LoginVo;
 import com.soft.base.service.AuthService;
 import com.soft.base.service.SecretKeyService;
+import com.soft.base.service.SysDeptService;
 import com.soft.base.service.SysUsersService;
 import com.soft.base.utils.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    private final SysDeptService sysDeptService;
+
     @Autowired
     public AuthServiceImpl(PasswordEncoder passwordEncoder,
                            RSAUtil rsaUtil,
@@ -55,7 +58,8 @@ public class AuthServiceImpl implements AuthService {
                            AuthenticationManager authenticationManager,
                            RedisTemplate<String,Object> redisTemplate,
                            SecretKeyService secretKeyService,
-                           StringRedisTemplate stringRedisTemplate) {
+                           StringRedisTemplate stringRedisTemplate,
+                           SysDeptService sysDeptService) {
         this.passwordEncoder = passwordEncoder;
         this.rsaUtil = rsaUtil;
         this.sysUsersService = sysUsersService;
@@ -63,16 +67,12 @@ public class AuthServiceImpl implements AuthService {
         this.redisTemplate = redisTemplate;
         this.secretKeyService = secretKeyService;
         this.stringRedisTemplate = stringRedisTemplate;
+        this.sysDeptService = sysDeptService;
     }
 
     @Override
     public void register(SysUser sysUser) {
         try {
-            if (sysUsersService.exists(Wrappers.lambdaQuery(SysUser.class)
-                    .eq(SysUser::getUsername, sysUser.getUsername()))) {
-                throw new GlobalException("用户已存在");
-            }
-
             Long userId = sysUsersService.getManager(BaseConstant.MANAGER_ROLE_CODE);
             sysUser.setCreateBy(userId);
             sysUser.setUpdateBy(userId);
@@ -84,6 +84,8 @@ public class AuthServiceImpl implements AuthService {
             sysUser.setPassword(encode);
             // 设置默认值
             sysUser.setDefault();
+            Long deptId = sysDeptService.getRootDept();
+            sysUser.setDeptId(deptId);
             sysUsersService.save(sysUser);
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());

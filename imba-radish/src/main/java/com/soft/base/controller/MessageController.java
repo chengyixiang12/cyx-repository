@@ -61,10 +61,10 @@ public class MessageController {
         }
         try {
             if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + email))) {
-                throw new RepeatSendCaptChaException("请勿重复发送验证码");
+                return R.fail("请勿重复发送验证码");
             }
             captchaProduce.sendRegistCaptcha(email);
-            return R.ok("验证码已发送，请留意您的邮箱");
+            return R.ok("验证码已发送，请留意您的邮箱", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -90,7 +90,7 @@ public class MessageController {
                 throw new RepeatSendCaptChaException("请勿重复发送验证码");
             }
             captchaProduce.sendLoginCaptcha(username);
-            return R.ok("验证码已发送，请留意您的邮箱");
+            return R.ok("验证码已发送，请留意您的邮箱", null);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

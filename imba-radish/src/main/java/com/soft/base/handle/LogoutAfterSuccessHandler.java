@@ -1,18 +1,14 @@
 package com.soft.base.handle;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.TokenConstant;
 import com.soft.base.enums.ResultEnum;
-import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.resultapi.R;
 import com.soft.base.utils.ResponseUtil;
-import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
-import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -61,16 +56,13 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
         Set<String> keys = new HashSet<>();
         keys.add(redisKeyAuth);
         keys.add(RedisConstant.USER_INFO + username);
+        keys.add(RedisConstant.WS_USER_SESSION + userDto.getId());
 
         redisTemplate.delete(keys);
 
-        @SuppressWarnings("unchecked")
-        WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        JSONObject forceOfflineParam = new JSONObject();
-        forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        forceOfflineParam.put("receiver", id);
-        TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
-        webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
+        // 移除用户websocket会话
+        WebSocketSessionManager.removeSession(id);
+
         ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.ok(ResultEnum.SUCCESS.getCode(), "注销成功"));
     }
 }

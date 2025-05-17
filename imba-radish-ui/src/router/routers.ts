@@ -25,6 +25,12 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'login',
     component: () => import('../views/login/Login.vue'),
     meta: { title: '登录', requiresAuth: false, isClose: false, visible: 1 }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: () => import('../views/register/Register.vue'),
+    meta: { title: '注册', requiresAuth: false, isClose: false, visible: 1 }
   }
 ]
 

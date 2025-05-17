@@ -35,6 +35,8 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
                                 @Param("request") GetDeptsRequest request);
 
     List<Long> getChildDeptIds(@Param("deptIds") List<Long> deptIds);
+
+    Long getRootDept();
 }
 
 

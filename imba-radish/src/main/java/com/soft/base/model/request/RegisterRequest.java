@@ -22,6 +22,6 @@ public class RegisterRequest {
     private String email;
 
     @Schema(description = "验证码")
-    private String captcha;
+    private String verificationCode;
 
 }

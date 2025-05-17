@@ -22,7 +22,8 @@
           </el-form-item>
 
           <el-form-item prop="password">
-            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" size="large" show-password />
+            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" size="large"
+              show-password />
           </el-form-item>
 
           <el-form-item prop="graphicsCaptcha">
@@ -58,6 +59,11 @@
             {{ loading ? '登录中...' : '立即登录' }}
           </el-button>
         </el-form-item>
+
+        <!-- 注册引导 -->
+        <div class="register-link">
+          <el-link type="primary" @click="goToRegister">没有账号？前往注册</el-link>
+        </div>
       </el-form>
     </div>
   </div>
@@ -94,17 +100,17 @@ const loginForm = ref({
 const loginRules = computed<FormRules>(() => {
   return currentLoginType.value === 'password'
     ? {
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        graphicsCaptcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
-      }
+      username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+      password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+      graphicsCaptcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+    }
     : {
-        email: [
-          { required: true, message: '请输入邮箱', trigger: 'blur' },
-          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
-        ],
-        emailCaptcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
-      };
+      email: [
+        { required: true, message: '请输入邮箱', trigger: 'blur' },
+        { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+      ],
+      emailCaptcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+    };
 });
 
 const refreshCaptcha = async () => {
@@ -123,8 +129,8 @@ const sendEmailCaptcha = async () => {
     return;
   }
   try {
-    await sendCaptchaApi(loginForm.value.email);
-    showMessage('验证码已发送，请查收邮箱', 'success');
+    const msg = await sendCaptchaApi(loginForm.value.email);
+    showMessage(msg, 'success');
     countdown.value = 60;
     timer = setInterval(() => {
       countdown.value--;
@@ -134,6 +140,10 @@ const sendEmailCaptcha = async () => {
     showMessage('发送验证码失败', 'error');
   }
 };
+
+const goToRegister = () => {
+  router.push('/register')
+}
 
 const handleLogin = async () => {
   try {
@@ -245,5 +255,12 @@ onMounted(() => {
 .login-btn {
   width: 100%;
   margin-top: 10px;
+}
+
+.register-link {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
 }
 </style>

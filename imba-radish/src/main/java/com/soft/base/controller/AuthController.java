@@ -18,6 +18,7 @@ import com.soft.base.service.AuthService;
 import com.soft.base.service.SysUsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -152,13 +153,13 @@ public class AuthController {
         if (sysUsersService.existsEmail(request.getEmail())) {
             return R.fail("邮箱已注册");
         }
-        if (StringUtils.isBlank(request.getCaptcha())) {
+        if (StringUtils.isBlank(request.getVerificationCode())) {
             return R.fail("验证码不能为空");
         }
 
         try {
             String captchaCache = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
-            if (!request.getCaptcha().equals(captchaCache)) {
+            if (!request.getVerificationCode().equals(captchaCache)) {
                 return R.fail("验证码错误，请检查您的邮箱是否更改或者验证码是否过期");
             }
             SysUser sysUser = new SysUser();

@@ -97,13 +97,14 @@ permit:
   urls:
     - /auth/**
     - /doc.html
-    - /message/sendRegistCaptCha
+    - /message/sendRegistCaptcha
     - /message/sendLoginCaptcha
     - /ws/**
     - /secretKey/getPublicKey
     - /error
     - /favicon.ico
     - /actuator/**
+    - /user/validUserInfoForRegister
 #限流
 rate-limit:
   #是否开启限流

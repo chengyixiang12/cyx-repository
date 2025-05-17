@@ -120,6 +120,7 @@ import ModuleTabs from '@/components/layout/ModuleTabs.vue';
 import { useRoute } from 'vue-router'
 import { CachedTabsType } from '@/types/layout';
 import { getWebSocketInstance } from '@/utils/websocket';
+import { showMessage } from '@/utils/message';
 
 const router = useRouter();
 const user = ref({
@@ -191,10 +192,10 @@ const goProfile = () => {
 }
 
 // 退出登录
- const logout = () => {
+const logout = () => {
+    const ws = getWebSocketInstance();
+    ws.close();
     logouted().then(() => {
-        const ws = getWebSocketInstance();
-        ws.close();
         clearCache();
         router.push('/login');
     });
@@ -239,10 +240,15 @@ const existDashboard = () => {
 
 // 初始化websocket
 const initWebsocket = async () => {
-    const token = sessionStorage.getItem('Authorization') || '';
+    const token = sessionStorage.getItem('Authorization') || ''
     // 连接websocket
     const ws = getWebSocketInstance()
     ws.connect(token)
+    ws.onForceLogout = () => {
+        clearCache()
+        router.push('/login')
+        showMessage('您已被强制下线', 'warning')
+    }
 }
 
 onMounted(() => {

@@ -25,6 +25,7 @@ import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -112,7 +113,9 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         PageVo<UsersVo> pageVo = new PageVo<>();
         allUsers.getRecords().forEach(item -> {
             item.setIsOnline(Boolean.TRUE.equals(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId())) ? 1 : 0);
-            item.setPhone(item.getPhone().replaceAll(RegexConstant.PHONE_HIDDEN_REGEX, RegexConstant.PHONE_HIDDEN_EXP));
+            if (StringUtils.isNotBlank(item.getPhone())) {
+                item.setPhone(item.getPhone().replaceAll(RegexConstant.PHONE_HIDDEN_REGEX, RegexConstant.PHONE_HIDDEN_EXP));
+            }
         });
         pageVo.setRecords(allUsers.getRecords());
         pageVo.setTotal(allUsers.getTotal());

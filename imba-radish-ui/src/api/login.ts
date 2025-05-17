@@ -46,6 +46,7 @@ export async function logouted(): Promise<any> {
  * 发送登录验证码
  * @param email 
  */
-export async function sendCaptchaApi(email: string) {
-  await get('/message/sendLoginCaptcha', { flag: false, params: { email } })
+export async function sendCaptchaApi(email: string): Promise<string> {
+  const res = await get('/message/sendLoginCaptcha', { flag: false, params: { email } })
+  return res.msg
 }

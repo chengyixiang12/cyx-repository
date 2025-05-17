@@ -39,4 +39,6 @@ public interface SysDeptService extends IService<SysDept> {
     PageVo<GetDeptsVo> getDepts(GetDeptsRequest request);
 
     List<Long> getChildDeptIds(List<Long> deptIds);
+
+    Long getRootDept();
 }

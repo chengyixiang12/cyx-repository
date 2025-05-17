@@ -63,7 +63,7 @@
                sd.parent_id  AS "parentId",
                sd1.name      AS "parentName"
         FROM sys_dept sd
-                 JOIN sys_dept sd1
+                 LEFT JOIN sys_dept sd1
                       ON
                                   sd.parent_id = sd1.id
                               AND sd1.del_flag = '1'
@@ -120,5 +120,11 @@
         <foreach collection="deptIds" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </select>
+    <select id="getRootDept" resultType="java.lang.Long">
+        SELECT sd.id
+        FROM sys_dept sd
+        WHERE sd.del_flag = '1'
+        AND sd.parent_id IS NULL
     </select>
 </mapper>

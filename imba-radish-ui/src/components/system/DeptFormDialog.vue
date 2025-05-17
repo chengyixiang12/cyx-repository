@@ -16,7 +16,7 @@
         </el-form-item>
 
         <el-form-item label="部门编码" prop="code">
-          <el-input v-model="formData.code" placeholder="部门编码ROLE_开头" />
+          <el-input v-model="formData.code" placeholder="请输入部门编码" />
         </el-form-item>
 
         <el-form-item label="排序" prop="osrtOrder">
