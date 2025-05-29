@@ -1,6 +1,7 @@
 export interface WebsocketMessage {
   status: boolean
   order: string
+  message: string
   [key: string]: any
 }
 
@@ -22,6 +23,7 @@ export class WebsocketManager {
   private isActive = false;
   public onMessage: ((data: WebsocketMessage) => void) | null = null
   public onForceLogout: (() => void) | null = null
+  public aiAnwser: ((message: WebsocketMessage) => void) | null = null
 
   constructor(url: string) {
     this.url = url
@@ -45,24 +47,27 @@ export class WebsocketManager {
     this.socket.onmessage = (event: MessageEvent) => {
       const message: WebsocketMessage = JSON.parse(event.data)
 
-      if (message.order === 'HEART_BEAT') {
-        console.log('[WebSocket] 收到心跳回应 pong')
-        this.missedHeartbeats = 0
-        return
+      switch (message.order) {
+        case 'HEART_BEAT': {
+          this.missedHeartbeats = 0
+          break
+        }
+        case 'FORCE_OFFLINE': {
+          this.close()
+          this.onForceLogout?.()
+          break
+        }
+        case 'AI': {
+          this.aiAnwser?.(message)
+        }
+        default : {
+          this.onMessage?.(message)
+          break
+        }
       }
-
-      if (message.order === 'FORCE_OFFLINE') {
-        console.warn('[WebSocket] 收到强制下线指令')
-        this.close()
-        this.onForceLogout?.()
-        return
-      }
-
-      this.onMessage?.(message)
     }
 
     this.socket.onclose = () => {
-      console.warn('[WebSocket] 连接关闭')
       this.stopHeartbeat()
       if (!this.isActive) {
         this.tryReconnect()
@@ -81,7 +86,6 @@ export class WebsocketManager {
 
       try {
         this.socket.send(JSON.stringify({ order: 'HEART_BEAT' }))
-        console.log('[WebSocket] 发送心跳 ping')
         this.missedHeartbeats++
         if (this.missedHeartbeats >= this.HEARTBEAT_TIMEOUT_LIMIT) {
           console.error('[WebSocket] 心跳失败过多，关闭连接')

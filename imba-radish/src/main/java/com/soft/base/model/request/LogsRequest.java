@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * @DateTime: 2024/11/21 11:28
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "获取日志请求参数")
 public class LogsRequest extends PageRequest {

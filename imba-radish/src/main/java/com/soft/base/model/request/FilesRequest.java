@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
  * @Description: TODO
  * @DateTime: 2024/11/20 16:45
  **/
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "获取文件（复）请求参数")
 public class FilesRequest extends PageRequest {

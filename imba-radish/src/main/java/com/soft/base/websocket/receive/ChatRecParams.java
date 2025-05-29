@@ -6,10 +6,15 @@ import lombok.EqualsAndHashCode;
 /**
  * @Author: cyx
  * @Description: TODO
- * @DateTime: 2025/2/10 14:19
+ * @DateTime: 2025/5/28 17:40
  **/
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class FilesTransferRecParams extends OrderReceiveParams {
+public class ChatRecParams extends OrderReceiveParams {
+
+    /**
+     * 问题
+     */
+    private String question;
 }

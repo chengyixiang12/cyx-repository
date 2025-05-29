@@ -3,13 +3,40 @@ server:
   servlet:
     context-path: /
   tomcat:
-    #连接超时（毫秒）
+    # 连接超时（毫秒）
     connection-timeout: 10000
-    #保持连接时长（秒）
+    # 保持连接时长（秒）
     keep-alive-timeout: 30
-    #最大连接数
+    # 最大连接数
     max-connections: 1024
 spring:
+  ai:
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}
+      base-url: ${DEEPSEEK_BASE_URL}
+      chat:
+        options:
+          model: ${DEEPSEEK_MODEL}
+          frequency-penalty: 0.2
+          maxTokens: 1024
+          temperature: 0.7
+          top-p: 0.9
+          logprobs: false
+          stop:
+            - "再见"
+            - "结束"
+        enabled: true
+    retry:
+      # 最大重试次数
+      max-attempts: 3
+      on-client-errors: false
+      backoff:
+        # 初始重试间隔 单位：ms
+        initial-interval: 1000
+        # 每次重试间隔时间倍增
+        multiplier: 2
+        # 最大重试间隔 单位：ms
+        max-interval: 10000
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 #  config:
@@ -28,9 +55,9 @@ spring:
   mail:
     host: smtp.qq.com
     port: 587
-    #发送方邮箱
+    # 发送方邮箱
     username: ${EMAIL_USERNAME}
-    #授权码
+    # 授权码
     password: ${EMAIL_PASSWORD}
     properties:
       mail:
@@ -39,7 +66,7 @@ spring:
           starttls:
             enable: true
     default-encoding: UTF-8
-#mybatis配置
+# mybatis配置
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
   configuration:
@@ -56,9 +83,9 @@ mybatis-plus:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-    #标签排序
+    # 标签排序
     tags-sorter: alpha
-    #接口排序
+    # 接口排序
     operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
@@ -73,46 +100,46 @@ knife4j:
   setting:
     language: zh_cn
     swagger-model-name: 实体列表
-#jwt；已弃用
+# jwt；已弃用
 jwt:
-  #密钥
+  # 密钥
   secret-key: abcdefghijklmnopq123456789
-  #单位秒；1小时过期
+  # 单位秒；1小时过期
   expire: 3600000
-#登录验证码
+# 登录验证码
 radish:
   captcha:
-    #主题
+    # 主题
     topic: 管理系统登录验证码
-    #验证码过期时间（秒）
+    # 验证码过期时间（秒）
     expire-time: 300
   graphics:
-    #图形验证码过期时间（秒）
+    # 图形验证码过期时间（秒）
     expire-time: 60
   token:
-    #token过期时间（秒）
+    # token过期时间（秒）
     expire-time: 36000
   lock:
-    #锁过期时间（秒）
+    # 锁过期时间（秒）
     expire: 10
-    #最大重试次数
+    # 最大重试次数
     max-retry: 5
     #重试间隔时间（毫秒）
     retry-interval-time: 2000
-#webclient配置
+# webclient配置
 web-client:
-  #响应超时；单位：秒
+  # 响应超时；单位：秒
   response-timeout: 5
-  #连接超时；单位：毫秒
+  # 连接超时；单位：毫秒
   connect-timeout: 5000
-#性能监控配置
+# 性能监控配置
 management:
   endpoints:
     web:
       exposure:
-        #暴露的监控端点
+        # 暴露的监控端点
         include: health, metrics, prometheus
   endpoint:
     health:
-      #显示详细信息
+      # 显示详细信息
       show-details: always

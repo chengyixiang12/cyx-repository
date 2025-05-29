@@ -5,11 +5,7 @@
             <el-col :span="24">
                 <el-card>
                     <template #header>
-                        <div class="list-header">
-                            <!-- <div class="right-header">
-                  <el-button type="primary" @click="handleAdd">新增</el-button>
-                </div> -->
-                        </div>
+                        <div class="list-header"></div>
                     </template>
 
                     <!-- 搜索条件 -->
@@ -38,21 +34,21 @@
                     <!-- 菜单表格 -->
                     <div class="list-table">
                         <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading">
-                            <el-table-column label="序号" width="80" align="center">
+                            <el-table-column label="序号" min-width="50" align="center">
                                 <template #default="scope">
                                     {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="moduleName" label="模块名称" show-overflow-tooltip />
-                            <el-table-column prop="nickname" label="创建人" show-overflow-tooltip />
-                            <el-table-column prop="createTime" label="创建时间" show-overflow-tooltip />
-                            <el-table-column prop="logLevel" label="日志级别" :formatter="logLevelType"
+                            <el-table-column prop="moduleName" align="center" label="模块名称" show-overflow-tooltip />
+                            <el-table-column prop="nickname" align="center" label="创建人" show-overflow-tooltip />
+                            <el-table-column prop="createTime" min-width="120" align="center" label="创建时间" show-overflow-tooltip />
+                            <el-table-column prop="logLevel" align="center" label="日志级别" :formatter="logLevelType"
                                 show-overflow-tooltip />
-                            <el-table-column prop="executionTime" label="耗时（ms）" />
-                            <el-table-column prop="requestMethod" label="请求方法" />
-                            <el-table-column prop="statusCode" label="状态码" />
-                            <el-table-column prop="operationDesc" label="操作描述" show-overflow-tooltip />
-                            <el-table-column label="操作" width="180" align="center">
+                            <el-table-column prop="executionTime" align="center" label="耗时（ms）" />
+                            <el-table-column prop="requestMethod" align="center" label="请求方法" />
+                            <el-table-column prop="statusCode" align="center" label="状态码" />
+                            <el-table-column prop="operationDesc" align="center" label="操作描述" show-overflow-tooltip />
+                            <el-table-column label="操作" min-width="120" align="center">
                                 <template #default="scope">
                                     <el-button size="small" type="primary" @click="handleView(scope.row)" :icon="View"
                                         circle />
@@ -177,15 +173,24 @@ onMounted(() => {
 <style scoped>
 .menu-container {
     height: 100%;
-    padding: 12px;
+    padding: 10px;
     background-color: #f5f7fa;
 }
 
 .list-table {
     width: 100%;
-    overflow-x: auto;
+    height: 53vh;
+    overflow: auto;
     padding-top: 12px;
-    max-height: calc(100vh - 220px);
+}
+
+.list-table::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.list-table::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .list-header {
@@ -210,6 +215,10 @@ onMounted(() => {
     padding: 8px 12px !important;
     min-height: 36px !important;
     border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-card__body) {
+    padding: 14px !important;
 }
 
 .search-container {

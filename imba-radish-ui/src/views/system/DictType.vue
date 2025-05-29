@@ -33,25 +33,25 @@
           <!-- 类型表格 -->
           <div class="list-table">
             <el-table :data="dictTypeList" border size="small" style="width: 100%" v-loading="loading">
-              <el-table-column label="序号" width="80" align="center">
+              <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="dictName" label="字典名称" show-overflow-tooltip>
+              <el-table-column prop="dictName" label="字典名称" align="center" show-overflow-tooltip>
                 <template #default="scope">
                   <el-link @click="goToData(scope.row)" type="primary">{{ scope.row.dictName }}</el-link>
                 </template>
               </el-table-column>
-              <el-table-column prop="dictType" label="字典类型" show-overflow-tooltip />
-              <el-table-column prop="sortOrder" label="排序" sortable />
-              <el-table-column prop="status" label="状态" width="100" align="center">
+              <el-table-column prop="dictType" label="字典类型" align="center" show-overflow-tooltip />
+              <el-table-column prop="sortOrder" label="排序" align="center" min-width="80" sortable />
+              <el-table-column prop="status" label="状态" min-width="80" align="center">
                 <template #default="scope">
                   <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
                     @change="changeStatus(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="120" align="center">
+              <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" :icon="Edit" circle @click="handleEditType(scope.row)" />
                   <el-popconfirm title="确认删除？" @confirm="deleteType(scope.row.id)">
@@ -173,7 +173,7 @@ onMounted(() => {
 <style scoped>
 .dictType-container {
   height: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #f5f7fa;
 }
 
@@ -224,8 +224,18 @@ onMounted(() => {
 
 .list-table {
   width: 100%;
-  overflow-x: auto;
+  height: 53vh;
+  overflow: auto;
   padding-top: 12px;
+}
+
+.list-table::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.list-table::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .list-pagination {
@@ -244,5 +254,9 @@ onMounted(() => {
   padding: 8px 12px !important;
   min-height: 36px !important;
   border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-card__body) {
+    padding: 14px !important;
 }
 </style>

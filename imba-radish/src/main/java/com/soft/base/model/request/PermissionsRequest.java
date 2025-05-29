@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  * @DateTime: 2024/11/20 14:44
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "获取权限（复）请求参数")
 public class PermissionsRequest extends PageRequest {

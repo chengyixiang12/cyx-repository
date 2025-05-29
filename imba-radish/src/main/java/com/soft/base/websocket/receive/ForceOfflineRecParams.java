@@ -9,7 +9,7 @@ import org.springframework.lang.Nullable;
  * @Description: 强制离线接收参数
  * @DateTime: 2024/11/23 21:56
  **/
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class ForceOfflineRecParams extends OrderReceiveParams {
 

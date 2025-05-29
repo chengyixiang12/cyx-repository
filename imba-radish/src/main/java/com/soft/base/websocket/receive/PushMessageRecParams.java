@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  * @DateTime: 2024/11/23 23:06
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class PushMessageRecParams extends OrderReceiveParams {
 

@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
  * @DateTime: 2025/4/3 14:33
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "获取部门（复）请求参数")
 @Alias(value = "GetDeptsRequest")

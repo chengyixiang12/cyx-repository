@@ -1,5 +1,5 @@
 <template>
-  <div class="list-container">
+  <div class="user-container">
     <el-row :gutter="20">
       <!-- 左侧组织架构树 -->
       <el-col :span="4">
@@ -10,16 +10,16 @@
             </div>
           </template>
           <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current
-            @node-click="handleDeptClick" @expand-change="handleExpandChange" :default-expanded-keys="[firstNodeKey]"
-            class="custom-tree" :expand-on-click-node="false">
-            <template #default="{ node }">
-              <el-tooltip effect="dark" :content="node.label" placement="right-start"
-                v-if="shouldShowTooltip(node.label)">
-                <span class="tree-node-label">{{ node.label }}</span>
-              </el-tooltip>
-              <span v-else class="tree-node-label">{{ node.label }}</span>
-            </template>
-          </el-tree>
+              @node-click="handleDeptClick" @expand-change="handleExpandChange" :default-expanded-keys="[firstNodeKey]"
+              class="custom-tree" :expand-on-click-node="false">
+              <template #default="{ node }">
+                <el-tooltip effect="dark" :content="node.label" placement="right-start"
+                  v-if="shouldShowTooltip(node.label)">
+                  <span class="tree-node-label">{{ node.label }}</span>
+                </el-tooltip>
+                <span v-else class="tree-node-label">{{ node.label }}</span>
+              </template>
+            </el-tree>
         </el-card>
       </el-col>
 
@@ -62,12 +62,12 @@
           <!-- 用户表格 -->
           <div class="list-table">
             <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading">
-              <el-table-column label="序号" width="80" align="center">
+              <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="username" label="用户名" show-overflow-tooltip width="80px">
+              <el-table-column prop="username" label="用户名" show-overflow-tooltip min-width="80" align="center">
                 <template #default="scope">
                   <div style="display: flex; align-items: center; gap: 9px;">
                     <span :style="{
@@ -81,29 +81,29 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="phone" label="手机号码" show-overflow-tooltip />
-              <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
-              <el-table-column prop="nickname" label="昵称" show-overflow-tooltip />
-              <el-table-column prop="deptName" label="部门" show-overflow-tooltip />
-              <el-table-column prop="enabled" label="状态" align="center" width="100">
+              <el-table-column prop="phone" label="手机号码" align="center" show-overflow-tooltip />
+              <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip />
+              <el-table-column prop="nickname" label="昵称" align="center" show-overflow-tooltip />
+              <el-table-column prop="deptName" label="部门" align="center" show-overflow-tooltip />
+              <el-table-column prop="enabled" label="状态" align="center" min-width="80">
                 <template #default="scope">
                   <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" active-color="#13ce66"
                     inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
 
-              <el-table-column prop="accountNonLocked" label="账户" align="center" width="100">
+              <el-table-column prop="accountNonLocked" label="账户" align="center" min-width="100">
                 <template #default="scope">
                   <el-switch v-model="scope.row.accountNonLocked" :active-value="1" :inactive-value="0"
                     active-color="#13ce66" inactive-color="#ff4949" @change="handleLockChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="180" align="center">
+              <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
                   <el-tooltip class="item" effect="dark" content="强制下线" placement="top">
-                    <el-button size="small" type="primary" @click="forceOffline(scope.row)" :icon="RemoveFilled"
-                      circle />
+                    <el-button v-show="scope.row.isOnline === 1" size="small" type="primary"
+                      @click="forceOffline(scope.row)" :icon="RemoveFilled" circle />
                   </el-tooltip>
                   <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
@@ -341,7 +341,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.list-container {
+.user-container {
   height: 100%;
   padding: 12px;
   background-color: #f5f7fa;
@@ -349,8 +349,19 @@ onMounted(() => {
 
 .list-table {
   width: 100%;
-  overflow-x: auto;
+  height: 53vh;
+  overflow: auto;
   padding-top: 12px;
+}
+
+.list-table::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+
+.list-table::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 /* 优化左侧树样式 */
@@ -385,6 +396,10 @@ onMounted(() => {
   border-bottom: 1px solid #ebeef5;
 }
 
+:deep(.el-card__body) {
+  padding: 14px !important;
+}
+
 .search-container {
   padding: 12px;
   background-color: #fafafa;
@@ -413,8 +428,18 @@ onMounted(() => {
 }
 
 .custom-tree {
-  max-height: 100%;
+  height: 67vh;
   overflow-y: auto;
+}
+
+:deep(.custom-tree)::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+
+:deep(.custom-tree)::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .tree-node-label {

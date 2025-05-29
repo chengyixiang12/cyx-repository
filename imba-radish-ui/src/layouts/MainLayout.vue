@@ -48,7 +48,7 @@
             </div>
         </el-header>
 
-        <div class="main-body">
+        <div class="main-left">
             <!-- 左侧菜单栏 -->
             <el-aside :width="isCollapsed ? '64px' : '220px'" class="main-sidebar">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
@@ -84,15 +84,16 @@
             <el-main class="main-content">
                 <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab" />
 
-                <div class="content-wrapper">
-                    <router-view v-slot="{ Component }">
-                        <transition name="fade" mode="out-in">
-                            <div v-if="Component">
-                                <component :is="Component" />
-                            </div>
-                        </transition>
-                    </router-view>
-                </div>
+                <!-- <div class="content-wrapper">
+                    
+                </div> -->
+                <router-view v-slot="{ Component }">
+                    <transition name="fade" mode="out-in">
+                        <div v-if="Component">
+                            <component :is="Component" />
+                        </div>
+                    </transition>
+                </router-view>
             </el-main>
         </div>
     </div>
@@ -212,7 +213,7 @@ const loadMenu = async () => {
 }
 
 // 组件挂载时获取用户昵称
-const getNicname = async () => {
+const getNickname = async () => {
     const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '');
     user.value.name = userInfo.nickname;
 }
@@ -251,12 +252,18 @@ const initWebsocket = async () => {
     }
 }
 
+// 获取用户头像
+const getAvatar = async () => {
+
+}
+
 onMounted(() => {
     loadMenu();
-    getNicname();
+    getNickname();
     getMessageNum();
     existDashboard();
     initWebsocket();
+    getAvatar();
 })
 </script>
 
@@ -268,7 +275,7 @@ onMounted(() => {
     overflow: hidden;
 }
 
-.main-body {
+.main-left {
     flex: 1;
     display: flex;
     min-height: 0;
@@ -432,7 +439,7 @@ onMounted(() => {
 
 .content-wrapper {
     flex: 1;
-    overflow: auto;
+    overflow: hidden;
     padding: 10px;
     background: #f0f2f5;
     border-radius: 4px;

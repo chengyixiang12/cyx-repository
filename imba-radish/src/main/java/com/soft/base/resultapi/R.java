@@ -1,10 +1,8 @@
 package com.soft.base.resultapi;
 
+import com.soft.base.enums.ResultEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import static com.soft.base.enums.ResultEnum.FAIL_NORMAL;
-import static com.soft.base.enums.ResultEnum.SUCCESS;
 
 @Data
 @Schema(description = "restful响应结果集")
@@ -23,7 +21,7 @@ public class R<T> {
     private T data;
 
     public static <T> R<T> ok() {
-        return setR(SUCCESS.getCode(), SUCCESS.getMessage(), null);
+        return setR(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage(), null);
     }
 
     public static <T> R<T> ok(Integer code, String message) {
@@ -31,15 +29,19 @@ public class R<T> {
     }
 
     public static <T> R<T> ok(String message, T data) {
-        return setR(SUCCESS.getCode(), message, data);
+        return setR(ResultEnum.SUCCESS.getCode(), message, data);
+    }
+
+    public static <T> R<T> ok(String message) {
+        return setR(ResultEnum.SUCCESS.getCode(), message, null);
     }
 
     public static <T> R<T> ok(T data) {
-        return setR(SUCCESS.getCode(), SUCCESS.getMessage(), data);
+        return setR(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage(), data);
     }
 
     public static <T> R<T> fail(String msg) {
-        return setR(FAIL_NORMAL.getCode(), msg, null);
+        return setR(ResultEnum.FAIL_NORMAL.getCode(), msg, null);
     }
 
     public static <T> R<T> fail(Integer code, String msg) {
@@ -47,7 +49,7 @@ public class R<T> {
     }
 
     public static <T> R<T> fail() {
-        return setR(FAIL_NORMAL.getCode(), FAIL_NORMAL.getMessage(), null);
+        return setR(ResultEnum.FAIL_NORMAL.getCode(), ResultEnum.FAIL_NORMAL.getMessage(), null);
     }
 
     private static <T> R<T> setR(Integer code, String msg, T data) {

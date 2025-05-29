@@ -61,19 +61,19 @@ spring:
   jmx:
     # 启动JMX监控，jconsole
     enabled: true
-#minio对象存储
+# minio对象存储
 minio:
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
   bucket: cyx
-#启用api文档
+# 启用api文档
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
-#日志
+# 日志
 logging:
   level:
     com.baomidou.mybatisplus: info
@@ -83,16 +83,16 @@ logging:
     root: info
   config: classpath:logback-spring.xml
 log:
-  #是否开启日志记录
+  # 是否开启日志记录
   enable: true
-  #是否记录请求及响应数据
+  # 是否记录请求及响应数据
   record-param: false
   file:
     home: logs
-#临时文件存储路径
+# 临时文件存储路径
 tmp:
   path: E:/tmp
-#不鉴权url
+# 不鉴权url
 permit:
   urls:
     - /auth/**
@@ -105,18 +105,18 @@ permit:
     - /favicon.ico
     - /actuator/**
     - /user/validUserInfoForRegister
-#限流
+# 限流
 rate-limit:
-  #是否开启限流
+  # 是否开启限流
   enable: true
-  #最大请求数；单位：个
+  # 最大请求数；单位：个
   max-request: 10
-  #窗口大小；单位：秒
+  # 窗口大小；单位：秒
   window-size: 1
-#大文件存储路径
+# 大文件存储路径
 storage:
   big-file:
     location: D:/bigFile
-#启用knife4j文档
+# 启用knife4j文档
 knife4j:
   enable: true

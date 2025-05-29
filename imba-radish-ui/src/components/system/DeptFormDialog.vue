@@ -1,11 +1,10 @@
 <template>
-  <el-dialog :title="isAdd ? '新增部门' : '编辑部门'" v-model="visible" width="700px" :close-on-click-modal="false"
-    :before-close="handleClose" class="custom-dialog">
+  <el-dialog :title="isAdd ? '新增部门' : '编辑部门'" v-model="visible" width="50vw" :close-on-click-modal="false"
+    :before-close="handleClose">
     <div class="dialog-body-wrapper">
-      <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px" label-position="right"
+      <el-form ref="formRef" :model="formData" :rules="rules" label-width="6vw" label-position="right"
         class="scrollable-form">
 
-        <!-- 父级部门 -->
         <el-form-item label="父级部门" prop="parentId">
           <el-tree-select v-model="formData.parentId" :data="deptTree" check-strictly placeholder="请选择父级部门" clearable
             filterable :filter-node-method="filterNode" :props="treeProps" style="width: 100%;" />
@@ -132,25 +131,24 @@ onMounted(() => {
   loadDeptTree()
 })
 </script>
-
 <style scoped>
-.custom-dialog {
-  display: flex;
-  flex-direction: column;
-  max-height: 80vh;
-  margin-top: 5vh;
-  overflow: hidden;
-}
-
 .dialog-body-wrapper {
   flex: 1;
   overflow-y: auto;
+  max-height: 60vh;
   padding-right: 10px;
 }
 
+.dialog-body-wrapper::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.dialog-body-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
 .scrollable-form {
-  max-height: 50vh;
-  overflow-y: auto;
   padding: 25px;
 }
 

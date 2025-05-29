@@ -1,8 +1,8 @@
 <template>
-<el-dialog :title="isAdd ? '新增字典数据' : '编辑字典数据'" v-model="visible" width="700px" :close-on-click-modal="false"
-        :before-close="handleClose" class="custom-dialog">
+<el-dialog :title="isAdd ? '新增字典数据' : '编辑字典数据'" v-model="visible" width="50vw" :close-on-click-modal="false"
+        :before-close="handleClose">
         <div class="dialog-body-wrapper">
-            <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px" label-position="right"
+            <el-form ref="formRef" :model="formData" :rules="rules" label-width="6vw" label-position="right"
                 class="scrollable-form">
                 <el-form-item label="编码" prop="code">
                     <el-input v-model="formData.code" placeholder="请输入编码" />
@@ -126,27 +126,26 @@ onMounted(() => {
 })
 </script>
 <style scoped>
-.custom-dialog {
-    display: flex;
-    flex-direction: column;
-    max-height: 80vh;
-    margin-top: 5vh;
-    overflow: hidden;
+.dialog-body-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 60vh;
 }
 
-.dialog-body-wrapper {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 10px;
+.dialog-body-wrapper::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.dialog-body-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .scrollable-form {
-    max-height: 50vh;
-    overflow-y: auto;
-    padding: 25px;
+  padding: 25px;
 }
 
 .el-form-item {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 </style>

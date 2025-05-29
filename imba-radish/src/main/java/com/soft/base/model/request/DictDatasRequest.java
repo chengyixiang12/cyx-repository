@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
  * @Description: TODO
  * @DateTime: 2024/11/20 11:41
  **/
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "字典数据请求参数")
 public class DictDatasRequest extends PageRequest {

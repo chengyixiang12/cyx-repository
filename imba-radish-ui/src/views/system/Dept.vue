@@ -32,19 +32,19 @@
           <div class="list-table">
             <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading"
               @selection-change="handleSelectionChange">
-              <el-table-column type="selection" width="50" align="center" />
-              <el-table-column label="序号" width="80" align="center">
+              <el-table-column type="selection" min-width="50" align="center" />
+              <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="name" label="部门名称" show-overflow-tooltip />
-              <el-table-column prop="code" label="部门编码" show-overflow-tooltip />
-              <el-table-column prop="parentCode" label="父级部门编码" show-overflow-tooltip />
-              <el-table-column prop="parentName" label="父级部门名称" show-overflow-tooltip />
-              <el-table-column prop="level" label="部门层级" />
-              <el-table-column prop="sortOrder" label="排序" sortable />
-              <el-table-column label="操作" width="160" align="center">
+              <el-table-column prop="name" label="部门名称" align="center" show-overflow-tooltip />
+              <el-table-column prop="code" label="部门编码" align="center" show-overflow-tooltip />
+              <el-table-column prop="parentCode" label="父级部门编码" align="center" show-overflow-tooltip />
+              <el-table-column prop="parentName" label="父级部门名称" align="center" show-overflow-tooltip />
+              <el-table-column prop="level" align="center" label="部门层级" />
+              <el-table-column prop="sortOrder" align="center" min-width="70" label="排序" sortable />
+              <el-table-column label="操作" min-width="160" align="center">
                 <template #default="scope">
                   <el-button type="primary" size="small" :icon="Edit" @click="handleEdit(scope.row)" circle />
                   <el-popconfirm title="确认删除该部门？" @confirm="handleDelete(scope.row.id)">
@@ -188,14 +188,24 @@ onMounted(() => {
 <style scoped>
 .dept-container {
   height: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #f5f7fa;
 }
 
 .list-table {
   width: 100%;
-  overflow-x: auto;
+  height: 53vh;
+  overflow: auto;
   padding-top: 12px;
+}
+
+.list-table::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.list-table::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .list-header {
@@ -220,6 +230,10 @@ onMounted(() => {
   padding: 8px 12px !important;
   min-height: 36px !important;
   border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-card__body) {
+    padding: 14px !important;
 }
 
 .search-container {

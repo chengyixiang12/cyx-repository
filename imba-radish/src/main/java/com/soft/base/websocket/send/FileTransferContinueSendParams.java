@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
  * @DateTime: 2025/1/2 11:45
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class FileTransferContinueSendParams extends SendParams {
 

@@ -1,6 +1,5 @@
 <template>
-  <el-dialog v-model="visible" title="赋予菜单" width="650px" :close-on-click-modal="false" :append-to-body="true"
-    class="custom-dialog">
+  <el-dialog v-model="visible" title="赋予菜单" width="50vw" :close-on-click-modal="false" :append-to-body="true">
     <div class="tree-wrapper">
       <el-tree ref="menuTreeRef" :data="menuTree" node-key="id" show-checkbox default-expand-all highlight-current
         :props="{ children: 'children', label: 'name' }" :default-checked-keys="selectedMenuIds" />
@@ -81,16 +80,21 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
-.custom-dialog {
-  max-height: 90vh;
-}
 
 .tree-wrapper {
-  padding: 16px 24px;
-  max-height: 400px;
+  flex: 1;
   overflow-y: auto;
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
+  max-height: 60vh;
+  padding-right: 10px;
+}
+
+.tree-wrapper::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.tree-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .dialog-footer {

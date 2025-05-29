@@ -33,27 +33,27 @@
           <!-- 数据表格 -->
           <div class="list-table">
             <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading">
-              <el-table-column label="序号" width="80" align="center">
+              <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="label" label="标签" />
-              <el-table-column prop="code" label="编码" />
-              <el-table-column prop="value" label="值" />
-              <el-table-column prop="isDefault" label="默认" width="80" align="center">
+              <el-table-column prop="label" align="center" label="标签" />
+              <el-table-column prop="code" align="center" label="编码" />
+              <el-table-column prop="value" align="center" label="值" />
+              <el-table-column prop="isDefault" label="默认" min-width="80" align="center">
                 <template #default="scope">
                   <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" @change="setDefault(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column prop="status" label="状态" width="80" align="center">
+              <el-table-column prop="status" label="状态" min-width="80" align="center">
                 <template #default="scope">
                   <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
                     @change="changeStatus(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column prop="sortOrder" label="排序" width="80" sortable />
-              <el-table-column label="操作" width="120" align="center">
+              <el-table-column prop="sortOrder" label="排序" min-width="80" align="center" sortable />
+              <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" :icon="Edit" circle @click="editData(scope.row)" />
                   <el-popconfirm title="确认删除该数据？" @confirm="deleteData(scope.row.id)">
@@ -186,7 +186,7 @@ onMounted(() => {
 <style scoped>
 .dictData-container {
   height: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #f5f7fa;
 }
 
@@ -239,8 +239,18 @@ onMounted(() => {
 
 .list-table {
   width: 100%;
-  overflow-x: auto;
+  height: 53vh;
+  overflow: auto;
   padding-top: 12px;
+}
+
+.list-table::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.list-table::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .list-pagination {
@@ -259,6 +269,10 @@ onMounted(() => {
   padding: 8px 12px !important;
   min-height: 36px !important;
   border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-card__body) {
+    padding: 14px !important;
 }
 
 .go-back {

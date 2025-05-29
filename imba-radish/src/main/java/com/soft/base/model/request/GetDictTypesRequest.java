@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
  * @DateTime: 2025/4/23 18:11
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "获取字典类型（复）请求参数")
 @Alias(value = "GetDictTypesRequest")

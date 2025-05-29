@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
  * @DateTime: 2025/4/4 23:09
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Schema(description = "获取菜单列表请求参数")
 @Alias(value = "GetMenuListRequest")

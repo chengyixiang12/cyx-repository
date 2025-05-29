@@ -30,7 +30,7 @@ public class EnvLoaderHandler implements ApplicationContextInitializer<Configura
             MapPropertySource propertySource = new MapPropertySource("custom-env", map);
             context.getEnvironment().getPropertySources().addFirst(propertySource);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load .env file", e);
+            throw new RuntimeException(".env文件不存在", e);
         }
     }
 }

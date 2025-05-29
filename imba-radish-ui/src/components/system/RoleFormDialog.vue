@@ -1,8 +1,8 @@
 <template>
-  <el-dialog :title="isAdd ? '新增角色' : '编辑角色'" v-model="visible" width="700px" :close-on-click-modal="false"
+  <el-dialog :title="isAdd ? '新增角色' : '编辑角色'" v-model="visible" width="50vw" :close-on-click-modal="false"
     :before-close="handleClose" class="custom-dialog">
     <div class="dialog-body-wrapper">
-      <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px" label-position="right"
+      <el-form ref="formRef" :model="formData" :rules="rules" label-width="6vw" label-position="right"
         class="scrollable-form">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="formData.name" placeholder="请输入角色名称" />
@@ -129,23 +129,23 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.custom-dialog {
-  display: flex;
-  flex-direction: column;
-  max-height: 80vh;
-  margin-top: 5vh;
-  overflow: hidden;
-}
-
 .dialog-body-wrapper {
   flex: 1;
   overflow-y: auto;
+  max-height: 60vh;
   padding-right: 10px;
 }
 
+.dialog-body-wrapper::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.dialog-body-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
 .scrollable-form {
-  max-height: 50vh;
-  overflow-y: auto;
   padding: 25px;
 }
 

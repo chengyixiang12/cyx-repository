@@ -50,13 +50,13 @@
           <!-- 菜单表格 -->
           <div class="list-table">
             <el-table :data="menuList" border size="small" style="width: 100%" v-loading="loading">
-              <el-table-column label="序号" width="80" align="center">
+              <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="name" label="菜单名称" show-overflow-tooltip />
-              <el-table-column label="菜单图标" width="70" align="center">
+              <el-table-column prop="name" align="center" label="菜单名称" show-overflow-tooltip />
+              <el-table-column label="菜单图标" min-width="70" align="center">
                 <template #default="scope">
                   <el-icon v-if="scope.row.icon">
                     <component :is="getIconComponent(scope.row.icon)" />
@@ -66,24 +66,24 @@
                   </el-icon>
                 </template>
               </el-table-column>
-              <el-table-column prop="type" label="类型" :formatter="formatType" show-overflow-tooltip />
-              <el-table-column prop="path" label="路由" show-overflow-tooltip />
-              <el-table-column prop="component" label="组件" show-overflow-tooltip />
-              <el-table-column prop="parentName" label="父级菜单" show-overflow-tooltip />
-              <el-table-column prop="orderNum" label="排序" width="50" sortable />
-              <el-table-column prop="status" label="菜单状态" align="center" width="100">
+              <el-table-column prop="type" align="center" label="类型" :formatter="formatType" show-overflow-tooltip />
+              <el-table-column prop="path" align="center" label="路由" show-overflow-tooltip />
+              <el-table-column prop="component" align="center" label="组件" show-overflow-tooltip />
+              <el-table-column prop="parentName" align="center" label="父级菜单" show-overflow-tooltip />
+              <el-table-column prop="orderNum" align="center" label="排序" min-width="65" sortable />
+              <el-table-column prop="status" label="菜单状态" align="center" min-width="80">
                 <template #default="scope">
                   <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
                     inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column prop="visible" label="显示状态" align="center" width="100">
+              <el-table-column prop="visible" label="显示状态" align="center" min-width="80">
                 <template #default="scope">
                   <el-switch v-model="scope.row.visible" :active-value="1" :inactive-value="0" active-color="#13ce66"
                     inactive-color="#ff4949" @change="handleVisibleChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="180" align="center">
+              <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
                   <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
@@ -281,15 +281,8 @@ const resetSearch = () => {
 <style scoped>
 .menu-container {
   height: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #f5f7fa;
-}
-
-.list-table {
-  width: 100%;
-  overflow-x: auto;
-  padding-top: 12px;
-  max-height: calc(100vh - 220px);
 }
 
 .list-header {
@@ -304,6 +297,22 @@ const resetSearch = () => {
   margin-left: auto;
 }
 
+.list-table {
+  width: 100%;
+  height: 53vh;
+  overflow: auto;
+  padding-top: 12px;
+}
+
+.list-table::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.list-table::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
 .el-card {
   height: 100%;
   border-radius: 6px;
@@ -314,6 +323,10 @@ const resetSearch = () => {
   padding: 8px 12px !important;
   min-height: 36px !important;
   border-bottom: 1px solid #ebeef5;
+}
+
+:deep(.el-card__body) {
+    padding: 14px !important;
 }
 
 .search-container {

@@ -5,16 +5,15 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @Author: cyx
- * @Description: 推送消息发送参数
- * @DateTime: 2024/11/23 23:09
+ * @Description: TODO
+ * @DateTime: 2025/5/28 17:41
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class PushMessageSendParams extends SendParams {
+public class ChatSendParams extends SendParams {
 
     /**
-     * 消息体
+     * 回答
      */
-    private String body;
-
+    private String answer;
 }

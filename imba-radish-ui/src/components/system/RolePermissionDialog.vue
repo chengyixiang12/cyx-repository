@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="visible" title="赋予权限" width="650px" :close-on-click-modal="false" :append-to-body="true"
+    <el-dialog v-model="visible" title="赋予权限" width="50vw" :close-on-click-modal="false" :append-to-body="true"
         class="custom-dialog">
         <!-- 内容区域内边距容器 -->
         <div class="transfer-wrapper">
@@ -76,7 +76,7 @@ watch(
 
 <style scoped>
 .custom-dialog {
-    max-height: 90vh;
+    max-height: 60vh;
 }
 
 .transfer-wrapper {

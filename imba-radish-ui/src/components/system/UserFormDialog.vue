@@ -1,43 +1,38 @@
 <template>
-  <el-dialog :title="dialogTitle" v-model="dialogVisible" width="600px" :close-on-click-modal="false"
+  <el-dialog :title="dialogTitle" v-model="dialogVisible" width="50vw" :close-on-click-modal="false"
     @closed="handleClose">
-    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" label-position="right">
+    <div class="dialog-body-wrapper">
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="5vw" label-position="right" class="scrollable-form">
 
-      <!-- 用户名 -->
       <el-form-item label="用户名" prop="username" v-if="isAdd">
         <el-input v-model="formData.username" placeholder="请输入用户名" />
       </el-form-item>
+
       <el-form-item label="用户名" v-else>
         <el-input v-model="formData.username" disabled />
       </el-form-item>
 
-      <!-- 部门 -->
       <el-form-item label="部门" prop="deptId">
         <el-tree-select v-model="formData.deptId" :data="deptTree" :props="treeProps" check-strictly placeholder="请选择部门"
           clearable filterable :filter-node-method="filterNode" style="width: 100%;" />
       </el-form-item>
 
-      <!-- 密码 -->
       <el-form-item label="密码" prop="password" v-if="isAdd">
         <el-input v-model="formData.password" type="password" placeholder="请输入密码" show-password />
       </el-form-item>
 
-      <!-- 昵称 -->
       <el-form-item label="昵称" prop="nickname">
         <el-input v-model="formData.nickname" placeholder="请输入昵称" />
       </el-form-item>
 
-      <!-- 邮箱 -->
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="formData.email" placeholder="请输入邮箱" />
       </el-form-item>
 
-      <!-- 手机号 -->
       <el-form-item label="手机号">
         <el-input v-model="formData.phone" placeholder="请输入手机号" />
       </el-form-item>
 
-      <!-- 角色 -->
       <el-form-item label="角色">
         <el-select v-model="formData.roleIds" multiple placeholder="请选择角色" filterable collapse-tags
           collapse-tags-tooltip>
@@ -46,16 +41,15 @@
       </el-form-item>
     </el-form>
 
+    </div>
     <template #footer>
       <el-button class="btn-cancel" @click="dialogVisible = false">取消</el-button>
       <el-button class="btn-submit" type="primary" @click="handleSubmit">确定</el-button>
     </template>
   </el-dialog>
 </template>
-
 <script lang="ts" setup>
 import { ref, computed, defineEmits, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 import { DeptTreeVo } from '@/types/dept'
 import { SaveUserRequest } from '@/types/user'
 import { getUser } from '@/api/user'
@@ -164,58 +158,28 @@ onMounted(async () => {
   }
 })
 </script>
-
-
 <style scoped>
+.dialog-body-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 60vh;
+  padding-right: 10px;
+}
+
+.dialog-body-wrapper::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+.dialog-body-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.scrollable-form {
+  padding: 25px;
+}
+
 .el-form-item {
   margin-bottom: 20px;
-}
-
-.el-input,
-.el-button {
-  border-radius: 8px;
-}
-
-.el-input::placeholder {
-  color: #999;
-}
-
-.el-button {
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.el-button:hover {
-  transform: translateY(-2px);
-}
-
-.el-button:active {
-  background-color: #409EFF;
-  transform: translateY(1px);
-}
-
-.dept-tree-popper {
-  max-height: 60vh;
-  overflow-y: auto;
-  border-radius: 8px;
-}
-
-.btn-cancel {
-  background-color: #f0f0f0;
-  color: #555;
-  border-radius: 8px;
-}
-
-.btn-cancel:hover {
-  background-color: #e0e0e0;
-}
-
-.btn-submit {
-  background-color: #409EFF;
-  color: white;
-  border-radius: 8px;
-}
-
-.btn-submit:hover {
-  background-color: #3386c5;
 }
 </style>

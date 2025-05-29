@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  * @DateTime: 2025/4/1 16:34
  **/
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "获取所有用户请求参数")
 @Data
 public class GetUsersRequest extends PageRequest {

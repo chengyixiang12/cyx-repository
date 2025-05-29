@@ -48,6 +48,11 @@ public enum WebSocketOrderEnum {
      */
     FILES_TRANSFER,
 
+    /**
+     * 人工智能
+     */
+    AI,
+
     ;
 
     /**
