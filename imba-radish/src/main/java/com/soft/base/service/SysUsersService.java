@@ -54,4 +54,6 @@ public interface SysUsersService extends IService<SysUser> {
     void forbiddenUser(String username);
 
     SysUser getUserByEmail(String email);
+
+    String getAvatar(Long id);
 }

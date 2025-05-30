@@ -70,6 +70,33 @@ public class MinioUtil {
     }
 
     /**
+     * 上传
+     * @param is 输入流
+     * @param bucket 桶名
+     * @param fileKey 文件名
+     * @param fileSuffix 文件后缀
+     * @param fileSize 文件大小 B
+     * @return
+     * @throws GlobalException
+     */
+    public String upload(InputStream is, String bucket, String fileKey, String fileSuffix, Long fileSize) throws GlobalException {
+        String objectKey = getObjectKey(fileKey, fileSuffix);
+        try {
+            if (!existBucket(bucket)) {
+                createBucket(bucket);
+            }
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(objectKey)
+                    .stream(is, fileSize, fileSize < BaseConstant.BURST_SIZE ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE)
+                    .build());
+            return objectKey;
+        } catch (Exception e) {
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    /**
      * 判断桶是否存在
      * @return
      * @throws GlobalException
@@ -83,10 +110,35 @@ public class MinioUtil {
     }
 
     /**
+     * 判断桶是否存在
+     * @return
+     * @throws GlobalException
+     */
+    private Boolean existBucket(String bucket) throws GlobalException {
+        try {
+            return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+        } catch (Exception e) {
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    /**
      * 创建桶
      * @throws GlobalException
      */
     private void createBucket() throws GlobalException {
+        try {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+        } catch (Exception e) {
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    /**
+     * 创建桶
+     * @throws GlobalException
+     */
+    private void createBucket(String bucket) throws GlobalException {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
         } catch (Exception e) {

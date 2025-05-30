@@ -66,7 +66,10 @@ minio:
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
+  # 文件桶名
   bucket: cyx
+  # 用户头像桶名
+  avatar-bucket: avatar
 # 启用api文档
 springdoc:
   api-docs:

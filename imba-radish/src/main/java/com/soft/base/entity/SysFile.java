@@ -72,6 +72,12 @@ public class SysFile implements Serializable {
     private String location;
 
     /**
+     * 桶名
+     */
+    @TableField(value = "bucket")
+    private String bucket;
+
+    /**
      * 文件路径
      */
     @TableField(value = "object_key")

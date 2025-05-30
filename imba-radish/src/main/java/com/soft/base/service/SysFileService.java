@@ -6,6 +6,7 @@ import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,4 +27,6 @@ public interface SysFileService extends IService<SysFile> {
     void deleteFile(Long id);
 
     PageVo<FilesVo> getFiles(FilesRequest request);
+
+    UploadAvatarVo uploadAvatar(MultipartFile multipartFile) throws IOException, NoSuchAlgorithmException;
 }

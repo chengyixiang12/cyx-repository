@@ -18,8 +18,8 @@ export async function addUser(params: SaveUserRequest): Promise<any> {
 }
 
 /**
- * 
- * @param params 修改用户
+ * 修改用户
+ * @param params 
  */
 export async function updateUser(params: EditUserRequest): Promise<any> {
    return put('/user', params, { flag: true })
@@ -74,4 +74,13 @@ export async function enableUserApi(id: number) {
  */
 export async function forbiddenUser(id: number) {
    await get(`/user/forbiddenUser/${id}`, { flag: true })
+}
+
+/**
+ * 获取用户头像
+ * @param params 
+ */
+export async function getAvatarApi(id: number): Promise<string> {
+   const res = await get('/user/getAvatar', { flag: true,  params: { id } })
+   return res.data;
 }

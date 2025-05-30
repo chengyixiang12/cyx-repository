@@ -335,4 +335,20 @@ public class SysUserController {
             return R.fail();
         }
     }
+
+    @GetMapping(value = "/getAvatar")
+    @Operation(summary = "获取用户头像")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<String> getAvatar(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            String avatarUri = sysUsersService.getAvatar(id);
+            return R.ok(avatarUri);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
 }

@@ -113,6 +113,7 @@ import {
 import { clearCache } from '../utils/clearCache';
 import { UserInfoVo } from '@/types/login';
 import { logouted } from '@/api/login';
+import { getAvatarApi } from '@/api/user';
 import { ElTooltip } from 'element-plus';
 import type { MenuItem } from '@/types/menu';
 import { getMessageNumApi } from '@/api/message';
@@ -122,6 +123,7 @@ import { useRoute } from 'vue-router'
 import { CachedTabsType } from '@/types/layout';
 import { getWebSocketInstance } from '@/utils/websocket';
 import { showMessage } from '@/utils/message';
+import { avatar_url } from '@/common/global-config';
 
 const router = useRouter();
 const user = ref({
@@ -146,6 +148,9 @@ const cachedTabs = ref<CachedTabsType[]>([
         visible: route.meta.visible as number
     }
 ])
+
+// 用户信息
+const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '');
 
 const toggleCollapse = () => {
     isCollapsed.value = !isCollapsed.value
@@ -214,7 +219,6 @@ const loadMenu = async () => {
 
 // 组件挂载时获取用户昵称
 const getNickname = async () => {
-    const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '');
     user.value.name = userInfo.nickname;
 }
 
@@ -254,7 +258,10 @@ const initWebsocket = async () => {
 
 // 获取用户头像
 const getAvatar = async () => {
-
+    const userId = userInfo.id
+    const uri = await getAvatarApi(userId)
+    console.log('aaa', uri)
+    user.value.avatar = avatar_url + '/' + uri
 }
 
 onMounted(() => {

@@ -9,6 +9,7 @@ import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysFileService;
@@ -171,6 +172,23 @@ public class SysFileController {
             PageVo<FilesVo> pageVo = sysFileService.getFiles(request);
             return R.ok(pageVo);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @PostMapping(value = "/uploadAvatar")
+    @Operation(summary = "上传用户头像")
+    public R<Object> uploadAvatar(@RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) {
+        if (multipartFile == null) {
+            return R.fail("文件不能为空");
+        }
+        try {
+            UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
+            return R.ok(uploadAvatarVo);
+        } catch (GlobalException e) {
+            return R.fail(e.getMessage());
+        }catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
         }

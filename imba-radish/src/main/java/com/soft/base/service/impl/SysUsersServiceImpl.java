@@ -20,6 +20,7 @@ import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UsersVo;
+import com.soft.base.properties.MinioProperty;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
@@ -28,6 +29,7 @@ import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -330,6 +332,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     public SysUser getUserByEmail(String email) {
         return sysUsersMapper.getUserByEmail(email);
+    }
+
+    @Override
+    public String getAvatar(Long id) {
+        return sysUsersMapper.getAvatar(id);
     }
 
     /**

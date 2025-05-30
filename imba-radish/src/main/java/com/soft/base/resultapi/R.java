@@ -32,10 +32,6 @@ public class R<T> {
         return setR(ResultEnum.SUCCESS.getCode(), message, data);
     }
 
-    public static <T> R<T> ok(String message) {
-        return setR(ResultEnum.SUCCESS.getCode(), message, null);
-    }
-
     public static <T> R<T> ok(T data) {
         return setR(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage(), data);
     }

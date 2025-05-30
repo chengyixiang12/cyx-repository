@@ -216,4 +216,15 @@
             su.del_flag = '1'
           AND su.email = #{email}
     </select>
+    <select id="getAvatar" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+            concat(sf.bucket, '/', sf.object_key)
+        FROM
+            sys_user su
+                JOIN sys_file sf
+                     ON
+                         su.avatar = sf.id
+        WHERE
+            su.id = #{id}
+    </select>
 </mapper>

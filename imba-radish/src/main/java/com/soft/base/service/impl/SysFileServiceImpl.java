@@ -12,7 +12,9 @@ import com.soft.base.model.dto.FileHashDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
+import com.soft.base.properties.MinioProperty;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.UniversalUtil;
@@ -45,11 +47,14 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final UniversalUtil universalUtil;
 
+    private final MinioProperty minioProperty;
+
     @Autowired
-    public SysFileServiceImpl(SysFileMapper sysFileMapper, MinioUtil minioUtil, UniversalUtil universalUtil) {
+    public SysFileServiceImpl(SysFileMapper sysFileMapper, MinioUtil minioUtil, UniversalUtil universalUtil, MinioProperty minioProperty) {
         this.sysFileMapper = sysFileMapper;
         this.minioUtil = minioUtil;
         this.universalUtil = universalUtil;
+        this.minioProperty = minioProperty;
     }
 
     @Override
@@ -88,6 +93,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             sysFile.setFileKey(fileKey);
             sysFile.setFileSuffix(fileSuffix);
             sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
+            sysFile.setBucket(minioProperty.getBucket());
             sysFile.setObjectKey(objectKey);
             sysFile.setOriginalName(originalFilename);
             sysFile.setFileSize(fileSize);
@@ -118,6 +124,55 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
+    }
+
+    @Override
+    public UploadAvatarVo uploadAvatar(MultipartFile multipartFile) throws IOException, NoSuchAlgorithmException {
+        UploadAvatarVo uploadAvatarVo = new UploadAvatarVo();
+        SysFile sysFile = new SysFile();
+        String originalFilename = multipartFile.getOriginalFilename();
+        if (StringUtils.isBlank(originalFilename)) {
+            throw new GlobalException("文件名不能为空");
+        }
+
+        MessageDigest digest = MessageDigest.getInstance(BaseConstant.TYPE_ALGORITHM);
+        try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
+            byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
+            int length = BaseConstant.BUFFER_SIZE;
+            while (length != BaseConstant.FILE_OVER_SIGN) {
+                length = dis.read(buffer);
+            }
+        }
+        byte[] hashBytes = digest.digest();
+        String hashCode = new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
+
+        FileHashDto fileHashDto = sysFileMapper.getFileByHash(hashCode);
+
+        if (fileHashDto != null) {
+            BeanUtils.copyProperties(fileHashDto, sysFile);
+            if (!originalFilename.equals(fileHashDto.getOriginalName())) {
+                sysFileMapper.insert(sysFile);
+            }
+        } else {
+            long fileSize = multipartFile.getSize();
+            String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
+            String fileKey = universalUtil.fileKeyGen();
+            String objectKey = minioUtil.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileKey, fileSuffix, fileSize);
+
+            sysFile.setFileKey(fileKey);
+            sysFile.setFileSuffix(fileSuffix);
+            sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
+            sysFile.setBucket(minioProperty.getAvatarBucket());
+            sysFile.setObjectKey(objectKey);
+            sysFile.setOriginalName(originalFilename);
+            sysFile.setFileSize(fileSize);
+            sysFileMapper.insert(sysFile);
+
+        }
+        uploadAvatarVo.setId(sysFile.getId());
+        uploadAvatarVo.setUri(sysFile.getObjectKey());
+
+        return uploadAvatarVo;
     }
 }
 

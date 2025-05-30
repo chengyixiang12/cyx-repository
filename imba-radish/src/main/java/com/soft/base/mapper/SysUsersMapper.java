@@ -46,6 +46,8 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
     void forbiddenUser(@Param("username") String username);
 
     SysUser getUserByEmail(@Param("email") String email);
+
+    String getAvatar(@Param("id") Long id);
 }
 
 
