@@ -1,16 +1,13 @@
 package com.soft.base.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysDialogueDetails;
-import com.soft.base.model.request.GetDialoguesRequest;
-import com.soft.base.model.vo.GetDialoguesVo;
-import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysDialogueDetailsService;
 import com.soft.base.mapper.SysDialogueDetailsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
 * @author cyq
@@ -28,6 +25,10 @@ public class SysDialogueDetailsServiceImpl extends ServiceImpl<SysDialogueDetail
         this.sysDialogueDetailsMapper = sysDialogueDetailsMapper;
     }
 
+    @Override
+    public List<String> getRecentContext(Long dialogueId, Long maxContextNum) {
+        return sysDialogueDetailsMapper.getRecentContext(dialogueId, maxContextNum);
+    }
 }
 
 

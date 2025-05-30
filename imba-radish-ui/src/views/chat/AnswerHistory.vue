@@ -2,53 +2,55 @@
     <div class="page-container">
         <div style="margin-bottom: 5px;">
             <el-row :gutter="20" style="width: 100%;">
-            <el-col :span="24">
-                <div class="search-block">
-                    <el-form :inline="true">
-                        <el-form-item label="关键字">
-                            <el-input v-model="searchForm.keyword" placeholder="请填写关键字" />
-                        </el-form-item>
-                    </el-form>
-                </div>
-            </el-col>
-        </el-row>
+                <el-col :span="24">
+                    <div class="search-block">
+                        <el-form :inline="true">
+                            <el-form-item label="关键字">
+                                <el-input v-model="searchForm.keyword" placeholder="请填写关键字" />
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </el-col>
+            </el-row>
         </div>
-        <el-row :gutter="20" style="width: 100%;">
-            <el-col :span="24">
-                <div class="card-list">
-                    <el-card shadow="hover" v-for="(item, index) in visibleCards" :key="item.id" class="card-item">
-                        <template #header>
-                            <div class="card-header">
-                                <span class="title">{{ item.title }}</span>
-                                <el-dropdown>
-                                    <span class="el-dropdown-link">
-                                        <el-icon>
-                                            <MoreFilled />
-                                        </el-icon>
-                                    </span>
-                                    <template #dropdown>
-                                        <el-dropdown-menu>
-                                            <el-dropdown-item @click="renameCard(item)">重命名</el-dropdown-item>
-                                            <el-dropdown-item @click="deleteCard(item)">删除</el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </template>
-                                </el-dropdown>
+        <div class="card-container">
+            <el-row :gutter="20" style="width: 100%;">
+                <el-col :span="24">
+                    <div class="card-list">
+                        <el-card shadow="hover" v-for="(item, index) in visibleCards" :key="item.id" class="card-item">
+                            <template #header>
+                                <div class="card-header">
+                                    <span class="title">{{ item.title }}</span>
+                                    <el-dropdown>
+                                        <span class="el-dropdown-link">
+                                            <el-icon>
+                                                <MoreFilled />
+                                            </el-icon>
+                                        </span>
+                                        <template #dropdown>
+                                            <el-dropdown-menu>
+                                                <el-dropdown-item @click="renameCard(item)">重命名</el-dropdown-item>
+                                                <el-dropdown-item @click="deleteCard(item)">删除</el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </template>
+                                    </el-dropdown>
+                                </div>
+                            </template>
+                            <div class="card-content">
+                                {{ item.content }}
                             </div>
-                        </template>
-                        <div class="card-content">
-                            {{ item.content }}
-                        </div>
-                        <template #footer>
-                            <div class="card-footer">
-                                <span>创建时间：{{ item.createTime }}</span>
-                                <span>创建人：{{ item.createBy }}</span>
-                            </div>
-                        </template>
-                    </el-card>
-                    <div ref="loadMoreTrigger" class="load-more-trigger"></div>
-                </div>
-            </el-col>
-        </el-row>
+                            <template #footer>
+                                <div class="card-footer">
+                                    <span>创建时间：{{ item.createTime }}</span>
+                                    <span>创建人：{{ item.createBy }}</span>
+                                </div>
+                            </template>
+                        </el-card>
+                        <div ref="loadMoreTrigger" class="load-more-trigger"></div>
+                    </div>
+                </el-col>
+            </el-row>
+        </div>
     </div>
 </template>
 
@@ -70,7 +72,7 @@ const searchForm = ref<GetDialogueHistoriesRequest>({
     keyword: null
 });
 
-const loadMore = async () =>  {
+const loadMore = async () => {
     const res = await getDialogueHistoriesApi(searchForm.value);
     const nextBatch = res.records.slice(loadedCount, loadedCount + loadBatchSize);
     visibleCards.value.push(...nextBatch);
@@ -107,17 +109,20 @@ onMounted(() => {
 <style scoped>
 .page-container {
     padding: 10px;
-    max-height: 83vh;
-    overflow: auto;
     background-color: #f5f7fa;
 }
 
-.page-container::-webkit-scrollbar {
+.card-container {
+    max-height: 69vh;
+    overflow: auto;
+}
+
+.card-container::-webkit-scrollbar {
     height: 6px;
     width: 5px;
 }
 
-.page-container::-webkit-scrollbar-thumb {
+.card-container::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
@@ -133,6 +138,8 @@ onMounted(() => {
     flex-direction: column;
     gap: 16px;
 }
+
+
 
 .card-item {
     width: 100%;

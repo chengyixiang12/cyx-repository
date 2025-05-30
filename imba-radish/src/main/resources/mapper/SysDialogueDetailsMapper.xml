@@ -21,4 +21,16 @@
         create_time,update_by,update_time,
         del_flag,tag,content
     </sql>
+    <select id="getRecentContext" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+            sdd.content
+        FROM
+            sys_dialogue_details sdd
+        WHERE
+            sdd.del_flag = '1'
+          AND sdd.parent_id = #{dialogueId}
+        ORDER BY
+            sdd.id DESC
+            LIMIT #{maxContextNum}
+    </select>
 </mapper>

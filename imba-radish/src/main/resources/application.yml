@@ -37,6 +37,8 @@ spring:
         multiplier: 2
         # 最大重试间隔 单位：ms
         max-interval: 10000
+    # 每次询问最多保留上下文数量
+    max-context-num: 6
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 #  config:

@@ -1,25 +1,30 @@
 package com.soft.base.websocket.handle.message.concrete;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysDialogueDetails;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.service.SysDialogueDetailsService;
+import com.soft.base.utils.SecurityUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.ChatRecParams;
 import com.soft.base.websocket.send.ChatSendParams;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
 import org.springframework.ai.deepseek.DeepSeekChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author: cyx
@@ -30,20 +35,27 @@ import java.io.IOException;
 @Slf4j
 public class ChatHandler implements WebSocketConcreteHandler<String> {
 
+    @Value(value = "${spring.ai.max-context-num}")
+    private Long maxContextNum;
+
     private final DeepSeekChatModel chatModel;
 
     private final SysDialogueDetailsService sysDialogueDetailsService;
 
+    private final SecurityUtil securityUtil;
+
     @Autowired
-    public ChatHandler(DeepSeekChatModel chatModel, SysDialogueDetailsService sysDialogueDetailsService) {
+    public ChatHandler(DeepSeekChatModel chatModel,
+                       SysDialogueDetailsService sysDialogueDetailsService,
+                       SecurityUtil securityUtil) {
         this.chatModel = chatModel;
         this.sysDialogueDetailsService = sysDialogueDetailsService;
+        this.securityUtil = securityUtil;
     }
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         ChatRecParams chatRecParams = JSON.parseObject(message.getPayload(), ChatRecParams.class);
-
 
         // 插入问题
         SysDialogueDetails question = new SysDialogueDetails();
@@ -51,11 +63,21 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         question.setTag(BaseConstant.CHAT_TAG_USER);
         question.setParentId(chatRecParams.getDialogueId());
         sysDialogueDetailsService.save(question);
+        List<String> recentContext = sysDialogueDetailsService.getRecentContext(chatRecParams.getDialogueId(), maxContextNum);
 
-        StringBuilder answerStr = new StringBuilder();
-        var prompt = new Prompt(new UserMessage(chatRecParams.getQuestion()));
+        List<Message> messages = new ArrayList<>();
+        if (CollectionUtil.isNotEmpty(recentContext)) {
+            for (int i = recentContext.size() - 1; i >= 0; i--) {
+                messages.add(new DeepSeekAssistantMessage(recentContext.get(i)));
+            }
+        }
+
+        var prompt = new Prompt(messages);
+
         ChatSendParams chatSendParams = new ChatSendParams();
         chatSendParams.setOrder(WebSocketOrderEnum.AI.toString());
+        StringBuilder answerStr = new StringBuilder();
+
         chatModel.stream(prompt).subscribe(item -> {
             String partialText = item.getResult().getOutput().getText();
             chatSendParams.setAnswer(partialText);
@@ -77,9 +99,16 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         }, () -> {
             // 插入回答
             SysDialogueDetails answer = new SysDialogueDetails();
+
+            // security上下文无法被子线程访问
+            Long userId = securityUtil.getUserInfo().getId();
+            answer.setCreateBy(userId);
+            answer.setUpdateBy(userId);
+
             answer.setParentId(chatRecParams.getDialogueId());
             answer.setContent(answerStr.toString());
             answer.setTag(BaseConstant.CHAT_TAG_AI);
+
             sysDialogueDetailsService.save(answer);
         });
     }

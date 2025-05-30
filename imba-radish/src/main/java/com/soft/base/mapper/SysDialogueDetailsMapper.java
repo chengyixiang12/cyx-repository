@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soft.base.model.vo.GetDialoguesVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
 * @author cyq
 * @description 针对表【sys_dialogue_details(智能对话详情表)】的数据库操作Mapper
@@ -15,6 +17,8 @@ import org.apache.ibatis.annotations.Param;
 public interface SysDialogueDetailsMapper extends BaseMapper<SysDialogueDetails> {
 
 
+    List<String> getRecentContext(@Param("dialogueId") Long dialogueId,
+                                  @Param("maxContextNum") Long maxContextNum);
 }
 
 
