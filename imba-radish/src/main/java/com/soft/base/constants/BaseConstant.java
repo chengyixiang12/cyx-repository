@@ -257,4 +257,14 @@ public class BaseConstant {
      * 菜单类型——按钮
      */
     public final static String MENU_TYPE_BUTTON = "2";
+
+    /**
+     * 对话标识-用户
+     */
+    public static final Integer CHAT_TAG_USER = 1;
+
+    /**
+     * 对话标识-AI
+     */
+    public static final Integer CHAT_TAG_AI = 0;
 }

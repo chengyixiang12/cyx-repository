@@ -2,6 +2,7 @@ package com.soft.base.utils;
 
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.exception.GlobalException;
+import com.soft.base.properties.MinioProperty;
 import io.minio.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,13 @@ public class MinioUtil {
 
     private final DateUtil dateUtil;
 
-    @Value(value = "${minio.bucket}")
-    private String bucket;
+    private final MinioProperty minioProperty;
 
     @Autowired
-    public MinioUtil(MinioClient minioClient, DateUtil dateUtil) {
+    public MinioUtil(MinioClient minioClient, DateUtil dateUtil, MinioProperty minioProperty) {
         this.minioClient = minioClient;
         this.dateUtil = dateUtil;
+        this.minioProperty = minioProperty;
     }
 
     /**
@@ -59,7 +60,7 @@ public class MinioUtil {
                 createBucket();
             }
             minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(bucket)
+                    .bucket(minioProperty.getDefaultBucket())
                     .object(objectKey)
                     .stream(is, fileSize, fileSize < BaseConstant.BURST_SIZE ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE)
                     .build());
@@ -103,7 +104,7 @@ public class MinioUtil {
      */
     private Boolean existBucket() throws GlobalException {
         try {
-            return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+            return minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioProperty.getDefaultBucket()).build());
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
@@ -128,7 +129,7 @@ public class MinioUtil {
      */
     private void createBucket() throws GlobalException {
         try {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(minioProperty.getDefaultBucket()).build());
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
@@ -154,7 +155,22 @@ public class MinioUtil {
      */
     public InputStream download(String objectKey) throws GlobalException {
         try {
-            return minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(objectKey).build());
+            return minioClient.getObject(GetObjectArgs.builder().bucket(minioProperty.getDefaultBucket()).object(objectKey).build());
+        } catch (Exception e) {
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    /**
+     * 下载文件
+     * @param objectKey
+     * @param bucket
+     * @return
+     * @throws GlobalException
+     */
+    public InputStream download(String bucket, String objectKey) throws GlobalException {
+        try {
+            return minioClient.getObject(GetObjectArgs.builder().bucket(minioProperty.getDefaultBucket()).object(objectKey).build());
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }

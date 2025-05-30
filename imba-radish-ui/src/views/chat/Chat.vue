@@ -14,23 +14,19 @@
 
     <!-- 输入框和发送按钮 -->
     <div class="textarea-wrapper">
-      <el-input
-        v-model="input"
-        type="textarea"
-        placeholder="请输入消息"
-        @keyup.enter="sendMessage"
-        :autosize="{ minRows: 4, maxRows: 6 }"
-        class="custom-textarea"
-      />
+      <el-input v-model="input" type="textarea" placeholder="请输入消息" @keyup.enter="sendMessage"
+        :autosize="{ minRows: 4, maxRows: 6 }" class="custom-textarea" />
       <el-button type="primary" class="send-btn" @click="sendMessage">发送</el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { getWebSocketInstance } from '@/utils/websocket'
 import VueMarkdownIt from 'vue3-markdown-it'
+import { saveDialogueApi } from '@/api/dialogueHistory'
+import { SaveDialogueRequest } from '@/types/dialogueHistory'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -41,9 +37,19 @@ const input = ref('')
 const messages = ref<Message[]>([])
 const chatBox = ref<HTMLElement>()
 const wsInstance = getWebSocketInstance()
+const dialogue = ref<SaveDialogueRequest>({
+  title: null
+})
+const dialogueId = ref<number | null>(null)
+const isLoading = ref(false)
 
 wsInstance.aiAnwser = (message) => {
   const last = messages.value[messages.value.length - 1]
+
+  if (isLoading.value && last && last.role === 'assistant' && last.content === 'AI 正在输入中...') {
+    last.content = ''
+  }
+
   if (!last || last.role !== 'assistant') {
     messages.value.push({ role: 'assistant', content: '' })
   }
@@ -51,20 +57,37 @@ wsInstance.aiAnwser = (message) => {
   scrollToBottom()
 }
 
-const scrollToBottom = () => {
+const scrollToBottom = async () => {
   nextTick(() => {
     chatBox.value?.scrollTo({ top: chatBox.value.scrollHeight, behavior: 'smooth' })
   })
 }
 
-const sendMessage = () => {
+const sendMessage = async () => {
+  if (!dialogueId.value || dialogueId.value == null) {
+    await saveDialogue();
+  }
+  console.log(dialogueId.value)
   const content = input.value.trim()
   if (!content) return
   messages.value.push({ role: 'user', content })
   input.value = ''
-  scrollToBottom()
-  wsInstance.send({ order: 'AI', question: content })
+
+  // 添加“AI 正在输入...”提示
+  messages.value.push({ role: 'assistant', content: 'AI 正在输入中...' })
+  isLoading.value = true
+
+  await scrollToBottom()
+  wsInstance.send({ order: 'AI', question: content, dialogueId: dialogueId.value })
 }
+
+// 新增对话
+const saveDialogue = async () => {
+  dialogueId.value = await saveDialogueApi(dialogue.value)
+}
+
+onMounted(() => {
+})
 </script>
 
 <style scoped>
@@ -80,7 +103,7 @@ const sendMessage = () => {
 
 .chat-box {
   flex-grow: 1;
-  height: 60vh; 
+  height: 60vh;
   overflow-y: auto;
   margin-bottom: 1rem;
 }
@@ -89,6 +112,7 @@ const sendMessage = () => {
   height: 6px;
   width: 5px;
 }
+
 .chat-box::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
@@ -108,13 +132,13 @@ const sendMessage = () => {
   text-align: left;
 }
 
-.message-row.user > .el-tag {
+.message-row.user>.el-tag {
   position: absolute;
   top: 0;
   right: 0;
 }
 
-.message-row.assistant > .el-tag {
+.message-row.assistant>.el-tag {
   position: absolute;
   top: 0;
   left: 0;
@@ -133,7 +157,8 @@ const sendMessage = () => {
 }
 
 .custom-textarea :deep(.el-textarea__inner) {
-  padding-right: 5rem; /* 留出发送按钮位置 */
+  padding-right: 5rem;
+  /* 留出发送按钮位置 */
   min-height: 80px;
   resize: none;
 }

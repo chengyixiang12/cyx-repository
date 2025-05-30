@@ -182,23 +182,24 @@ DROP TABLE IF EXISTS `sys_file`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_file` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `create_by` bigint DEFAULT NULL COMMENT '创建人',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_by` bigint DEFAULT NULL COMMENT '修改人',
-  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
-  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
-  `original_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源文件名',
-  `file_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储文件名',
-  `location` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储地址；1：minio；2：磁盘',
-  `object_key` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件路径',
-  `file_suffix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件后缀；示例：.txt、.jpg',
-  `file_size` bigint DEFAULT NULL COMMENT '文件大小；单位：B',
-  `file_hash` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件hash',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `idx_sys_file_key` (`file_key`) USING BTREE COMMENT '存储文件名普通索引',
-  KEY `idx_sys_file_hash` (`file_hash`) USING BTREE COMMENT '文件hash普通索引'
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
+                            `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+                            `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                            `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                            `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                            `original_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源文件名',
+                            `file_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储文件名',
+                            `location` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储地址；1：minio；2：磁盘',
+                            `bucket` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '桶名',
+                            `object_key` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件路径',
+                            `file_suffix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件后缀；示例：.txt、.jpg',
+                            `file_size` bigint DEFAULT NULL COMMENT '文件大小；单位：B',
+                            `file_hash` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件hash',
+                            PRIMARY KEY (`id`) USING BTREE,
+                            KEY `idx_sys_file_key` (`file_key`) USING BTREE COMMENT '存储文件名普通索引',
+                            KEY `idx_sys_file_hash` (`file_hash`) USING BTREE COMMENT '文件hash普通索引'
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -467,27 +468,27 @@ DROP TABLE IF EXISTS `sys_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sys_user` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `create_by` bigint DEFAULT NULL COMMENT '创建人',
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` bigint DEFAULT NULL COMMENT '修改人',
-  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：不存在',
-  `username` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
-  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
-  `nickname` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '昵称',
-  `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '邮箱',
-  `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '电话',
-  `enabled` tinyint(1) DEFAULT '1' COMMENT '用户是否被启用；1：启用；0：禁用',
-  `account_non_locked` tinyint(1) DEFAULT '1' COMMENT '账户是否被锁定；1：正常；0：锁定',
-  `credentials_non_expired` tinyint(1) DEFAULT '1' COMMENT '凭证是否过期；1：正常；0：过期',
-  `account_non_expired` tinyint(1) DEFAULT '1' COMMENT '账户是否过期；1：正常；0：过期',
-  `dept_id` bigint DEFAULT NULL COMMENT '部门id',
-  `avatar` bigint DEFAULT NULL COMMENT '用户头像',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `idx_sys_user_username` (`username`) USING BTREE COMMENT '用户名普通索引',
-  KEY `idx_sys_user_email` (`email`) USING BTREE COMMENT '邮箱普通索引'
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
+                            `id` bigint NOT NULL AUTO_INCREMENT,
+                            `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                            `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                            `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：不存在',
+                            `username` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
+                            `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
+                            `nickname` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '昵称',
+                            `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '邮箱',
+                            `phone` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '电话',
+                            `enabled` tinyint(1) DEFAULT '1' COMMENT '用户是否被启用；1：启用；0：禁用',
+                            `account_non_locked` tinyint(1) DEFAULT '1' COMMENT '账户是否被锁定；1：正常；0：锁定',
+                            `credentials_non_expired` tinyint(1) DEFAULT '1' COMMENT '凭证是否过期；1：正常；0：过期',
+                            `account_non_expired` tinyint(1) DEFAULT '1' COMMENT '账户是否过期；1：正常；0：过期',
+                            `dept_id` bigint DEFAULT NULL COMMENT '部门id',
+                            `avatar` bigint DEFAULT NULL COMMENT '用户头像',
+                            PRIMARY KEY (`id`) USING BTREE,
+                            KEY `idx_sys_user_username` (`username`) USING BTREE COMMENT '用户名普通索引',
+                            KEY `idx_sys_user_email` (`email`) USING BTREE COMMENT '邮箱普通索引'
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

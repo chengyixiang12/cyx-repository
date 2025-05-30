@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.base.mapper.SysDialogueMapper">
+
+    <resultMap id="BaseResultMap" type="com.soft.base.entity.SysDialogue">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="sortOrder" column="sort_order" jdbcType="BIGINT"/>
+            <result property="createBy" column="create_by" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="BIGINT"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="topFlag" column="top_flag" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,sort_order,create_by,
+        create_time,update_by,update_time,
+        del_flag,title,top_flag
+    </sql>
+    <select id="getDialogues" resultType="GetDialoguesVo">
+        SELECT
+        sd.id,
+        su.nickname AS createBy,
+        sd.create_time,
+        sd.title,
+        sd.top_flag,
+        (
+        SELECT
+        sdd.content
+        FROM
+        sys_dialogue_details sdd
+        WHERE
+        sdd.parent_id = sd.id
+        ORDER BY
+        sdd.id ASC
+        LIMIT 1 ) AS content
+        FROM
+        sys_dialogue sd
+        JOIN sys_user su ON
+        sd.create_by = su.id
+        WHERE
+        sd.del_flag = '1'
+        <if test="userId != null and userId != ''">
+            AND sd.create_by = #{userId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND sd.title LIKE concat('%', #{keyword}, '%')
+        </if>
+    </select>
+</mapper>

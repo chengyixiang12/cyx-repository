@@ -56,12 +56,15 @@ spring:
     username: ${RABBIT_MQ_USERNAME}
     password: ${RABBIT_MQ_PASSWORD}
     virtual-host: /
-#minio对象存储
+# minio对象存储
 minio:
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
-  bucket: cyx
+  # 文件桶名
+  default-bucket: ${MINIO_DEFAULT_BUCKET}
+  # 用户头像桶名
+  avatar-bucket: ${MINIO_AVATAR_BUCKET}
 #启用api文档
 springdoc:
   api-docs:

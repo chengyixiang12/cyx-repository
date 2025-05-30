@@ -32,7 +32,7 @@ public class MinioProperty {
     /**
      * 通用桶名
      */
-    private String bucket;
+    private String defaultBucket;
 
     /**
      * 用户头像桶名

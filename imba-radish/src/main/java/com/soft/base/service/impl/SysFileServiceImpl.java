@@ -93,7 +93,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             sysFile.setFileKey(fileKey);
             sysFile.setFileSuffix(fileSuffix);
             sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
-            sysFile.setBucket(minioProperty.getBucket());
+            sysFile.setBucket(minioProperty.getDefaultBucket());
             sysFile.setObjectKey(objectKey);
             sysFile.setOriginalName(originalFilename);
             sysFile.setFileSize(fileSize);

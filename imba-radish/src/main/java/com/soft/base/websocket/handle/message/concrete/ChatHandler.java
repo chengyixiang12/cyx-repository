@@ -1,7 +1,10 @@
 package com.soft.base.websocket.handle.message.concrete;
 
 import com.alibaba.fastjson2.JSON;
+import com.soft.base.constants.BaseConstant;
+import com.soft.base.entity.SysDialogueDetails;
 import com.soft.base.enums.WebSocketOrderEnum;
+import com.soft.base.service.SysDialogueDetailsService;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.ChatRecParams;
 import com.soft.base.websocket.send.ChatSendParams;
@@ -29,14 +32,27 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
 
     private final DeepSeekChatModel chatModel;
 
+    private final SysDialogueDetailsService sysDialogueDetailsService;
+
     @Autowired
-    public ChatHandler(DeepSeekChatModel chatModel) {
+    public ChatHandler(DeepSeekChatModel chatModel, SysDialogueDetailsService sysDialogueDetailsService) {
         this.chatModel = chatModel;
+        this.sysDialogueDetailsService = sysDialogueDetailsService;
     }
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         ChatRecParams chatRecParams = JSON.parseObject(message.getPayload(), ChatRecParams.class);
+
+
+        // 插入问题
+        SysDialogueDetails question = new SysDialogueDetails();
+        question.setContent(chatRecParams.getQuestion());
+        question.setTag(BaseConstant.CHAT_TAG_USER);
+        question.setParentId(chatRecParams.getDialogueId());
+        sysDialogueDetailsService.save(question);
+
+        StringBuilder answerStr = new StringBuilder();
         var prompt = new Prompt(new UserMessage(chatRecParams.getQuestion()));
         ChatSendParams chatSendParams = new ChatSendParams();
         chatSendParams.setOrder(WebSocketOrderEnum.AI.toString());
@@ -45,6 +61,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
             chatSendParams.setAnswer(partialText);
             try {
                 session.sendMessage(new TextMessage(chatSendParams.toJsonString()));
+                answerStr.append(partialText);
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -57,6 +74,13 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);
             }
+        }, () -> {
+            // 插入回答
+            SysDialogueDetails answer = new SysDialogueDetails();
+            answer.setParentId(chatRecParams.getDialogueId());
+            answer.setContent(answerStr.toString());
+            answer.setTag(BaseConstant.CHAT_TAG_AI);
+            sysDialogueDetailsService.save(answer);
         });
     }
 

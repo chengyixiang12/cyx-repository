@@ -17,4 +17,9 @@ public class ChatRecParams extends OrderReceiveParams {
      * 问题
      */
     private String question;
+
+    /**
+     * 对话id
+     */
+    private Long dialogueId;
 }

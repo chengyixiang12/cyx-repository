@@ -259,9 +259,9 @@ const initWebsocket = async () => {
 // 获取用户头像
 const getAvatar = async () => {
     const userId = userInfo.id
-    const uri = await getAvatarApi(userId)
-    console.log('aaa', uri)
-    user.value.avatar = avatar_url + '/' + uri
+    getAvatarApi(userId).then((uri) => {
+        user.value.avatar = avatar_url + '/' + uri
+    }) 
 }
 
 onMounted(() => {
@@ -282,15 +282,6 @@ onMounted(() => {
     overflow: hidden;
 }
 
-.main-left {
-    flex: 1;
-    display: flex;
-    min-height: 0;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-}
-
 .main-header {
     background: #b3b9bf;
     color: white;
@@ -300,6 +291,15 @@ onMounted(() => {
     padding: 0 20px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.main-left {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
 }
 
 .main-sidebar {
@@ -444,12 +444,12 @@ onMounted(() => {
     color: #99c0e7;
 }
 
-.content-wrapper {
+/* .content-wrapper {
     flex: 1;
     overflow: hidden;
     padding: 10px;
     background: #f0f2f5;
     border-radius: 4px;
     min-height: 0;
-}
+} */
 </style>

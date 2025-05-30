@@ -1,0 +1,1 @@
+import { post } from '@/utils/http';

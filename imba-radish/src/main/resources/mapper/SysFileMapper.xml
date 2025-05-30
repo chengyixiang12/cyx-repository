@@ -13,6 +13,7 @@
             <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
             <result property="originalName" column="original_name" jdbcType="VARCHAR"/>
             <result property="fileKey" column="file_key" jdbcType="VARCHAR"/>
+            <result property="bucket" column="bucket" jdbcType="VARCHAR"/>
             <result property="location" column="location" jdbcType="CHAR"/>
             <result property="objectKey" column="object_key" jdbcType="VARCHAR"/>
             <result property="fileSuffix" column="file_suffix" jdbcType="VARCHAR"/>
@@ -22,7 +23,7 @@
     <sql id="Base_Column_List">
         id,create_by,create_time,
         update_by,update_time,del_flag,
-        original_name,file_key,localtion,
+        original_name,file_key,bucket,localtion,
         object_key,file_suffix
     </sql>
     <select id="getFileDetailById" parameterType="java.lang.Long" resultType="FileDetailDto">
