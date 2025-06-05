@@ -58,25 +58,27 @@
 import { ref, reactive, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { MoreFilled } from '@element-plus/icons-vue';
-import { getDialogueHistoriesApi } from '@/api/dialogueHistory'
+import { deleteDialogueApi, getDialogueHistoriesApi } from '@/api/dialogueHistory'
 import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo } from '@/types/dialogueHistory';
+import { showMessage } from '@/utils/message';
 
 const visibleCards = ref<GetDialogueHistoriesVo[]>([]);
 const loadMoreTrigger = ref<HTMLElement | null>(null);
+const total = ref<number>(1);
 
-const loadBatchSize = 10;
-let loadedCount = 0;
 const searchForm = ref<GetDialogueHistoriesRequest>({
-    pageNum: 0,
+    pageNum: 1,
     pageSize: 10,
     keyword: null
 });
 
 const loadMore = async () => {
+    if (total.value === visibleCards.value.length) {
+        showMessage('已全部加载', 'info')
+    }
     const res = await getDialogueHistoriesApi(searchForm.value);
-    const nextBatch = res.records.slice(loadedCount, loadedCount + loadBatchSize);
-    visibleCards.value.push(...nextBatch);
-    loadedCount += nextBatch.length;
+    total.value = res.total;
+    visibleCards.value.push(...res.records);
     searchForm.value.pageNum++;
 }
 
@@ -84,9 +86,9 @@ function renameCard(item: GetDialogueHistoriesVo) {
     ElMessage.info(`重命名卡片：${item.title}`);
 }
 
-function deleteCard(item: GetDialogueHistoriesVo) {
-    visibleCards.value = visibleCards.value.filter(c => c.id !== item.id);
-    ElMessage.success(`删除成功：${item.title}`);
+const deleteCard = async(item: GetDialogueHistoriesVo) => {
+    await deleteDialogueApi(item.id)
+    
 }
 
 // 懒加载

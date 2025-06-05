@@ -138,8 +138,6 @@ const handleAdd = () => {
 const handleEdit = (row: GetDeptsVo) => {
   deptId.value = row.id
   editDialogVisible.value = true
-  console.log('deptId', deptId.value)
-  console.log('editDialogVisible', editDialogVisible.value)
 }
 
 const handleDelete = async (id: number) => {

@@ -67,7 +67,6 @@ const sendMessage = async () => {
   if (!dialogueId.value || dialogueId.value == null) {
     await saveDialogue();
   }
-  console.log(dialogueId.value)
   const content = input.value.trim()
   if (!content) return
   messages.value.push({ role: 'user', content })
@@ -83,6 +82,7 @@ const sendMessage = async () => {
 
 // 新增对话
 const saveDialogue = async () => {
+  dialogue.value.title = '新对话'
   dialogueId.value = await saveDialogueApi(dialogue.value)
 }
 

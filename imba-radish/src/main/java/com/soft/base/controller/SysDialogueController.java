@@ -7,13 +7,12 @@ import com.soft.base.model.vo.PageVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDialogueService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: cyx
@@ -52,6 +51,22 @@ public class SysDialogueController {
         try {
             Long id = sysDialogueService.saveDialogue(request);
             return R.ok(id);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return R.fail();
+        }
+    }
+
+    @DeleteMapping(value = "/deleteDialogue")
+    @Operation(summary = "删除对话")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> deleteDialogue(@RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            return R.fail("主键不能为空");
+        }
+        try {
+            sysDialogueService.deleteDialogue(id);
+            return R.ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();

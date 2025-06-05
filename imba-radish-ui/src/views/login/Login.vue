@@ -1,18 +1,16 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <!-- 登录方式 Tabs 切换 -->
-      <el-tabs v-model="currentLoginType" stretch class="login-tabs">
-        <el-tab-pane label="密码登录" name="password" />
-        <el-tab-pane label="邮箱验证码登录" name="email" />
-      </el-tabs>
-
       <!-- 登录标题 -->
       <div class="login-header">
         <h2>欢迎登录</h2>
         <p>请选择登录方式并输入信息</p>
       </div>
-
+      <!-- 登录方式 Tabs 切换 -->
+      <el-tabs v-model="currentLoginType" stretch class="login-tabs">
+        <el-tab-pane label="密码登录" name="password" />
+        <el-tab-pane label="邮箱验证码登录" name="email" />
+      </el-tabs>
       <!-- 登录表单 -->
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" @submit.prevent="handleLogin">
         <!-- 密码登录表单 -->

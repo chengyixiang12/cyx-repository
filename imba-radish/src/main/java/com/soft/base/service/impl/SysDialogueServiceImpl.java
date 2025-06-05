@@ -51,6 +51,11 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
         return sysDialogue.getId();
     }
 
+    @Override
+    public void deleteDialogue(Long id) {
+        sysDialogueMapper.deleteById(id);
+    }
+
 }
 
 

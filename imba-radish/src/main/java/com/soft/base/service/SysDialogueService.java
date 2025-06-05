@@ -17,4 +17,6 @@ public interface SysDialogueService extends IService<SysDialogue> {
     PageVo<GetDialoguesVo> getDialogues(GetDialoguesRequest request);
 
     Long saveDialogue(SaveDialogueRequest request);
+
+    void deleteDialogue(Long id);
 }

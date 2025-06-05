@@ -50,5 +50,6 @@
         <if test="keyword != null and keyword != ''">
             AND sd.title LIKE concat('%', #{keyword}, '%')
         </if>
+        ORDER BY sd.create_time DESC
     </select>
 </mapper>

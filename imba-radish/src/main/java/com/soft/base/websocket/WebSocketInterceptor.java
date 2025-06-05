@@ -10,8 +10,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
@@ -48,11 +46,6 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
             UserDto user = (UserDto) userDetailsService.loadUserByUsername(username);
             attributes.put(WebSocketConstant.WEBSOCKET_USER, user);
             attributes.put(WebSocketConstant.AUTHORIZATION, token);
-
-            // 在 Spring Security 中设置用户身份
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         } else {
             log.info("request is not ServletServerHttpRequest type");
             return false;
@@ -62,6 +55,6 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(@NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response, @NotNull WebSocketHandler wsHandler, Exception exception) {
-        SecurityContextHolder.clearContext();
+
     }
 }

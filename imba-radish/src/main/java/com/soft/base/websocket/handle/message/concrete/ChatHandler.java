@@ -1,16 +1,20 @@
 package com.soft.base.websocket.handle.message.concrete;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.entity.SysDialogueDetails;
 import com.soft.base.enums.WebSocketOrderEnum;
+import com.soft.base.model.dto.UserDto;
 import com.soft.base.service.SysDialogueDetailsService;
 import com.soft.base.utils.SecurityUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.ChatRecParams;
 import com.soft.base.websocket.send.ChatSendParams;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
@@ -42,23 +46,22 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
 
     private final SysDialogueDetailsService sysDialogueDetailsService;
 
-    private final SecurityUtil securityUtil;
-
     @Autowired
     public ChatHandler(DeepSeekChatModel chatModel,
-                       SysDialogueDetailsService sysDialogueDetailsService,
-                       SecurityUtil securityUtil) {
+                       SysDialogueDetailsService sysDialogueDetailsService) {
         this.chatModel = chatModel;
         this.sysDialogueDetailsService = sysDialogueDetailsService;
-        this.securityUtil = securityUtil;
     }
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         ChatRecParams chatRecParams = JSON.parseObject(message.getPayload(), ChatRecParams.class);
+        UserDto user = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
-        // 插入问题
+        // 问题
         SysDialogueDetails question = new SysDialogueDetails();
+        question.setCreateBy(user.getId());
+        question.setUpdateBy(user.getId());
         question.setContent(chatRecParams.getQuestion());
         question.setTag(BaseConstant.CHAT_TAG_USER);
         question.setParentId(chatRecParams.getDialogueId());
@@ -77,6 +80,9 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         ChatSendParams chatSendParams = new ChatSendParams();
         chatSendParams.setOrder(WebSocketOrderEnum.AI.toString());
         StringBuilder answerStr = new StringBuilder();
+
+        // 回答
+        SysDialogueDetails answer = new SysDialogueDetails();
 
         chatModel.stream(prompt).subscribe(item -> {
             String partialText = item.getResult().getOutput().getText();
@@ -97,18 +103,11 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
                 throw new RuntimeException(e);
             }
         }, () -> {
-            // 插入回答
-            SysDialogueDetails answer = new SysDialogueDetails();
-
-            // security上下文无法被子线程访问
-            Long userId = securityUtil.getUserInfo().getId();
-            answer.setCreateBy(userId);
-            answer.setUpdateBy(userId);
-
             answer.setParentId(chatRecParams.getDialogueId());
             answer.setContent(answerStr.toString());
             answer.setTag(BaseConstant.CHAT_TAG_AI);
-
+            answer.setCreateBy(user.getId());
+            answer.setUpdateBy(user.getId());
             sysDialogueDetailsService.save(answer);
         });
     }

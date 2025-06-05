@@ -12,7 +12,20 @@ export async function getDialogueHistoriesApi(data: GetDialogueHistoriesRequest)
     return res.data
 }
 
+/**
+ * 新增对话
+ * @param data 
+ * @returns 
+ */
 export async function saveDialogueApi(data: SaveDialogueRequest): Promise<number | null> {
     const res = await post<number | null>('/dialogue/saveDialogue', data, { flag: true })
     return res.data
+}
+
+/**
+ * 删除对话
+ * @param param 
+ */
+export async function deleteDialogueApi(param: number) {
+    del('/dialogue/deleteDialogue', { flag: true, params: { id: param } })
 }
