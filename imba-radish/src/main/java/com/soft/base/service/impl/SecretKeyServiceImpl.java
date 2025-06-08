@@ -45,7 +45,7 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
     @Cacheable(cacheNames = "cyx:rsa:public", key = "#type")
     @Override
-    public String getPublicKey(Integer type) {
+    public String getPublicKey(String type) {
         return sysSecretKeyMapper.getPublicKey(type);
     }
 
@@ -56,18 +56,22 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
     }
 
     @Override
-    public void generateKey(Integer type) throws NoSuchAlgorithmException {
-        Map<String, String> generate = rsaUtil.generate();
-        String privateKey = generate.get("privateKey");
-        String publicKey = generate.get("publicKey");
-        String username = securityUtil.getUserInfo().getUsername();
-        sysSecretKeyMapper.generateKey(type, privateKey, publicKey, username);
+    public void generateKey(String type) {
+        try {
+            Map<String, String> generate = rsaUtil.generate();
+            String privateKey = generate.get("privateKey");
+            String publicKey = generate.get("publicKey");
+            String username = securityUtil.getUserInfo().getUsername();
+            sysSecretKeyMapper.generateKey(type, privateKey, publicKey, username);
 
-        // 清空redis中缓存的密钥
-        Set<String> keys = new HashSet<>();
-        keys.add(RedisConstant.RSA_PUBLIC_KEY + type);
-        keys.add(RedisConstant.RSA_PRIVATE_KEY + type);
-        redisTemplate.delete(keys);
+            // 清空redis中缓存的密钥
+            Set<String> keys = new HashSet<>();
+            keys.add(RedisConstant.RSA_PUBLIC_KEY + type);
+            keys.add(RedisConstant.RSA_PRIVATE_KEY + type);
+            redisTemplate.delete(keys);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

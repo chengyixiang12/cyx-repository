@@ -120,7 +120,7 @@
           <div class="list-pagination">
             <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
               :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handlePageChange" @size-change="handleSizeChange" size="small" />
+              @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
           </div>
         </el-card>
       </el-col>

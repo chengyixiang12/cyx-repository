@@ -25,7 +25,7 @@ public interface SysUsersService extends IService<SysUser> {
 
     boolean checkUsernameExist(String username);
 
-    void saveUser(SaveUserRequest request) throws Exception;
+    void saveUser(SaveUserRequest request);
 
     void editUser(EditUserRequest request, String username);
 
@@ -37,7 +37,7 @@ public interface SysUsersService extends IService<SysUser> {
 
     void unlockUser(String username);
 
-    void resetUsername(ResetUsernameRequest request, String username) throws IOException;
+    void resetUsername(ResetUsernameRequest request, String username);
 
     boolean existsUsername(String newUsername);
 
@@ -45,7 +45,7 @@ public interface SysUsersService extends IService<SysUser> {
 
     boolean existsEmail(Long id, String email);
 
-    void deleteUser(Long id, String username) throws IOException;
+    void deleteUser(Long id, String username);
 
     String getUsername(Long id);
 

@@ -18,6 +18,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -30,9 +32,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +52,7 @@ import java.util.List;
 @RequestMapping(value = "/dept")
 @Tag(name = "部门")
 @Slf4j
+@Validated
 public class SysDeptController {
 
     private final SysDeptService sysDeptService;
@@ -74,32 +79,21 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_add')")
     @PostMapping
     @Operation(summary = "添加部门")
-    public R<Object> saveDept(@RequestBody SaveDeptRequest request) {
-        if (StringUtils.isBlank(request.getCode())) {
-            return R.fail("部门编码不能为空");
-        }
+    public R<Object> saveDept(@RequestBody @Valid SaveDeptRequest request) {
         if (sysDeptService.existCode(request.getCode())) {
             return R.fail("部门编码已存在");
         }
-        if (StringUtils.isBlank(request.getName())) {
-            return R.fail("部门名称不能为空");
+        Boolean notEmpty = sysDeptService.isNotEmpty();
+        // 如果数据库中存在值，则父id不能为空
+        if (notEmpty && request.getParentId() == null) {
+            return R.fail("父级id不能为空");
         }
-        try {
-            Boolean notEmpty = sysDeptService.isNotEmpty();
-            // 如果数据库中存在值，则父id不能为空
-            if (notEmpty && request.getParentId() == null) {
-                return R.fail("父级id不能为空");
-            }
-            Boolean existCode = sysDeptService.existCode(request.getCode());
-            if (existCode) {
-                return R.fail("编码：" + request.getCode() + "已存在");
-            }
-            sysDeptService.saveDept(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
+        Boolean existCode = sysDeptService.existCode(request.getCode());
+        if (existCode) {
+            return R.fail("编码：" + request.getCode() + "已存在");
         }
+        sysDeptService.saveDept(request);
+        return R.ok();
     }
 
     @SysLock(name = "dept")
@@ -107,87 +101,46 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_edit')")
     @PutMapping
     @Operation(summary = "编辑部门")
-    public R<Object> editDept(@RequestBody EditDeptRequest request) {
-        if (request.getId() == null) {
-            return R.fail("id不能为空");
-        }
-        if (StringUtils.isBlank(request.getCode())) {
-            return R.fail("部门编码不能为空");
-        }
+    public R<Object> editDept(@RequestBody @Valid EditDeptRequest request) {
         if (sysDeptService.existCode(request.getCode(), request.getId())) {
             return R.fail("部门编码已存在");
         }
-        if (StringUtils.isBlank(request.getName())) {
-            return R.fail("部门名称不能为空");
-        }
-        try {
-            sysDeptService.editDept(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        sysDeptService.editDept(request);
+        return R.ok();
     }
 
     @SysLog(value = "删除部门", module = LogModuleEnum.DEPT)
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_del')")
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping
     @Operation(summary = "删除部门")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> deleteDept(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("id不能为空");
-        }
-        try {
-            sysDeptService.removeById(id);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysDeptService.removeById(id);
+        return R.ok();
     }
 
     @SysLog(value = "批量删除部门", module = LogModuleEnum.DEPT)
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_del')")
     @DeleteMapping(value = "/deleteRoleBatch")
     @Operation(summary = "批量删除部门")
-    public R<Object> deleteRoleBatch(@RequestBody DeleteRequest request) {
-        if (request.getIds() == null || request.getIds().isEmpty()) {
-            return R.fail("id不能为空");
-        }
-        try {
-            sysDeptService.deleteDeptBatch(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> deleteRoleBatch(@RequestBody @Valid DeleteRequest request) {
+        sysDeptService.deleteDeptBatch(request);
+        return R.ok();
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping
     @Operation(summary = "获取部门（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<DeptVo> getDept(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("id不能为空");
-        }
-        try {
-            DeptVo deptVo = sysDeptService.getDept(id);
-            return R.ok(deptVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        DeptVo deptVo = sysDeptService.getDept(id);
+        return R.ok(deptVo);
     }
 
     @PostMapping(value = "/exportDept")
     @Operation(summary = "导出部门")
-    public ResponseEntity<byte[]> exportDept(@RequestBody ExportDeptRequest request) {
+    public ResponseEntity<byte[]> exportDept(@RequestBody @Valid ExportDeptRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        if (CollectionUtil.isEmpty(request.getIds())) {
-            throw new GlobalException("部门id数组不能为空");
-        }
         String fileName = request.getFileName();
         if (StringUtils.isBlank(fileName)) {
             request.setFileName(BaseConstant.EXPORT_DEPT_EXCEL_NAME);
@@ -221,20 +174,15 @@ public class SysDeptController {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(byteArray);
-        } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @PostMapping(value = "/getDepts")
     @Operation(summary = "获取部门（复）")
     public R<PageVo<GetDeptsVo>> getDepts(@RequestBody GetDeptsRequest request) {
-        try {
-            PageVo<GetDeptsVo> pageVo = sysDeptService.getDepts(request);
-            return R.ok(pageVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        PageVo<GetDeptsVo> pageVo = sysDeptService.getDepts(request);
+        return R.ok(pageVo);
     }
 }

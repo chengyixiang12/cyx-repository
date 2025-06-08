@@ -16,6 +16,5 @@ public class ForceOfflineRecParams extends OrderReceiveParams {
     /**
      * 接收者
      */
-    @Nullable
     private Long receiver;
 }

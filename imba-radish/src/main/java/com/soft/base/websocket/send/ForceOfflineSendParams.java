@@ -16,6 +16,5 @@ public class ForceOfflineSendParams extends SendParams {
     /**
      * 指令
      */
-    @NotNull
     private String order;
 }

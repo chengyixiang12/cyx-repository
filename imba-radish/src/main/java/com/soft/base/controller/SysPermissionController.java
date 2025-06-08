@@ -14,9 +14,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +33,7 @@ import java.util.List;
 @RequestMapping(value = "/permission")
 @Slf4j
 @Tag(name = "权限")
+@Validated
 public class SysPermissionController {
 
     private final SysPermissionService sysPermissionService;
@@ -43,13 +46,8 @@ public class SysPermissionController {
     @PostMapping(value = "/getPermissions")
     @Operation(summary = "获取权限（复）")
     public R<PageVo<PermissionsVo>> getPermissions(@RequestBody PermissionsRequest request) {
-        try {
-            PageVo<PermissionsVo> pageVo = sysPermissionService.getPermissions(request);
-            return R.ok(pageVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        PageVo<PermissionsVo> pageVo = sysPermissionService.getPermissions(request);
+        return R.ok(pageVo);
     }
 
     @SysLog(value = "添加权限", module = LogModuleEnum.PERMISSION)
@@ -60,41 +58,23 @@ public class SysPermissionController {
         if (sysPermissionService.existCode(request.getCode())) {
             R.fail("权限编码已存在");
         }
-        try {
-            sysPermissionService.savePermission(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        sysPermissionService.savePermission(request);
+        return R.ok();
     }
 
     @GetMapping(value = "/getAllPermission")
     @Operation(summary = "获取所有权限")
     public R<List<GetAllPermissionVo>> getAllPermission() {
-        try {
-            List<GetAllPermissionVo> notAssignPerVos = sysPermissionService.getAllPermission();
-            return R.ok(notAssignPerVos);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        List<GetAllPermissionVo> notAssignPerVos = sysPermissionService.getAllPermission();
+        return R.ok(notAssignPerVos);
     }
 
     @GetMapping(value = "/getAssignPer")
     @Operation(summary = "获取被赋予的权限")
     @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
-    public R<List<GetAssignPerVo>> getAssignPer(@RequestParam(value = "roleId", required = false) Long roleId) {
-        if (roleId == null) {
-            return R.fail("角色id不能为空");
-        }
-        try {
-            List<GetAssignPerVo> notAssignPerVos = sysPermissionService.getAssignPer(roleId);
-            return R.ok(notAssignPerVos);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<List<GetAssignPerVo>> getAssignPer(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
+        List<GetAssignPerVo> notAssignPerVos = sysPermissionService.getAssignPer(roleId);
+        return R.ok(notAssignPerVos);
     }
 
 

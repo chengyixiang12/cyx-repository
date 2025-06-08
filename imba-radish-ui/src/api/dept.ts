@@ -26,7 +26,7 @@ export async function getDeptsApi(data: GetDeptsRequest): Promise<PaginatedData<
  * @param id 
  */
 export async function deleteDeptApi(id: number) {
-  await del(`/dept/${id}`, { flag: true })
+  await del('/dept', { flag: true, params: { id } })
 }
 
 /**

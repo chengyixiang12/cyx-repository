@@ -8,5 +8,5 @@ public interface AuthService {
 
     void register(SysUser sysUser);
 
-    LoginVo authenticate(LoginRequest request) throws Exception;
+    LoginVo authenticate(LoginRequest request);
 }

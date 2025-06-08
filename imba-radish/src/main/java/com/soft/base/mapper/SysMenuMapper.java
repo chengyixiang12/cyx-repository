@@ -26,9 +26,9 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     List<Long> getByIds(@Param("ids") List<Long> ids);
 
-    void enableMenu(@Param("id") Integer id);
+    void enableMenu(@Param("id") Long id);
 
-    void disableMenu(@Param("id") Integer id);
+    void disableMenu(@Param("id") Long id);
 
     List<GetSelectMenuVo> getSelectMenu(@Param("type") String type);
 

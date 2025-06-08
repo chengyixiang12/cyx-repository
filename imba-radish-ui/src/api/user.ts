@@ -27,11 +27,11 @@ export async function updateUser(params: EditUserRequest): Promise<any> {
 
 /**
  * 获取用户
- * @param param 
+ * @param id 
  * @returns 
  */
-export async function getUser(param: number): Promise<GetUserVo> {
-   const res = await get<GetUserVo>(`/user/getUser/${param}`, { flag: true })
+export async function getUser(id: number): Promise<GetUserVo> {
+   const res = await get<GetUserVo>('/user/getUser', { flag: true, params: { id } })
    return res.data;
 }
 
@@ -49,7 +49,7 @@ export async function deleteUserById(param: number): Promise<ApiResponse<any>> {
  * @param id 
  */
 export async function lockUserApi(id: number) {
-   await get(`/user/lockUser/${id}`, { flag: true })
+   await get('/user/lockUser', { flag: true, params: { id } })
 }
 
 /**
@@ -57,7 +57,7 @@ export async function lockUserApi(id: number) {
  * @param id 
  */
 export async function unlockUserApi(id: number) {
-   await get(`/user/unlockUser/${id}`, { flag: true })
+   await get('/user/unlockUser', { flag: true, params: { id } })
 }
 
 /**
@@ -65,7 +65,7 @@ export async function unlockUserApi(id: number) {
  * @param id 
  */
 export async function enableUserApi(id: number) {
-   await get(`/user/enableUser/${id}`, { flag: true })
+   await get('/user/enableUser', { flag: true, params: { id } })
 }
 
 /**
@@ -73,7 +73,7 @@ export async function enableUserApi(id: number) {
  * @param id 
  */
 export async function forbiddenUser(id: number) {
-   await get(`/user/forbiddenUser/${id}`, { flag: true })
+   await get('/user/forbiddenUser', { flag: true, params: { id } })
 }
 
 /**

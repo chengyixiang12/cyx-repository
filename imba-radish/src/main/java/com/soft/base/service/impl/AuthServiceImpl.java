@@ -93,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginVo authenticate(LoginRequest request) throws Exception {
+    public LoginVo authenticate(LoginRequest request) {
         try {
             switch (request.getLoginMethod()) {
                 case BaseConstant.LOGIN_METHOD_PASSWORD: {
@@ -127,7 +127,7 @@ public class AuthServiceImpl implements AuthService {
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (BadCredentialsException e) {
-            Long errorTime;
+            long errorTime;
             try {
                 errorTime = Long.parseLong(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername())));
                 if (BaseConstant.LONG_INIT_VAL.equals(errorTime)) {
@@ -152,8 +152,8 @@ public class AuthServiceImpl implements AuthService {
             throw new CaptChaErrorException(e.getMessage());
         } catch (InvalidLoginMethodException e) {
             throw new InvalidLoginMethodException(e.getMessage());
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+        } catch (GlobalException e) {
+            throw new GlobalException(e.getMessage());
         }
     }
 }

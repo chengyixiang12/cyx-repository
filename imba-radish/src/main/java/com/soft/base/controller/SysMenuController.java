@@ -12,6 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,75 +46,34 @@ public class SysMenuController {
     @GetMapping(value = "/getMenuRoute")
     @Operation(summary = "获取菜单路由")
     public R<List<MenusVo>> getMenuRoute() {
-        try {
-            List<MenusVo> pageVo = sysMenuService.getMenuRoute();
-            return R.ok(pageVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        List<MenusVo> pageVo = sysMenuService.getMenuRoute();
+        return R.ok(pageVo);
     }
 
     @GetMapping(value = "/getSelectMenu")
     @Operation(summary = "获取下拉菜单结构")
     @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY)
-    public R<List<GetSelectMenuVo>> getSelectMenu(@RequestParam(value = "type", required = false) String type) {
-        try {
-            List<GetSelectMenuVo> pageVo = sysMenuService.getSelectMenu(type);
-            return R.ok(pageVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<List<GetSelectMenuVo>> getSelectMenu(@RequestParam(value = "type", required = false) @NotBlank(message = "类型不能为空") String type) {
+        List<GetSelectMenuVo> pageVo = sysMenuService.getSelectMenu(type);
+        return R.ok(pageVo);
     }
 
     @SysLog(value = "添加菜单", module = LogModuleEnum.MENU)
     @PreAuthorize(value = "@cps.hasPermission('sys_menu_add')")
     @PostMapping
     @Operation(summary = "添加菜单")
-    public R<Object> saveMenu(@RequestBody SaveMenuRequest request) {
-        if (StringUtils.isBlank(request.getName())) {
-            return R.fail("菜单名称不能为空");
-        }
-        if (StringUtils.isBlank(request.getPath())) {
-            return R.fail("菜单路径不能为空");
-        }
-        if (StringUtils.isBlank(request.getType())) {
-            return R.fail("菜单类型不能为空");
-        }
-        try {
-            sysMenuService.saveMenu(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> saveMenu(@RequestBody @Valid SaveMenuRequest request) {
+        sysMenuService.saveMenu(request);
+        return R.ok();
     }
 
     @SysLog(value = "编辑菜单", module = LogModuleEnum.MENU)
     @PreAuthorize(value = "@cps.hasPermission('sys_menu_edit')")
     @PutMapping
     @Operation(summary = "编辑菜单")
-    public R<Object> editMenu(@RequestBody EditMenuRequest request) {
-        if (request.getId() == null) {
-            return R.fail("主键不能不能为空");
-        }
-        if (StringUtils.isBlank(request.getName())) {
-            return R.fail("菜单名称不能为空");
-        }
-        if (StringUtils.isBlank(request.getPath())) {
-            return R.fail("菜单路径不能为空");
-        }
-        if (StringUtils.isBlank(request.getType())) {
-            return R.fail("菜单类型不能为空");
-        }
-        try {
-            sysMenuService.editMenu(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> editMenu(@RequestBody @Valid EditMenuRequest request) {
+        sysMenuService.editMenu(request);
+        return R.ok();
     }
 
     @SysLog(value = "删除菜单", module = LogModuleEnum.MENU)
@@ -119,17 +81,9 @@ public class SysMenuController {
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> deleteMenu(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysMenuService.deleteMenu(id);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> deleteMenu(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
+        sysMenuService.deleteMenu(id);
+        return R.ok();
     }
 
     @PostMapping(value = "/getMenuList")
@@ -147,122 +101,64 @@ public class SysMenuController {
     @GetMapping(value = "/getMenu")
     @Operation(summary = "获取菜单（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<GetMenuVo> getMenu(@RequestParam(value = "id", required = false) Long id) {
-        if (id == null) {
-            return R.fail("id不能为空");
-        }
-        try {
-            GetMenuVo getMenuVo = sysMenuService.getMenu(id);
-            return R.ok(getMenuVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<GetMenuVo> getMenu(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        GetMenuVo getMenuVo = sysMenuService.getMenu(id);
+        return R.ok(getMenuVo);
     }
 
     @SysLog(value = "启用菜单", module = LogModuleEnum.MENU)
     @GetMapping(value = "/enableMenu/{id}")
     @Operation(summary = "启用菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> enableMenu(@PathVariable(value = "id") Integer id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysMenuService.enableMenu(id);
-            return R.ok("启用成功", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> enableMenu(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
+        sysMenuService.enableMenu(id);
+        return R.ok("启用成功", null);
     }
 
     @SysLog(value = "禁用菜单", module = LogModuleEnum.MENU)
     @GetMapping(value = "/disableMenu/{id}")
     @Operation(summary = "禁用菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> disableMenu(@PathVariable(value = "id") Integer id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysMenuService.disableMenu(id);
-            return R.ok("禁用成功", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> disableMenu(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
+        sysMenuService.disableMenu(id);
+        return R.ok("禁用成功", null);
     }
 
     @GetMapping(value = "/getMenuTree")
     @Operation(summary = "获取菜单树")
     public R<List<GetMenuTreeVo>> getMenuTree() {
-        try {
-            List<GetMenuTreeVo> menuTreeVos = sysMenuService.getMenuTree();
-            return R.ok(menuTreeVos);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        List<GetMenuTreeVo> menuTreeVos = sysMenuService.getMenuTree();
+        return R.ok(menuTreeVos);
     }
 
     @GetMapping(value = "/getAssignedMenu")
     @Operation(summary = "获取已分配的菜单")
     @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
-    public R<List<GetAssignedMenuVo>> getAssignedMenu(@RequestParam(value = "roleId", required = false) Long roleId) {
-        if (roleId == null) {
-            return R.fail("角色id不能为空");
-        }
-        try {
-            List<GetAssignedMenuVo> menuIds = sysMenuService.getAssignedMenu(roleId);
-            return R.ok(menuIds);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<List<GetAssignedMenuVo>> getAssignedMenu(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
+        List<GetAssignedMenuVo> menuIds = sysMenuService.getAssignedMenu(roleId);
+        return R.ok(menuIds);
     }
 
     @GetMapping(value = "/menuShow")
     @Operation(summary = "显示菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> menuShow(@RequestParam(value = "id", required = false) Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysMenuService.menuShow(id);
-            return R.ok("菜单已显示", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> menuShow(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysMenuService.menuShow(id);
+        return R.ok("菜单已显示", null);
     }
 
     @GetMapping(value = "/menuHide")
     @Operation(summary = "隐藏菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> menuHide(@RequestParam(value = "id", required = false) Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysMenuService.menuHide(id);
-            return R.ok("菜单已隐藏", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> menuHide(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysMenuService.menuHide(id);
+        return R.ok("菜单已隐藏", null);
     }
 
     @GetMapping(value = "/getLeftMenus")
     @Operation(summary = "获取左侧菜单")
     public R<List<MenusVo>> getLeftMenus() {
-        try {
-            List<MenusVo> menusVos = sysMenuService.getLeftMenus();
-            return R.ok(menusVos);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        List<MenusVo> menusVos = sysMenuService.getLeftMenus();
+        return R.ok(menusVos);
     }
 }

@@ -15,6 +15,5 @@ public class FileTransferStartRecParams {
     /**
      * 文件hash值
      */
-    @NotNull
     private String fileHash;
 }

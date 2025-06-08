@@ -105,12 +105,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public void enableMenu(Integer id) {
+    public void enableMenu(Long id) {
         sysMenuMapper.enableMenu(id);
     }
 
     @Override
-    public void disableMenu(Integer id) {
+    public void disableMenu(Long id) {
         sysMenuMapper.disableMenu(id);
     }
 

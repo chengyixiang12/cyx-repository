@@ -16,7 +16,7 @@ export async function getDictDatasApi(data: DictDatasRequest): Promise<Paginated
  * @param id 
  */
 export async function deleteDictDataApi(id: number) {
-    await del(`/dictData/${id}`, { flag: true })
+    await del('/dictData', { flag: true, params: { id } })
 }
 
 /**

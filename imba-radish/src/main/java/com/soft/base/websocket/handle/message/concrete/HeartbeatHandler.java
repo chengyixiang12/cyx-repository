@@ -7,7 +7,6 @@ import com.soft.base.model.dto.UserDto;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.send.SendParams;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -52,7 +51,7 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
     }
 
     @Override
-    public @NotNull WebSocketOrderEnum getOrder() {
+    public WebSocketOrderEnum getOrder() {
         return WebSocketOrderEnum.HEART_BEAT;
     }
 }

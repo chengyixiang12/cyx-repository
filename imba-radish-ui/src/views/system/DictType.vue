@@ -68,7 +68,7 @@
           <div class="list-pagination">
             <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
               layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
-              @size-change="handleSizeChange" size="small" />
+              @size-change="handleSizeChange" size="default" />
           </div>
         </el-card>
       </el-col>

@@ -18,15 +18,17 @@ import com.soft.base.utils.RSAUtil;
 import com.soft.base.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.regex.Pattern;
 @RequestMapping(value = "/user")
 @Slf4j
 @Tag(name = "用户")
+@Validated
 public class SysUserController {
 
     private final SysUsersService sysUsersService;
@@ -68,39 +71,23 @@ public class SysUserController {
     @PostMapping(value = "/getUsers")
     @Operation(summary = "获取用户（复）")
     public R<PageVo<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
-        try {
-            PageVo<UsersVo> allUsers = sysUsersService.getUsers(request);
-            return R.ok(allUsers);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        PageVo<UsersVo> allUsers = sysUsersService.getUsers(request);
+        return R.ok(allUsers);
     }
 
     @SysLog(value = "修改密码", module = LogModuleEnum.USER)
     @PutMapping(value = "/editPassword")
     @Operation(summary = "修改密码")
-    public R<Object> editPassword(@RequestBody EditPasswordRequest request) {
-        if (StringUtils.isBlank(request.getOriginalPass())) {
-            return R.fail("原密码不能为空");
+    public R<Object> editPassword(@RequestBody @Valid EditPasswordRequest request) {
+        String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+        String originalDecrypt = rsaUtil.decrypt(request.getOriginalPass(), privateKey);
+        String password = securityUtil.getUserInfo().getPassword();
+        if (!passwordEncoder.matches(originalDecrypt, password)) {
+            return R.fail("原密码不正确");
         }
-        if (StringUtils.isBlank(request.getTargetPass())) {
-            return R.fail("新密码不能为空");
-        }
-        try {
-            String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
-            String originalDecrypt = rsaUtil.decrypt(request.getOriginalPass(), privateKey);
-            String password = securityUtil.getUserInfo().getPassword();
-            if (!passwordEncoder.matches(originalDecrypt, password)) {
-                return R.fail("原密码不正确");
-            }
-            Long id = securityUtil.getUserInfo().getId();
-            sysUsersService.editPassword(request.getTargetPass(), id);
-            return R.ok("修改成功", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        Long id = securityUtil.getUserInfo().getId();
+        sysUsersService.editPassword(request.getTargetPass(), id);
+        return R.ok("修改成功", null);
     }
 
     @SysLog(value = "重置密码", module = LogModuleEnum.USER)
@@ -108,16 +95,8 @@ public class SysUserController {
     @PutMapping(value = "/resetPassword")
     @Operation(summary = "重置密码")
     public R<Object> resetPassword(@RequestBody ResetPasswordRequest request) {
-        if (StringUtils.isBlank(request.getPassword())) {
-            return R.fail("新密码不能为空");
-        }
-        try {
-            sysUsersService.resetPassword(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        sysUsersService.resetPassword(request);
+        return R.ok();
     }
 
     @SysLock(name = "user")
@@ -125,32 +104,15 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_add')")
     @PostMapping
     @Operation(summary = "添加用户")
-    public R<Object> saveUser(@RequestBody SaveUserRequest request) {
-        if (StringUtils.isBlank(request.getUsername())) {
-            return R.fail("用户名不能为空");
-        }
+    public R<Object> saveUser(@RequestBody @Valid SaveUserRequest request) {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
-        }
-        if (StringUtils.isBlank(request.getPassword())) {
-            return R.fail("密码不能为空");
-        }
-        if (request.getDeptId() == null) {
-            return R.fail("部门不能为空");
-        }
-        if (StringUtils.isBlank(request.getEmail())) {
-            return R.fail("邮箱不能为空");
         }
         if (sysUsersService.existsEmail(request.getEmail())) {
             return R.fail("邮箱已注册");
         }
-        try {
-            sysUsersService.saveUser(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        sysUsersService.saveUser(request);
+        return R.ok();
     }
 
     @SysLock(name = "user")
@@ -158,27 +120,13 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_edit')")
     @PutMapping
     @Operation(summary = "编辑用户")
-    public R<Object> editUser(@RequestBody EditUserRequest request) {
-        if (request.getId() == null) {
-            return R.fail("id不能为空");
-        }
-        if (request.getDeptId() == null) {
-            return R.fail("部门不能为空");
-        }
-        if (StringUtils.isBlank(request.getEmail())) {
-            return R.fail("邮箱不能为空");
-        }
+    public R<Object> editUser(@RequestBody @Valid EditUserRequest request) {
         if (sysUsersService.existsEmail(request.getId(), request.getEmail())) {
             return R.fail("邮箱已注册");
         }
-        try {
-            String username = sysUsersService.getUsername(request.getId());
-            sysUsersService.editUser(request, username);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        String username = sysUsersService.getUsername(request.getId());
+        sysUsersService.editUser(request, username);
+        return R.ok();
     }
 
     @GetMapping(value = "/getUserInfo")
@@ -198,85 +146,50 @@ public class SysUserController {
         }
     }
 
-    @GetMapping(value = "/getUser/{id}")
+    @GetMapping(value = "/getUser")
     @Operation(summary = "获取用户")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<GetUserVo> getUser(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("id不能为空");
-        }
-        try {
-            GetUserVo getUserVo = sysUsersService.getUser(id);
-            return R.ok(getUserVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<GetUserVo> getUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        GetUserVo getUserVo = sysUsersService.getUser(id);
+        return R.ok(getUserVo);
     }
 
     @SysLog(value = "锁定用户", module = LogModuleEnum.USER)
-    @GetMapping(value = "/lockUser/{id}")
+    @GetMapping(value = "/lockUser")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_lock')")
     @Operation(summary = "锁定用户")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> lockUser(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            String username = sysUsersService.getUsername(id);
-            sysUsersService.lockUser(username);
-            return R.ok("用户已锁定");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> lockUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        String username = sysUsersService.getUsername(id);
+        sysUsersService.lockUser(username);
+        return R.ok("用户已锁定", null);
     }
 
     @SysLog(value = "解锁用户", module = LogModuleEnum.USER)
-    @GetMapping(value = "/unlockUser/{id}")
+    @GetMapping(value = "/unlockUser")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_unlock')")
     @Operation(summary = "解锁用户")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> unLockUser(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            String username = sysUsersService.getUsername(id);
-            sysUsersService.unlockUser(username);
-            return R.ok("用户已解锁");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> unLockUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        String username = sysUsersService.getUsername(id);
+        sysUsersService.unlockUser(username);
+        return R.ok("用户已解锁", null);
     }
 
     @SysLog(value = "重置用户名", module = LogModuleEnum.USER)
     @SysLock(name = "user")
     @PutMapping(value = "/resetUsername")
     @Operation(summary = "重置用户名")
-    public R<Object> resetUsername(@RequestBody ResetUsernameRequest request) {
-        if (request.getId() == null) {
-            return R.fail("主键不能为空");
-        }
-        if (StringUtils.isBlank(request.getUsername())) {
-            return R.fail("用户名不能为空");
-        }
+    public R<Object> resetUsername(@RequestBody @Valid ResetUsernameRequest request) {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
         }
         if (sysUsersService.existsUsername(request.getUsername())) {
             return R.fail("用户名重复");
         }
-        try {
-            String username = sysUsersService.getUsername(request.getId());
-            sysUsersService.resetUsername(request, username);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        String username = sysUsersService.getUsername(request.getId());
+        sysUsersService.resetUsername(request, username);
+        return R.ok();
     }
 
     @SysLog(value = "删除用户", module = LogModuleEnum.USER)
@@ -284,71 +197,39 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_delete')")
     @Operation(summary = "删除用户")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteUser(@RequestParam(value = "id", required = false) Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            String username = sysUsersService.getUsername(id);
-            sysUsersService.deleteUser(id, username);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> deleteUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        String username = sysUsersService.getUsername(id);
+        sysUsersService.deleteUser(id, username);
+        return R.ok();
     }
 
     @SysLog(value = "启用用户", module = LogModuleEnum.USER)
-    @GetMapping(value = "/enableUser/{id}")
+    @GetMapping(value = "/enableUser")
     @Operation(summary = "启用用户")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_enable')")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> enableUser(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            String username = sysUsersService.getUsername(id);
-            sysUsersService.enableUser(username);
-            return R.ok("用户已启用");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> enableUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        String username = sysUsersService.getUsername(id);
+        sysUsersService.enableUser(username);
+        return R.ok("用户已启用", null);
     }
 
     @SysLog(value = "禁用用户", module = LogModuleEnum.USER)
-    @GetMapping(value = "/forbiddenUser/{id}")
+    @GetMapping(value = "/forbiddenUser")
     @Operation(summary = "禁用用户")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_forbidden')")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> forbiddenUser(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            String username = sysUsersService.getUsername(id);
-            sysUsersService.forbiddenUser(username);
-            return R.ok("用户已禁用");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> forbiddenUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        String username = sysUsersService.getUsername(id);
+        sysUsersService.forbiddenUser(username);
+        return R.ok("用户已禁用", null);
     }
 
     @GetMapping(value = "/getAvatar")
     @Operation(summary = "获取用户头像")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<String> getAvatar(@RequestParam(value = "id", required = false) Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            String avatarUri = sysUsersService.getAvatar(id);
-            return R.ok(avatarUri);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        String avatarUri = sysUsersService.getAvatar(id);
+        return R.ok(avatarUri);
     }
 }

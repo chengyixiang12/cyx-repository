@@ -10,9 +10,6 @@ import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
 /**
 * @author cyq
 * @description 针对表【sys_file】的数据库操作Service
@@ -20,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 */
 public interface SysFileService extends IService<SysFile> {
 
-    UploadFileVo uploadFile(MultipartFile multipartFile) throws IOException, NoSuchAlgorithmException;
+    UploadFileVo uploadFile(MultipartFile multipartFile);
 
     FileDetailDto getFileDetailById(Long id);
 
@@ -28,5 +25,5 @@ public interface SysFileService extends IService<SysFile> {
 
     PageVo<FilesVo> getFiles(FilesRequest request);
 
-    UploadAvatarVo uploadAvatar(MultipartFile multipartFile) throws IOException, NoSuchAlgorithmException;
+    UploadAvatarVo uploadAvatar(MultipartFile multipartFile);
 }

@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,6 +16,7 @@ import lombok.EqualsAndHashCode;
 public class DictDatasRequest extends PageRequest {
 
     @Schema(description = "字典类型")
+    @NotBlank(message = "字典类型不能为空")
     private String dictType;
 
     @Schema(description = "关键字")

@@ -9,7 +9,6 @@ import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.ForceOfflineRecParams;
 import com.soft.base.websocket.send.ForceOfflineSendParams;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -65,7 +64,7 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
     }
 
     @Override
-    public @NotNull WebSocketOrderEnum getOrder() {
+    public WebSocketOrderEnum getOrder() {
         return WebSocketOrderEnum.FORCE_OFFLINE;
     }
 }

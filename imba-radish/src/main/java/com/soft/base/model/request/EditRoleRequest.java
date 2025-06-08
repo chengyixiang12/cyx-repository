@@ -1,6 +1,8 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -10,6 +12,7 @@ import org.apache.ibatis.type.Alias;
 public class EditRoleRequest {
 
     @Schema(description = "主键")
+    @NotNull(message = "主键不能为空")
     private Long id;
 
     @Schema(description = "排序")
@@ -19,6 +22,7 @@ public class EditRoleRequest {
     private String name;
 
     @Schema(description = "角色编码")
+    @NotBlank(message = "角色编码不能为空")
     private String code;
 
     @Schema(description = "描述")

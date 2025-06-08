@@ -17,7 +17,7 @@ export async function getDictTypesApi(data: GetDictTypesRequest): Promise<Pagina
  * @param id 
  */
 export async function getDictTypeApi(id: number): Promise<DictTypeVo> {
-    const res = await get(`/dictType/${id}`, { flag: true });
+    const res = await get('/dictType', { flag: true, params: { id } });
     return res.data;
 }
 

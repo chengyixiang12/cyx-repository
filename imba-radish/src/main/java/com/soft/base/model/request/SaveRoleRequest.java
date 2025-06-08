@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -13,6 +14,7 @@ public class SaveRoleRequest {
     private Integer sortOrder;
 
     @Schema(description = "角色编码（以ROLE_开头）", example = "ROLE_ADMIN")
+    @NotBlank(message = "角色编码不能为空")
     private String code;
 
     @Schema(description = "角色名称")

@@ -28,9 +28,9 @@ public interface SysMenuService extends IService<SysMenu> {
 
     void deleteMenu(Long id);
 
-    void enableMenu(Integer id);
+    void enableMenu(Long id);
 
-    void disableMenu(Integer id);
+    void disableMenu(Long id);
 
     List<MenusVo> getMenuRoute();
 

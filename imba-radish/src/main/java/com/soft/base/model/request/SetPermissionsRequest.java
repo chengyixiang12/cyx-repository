@@ -1,6 +1,8 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +16,8 @@ import java.util.List;
 @Schema(description = "赋予权限请求参数")
 public class SetPermissionsRequest {
 
-    @Schema(description = "角色id")
+    @Schema(description = "角色主键")
+    @NotNull(message = "角色主键不能为空")
     private Long roleId;
 
     @Schema(description = "权限id集合")

@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -15,8 +16,10 @@ import org.apache.ibatis.type.Alias;
 public class EditPasswordRequest {
 
     @Schema(description = "原密码")
+    @NotBlank(message = "原密码不能为空")
     private String originalPass;
 
     @Schema(description = "新密码")
+    @NotBlank(message = "新密码不能为空")
     private String targetPass;
 }

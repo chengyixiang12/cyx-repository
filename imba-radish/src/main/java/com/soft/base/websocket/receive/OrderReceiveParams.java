@@ -14,6 +14,5 @@ public class OrderReceiveParams {
     /**
      * 指令
      */
-    @NotNull
     private String order;
 }

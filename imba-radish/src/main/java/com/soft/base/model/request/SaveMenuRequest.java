@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -19,9 +20,11 @@ public class SaveMenuRequest {
     private Long parentId;
 
     @Schema(description = "菜单名称")
+    @NotBlank(message = "菜单名称不能为空")
     private String name;
 
     @Schema(description = "前端路由路径")
+    @NotBlank(message = "菜单路径不能为空")
     private String path;
 
     @Schema(description = "前端组件路径")
@@ -31,6 +34,7 @@ public class SaveMenuRequest {
     private String icon;
 
     @Schema(description = "菜单类型：0-目录，1-菜单，2-按钮")
+    @NotBlank(message = "菜单类型不能为空")
     private String type;
 
     @Schema(description = "排序号，数字越小，排序越靠前")

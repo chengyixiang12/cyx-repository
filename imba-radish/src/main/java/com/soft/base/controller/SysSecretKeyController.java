@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,19 +39,11 @@ public class SysSecretKeyController {
     @GetMapping(value = "/getPublicKey")
     @Operation(summary = "获取公钥")
     @Parameter(name = "type", description = "密钥类型", required = true, in = ParameterIn.QUERY)
-    public R<PublicKeyVo> getPublicKey(@RequestParam(value = "type", required = false) Integer type) {
-        if (type == null) {
-            return R.fail("密钥类型不能为空");
-        }
-        try {
-            String publicKey = secretKeyService.getPublicKey(type);
-            PublicKeyVo publicKeyVo = new PublicKeyVo();
-            publicKeyVo.setPublicKey(publicKey);
-            return R.ok(publicKeyVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<PublicKeyVo> getPublicKey(@RequestParam(value = "type", required = false) @NotBlank(message = "密钥类型不能为空") String type) {
+        String publicKey = secretKeyService.getPublicKey(type);
+        PublicKeyVo publicKeyVo = new PublicKeyVo();
+        publicKeyVo.setPublicKey(publicKey);
+        return R.ok(publicKeyVo);
     }
 
     @PreAuthorize(value = "@cps.hasPermission('sys_secret_key_generate')")
@@ -58,17 +51,8 @@ public class SysSecretKeyController {
     @GetMapping(value = "/generateKey")
     @Operation(summary = "生成密钥对")
     @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY)
-    public R<Object> generateKey(@RequestParam(value = "type", required = false) Integer type) {
-        if (type == null) {
-            return R.fail("类型不能为空");
-        }
-        try {
-            secretKeyService.generateKey(type);
-            R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
-        return R.ok();
+    public R<Object> generateKey(@RequestParam(value = "type", required = false) @NotBlank(message = "密钥类型不能为空") String type) {
+        secretKeyService.generateKey(type);
+        return R.ok("密钥对生成成功");
     }
 }

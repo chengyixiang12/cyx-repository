@@ -20,7 +20,6 @@ import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UsersVo;
-import com.soft.base.properties.MinioProperty;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
@@ -29,7 +28,6 @@ import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -138,13 +136,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             sysUser.setPassword(encode);
 
             sysUsersMapper.updateById(sysUser);
-        } catch (NoSuchPaddingException
-                 | IllegalBlockSizeException
-                 | NoSuchAlgorithmException
-                 | InvalidKeySpecException
-                 | BadPaddingException
-                 | IOException
-                 | InvalidKeyException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -163,13 +155,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             sysUser.setPassword(encode);
 
             sysUsersMapper.updateById(sysUser);
-        } catch (NoSuchPaddingException
-                 | IllegalBlockSizeException
-                 | NoSuchAlgorithmException
-                 | InvalidKeySpecException
-                 | BadPaddingException
-                 | IOException
-                 | InvalidKeyException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -186,7 +172,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveUser(SaveUserRequest request) throws Exception {
+    public void saveUser(SaveUserRequest request) {
         String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
         request.setPassword(passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey)));
         SysUser sysUser = new SysUser();
@@ -282,13 +268,17 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     @CacheEvict(key = "#username")
     @Transactional(rollbackFor = Exception.class)
-    public void resetUsername(ResetUsernameRequest request, String username) throws IOException {
-        sendWebsocket(request.getId());
+    public void resetUsername(ResetUsernameRequest request, String username) {
+        try {
+            sendWebsocket(request.getId());
 
-        SysUser sysUser = new SysUser();
-        sysUser.setId(request.getId());
-        sysUser.setUsername(request.getUsername());
-        sysUsersMapper.updateById(sysUser);
+            SysUser sysUser = new SysUser();
+            sysUser.setId(request.getId());
+            sysUser.setUsername(request.getUsername());
+            sysUsersMapper.updateById(sysUser);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -308,10 +298,14 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     @CacheEvict(key = "#username")
-    public void deleteUser(Long id, String username) throws IOException {
-        sendWebsocket(id);
+    public void deleteUser(Long id, String username) {
+        try {
+            sendWebsocket(id);
 
-        sysUsersMapper.deleteById(id);
+            sysUsersMapper.deleteById(id);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

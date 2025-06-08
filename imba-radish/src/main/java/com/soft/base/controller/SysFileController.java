@@ -4,7 +4,6 @@ import com.soft.base.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.exception.GlobalException;
-import com.soft.base.exception.ResourceNotExistException;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
@@ -18,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,12 +26,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +50,7 @@ import java.nio.file.Paths;
 @RequestMapping(value = "/file")
 @Tag(name = "文件")
 @Slf4j
+@Validated
 public class SysFileController {
 
     @Value(value = "${storage.big-file.location}")
@@ -66,37 +69,23 @@ public class SysFileController {
 
     @PostMapping
     @Operation(summary = "上传文件")
-    public R<UploadFileVo> uploadFile(@RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) {
-        if (multipartFile == null) {
-            return R.fail("文件不能为空");
-        }
-        try {
-            UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
-            return R.ok(uploadFileVo);
-        } catch (GlobalException e) {
-            return R.fail(e.getMessage());
-        }catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<UploadFileVo> uploadFile(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
+        UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
+        return R.ok(uploadFileVo);
     }
 
     @GetMapping (value = "/downloadFile")
     @Operation(summary = "下载文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) Long id) {
+    public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         HttpHeaders headers = new HttpHeaders();
 
-        if (id == null) {
-            throw new GlobalException("主键不能为空");
+        FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
+        if (fileDetail == null) {
+            throw new GlobalException("不存在的文件");
         }
 
         try {
-            FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
-            if (fileDetail == null) {
-                throw new ResourceNotExistException("不存在的文件");
-            }
-
             // 设置响应头
             String mimeType = Files.probeContentType(Paths.get(fileDetail.getOriginalName()));
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
@@ -119,13 +108,13 @@ public class SysFileController {
                     case BaseConstant.DISK_STORAGE_LOCATION: {
                         file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
                         if (!file.exists()) {
-                            throw new ResourceNotExistException("资源不存在");
+                            throw new GlobalException("资源不存在");
                         }
                         is = new FileInputStream(file);
                         break;
                     }
                     default: {
-                        throw new ResourceNotExistException("资源不存在");
+                        throw new GlobalException("资源不存在");
                     }
                 }
 
@@ -140,57 +129,32 @@ public class SysFileController {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(responseBody);
-        } catch (ResourceNotExistException e) {
-            throw new ResourceNotExistException(e.getMessage());
-        } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @SysLog(value = "删除文件", module = LogModuleEnum.FILE)
     @PreAuthorize(value = "@cps.hasPermission('sys_file_del')")
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping
     @Operation(summary = "删除文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> deleteFile(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysFileService.deleteFile(id);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> deleteFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysFileService.deleteFile(id);
+        return R.ok();
     }
 
     @PostMapping(value = "/getFiles")
     @Operation(summary = "获取文件（复）")
     public R<PageVo<FilesVo>> getFiles(@RequestBody FilesRequest request) {
-        try {
-            PageVo<FilesVo> pageVo = sysFileService.getFiles(request);
-            return R.ok(pageVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        PageVo<FilesVo> pageVo = sysFileService.getFiles(request);
+        return R.ok(pageVo);
     }
 
     @PostMapping(value = "/uploadAvatar")
     @Operation(summary = "上传用户头像")
-    public R<Object> uploadAvatar(@RequestPart(value = "multipartFile", required = false) MultipartFile multipartFile) {
-        if (multipartFile == null) {
-            return R.fail("文件不能为空");
-        }
-        try {
-            UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
-            return R.ok(uploadAvatarVo);
-        } catch (GlobalException e) {
-            return R.fail(e.getMessage());
-        }catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
+        UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
+        return R.ok(uploadAvatarVo);
     }
 }

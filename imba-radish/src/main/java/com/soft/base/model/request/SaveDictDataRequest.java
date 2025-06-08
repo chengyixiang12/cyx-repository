@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -17,15 +18,18 @@ public class SaveDictDataRequest {
     private Integer sortOrder;
 
     @Schema(description = "编码")
+    @NotBlank(message = "字典编码不能为空")
     private String code;
 
     @Schema(description = "标签")
     private String label;
 
-    @Schema(description = "键值")
+    @Schema(description = "值")
+    @NotBlank(message = "字典值不能为空")
     private String value;
 
     @Schema(description = "字典类型")
+    @NotBlank(message = "字典类型不能为空")
     private String dictType;
 
     @Schema(description = "样式属性（其他样式扩展）")

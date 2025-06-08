@@ -117,13 +117,13 @@
             #{item}
         </foreach>
     </select>
-    <update id="enableMenu" parameterType="java.lang.Integer">
+    <update id="enableMenu" parameterType="java.lang.Long">
         UPDATE sys_menu
         SET status = 1
         WHERE del_flag = '1'
         AND id = #{id}
     </update>
-    <update id="disableMenu" parameterType="java.lang.Integer">
+    <update id="disableMenu" parameterType="java.lang.Long">
         UPDATE sys_menu
         SET status = 0
         WHERE del_flag = '1'

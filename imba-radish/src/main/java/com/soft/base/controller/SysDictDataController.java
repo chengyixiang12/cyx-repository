@@ -17,10 +17,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/dictData")
 @Slf4j
 @Tag(name = "字典数据")
+@Validated
 public class SysDictDataController {
 
     private final SysDictDataService sysDictDataService;
@@ -44,32 +48,16 @@ public class SysDictDataController {
     @PostMapping(value = "/getDictDatas")
     @Operation(summary = "获取字典数据（复）")
     public R<PageVo<DictDatasVo>> getDictDatas(@RequestBody DictDatasRequest request) {
-        if (StringUtils.isBlank(request.getDictType())) {
-            return R.fail("字典类型不能为空");
-        }
-        try {
-            PageVo<DictDatasVo> pageVo = sysDictDataService.getDictDatas(request);
-            return R.ok(pageVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        PageVo<DictDatasVo> pageVo = sysDictDataService.getDictDatas(request);
+        return R.ok(pageVo);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping
     @Operation(summary = "获取字典数据（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<DictDataVo> getDictData(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            DictDataVo dictDataVo = sysDictDataService.getDictData(id);
-            return R.ok(dictDataVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<DictDataVo> getDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        DictDataVo dictDataVo = sysDictDataService.getDictData(id);
+        return R.ok(dictDataVo);
     }
 
     @SysLock(name = "dictData")
@@ -77,26 +65,12 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_add')")
     @PostMapping
     @Operation(summary = "添加字典数据")
-    public R<Object> saveDictData(@RequestBody SaveDictDataRequest request) {
-        if (StringUtils.isBlank(request.getDictType())) {
-            return R.fail("字典类型不能为空");
-        }
-        if (StringUtils.isBlank(request.getCode())) {
-            return R.fail("字典编码不能为空");
-        }
+    public R<Object> saveDictData(@RequestBody @Valid SaveDictDataRequest request) {
         if (sysDictDataService.existCode(request.getCode())) {
             return R.fail("字典编码已存在");
         }
-        if (StringUtils.isBlank(request.getValue())) {
-            return R.fail("字典值不能为空");
-        }
-        try {
-            sysDictDataService.saveDictData(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        sysDictDataService.saveDictData(request);
+        return R.ok();
     }
 
     @SysLock(name = "dictData")
@@ -104,98 +78,49 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_edit')")
     @PutMapping
     @Operation(summary = "编辑字典数据")
-    public R<Object> editDictData(@RequestBody EditDictDataRequest request) {
-        if (request.getId() == null) {
-            return R.fail("主键不能为空");
-        }
-        if (StringUtils.isBlank(request.getDictType())) {
-            return R.fail("字典类型不能为空");
-        }
-        if (StringUtils.isBlank(request.getCode())) {
-            return R.fail("字典编码不能为空");
-        }
+    public R<Object> editDictData(@RequestBody @Valid EditDictDataRequest request) {
         if (sysDictDataService.existCode(request.getCode(), request.getId())) {
             return R.fail("字典编码已存在");
         }
-        if (StringUtils.isBlank(request.getValue())) {
-            return R.fail("字典值不能为空");
-        }
-        try {
-            sysDictDataService.editDictData(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        sysDictDataService.editDictData(request);
+        return R.ok();
     }
 
     @SysLog(value = "删除字典数据", module = LogModuleEnum.DICT_DATA)
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_del')")
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping
     @Operation(summary = "删除字典数据")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
-    public R<Object> deleteDictData(@PathVariable(value = "id") Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysDictDataService.deleteDictData(id);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> deleteDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysDictDataService.deleteDictData(id);
+        return R.ok();
     }
 
     @SysLog(value = "批量删除字典数据", module = LogModuleEnum.DICT_DATA)
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_del')")
     @DeleteMapping(value = "/deleteDictDataBatch")
     @Operation(summary = "批量删除字典数据")
-    public R<Object> deleteDictDataBatch(@RequestBody DeleteRequest request) {
-        if (request.getIds() == null || request.getIds().isEmpty()) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysDictDataService.deleteDictDataBatch(request);
-            return R.ok();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> deleteDictDataBatch(@RequestBody @Valid DeleteRequest request) {
+        sysDictDataService.deleteDictDataBatch(request);
+        return R.ok();
     }
 
     @SysLog(value = "启用", module = LogModuleEnum.DICT_DATA)
     @GetMapping(value = "/enableDictData")
     @Operation(summary = "启用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> enableDictData(@RequestParam(value = "id", required = false) Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysDictDataService.enableDictData(id);
-            return R.ok("启用成功", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> enableDictData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysDictDataService.enableDictData(id);
+        return R.ok("启用成功", null);
     }
 
     @SysLog(value = "禁用", module = LogModuleEnum.DICT_DATA)
     @GetMapping(value = "/forbiddenDictData")
     @Operation(summary = "禁用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> forbiddenDictData(@RequestParam(value = "id", required = false) Long id) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        try {
-            sysDictDataService.forbiddenDictData(id);
-            return R.ok("禁用成功", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> forbiddenDictData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysDictDataService.forbiddenDictData(id);
+        return R.ok("禁用成功", null);
     }
 
     @SysLog(value = "设置默认", module = LogModuleEnum.DICT_DATA)
@@ -206,20 +131,9 @@ public class SysDictDataController {
             @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "dictType", description = "字典类型", required = true, in = ParameterIn.QUERY)
     })
-    public R<Object> setDefaultData(@RequestParam(value = "id", required = false) Long id,
-                                    @RequestParam(value = "dictType", required = false) String dictType) {
-        if (id == null) {
-            return R.fail("主键不能为空");
-        }
-        if (StringUtils.isBlank(dictType)) {
-            return R.fail("字典类型不能为空");
-        }
-        try {
-            sysDictDataService.setDefaultData(id, dictType);
-            return R.ok("设置成功", null);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+    public R<Object> setDefaultData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id,
+                                    @RequestParam(value = "dictType", required = false) @NotBlank(message = "字典类型不能为空") String dictType) {
+        sysDictDataService.setDefaultData(id, dictType);
+        return R.ok("设置成功", null);
     }
 }

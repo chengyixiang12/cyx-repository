@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -19,9 +20,11 @@ public class SaveDictTypeRequest {
     private Integer sortOrder;
 
     @Schema(description = "字典类型名称")
+    @NotBlank(message = "字典类型名称不能为空")
     private String dictName;
 
     @Schema(description = "字典类型")
+    @NotBlank(message = "字典类型不能为空")
     private String dictType;
 
     @Schema(description = "状态")

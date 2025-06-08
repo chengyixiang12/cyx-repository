@@ -1,5 +1,6 @@
 package com.soft.base.utils;
 
+import com.soft.base.exception.GlobalException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.BadPaddingException;
@@ -62,15 +63,24 @@ public class RSAUtil {
      * @throws IllegalBlockSizeException
      * @throws BadPaddingException
      */
-    public String decrypt(String decryptedData, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        // 使用私钥解密
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, keyFactory.generatePrivate(keySpec));
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(decryptedData));
+    public String decrypt(String decryptedData, String privateKey) {
+        try {
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKey));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            // 使用私钥解密
+            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-1AndMGF1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, keyFactory.generatePrivate(keySpec));
+            byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(decryptedData));
 
-        return new String(decryptedBytes);
+            return new String(decryptedBytes);
+        } catch (NoSuchAlgorithmException
+                 | InvalidKeySpecException
+                 | NoSuchPaddingException
+                 | InvalidKeyException
+                 | IllegalBlockSizeException
+                 | BadPaddingException e) {
+            throw new GlobalException(e.getLocalizedMessage());
+        }
     }
 
     /**

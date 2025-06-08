@@ -3,8 +3,6 @@ package com.soft.base.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysSecretKey;
 
-import java.security.NoSuchAlgorithmException;
-
 /**
 * @author cyq
 * @description 针对表【sys_secret_key】的数据库操作Service
@@ -12,9 +10,9 @@ import java.security.NoSuchAlgorithmException;
 */
 public interface SecretKeyService extends IService<SysSecretKey> {
 
-    String getPublicKey(Integer type);
+    String getPublicKey(String type);
 
     String getPrivateKey(Integer type);
 
-    void generateKey(Integer type) throws NoSuchAlgorithmException;
+    void generateKey(String type);
 }

@@ -7,7 +7,6 @@ import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.PushMessageRecParams;
 import com.soft.base.websocket.send.PushMessageSendParams;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
@@ -42,7 +41,7 @@ public class PushMessageHandler implements WebSocketConcreteHandler<String> {
     }
 
     @Override
-    public @NotNull WebSocketOrderEnum getOrder() {
+    public WebSocketOrderEnum getOrder() {
         return WebSocketOrderEnum.PUSH_MESSAGE;
     }
 }

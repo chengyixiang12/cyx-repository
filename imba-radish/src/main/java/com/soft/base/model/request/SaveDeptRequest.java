@@ -1,6 +1,8 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -16,9 +18,11 @@ import org.apache.ibatis.type.Alias;
 public class SaveDeptRequest {
 
     @Schema(description = "部门名称")
+    @NotBlank(message = "部门名称不能为空")
     private String name;
 
     @Schema(description = "部门编码")
+    @NotBlank(message = "部门编码不能为空")
     private String code;
 
     @Schema(description = "排序")
