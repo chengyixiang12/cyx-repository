@@ -224,7 +224,7 @@ onMounted(() => {
 
 .list-table {
   width: 100%;
-  height: 53vh;
+  height: 52vh;
   overflow: auto;
   padding-top: 12px;
 }

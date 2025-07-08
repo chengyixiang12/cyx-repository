@@ -1,12 +1,11 @@
 package com.soft.base.controller;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.soft.base.annotation.SysLock;
+import com.soft.base.core.annotation.SysLock;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.entity.SysUser;
-import com.soft.base.exception.InvalidLoginMethodException;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.request.RegisterRequest;
 import com.soft.base.model.vo.LoginVo;
@@ -27,7 +26,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

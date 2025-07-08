@@ -349,7 +349,7 @@ onMounted(() => {
 
 .list-table {
   width: 100%;
-  height: 53vh;
+  height: 52vh;
   overflow: auto;
   padding-top: 12px;
 }
@@ -376,7 +376,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 36px;
+  height: 35px;
   padding: 0 12px;
 }
 

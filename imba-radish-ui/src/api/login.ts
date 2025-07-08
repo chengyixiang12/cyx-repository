@@ -7,7 +7,7 @@ export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uu
   const finalUKey = uuid || uuidv4();
   // 调用method.ts的get方法（明确指定responseType为'blob'）
   const blob = await getBlob(
-    '/auth/getGraphicCaptcha', { flag: false, params: { uuid }}
+    '/auth/getGraphicCaptcha', { flag: false, params: { uuid: finalUKey }}
   );
   return { blob, uuid: finalUKey };
 }

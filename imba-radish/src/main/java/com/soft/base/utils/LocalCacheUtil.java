@@ -1,9 +1,7 @@
 package com.soft.base.utils;
 
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.exception.LocalCacheExpireException;
-import com.soft.base.exception.NotSupportTimeUnitException;
-import com.soft.base.exception.NumberRangeException;
+import com.soft.base.exception.GlobalException;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -35,7 +33,7 @@ public class LocalCacheUtil {
             throw new NullPointerException();
         }
         if (0 > expire) {
-            throw new NumberRangeException("过期时间必须大于0");
+            throw new GlobalException("过期时间必须大于0");
         }
         Storage storage = new Storage();
         long currentTime = System.currentTimeMillis();
@@ -45,7 +43,7 @@ public class LocalCacheUtil {
             case HOURS -> storage.setExpire(currentTime + expire * BaseConstant.LOCAL_CACHE_EXPIRE_HOURS);
             case MINUTES -> storage.setExpire(currentTime + expire * BaseConstant.LOCAL_CACHE_EXPIRE_MINUTES);
             case MILLISECONDS -> storage.setExpire(currentTime + expire);
-            default -> throw new NotSupportTimeUnitException("不支持的时间单位");
+            default -> throw new GlobalException("不支持的时间单位");
         }
 
         storage.setValue(value);
@@ -72,14 +70,14 @@ public class LocalCacheUtil {
      * @param key
      * @return
      */
-    public Object get(String key) throws LocalCacheExpireException {
+    public Object get(String key) {
         Storage storage = LOCAL_CACHE.get(key);
         Long expire = storage.getExpire();
         if (BaseConstant.LOCAL_CACHE_EXPIRE_NEVER.equals(expire) || System.currentTimeMillis() < expire) {
             return storage.getValue();
         } else {
             LOCAL_CACHE.remove(key);
-            throw new LocalCacheExpireException(key + "已过期");
+            throw new GlobalException(key + "已过期");
         }
     }
 

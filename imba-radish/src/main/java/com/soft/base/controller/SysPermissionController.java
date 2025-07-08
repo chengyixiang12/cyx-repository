@@ -1,6 +1,6 @@
 package com.soft.base.controller;
 
-import com.soft.base.annotation.SysLog;
+import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;

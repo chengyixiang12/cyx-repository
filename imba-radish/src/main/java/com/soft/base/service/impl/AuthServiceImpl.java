@@ -1,13 +1,10 @@
 package com.soft.base.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysUser;
 import com.soft.base.enums.SecretKeyEnum;
-import com.soft.base.exception.CaptChaErrorException;
 import com.soft.base.exception.GlobalException;
-import com.soft.base.exception.InvalidLoginMethodException;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.vo.LoginVo;
 import com.soft.base.service.AuthService;
@@ -107,13 +104,13 @@ public class AuthServiceImpl implements AuthService {
                     request.setUsername(sysUser.getUsername());
                     String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getUsername());
                     if (!request.getEmailCaptcha().equals(emailCaptCha)) {
-                        throw new CaptChaErrorException("验证码错误");
+                        throw new GlobalException("验证码错误");
                     }
                     redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
                     break;
                 }
                 default: {
-                    throw new InvalidLoginMethodException("无效的登录方式");
+                    throw new GlobalException("无效的登录方式");
                 }
             }
 
@@ -148,10 +145,6 @@ public class AuthServiceImpl implements AuthService {
             throw new CredentialsExpiredException(e.getMessage());
         } catch (AccountExpiredException e) {
             throw new AccountExpiredException(e.getMessage());
-        } catch (CaptChaErrorException e) {
-            throw new CaptChaErrorException(e.getMessage());
-        } catch (InvalidLoginMethodException e) {
-            throw new InvalidLoginMethodException(e.getMessage());
         } catch (GlobalException e) {
             throw new GlobalException(e.getMessage());
         }

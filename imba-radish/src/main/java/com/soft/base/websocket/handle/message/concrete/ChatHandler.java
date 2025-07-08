@@ -97,7 +97,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         }, error -> {
             log.error(error.getMessage());
             try {
-                session.sendMessage(new TextMessage("服务异常，请稍后再试"));
+                session.sendMessage(new TextMessage("服务异常，请联系管理员"));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);

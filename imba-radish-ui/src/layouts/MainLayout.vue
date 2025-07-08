@@ -50,7 +50,7 @@
 
         <div class="main-left">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '64px' : '220px'" class="main-sidebar">
+            <el-aside :width="isCollapsed ? '64px' : '180px'" class="main-sidebar">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
                     text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
                     :collapse-transition="false">
@@ -131,7 +131,6 @@ const user = ref({
     avatar: ''
 });
 const route = useRoute()
-// 折叠菜单
 const isCollapsed = ref(false)
 // 未读消息数
 const unreadCount = ref(5)
@@ -261,7 +260,7 @@ const getAvatar = async () => {
     const userId = userInfo.id
     getAvatarApi(userId).then((uri) => {
         user.value.avatar = avatar_url + '/' + uri
-    }) 
+    })
 }
 
 onMounted(() => {
@@ -304,10 +303,10 @@ onMounted(() => {
 
 .main-sidebar {
     background: #b3b9bf;
-    transition: width 0.3s;
     border-radius: 4px;
     margin-right: 10px;
     overflow: hidden;
+    /* height: 90vh; */
 }
 
 .main-content {
