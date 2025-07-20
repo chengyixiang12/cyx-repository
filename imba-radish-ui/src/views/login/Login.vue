@@ -128,14 +128,15 @@ const sendEmailCaptcha = async () => {
   }
   try {
     const msg = await sendCaptchaApi(loginForm.value.email);
-    showMessage(msg, 'success');
+    // showMessage(msg, 'success');
     countdown.value = 60;
     timer = setInterval(() => {
       countdown.value--;
       if (countdown.value <= 0) clearInterval(timer);
     }, 1000);
-  } catch {
-    showMessage('发送验证码失败', 'error');
+  } catch (error) {
+    // showMessage('发送验证码失败', 'error');
+    console.error('获取验证码失败:', error);
   }
 };
 

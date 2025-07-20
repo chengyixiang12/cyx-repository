@@ -14,6 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ImbaRadishApplication {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(ImbaRadishApplication.class).initializers(new EnvLoaderHandler()).run(args);
+        SpringApplicationBuilder initializers = new SpringApplicationBuilder(ImbaRadishApplication.class);
+        initializers.initializers(new EnvLoaderHandler());
+        initializers.run(args);
     }
 }

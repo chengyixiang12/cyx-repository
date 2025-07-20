@@ -1,5 +1,6 @@
 package com.soft.base.core.handle;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MapPropertySource;
@@ -16,6 +17,7 @@ import java.util.Properties;
  * @Description: TODO
  * @DateTime: 2025/5/15 10:55
  **/
+@Slf4j
 public class EnvLoaderHandler implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override
     public void initialize(ConfigurableApplicationContext context) {
@@ -29,6 +31,7 @@ public class EnvLoaderHandler implements ApplicationContextInitializer<Configura
             // 加入 Spring 的 Environment 中
             MapPropertySource propertySource = new MapPropertySource("custom-env", map);
             context.getEnvironment().getPropertySources().addFirst(propertySource);
+            log.info("environment config load success...");
         } catch (IOException e) {
             throw new RuntimeException(".env文件不存在", e);
         }

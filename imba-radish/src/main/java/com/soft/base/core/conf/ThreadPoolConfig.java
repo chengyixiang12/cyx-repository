@@ -1,5 +1,6 @@
 package com.soft.base.core.conf;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -13,17 +14,20 @@ import java.util.concurrent.ThreadPoolExecutor;
  **/
 
 @Configuration
+@Slf4j
 public class ThreadPoolConfig {
 
     @Bean(name = "cyxTaskExecutor")
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        int cpuCores = Runtime.getRuntime().availableProcessors();
+        log.info("系统核心数为：{}", cpuCores);
 
         // 设置核心线程数
-        executor.setCorePoolSize(10);
+        executor.setCorePoolSize(cpuCores);
 
         // 设置最大线程数
-        executor.setMaxPoolSize(20);
+        executor.setMaxPoolSize(cpuCores * 2);
 
         // 设置队列容量
         executor.setQueueCapacity(100);

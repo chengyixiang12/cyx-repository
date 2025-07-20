@@ -61,6 +61,29 @@ spring:
   jmx:
     # 启动JMX监控，jconsole
     enabled: true
+  quartz:
+    job-store-type: JDBC
+    data-source: dataSource
+    scheduler-name: radishScheduler
+    wait-for-jobs-to-complete-on-shutdown: true
+    overwrite-existing-jobs: true
+    properties:
+      org:
+        quartz:
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: false
+            tablePrefix: QRTZ_
+            useProperties: true
+          threadPool:
+            threadCount: 5
+            class: org.quartz.simpl.SimpleThreadPool
+          scheduler:
+            instanceId: AUTO
+    jdbc:
+      initialize-schema: always
+
 # minio对象存储
 minio:
   url: ${MINIO_URL}
@@ -123,3 +146,14 @@ storage:
 # 启用knife4j文档
 knife4j:
   enable: true
+# 性能监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露的监控端点
+        include: health, metrics, prometheus
+  endpoint:
+    health:
+      # 显示详细信息
+      show-details: always

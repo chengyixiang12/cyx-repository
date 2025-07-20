@@ -2,6 +2,7 @@ package com.soft.base.websocket;
 
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.List;
  **/
 
 @Component
+@Slf4j
 public class WebSocketConcreteRegistry {
 
     private final List<WebSocketConcreteHandler<?>> webSocketConcreteHandlers;
@@ -28,8 +30,11 @@ public class WebSocketConcreteRegistry {
      */
     @PostConstruct
     public void init() {
+        log.info("开始注入websocket消息处理器");
         for (WebSocketConcreteHandler<?> c : webSocketConcreteHandlers) {
-            WebSocketConcreteHolder.addConcreteHandler(c.getOrder().toString(), c);
+            String order = c.getOrder().toString();
+            WebSocketConcreteHolder.addConcreteHandler(order, c);
+            log.info("{}处理器注入成功", order);
         }
     }
 }

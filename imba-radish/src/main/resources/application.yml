@@ -98,7 +98,7 @@ springdoc:
 # knife4j的增强配置
 knife4j:
   production: false
-  enable: true
+  enable: false
   setting:
     language: zh_cn
     swagger-model-name: 实体列表
@@ -134,14 +134,3 @@ web-client:
   response-timeout: 5
   # 连接超时；单位：毫秒
   connect-timeout: 5000
-# 性能监控配置
-management:
-  endpoints:
-    web:
-      exposure:
-        # 暴露的监控端点
-        include: health, metrics, prometheus
-  endpoint:
-    health:
-      # 显示详细信息
-      show-details: always

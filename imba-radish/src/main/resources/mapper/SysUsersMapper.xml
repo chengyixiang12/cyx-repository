@@ -193,7 +193,7 @@
         UPDATE
             sys_user
         SET
-            enable = 1
+            enabled = 1
         WHERE
             del_flag = '1'
           AND username = #{username}
@@ -202,7 +202,7 @@
         UPDATE
             sys_user
         SET
-            enable = 0
+            enabled = 0
         WHERE
             del_flag = '1'
           AND username = #{username}

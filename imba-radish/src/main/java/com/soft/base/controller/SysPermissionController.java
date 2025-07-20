@@ -59,7 +59,7 @@ public class SysPermissionController {
             R.fail("权限编码已存在");
         }
         sysPermissionService.savePermission(request);
-        return R.ok();
+        return R.ok("权限添加成功", null);
     }
 
     @GetMapping(value = "/getAllPermission")

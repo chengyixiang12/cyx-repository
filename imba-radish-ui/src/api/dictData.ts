@@ -56,7 +56,7 @@ export async function editDictDataApi(data: EditDictDataRequest) {
  * @param id 
  */
 export async function getDictDataApi(id: number): Promise<DictDataVo> {
-    const res = await get(`/dictData/${id}`, { flag: true });
+    const res = await get('/dictData', { flag: true, params: { id } });
     return res.data;
 }
 

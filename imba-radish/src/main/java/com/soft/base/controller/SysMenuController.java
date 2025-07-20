@@ -63,7 +63,7 @@ public class SysMenuController {
     @Operation(summary = "添加菜单")
     public R<Object> saveMenu(@RequestBody @Valid SaveMenuRequest request) {
         sysMenuService.saveMenu(request);
-        return R.ok();
+        return R.ok("添加成功", null);
     }
 
     @SysLog(value = "编辑菜单", module = LogModuleEnum.MENU)
@@ -72,7 +72,7 @@ public class SysMenuController {
     @Operation(summary = "编辑菜单")
     public R<Object> editMenu(@RequestBody @Valid EditMenuRequest request) {
         sysMenuService.editMenu(request);
-        return R.ok();
+        return R.ok("修改成功", null);
     }
 
     @SysLog(value = "删除菜单", module = LogModuleEnum.MENU)
@@ -82,19 +82,14 @@ public class SysMenuController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
     public R<Object> deleteMenu(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.deleteMenu(id);
-        return R.ok();
+        return R.ok("删除成功", null);
     }
 
     @PostMapping(value = "/getMenuList")
     @Operation(summary = "获取菜单列表")
     public R<PageVo<GetMenuListVo>> getMenuList(@RequestBody GetMenuListRequest request) {
-        try {
-            PageVo<GetMenuListVo> pageVo = sysMenuService.getMenuList(request);
-            return R.ok(pageVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
-        }
+        PageVo<GetMenuListVo> pageVo = sysMenuService.getMenuList(request);
+        return R.ok(pageVo);
     }
 
     @GetMapping(value = "/getMenu")

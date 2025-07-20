@@ -267,4 +267,49 @@ public class BaseConstant {
      * 对话标识-AI
      */
     public static final Integer CHAT_TAG_AI = 0;
+
+    /**
+     * 定时任务的默认分组
+     */
+    public static final String QUARTZ_DEFAULT_GROUP = "default";
+
+    /**
+     * 定时任务-暂停
+     */
+    public static final String QUARTZ_PAUSE = "0";
+
+    /**
+     * 定时任务-启用
+     */
+    public static final String QUARTZ_START = "1";
+
+    /**
+     * 定时任务-简单调度
+     */
+    public static final String QUARTZ_SIMPLE_SCHEDULE = "0";
+
+    /**
+     * 定时任务-cron调度
+     */
+    public static final String QUARTZ_CRON_SCHEDULE = "1";
+
+    /**
+     * 定时任务-间隔类型-毫秒
+     */
+    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_MILLISECONDS = "0";
+
+    /**
+     * 定时任务-间隔类型-秒
+     */
+    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_SECONDS = "1";
+
+    /**
+     * 定时任务-间隔类型-分钟
+     */
+    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_MINUTES = "2";
+
+    /**
+     * 定时任务-间隔类型-小时
+     */
+    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_HOURS = "3";
 }
