@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @Author: cyx
@@ -43,7 +44,7 @@ public class SysLogConsume {
         String key = null;
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         try {
-            key = new String(message.getBody());
+            key = new String(message.getBody(), StandardCharsets.UTF_8);
 
             LogDto logDto = (LogDto) redisTemplate.opsForValue().get(key);
             sysLogService.saveLog(logDto);

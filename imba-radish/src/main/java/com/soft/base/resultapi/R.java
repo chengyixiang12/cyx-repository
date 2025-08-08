@@ -4,6 +4,9 @@ import com.soft.base.enums.ResultEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
 @Schema(description = "restful响应结果集")
 public class R<T> {
@@ -19,6 +22,9 @@ public class R<T> {
 
     @Schema(description = "响应结果集")
     private T data;
+
+    @Schema(description = "额外的参数")
+    private Map<String, Object> extra;
 
     public static <T> R<T> ok() {
         return setR(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage(), null);
@@ -48,12 +54,23 @@ public class R<T> {
         return setR(ResultEnum.FAIL_NORMAL.getCode(), ResultEnum.FAIL_NORMAL.getMessage(), null);
     }
 
+    public R<T> setExtra(String key, Object value) {
+        this.extra.put(key, value);
+        return this;
+    }
+
+    public R<T> setExtra(Map<String, Object> extra) {
+        this.extra.putAll(extra);
+        return this;
+    }
+
     private static <T> R<T> setR(Integer code, String msg, T data) {
         R<T> result = new R<>();
         result.code = code;
         result.msg = msg;
         result.data = data;
         result.timestamp = System.currentTimeMillis();
+        result.extra = new HashMap<>();
         return result;
     }
 

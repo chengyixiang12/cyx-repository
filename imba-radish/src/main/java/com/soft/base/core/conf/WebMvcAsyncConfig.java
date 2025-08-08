@@ -18,7 +18,7 @@ public class WebMvcAsyncConfig implements WebMvcConfigurer {
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Autowired
-    public WebMvcAsyncConfig(@Qualifier("cyxTaskExecutor") ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+    public WebMvcAsyncConfig(@Qualifier("applicationTaskExecutor") ThreadPoolTaskExecutor threadPoolTaskExecutor) {
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }
 

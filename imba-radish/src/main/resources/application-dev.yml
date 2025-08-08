@@ -138,8 +138,12 @@ management:
     web:
       exposure:
         # 暴露的监控端点
-        include: "*"
+        include: health, metrics, info
   endpoint:
     health:
       # 显示详细信息
       show-details: always
+#flowable
+flowable:
+  database-schema-update: false
+  check-process-definitions: true

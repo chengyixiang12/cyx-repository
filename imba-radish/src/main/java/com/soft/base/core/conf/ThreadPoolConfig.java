@@ -17,11 +17,42 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class ThreadPoolConfig {
 
-    @Bean(name = "cyxTaskExecutor")
-    public ThreadPoolTaskExecutor taskExecutor() {
+    @Bean(name = "applicationTaskExecutor")
+    public ThreadPoolTaskExecutor applicationTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         int cpuCores = Runtime.getRuntime().availableProcessors();
-        log.info("系统核心数为：{}", cpuCores);
+
+        // 设置核心线程数
+        executor.setCorePoolSize(cpuCores);
+
+        // 设置最大线程数
+        executor.setMaxPoolSize(cpuCores * 2);
+
+        // 设置队列容量
+        executor.setQueueCapacity(100);
+
+        // 设置线程池名称前缀
+        executor.setThreadNamePrefix("async-task-");
+
+        // 设置最大空闲时间
+        executor.setKeepAliveSeconds(60);
+
+        // 设置拒绝策略
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+
+        // 是否允许核心线程超时
+        executor.setAllowCoreThreadTimeOut(true);
+
+        // 初始化线程池
+        executor.initialize();
+
+        return executor;
+    }
+
+    @Bean(name = "radishTaskExecutor")
+    public ThreadPoolTaskExecutor radishTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        int cpuCores = Runtime.getRuntime().availableProcessors();
 
         // 设置核心线程数
         executor.setCorePoolSize(cpuCores);

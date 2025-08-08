@@ -56,7 +56,7 @@ public class RedisConfig {
                         .fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
         return RedisCacheManager.builder(factory)
-                .withCacheConfiguration("cyx:users", userDetailsCacheConfig) // 特定缓存配置
+                .withCacheConfiguration("radish:users", userDetailsCacheConfig) // 特定缓存配置
                 .cacheDefaults(defaultConfig) // 默认配置
                 .build();
     }

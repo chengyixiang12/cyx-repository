@@ -23,7 +23,7 @@ public class AsyncConfig implements AsyncConfigurer {
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Autowired
-    public AsyncConfig(@Qualifier(value = "cyxTaskExecutor") ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+    public AsyncConfig(@Qualifier(value = "radishTaskExecutor") ThreadPoolTaskExecutor threadPoolTaskExecutor) {
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }
 

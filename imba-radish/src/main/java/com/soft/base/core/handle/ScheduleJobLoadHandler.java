@@ -1,4 +1,4 @@
-package com.soft.base.quartz;
+package com.soft.base.core.handle;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
@@ -29,15 +29,15 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class ScheduleJobLoader implements CommandLineRunner {
+public class ScheduleJobLoadHandler implements CommandLineRunner {
 
     private final SysScheduleJobService sysScheduleJobService;
 
     private final Scheduler scheduler;
 
     @Autowired
-    public ScheduleJobLoader(SysScheduleJobService sysScheduleJobService,
-                             Scheduler scheduler) {
+    public ScheduleJobLoadHandler(SysScheduleJobService sysScheduleJobService,
+                                  Scheduler scheduler) {
         this.sysScheduleJobService = sysScheduleJobService;
         this.scheduler = scheduler;
     }

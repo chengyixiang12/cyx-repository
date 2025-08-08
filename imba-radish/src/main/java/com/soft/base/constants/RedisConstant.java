@@ -11,37 +11,37 @@ public class RedisConstant {
      * 黑名单
      */
     @Deprecated
-    public final static String TOKEN_BLACKLIST_KEY = "cyx:token:blacklist";
+    public final static String TOKEN_BLACKLIST_KEY = "radish:token:blacklist";
 
     /**
      * 用户鉴权
      */
-    public final static String AUTHORIZATION_USERNAME = "cyx:token:";
+    public final static String AUTHORIZATION_USERNAME = "radish:token:";
 
     /**
      * 邮箱验证码
      */
-    public final static String EMAIL_CAPTCHA_KEY = "cyx:email:captcha:";
+    public final static String EMAIL_CAPTCHA_KEY = "radish:email:captcha:";
 
     /**
      * 保存日志key
      */
-    public final static String SYS_LOG_CACHE = "cyx:log:";
+    public final static String SYS_LOG_CACHE = "radish:log:";
 
     /**
      * 用户信息，注意：此处的“::”不能改为“:”
      */
-    public final static String USER_INFO = "cyx:users::";
+    public final static String USER_INFO = "radish:users::";
 
     /**
      * 登录图形验证码
      */
-    public final static String LOGIN_GRAPHICS_CAPTCHA = "cyx:graphics:captcha:";
+    public final static String LOGIN_GRAPHICS_CAPTCHA = "radish:graphics:captcha:";
 
     /**
      * 用户登录错误次数
      */
-    public final static String USER_LOGIN_ERROR_TIME = "cyx:login-error-time:";
+    public final static String USER_LOGIN_ERROR_TIME = "radish:login-error-time:";
 
     /**
      * websocket中的用户会话
@@ -61,35 +61,35 @@ public class RedisConstant {
     /**
      * 公钥
      */
-    public final static String RSA_PUBLIC_KEY = "cyx:rsa:public:";
+    public final static String RSA_PUBLIC_KEY = "radish:rsa:public:";
 
     /**
      * 私钥
      */
-    public final static String RSA_PRIVATE_KEY = "cyx:rsa:private:";
+    public final static String RSA_PRIVATE_KEY = "radish:rsa:private:";
 
     /**
      * 限流
      */
-    public final static String RATE_LIMIT_KEY = "cyx:rate:limit:";
+    public final static String RATE_LIMIT_KEY = "radish:rate:limit:";
 
     /**
      * 分片文件key
      */
-    public final static String SLICE_FILE_KEY = "cyx:slice:keys:";
+    public final static String SLICE_FILE_KEY = "radish:slice:keys:";
 
     /**
      * 分片文件索引key
      */
-    public final static String SLICE_FILE_INDEX_KEY = "cyx:slice:index:";
+    public final static String SLICE_FILE_INDEX_KEY = "radish:slice:index:";
 
     /**
      * 分片文件hash
      */
-    public final static String SLICE_FILE_INFO = "cyx:slice:hash:";
+    public final static String SLICE_FILE_INFO = "radish:slice:hash:";
 
     /**
      * 锁key
      */
-    public final static String LOCK_KEY = "cyx:lock:";
+    public final static String LOCK_KEY = "radish:lock:";
 }

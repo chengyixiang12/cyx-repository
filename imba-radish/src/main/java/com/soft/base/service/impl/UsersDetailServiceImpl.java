@@ -23,7 +23,7 @@ import java.util.List;
 */
 @Service
 @Slf4j
-@CacheConfig(cacheNames = "cyx:users")
+@CacheConfig(cacheNames = "radish:users")
 public class UsersDetailServiceImpl implements UserDetailsService{
 
     private final SysUsersMapper sysUsersMapper;

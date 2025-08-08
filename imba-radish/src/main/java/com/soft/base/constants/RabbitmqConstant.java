@@ -11,37 +11,37 @@ public class RabbitmqConstant {
     /**
      * 直接交换机队列
      */
-    public final static String DIRECT_QUEUE_ONE = "cyx-direct-queue";
+    public final static String DIRECT_QUEUE_ONE = "radish-direct-queue";
 
     /**
      * 直接交换机
      */
-    public final static String DIRECT_EXCHANGE = "cyx-direct-exchange";
+    public final static String DIRECT_EXCHANGE = "radish-direct-exchange";
 
     /**
      * 直接交换机路由
      */
-    public final static String DIRECT_ROUTEKEY_ONE = "cyx-direct-route-key";
+    public final static String DIRECT_ROUTEKEY_ONE = "radish-direct-route-key";
 
     /*****************************************主题交换机*****************************************/
     /**
      * 主题交换机队列
      */
-    public final static String TOPIC_QUEUE_SEND_REGIST_CAPTCHA = "cyx-topic-queue-regist";
-    public final static String TOPIC_QUEUE_SEND_LOGIN_CAPTCHA = "cyx-topic-queue-login";
-    public final static String TOPIC_QUEUE_SEND_DEAD = "cyx-topic-queue-dead";
+    public final static String TOPIC_QUEUE_SEND_REGIST_CAPTCHA = "radish-topic-queue-regist";
+    public final static String TOPIC_QUEUE_SEND_LOGIN_CAPTCHA = "radish-topic-queue-login";
+    public final static String TOPIC_QUEUE_SEND_DEAD = "radish-topic-queue-dead";
 
     /**
      * 主题交换机
      */
-    public final static String TOPIC_EXCHANGE = "cyx-topic-exchange";
+    public final static String TOPIC_EXCHANGE = "radish-topic-exchange";
 
     /**
      * 主题交换机路由
      */
-    public final static String TOPIC_ROUTE_KEY_REGIST = "cyx.topic.regist";
-    public final static String TOPIC_ROUTE_KEY_LOGIN = "cyx.topic.login";
-    public final static String TOPIC_ROUTE_KEY_DEAD = "cyx.topic.dead";
+    public final static String TOPIC_ROUTE_KEY_REGIST = "radish.topic.regist";
+    public final static String TOPIC_ROUTE_KEY_LOGIN = "radish.topic.login";
+    public final static String TOPIC_ROUTE_KEY_DEAD = "radish.topic.dead";
 
 
 }

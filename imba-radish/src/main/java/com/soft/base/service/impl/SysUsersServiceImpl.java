@@ -56,7 +56,7 @@ import java.util.stream.Stream;
  * @createDate 2024-09-30 15:49:52
  */
 @Service
-@CacheConfig(cacheNames = "cyx:users")
+@CacheConfig(cacheNames = "radish:users")
 public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> implements SysUsersService {
 
     private final SysUsersMapper sysUsersMapper;
