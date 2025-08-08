@@ -79,7 +79,7 @@ public class SysMenuController {
     @PreAuthorize(value = "@cps.hasPermission('sys_menu_del')")
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除菜单")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteMenu(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.deleteMenu(id);
         return R.ok("删除成功", null);
@@ -103,7 +103,7 @@ public class SysMenuController {
     @SysLog(value = "启用菜单", module = LogModuleEnum.MENU)
     @GetMapping(value = "/enableMenu/{id}")
     @Operation(summary = "启用菜单")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enableMenu(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.enableMenu(id);
         return R.ok("启用成功", null);
@@ -112,7 +112,7 @@ public class SysMenuController {
     @SysLog(value = "禁用菜单", module = LogModuleEnum.MENU)
     @GetMapping(value = "/disableMenu/{id}")
     @Operation(summary = "禁用菜单")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> disableMenu(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.disableMenu(id);
         return R.ok("禁用成功", null);

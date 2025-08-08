@@ -46,25 +46,28 @@
                                 </div>
                             </template>
                         </el-card>
-                        <div ref="loadMoreTrigger" class="load-more-trigger"></div>
                     </div>
                 </el-col>
             </el-row>
         </div>
+        <!-- 分页 -->
+          <div class="list-pagination">
+            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
+              :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
+              @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
+          </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { MoreFilled } from '@element-plus/icons-vue';
 import { deleteDialogueApi, getDialogueHistoriesApi } from '@/api/dialogueHistory'
 import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo } from '@/types/dialogueHistory';
-import { showMessage } from '@/utils/message';
 
 const visibleCards = ref<GetDialogueHistoriesVo[]>([]);
-const loadMoreTrigger = ref<HTMLElement | null>(null);
-const total = ref<number>(1);
+const total = ref<number>(0);
 
 const searchForm = ref<GetDialogueHistoriesRequest>({
     pageNum: 1,
@@ -73,13 +76,10 @@ const searchForm = ref<GetDialogueHistoriesRequest>({
 });
 
 const loadMore = async () => {
-    if (total.value === visibleCards.value.length) {
-        showMessage('已全部加载', 'info')
-    }
     const res = await getDialogueHistoriesApi(searchForm.value);
     total.value = res.total;
+    visibleCards.value.length = 0;
     visibleCards.value.push(...res.records);
-    searchForm.value.pageNum++;
 }
 
 function renameCard(item: GetDialogueHistoriesVo) {
@@ -87,24 +87,22 @@ function renameCard(item: GetDialogueHistoriesVo) {
 }
 
 const deleteCard = async(item: GetDialogueHistoriesVo) => {
-    await deleteDialogueApi(item.id)
-    
+    await deleteDialogueApi(item.id);
+    await loadMore(); 
 }
 
-// 懒加载
-const lazyLoading = () => {
-    const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-            loadMore();
-        }
-    });
-    if (loadMoreTrigger.value) {
-        observer.observe(loadMoreTrigger.value);
-    }
+const handlePageChange = (val: number) => {
+  searchForm.value.pageNum = val
+  loadMore()
+}
+
+const handleSizeChange = (val: number) => {
+  searchForm.value.pageSize = val
+  loadMore()
 }
 
 onMounted(() => {
-    lazyLoading();
+    loadMore();
 });
 </script>
 
@@ -115,7 +113,7 @@ onMounted(() => {
 }
 
 .card-container {
-    max-height: 69vh;
+    max-height: 62vh;
     overflow: auto;
 }
 
@@ -140,8 +138,6 @@ onMounted(() => {
     flex-direction: column;
     gap: 16px;
 }
-
-
 
 .card-item {
     width: 100%;
@@ -173,5 +169,10 @@ onMounted(() => {
 
 .load-more-trigger {
     height: 1px;
+}
+.list-pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

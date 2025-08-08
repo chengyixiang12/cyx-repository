@@ -138,7 +138,7 @@ public class SysFileController {
     @PreAuthorize(value = "@cps.hasPermission('sys_file_del')")
     @DeleteMapping
     @Operation(summary = "删除文件")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysFileService.deleteFile(id);
         return R.ok();

@@ -33,7 +33,8 @@ public class EnvLoaderHandler implements ApplicationContextInitializer<Configura
             context.getEnvironment().getPropertySources().addFirst(propertySource);
             log.info("environment config load success...");
         } catch (IOException e) {
-            throw new RuntimeException(".env文件不存在", e);
+            log.error(".env文件不存在", e);
+            throw new RuntimeException(e);
         }
     }
 }

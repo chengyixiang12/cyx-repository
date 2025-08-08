@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -16,6 +17,7 @@ public class LoginRequest {
     private String password;
 
     @Schema(description = "登录方式，password：密码登录；email：邮箱验证码登录")
+    @NotBlank(message = "登录方式不能为空")
     private String loginMethod;
 
     @Schema(description = "图形验证码")

@@ -147,7 +147,7 @@ public class SysUserController {
 
     @GetMapping(value = "/getUser")
     @Operation(summary = "获取用户")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<GetUserVo> getUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         GetUserVo getUserVo = sysUsersService.getUser(id);
         return R.ok(getUserVo);
@@ -157,7 +157,7 @@ public class SysUserController {
     @GetMapping(value = "/lockUser")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_lock')")
     @Operation(summary = "锁定用户")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> lockUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.lockUser(username);
@@ -168,7 +168,7 @@ public class SysUserController {
     @GetMapping(value = "/unlockUser")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_unlock')")
     @Operation(summary = "解锁用户")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> unLockUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.unlockUser(username);
@@ -206,7 +206,7 @@ public class SysUserController {
     @GetMapping(value = "/enableUser")
     @Operation(summary = "启用用户")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_enable')")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enableUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.enableUser(username);
@@ -217,7 +217,7 @@ public class SysUserController {
     @GetMapping(value = "/forbiddenUser")
     @Operation(summary = "禁用用户")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_forbidden')")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> forbiddenUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.forbiddenUser(username);

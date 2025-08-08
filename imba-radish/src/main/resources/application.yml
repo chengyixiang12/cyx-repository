@@ -112,7 +112,7 @@ jwt:
 radish:
   captcha:
     # 主题
-    topic: 管理系统登录验证码
+    topic: 萝卜系统登录验证码
     # 验证码过期时间（秒）
     expire-time: 300
   graphics:

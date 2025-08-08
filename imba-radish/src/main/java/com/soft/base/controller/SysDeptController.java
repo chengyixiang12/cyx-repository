@@ -111,7 +111,7 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_del')")
     @DeleteMapping
     @Operation(summary = "删除部门")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysDeptService.removeById(id);
         return R.ok();
@@ -128,7 +128,7 @@ public class SysDeptController {
 
     @GetMapping
     @Operation(summary = "获取部门（单）")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         DeptVo deptVo = sysDeptService.getDept(id);
         return R.ok(deptVo);

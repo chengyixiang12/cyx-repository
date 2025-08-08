@@ -54,7 +54,7 @@ public class SysDictDataController {
 
     @GetMapping
     @Operation(summary = "获取字典数据（单）")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<DictDataVo> getDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         DictDataVo dictDataVo = sysDictDataService.getDictData(id);
         return R.ok(dictDataVo);
@@ -90,7 +90,7 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_del')")
     @DeleteMapping
     @Operation(summary = "删除字典数据")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysDictDataService.deleteDictData(id);
         return R.ok();

@@ -75,7 +75,7 @@ public class SysDictTypeController {
 
     @GetMapping
     @Operation(summary = "获取字典类型（单）")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<DictTypeVo> getDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         DictTypeVo dictTypeVo = sysDictTypeService.getDictType(id);
         return R.ok(dictTypeVo);
@@ -85,7 +85,7 @@ public class SysDictTypeController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_del')")
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除字典类型")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteDictType(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysDictTypeService.deleteDictType(id);
         return R.ok();

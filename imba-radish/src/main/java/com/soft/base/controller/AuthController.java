@@ -68,9 +68,6 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "登录")
     public R<LoginVo> authenticate(@RequestBody @Valid LoginRequest request) {
-        if (StringUtils.isBlank(request.getLoginMethod())) {
-            return R.fail("登录方式不能为空");
-        }
         if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
             if (StringUtils.isBlank(request.getGraphicsCaptcha())) {
                 return R.fail("图形验证码不能为空");
@@ -146,7 +143,7 @@ public class AuthController {
 
     @GetMapping(value = "/getGraphicCaptcha")
     @Operation(summary = "获取图形验证码")
-    @Parameter(name = "uuid", description = "唯一标识", required = true, in = ParameterIn.PATH)
+    @Parameter(name = "uuid", description = "唯一标识", required = true, in = ParameterIn.QUERY)
     public ResponseEntity<Object> getGraphicCaptcha(@RequestParam(value = "uuid", required = false) @NotNull(message = "唯一标识不能为空") String uuid) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

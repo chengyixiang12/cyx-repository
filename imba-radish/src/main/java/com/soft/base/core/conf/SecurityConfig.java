@@ -98,10 +98,8 @@ public class SecurityConfig {
                 // 会话无状态
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 忽略不鉴权的路由
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
-                            .anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(auth -> auth.requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
+                        .anyRequest().authenticated())
                 .logout(item -> item.logoutUrl("/logout")
                         .logoutSuccessHandler(logoutAfterSuccessHandler))
                 // 认证失败处理类

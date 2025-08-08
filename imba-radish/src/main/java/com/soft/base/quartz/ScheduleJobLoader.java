@@ -2,6 +2,7 @@ package com.soft.base.quartz;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.enums.JobEnum;
@@ -46,7 +47,9 @@ public class ScheduleJobLoader implements CommandLineRunner {
         log.info("开始加载定时任务");
         Date startTime = new Date();
         Date endTime = null;
-        List<SysScheduleJob> sysScheduleJobs = sysScheduleJobService.list();
+        LambdaQueryWrapper<SysScheduleJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysScheduleJob::getStatus, BaseConstant.QUARTZ_START);
+        List<SysScheduleJob> sysScheduleJobs = sysScheduleJobService.list(wrapper);
         if (CollectionUtil.isNotEmpty(sysScheduleJobs)) {
             for (SysScheduleJob sysScheduleJob : sysScheduleJobs) {
                 if (sysScheduleJob.getStartTime() != null) {
@@ -133,5 +136,6 @@ public class ScheduleJobLoader implements CommandLineRunner {
                 log.info("{}-{}定时任务加载成功", sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
             }
         }
+        log.info("定时任务加载完成");
     }
 }

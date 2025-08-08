@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +55,7 @@ public class MessageController {
     @GetMapping(value = "/sendRegistCaptcha")
     @Operation(summary = "发送注册验证码")
     @Parameter(name = "email", description = "邮箱地址", required = true, in = ParameterIn.QUERY)
-    public R<Object> sendRegistCaptcha(@RequestParam(value = "email", required = false) @NotNull(message = "邮箱不能为空") String email) {
+    public R<Object> sendRegistCaptcha(@RequestParam(value = "email", required = false) @NotBlank(message = "邮箱不能为空") String email) {
         if (!Pattern.matches(RegexConstant.EMAIL, email)) {
             return R.fail("非法邮箱");
         }
@@ -68,7 +69,7 @@ public class MessageController {
     @GetMapping(value = "/sendLoginCaptcha")
     @Operation(summary = "发送登录验证码")
     @Parameter(name = "email", description = "邮箱", required = true, in = ParameterIn.QUERY)
-    public R<Object> sendLoginCaptcha(@RequestParam(value = "email", required = false) @NotNull(message = "邮箱不能为空") String email) {
+    public R<Object> sendLoginCaptcha(@RequestParam(value = "email", required = false) @NotBlank(message = "邮箱不能为空") String email) {
         SysUser sysUser = sysUsersService.getUserByEmail(email);
         if (sysUser == null) {
             return R.fail("邮箱尚未注册，请前往注册");

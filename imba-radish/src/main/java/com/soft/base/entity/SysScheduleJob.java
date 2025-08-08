@@ -2,6 +2,7 @@ package com.soft.base.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
 
