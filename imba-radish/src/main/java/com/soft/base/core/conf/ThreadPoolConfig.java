@@ -58,7 +58,7 @@ public class ThreadPoolConfig {
         executor.setCorePoolSize(cpuCores);
 
         // 设置最大线程数
-        executor.setMaxPoolSize(cpuCores * 2);
+        executor.setMaxPoolSize(cpuCores);
 
         // 设置队列容量
         executor.setQueueCapacity(100);
