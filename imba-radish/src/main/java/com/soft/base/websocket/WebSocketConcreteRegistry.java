@@ -36,6 +36,6 @@ public class WebSocketConcreteRegistry {
             WebSocketConcreteHolder.addConcreteHandler(order, c);
             log.info("{}处理器注入成功", order);
         }
-        log.info("websocket消息处理器注入完成");
+        log.info("websocket处理器注入完成");
     }
 }

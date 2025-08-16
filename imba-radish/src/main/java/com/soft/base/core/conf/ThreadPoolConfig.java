@@ -17,6 +17,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Slf4j
 public class ThreadPoolConfig {
 
+    /**
+     * I/O密集型
+     * @return
+     */
     @Bean(name = "applicationTaskExecutor")
     public ThreadPoolTaskExecutor applicationTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -32,7 +36,7 @@ public class ThreadPoolConfig {
         executor.setQueueCapacity(100);
 
         // 设置线程池名称前缀
-        executor.setThreadNamePrefix("async-task-");
+        executor.setThreadNamePrefix("application-task-");
 
         // 设置最大空闲时间
         executor.setKeepAliveSeconds(60);
@@ -49,6 +53,10 @@ public class ThreadPoolConfig {
         return executor;
     }
 
+    /**
+     * CPU密集型
+     * @return
+     */
     @Bean(name = "radishTaskExecutor")
     public ThreadPoolTaskExecutor radishTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -64,7 +72,7 @@ public class ThreadPoolConfig {
         executor.setQueueCapacity(100);
 
         // 设置线程池名称前缀
-        executor.setThreadNamePrefix("async-task-");
+        executor.setThreadNamePrefix("radish-task-");
 
         // 设置最大空闲时间
         executor.setKeepAliveSeconds(60);

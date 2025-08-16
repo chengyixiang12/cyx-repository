@@ -28,7 +28,7 @@ spring:
         enabled: true
     retry:
       # 最大重试次数
-      max-attempts: 3
+      max-attempts: 1
       on-client-errors: false
       backoff:
         # 初始重试间隔 单位：ms
