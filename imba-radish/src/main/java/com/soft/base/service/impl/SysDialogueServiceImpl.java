@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysDialogue;
 import com.soft.base.model.request.GetDialoguesRequest;
+import com.soft.base.model.request.RenameRequest;
 import com.soft.base.model.request.SaveDialogueRequest;
 import com.soft.base.model.vo.GetDialoguesVo;
+import com.soft.base.model.vo.GetTitleVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysDialogueService;
 import com.soft.base.mapper.SysDialogueMapper;
@@ -54,6 +56,23 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     @Override
     public void deleteDialogue(Long id) {
         sysDialogueMapper.deleteById(id);
+    }
+
+    @Override
+    public void rename(RenameRequest request) {
+        SysDialogue sysDialogue = new SysDialogue();
+        sysDialogue.setId(request.getId());
+        sysDialogue.setTitle(request.getTitle());
+        sysDialogueMapper.updateById(sysDialogue);
+    }
+
+    @Override
+    public GetTitleVo getTitle(Long id) {
+        GetTitleVo getTitleVo = new GetTitleVo();
+        SysDialogue sysDialogue = sysDialogueMapper.selectById(id);
+        getTitleVo.setId(id);
+        getTitleVo.setTitle(sysDialogue.getTitle());
+        return getTitleVo;
     }
 
 }

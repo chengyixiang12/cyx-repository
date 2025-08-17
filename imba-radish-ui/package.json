@@ -14,6 +14,7 @@
     "@types/node": "^22.9.0",
     "@types/uuid": "^10.0.0",
     "axios": "^1.7.7",
+    "cronstrue": "^3.2.0",
     "crypto-js": "^4.2.0",
     "element-plus": "^2.9.7",
     "github-markdown-css": "^5.8.1",
@@ -23,6 +24,7 @@
     "shortid": "^2.2.17",
     "uuid": "^11.1.0",
     "vue-router": "^4.4.5",
+    "vue3-cron": "^1.1.8",
     "vue3-markdown-it": "^1.0.10"
   },
   "devDependencies": {

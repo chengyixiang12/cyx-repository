@@ -15,3 +15,13 @@ export interface GetDialogueHistoriesVo {
 export interface SaveDialogueRequest {
     title: string | null
 }
+
+export interface RenameRequest {
+    id: number;
+    title: string;
+}
+
+export interface GetTitleVo {
+    id: number | null;
+    title: string | null;
+}

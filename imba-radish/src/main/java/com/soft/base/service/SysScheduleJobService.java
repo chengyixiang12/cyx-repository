@@ -3,6 +3,10 @@ package com.soft.base.service;
 import com.soft.base.entity.SysScheduleJob;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.model.request.CreateJobRequest;
+import com.soft.base.model.request.GetQuartzTasksRequest;
+import com.soft.base.model.vo.GetQuartzTasksVo;
+import com.soft.base.model.vo.PageVo;
+import jakarta.validation.Valid;
 import org.quartz.SchedulerException;
 
 import java.util.List;
@@ -15,4 +19,6 @@ import java.util.List;
 public interface SysScheduleJobService extends IService<SysScheduleJob> {
 
     void createJob(CreateJobRequest request);
+
+    PageVo<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request);
 }

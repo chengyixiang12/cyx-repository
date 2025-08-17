@@ -4,3 +4,10 @@ declare module "*.vue" {
     const component: DefineComponent<{}, {}, any>
     export default component
 }
+
+// vue3-cron
+declare module 'vue3-cron' {
+  import { DefineComponent } from 'vue'
+  const component: DefineComponent<{}, {}, any>
+  export default component
+}

@@ -17,7 +17,7 @@
             <el-row :gutter="20" style="width: 100%;">
                 <el-col :span="24">
                     <div class="card-list">
-                        <el-card shadow="hover" v-for="(item, index) in visibleCards" :key="item.id" class="card-item">
+                        <el-card shadow="hover" v-for="(item, index) in visibleCards" :key="item.id" class="card-item" @click.native="goToDetail(item.id)">
                             <template #header>
                                 <div class="card-header">
                                     <span class="title">{{ item.title }}</span>
@@ -29,8 +29,8 @@
                                         </span>
                                         <template #dropdown>
                                             <el-dropdown-menu>
-                                                <el-dropdown-item @click="renameCard(item)">重命名</el-dropdown-item>
-                                                <el-dropdown-item @click="deleteCard(item)">删除</el-dropdown-item>
+                                                <el-dropdown-item @click="renameCard(item.id)">重命名</el-dropdown-item>
+                                                <el-dropdown-item @click="deleteCard(item.id)">删除</el-dropdown-item>
                                             </el-dropdown-menu>
                                         </template>
                                     </el-dropdown>
@@ -57,17 +57,22 @@
               @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
           </div>
     </div>
+
+    <answer-form-dialog v-model:visible="renameVisible" v-if="renameVisible" @submit="handleRenameSubmit" :dialogId="dialogId"/>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { ElMessage } from 'element-plus';
+import router from '@/router/routers';
 import { MoreFilled } from '@element-plus/icons-vue';
-import { deleteDialogueApi, getDialogueHistoriesApi } from '@/api/dialogueHistory'
-import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo } from '@/types/dialogueHistory';
+import { deleteDialogueApi, getDialogueHistoriesApi, renameApi } from '@/api/dialogueHistory'
+import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo, GetTitleVo, RenameRequest } from '@/types/dialogueHistory';
+import AnswerFormDialog from '@/components/system/AnswerFormDialog.vue';
 
 const visibleCards = ref<GetDialogueHistoriesVo[]>([]);
 const total = ref<number>(0);
+const renameVisible = ref(false);
+const dialogId = ref<number | null>(null);
 
 const searchForm = ref<GetDialogueHistoriesRequest>({
     pageNum: 1,
@@ -82,13 +87,22 @@ const loadMore = async () => {
     visibleCards.value.push(...res.records);
 }
 
-function renameCard(item: GetDialogueHistoriesVo) {
-    ElMessage.info(`重命名卡片：${item.title}`);
+// 打开重命名对话框
+const renameCard = async (id: number) => {
+    renameVisible.value = true;
+    dialogId.value = id;
 }
 
-const deleteCard = async(item: GetDialogueHistoriesVo) => {
-    await deleteDialogueApi(item.id);
-    await loadMore(); 
+// 删除
+const deleteCard = async(id: number) => {
+    await deleteDialogueApi(id);
+    await loadMore();
+}
+
+// 提交重命名表单
+const handleRenameSubmit = async (formData: RenameRequest) => {
+    await renameApi(formData);
+    await loadMore();
 }
 
 const handlePageChange = (val: number) => {
@@ -99,6 +113,10 @@ const handlePageChange = (val: number) => {
 const handleSizeChange = (val: number) => {
   searchForm.value.pageSize = val
   loadMore()
+}
+
+const goToDetail = (id: number | null) => {
+    // router.push({ path: `/card-detail/${id}` });
 }
 
 onMounted(() => {

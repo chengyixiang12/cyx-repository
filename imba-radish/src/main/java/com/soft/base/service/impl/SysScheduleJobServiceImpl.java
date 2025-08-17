@@ -9,6 +9,9 @@ import com.soft.base.enums.JobEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysScheduleJobMapper;
 import com.soft.base.model.request.CreateJobRequest;
+import com.soft.base.model.request.GetQuartzTasksRequest;
+import com.soft.base.model.vo.GetQuartzTasksVo;
+import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysScheduleJobService;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
@@ -164,6 +167,11 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
             log.error(e.getMessage(), e);
             throw new GlobalException("定时任务创建失败");
         }
+    }
+
+    @Override
+    public PageVo<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request) {
+        return null;
     }
 }
 

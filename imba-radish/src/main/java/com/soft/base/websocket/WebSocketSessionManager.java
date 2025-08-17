@@ -36,7 +36,7 @@ public class WebSocketSessionManager {
     public static void removeSession(Long sessionKey) throws RuntimeException {
         try {
             WebSocketSession session = getSession(sessionKey);
-            if (session != null) {
+            if (session != null && session.isOpen()) {
                 session.close();
             }
             USER_SESSION_MAP.remove(String.valueOf(sessionKey));
@@ -68,9 +68,11 @@ public class WebSocketSessionManager {
     public static void clear() {
         USER_SESSION_MAP.forEach((k, v) -> {
             try {
-                v.close();
-            } catch (IOException e) {
-                log.error("{}的session会话未正常关闭", k);
+                if (v != null && v.isOpen()) {
+                    v.close();
+                }
+            } catch (Exception e) {
+                log.warn("{}的session会话关闭时出错", k, e);
             }
         });
         USER_SESSION_MAP.clear();

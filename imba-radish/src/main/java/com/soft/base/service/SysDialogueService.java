@@ -3,9 +3,13 @@ package com.soft.base.service;
 import com.soft.base.entity.SysDialogue;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.model.request.GetDialoguesRequest;
+import com.soft.base.model.request.RenameRequest;
 import com.soft.base.model.request.SaveDialogueRequest;
 import com.soft.base.model.vo.GetDialoguesVo;
+import com.soft.base.model.vo.GetTitleVo;
 import com.soft.base.model.vo.PageVo;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
 * @author cyq
@@ -19,4 +23,8 @@ public interface SysDialogueService extends IService<SysDialogue> {
     Long saveDialogue(SaveDialogueRequest request);
 
     void deleteDialogue(Long id);
+
+    void rename(RenameRequest request);
+
+    GetTitleVo getTitle(Long id);
 }

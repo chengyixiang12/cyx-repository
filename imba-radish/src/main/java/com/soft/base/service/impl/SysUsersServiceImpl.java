@@ -314,11 +314,13 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
+    @CacheEvict(key = "#username")
     public void enableUser(String username) {
         sysUsersMapper.enableUser(username);
     }
 
     @Override
+    @CacheEvict(key = "#username")
     public void forbiddenUser(String username) {
         sysUsersMapper.forbiddenUser(username);
     }
