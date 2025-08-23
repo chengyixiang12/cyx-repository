@@ -40,13 +40,13 @@ import { DeptTreeVo, DeptVo } from '@/types/dept'
 interface FatherParam {
   visible: boolean;
   isAdd: boolean;
-  roleId?: number | null
+  deptId?: number | null
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
   visible: false,
   isAdd: false,
-  roleId: null,
+  deptId: null,
 })
 const emit = defineEmits(['update:visible', 'submit'])
 const formRef = ref<FormInstance>()
@@ -92,8 +92,10 @@ const submitForm = async () => {
 
 // 获取部门信息（编辑模式）
 const getDept = async () => {
-  if (!props.isAdd && props.roleId) {
-    const res = await getDeptApi(props.roleId)
+  if (!props.isAdd && props.deptId) {
+    console.log(props.deptId);
+    
+    const res = await getDeptApi(props.deptId)
     formData.value = res
   }
 }

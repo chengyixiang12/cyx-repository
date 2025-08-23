@@ -50,7 +50,7 @@ export async function updateDeptApi(data: EditDeptRequest) {
  * @param id 
  */
 export async function getDeptApi(id: number): Promise<DeptVo> {
-  const res = await get(`/dept/${id}`, { flag: true })
+  const res = await get('/dept', { params: { id }, flag: true })
   return res.data;
 }
 

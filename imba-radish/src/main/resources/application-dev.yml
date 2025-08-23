@@ -89,7 +89,7 @@ logging:
   level:
     com.baomidou.mybatisplus: info
     org.mybatis: info
-    com.soft.base.mapper: info
+    com.soft.base.mapper: debug
     com.soft.cyx.mapper: info
     org.springframework.boot.actuate: info
     org.flowable.job.service.impl.asyncexecutor: info

@@ -2,6 +2,7 @@ package com.soft.base.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
@@ -171,7 +172,12 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
     @Override
     public PageVo<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request) {
-        return null;
+        Page<GetQuartzTasksVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+        page = sysScheduleJobMapper.getQuartzTasks(page, request);
+        PageVo<GetQuartzTasksVo> pageVo = new PageVo<>();
+        pageVo.setRecords(page.getRecords());
+        pageVo.setTotal(page.getTotal());
+        return pageVo;
     }
 }
 

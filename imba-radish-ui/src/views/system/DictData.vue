@@ -90,6 +90,7 @@ import { Edit, Delete } from '@element-plus/icons-vue'
 import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
 import DictDataFormDialog from '@/components/system/DictDataFormDialog.vue'
 import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi, setDefaultRoleApi } from '@/api/dictData'
+import { showMessage } from '@/utils/message'
 
 const router = useRouter()
 const route = useRoute()
@@ -172,7 +173,12 @@ const resetSearch = () => {
 
 // 设置默认
 const setDefault = async (row: DictDatasVo) => {
-  await setDefaultRoleApi(row.id, dictType.value);
+  if (row.isDefault === 1) {
+    await setDefaultRoleApi(row.id, dictType.value);
+  } else {
+    showMessage('非法操作', 'warning');
+    row.isDefault = 1
+  }
   await handleSearch();
 }
 
@@ -239,7 +245,7 @@ onMounted(() => {
 
 .list-table {
   width: 100%;
-  height: 53vh;
+  height: 52vh;
   overflow: auto;
   padding-top: 12px;
 }

@@ -34,7 +34,7 @@ public class WebSocketConcreteRegistry {
         for (WebSocketConcreteHandler<?> c : webSocketConcreteHandlers) {
             String order = c.getOrder().toString();
             WebSocketConcreteHolder.addConcreteHandler(order, c);
-            log.info("{}处理器注入成功", order);
+            log.debug("{}处理器注入成功", order);
         }
         log.info("websocket处理器注入完成");
     }

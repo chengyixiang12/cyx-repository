@@ -5,9 +5,9 @@ declare module "*.vue" {
     export default component
 }
 
-// vue3-cron
-declare module 'vue3-cron' {
-  import { DefineComponent } from 'vue'
-  const component: DefineComponent<{}, {}, any>
-  export default component
+declare module 'vue3-markdown-it' {
+  import type { DefineComponent } from 'vue'
+  export const VueMarkdownIt: DefineComponent<{
+    source: string
+  }>
 }

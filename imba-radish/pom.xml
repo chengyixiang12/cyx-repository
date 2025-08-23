@@ -143,6 +143,10 @@
                     <artifactId>mybatis</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.mybatis</groupId>
+                    <artifactId>mybatis-spring</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.springframework.security</groupId>
                     <artifactId>spring-security-core</artifactId>
                 </exclusion>
@@ -157,6 +161,10 @@
                 <exclusion>
                     <groupId>com.zaxxer</groupId>
                     <artifactId>HikariCP</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

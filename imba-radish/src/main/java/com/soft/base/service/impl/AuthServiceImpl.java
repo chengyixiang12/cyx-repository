@@ -1,9 +1,11 @@
 package com.soft.base.service.impl;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysUser;
 import com.soft.base.enums.SecretKeyEnum;
+import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.vo.LoginVo;
@@ -12,6 +14,10 @@ import com.soft.base.service.SecretKeyService;
 import com.soft.base.service.SysDeptService;
 import com.soft.base.service.SysUsersService;
 import com.soft.base.utils.RSAUtil;
+import com.soft.base.websocket.WebSocketConcreteHolder;
+import com.soft.base.websocket.WebSocketSessionManager;
+import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +26,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -91,16 +100,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginVo authenticate(LoginRequest request) {
+        Long id;
         try {
             switch (request.getLoginMethod()) {
                 case BaseConstant.LOGIN_METHOD_PASSWORD: {
                     String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername()
                             , rsaUtil.decrypt(request.getPassword(), privateKey)));
+                    id = sysUsersService.getPrimaryKeyByUsername(request.getUsername());
                     break;
                 }
                 case BaseConstant.LOGIN_METHOD_EMAIL: {
                     SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
+                    id = sysUser.getId();
                     request.setUsername(sysUser.getUsername());
                     String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getUsername());
                     if (!request.getEmailCaptcha().equals(emailCaptCha)) {
@@ -117,6 +129,15 @@ public class AuthServiceImpl implements AuthService {
             // 清空错误登录次数
             redisTemplate.delete(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());
 
+            // 同一个用户只能有一个客户端登录
+            WebSocketSession session = WebSocketSessionManager.getSession(id);
+            ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+            JSONObject forceOfflineParam = new JSONObject();
+            forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
+            forceOfflineParam.put("receiver", id);
+            TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
+            concreteHandler.handle(session, textMessage);
+
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), authorizationExpire, TimeUnit.SECONDS);
@@ -124,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (BadCredentialsException e) {
-            long errorTime;
+            Long errorTime;
             try {
                 errorTime = Long.parseLong(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername())));
                 if (BaseConstant.LONG_INIT_VAL.equals(errorTime)) {
@@ -145,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CredentialsExpiredException(e.getMessage());
         } catch (AccountExpiredException e) {
             throw new AccountExpiredException(e.getMessage());
-        } catch (GlobalException e) {
+        } catch (GlobalException | IOException e) {
             throw new GlobalException(e.getMessage());
         }
     }

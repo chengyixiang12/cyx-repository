@@ -30,4 +30,21 @@
         job_name,job_group,cron,
         job_type,status
     </sql>
+    <select id="getQuartzTasks" parameterType="GetQuartzTasksRequest" resultType="GetQuartzTasksVo">
+        select t1.id,
+               t1.job_name,
+               t1.job_group,
+               t1.cron,
+               t1.job_type,
+               t1.status
+        from sys_schedule_job t1
+        where t1.del_flag = '1'
+          <if test="request.keyword != null and request.keyword != ''">
+              <bind name="keyword" value="'%'+ request.keyword + '%'"/>
+              and t1.job_name like #{keyword}
+          </if>
+          <if test="request.status != null and request.status != ''">
+              and t1.status = #{request.status}
+          </if>
+    </select>
 </mapper>

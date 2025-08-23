@@ -1,7 +1,11 @@
 package com.soft.base.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysScheduleJob;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.soft.base.model.request.GetQuartzTasksRequest;
+import com.soft.base.model.vo.GetQuartzTasksVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -13,6 +17,8 @@ import java.util.List;
 */
 public interface SysScheduleJobMapper extends BaseMapper<SysScheduleJob> {
 
+    Page<GetQuartzTasksVo> getQuartzTasks(@Param("page") Page<GetQuartzTasksVo> page,
+                                          @Param("request") GetQuartzTasksRequest request);
 }
 
 

@@ -56,4 +56,6 @@ public interface SysUsersService extends IService<SysUser> {
     SysUser getUserByEmail(String email);
 
     String getAvatar(Long id);
+
+    Long getPrimaryKeyByUsername(String username);
 }

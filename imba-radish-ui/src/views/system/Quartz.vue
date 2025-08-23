@@ -86,15 +86,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import JobFormDialog from '@/components/system/JobFormDialog.vue'
+import { getQuartzTasksApi } from '@/api/quartz'
+import { GetQuartzTasksRequest, GetQuartzTasksVo } from '@/types/quartz'
 
 const loading = ref(false)
-const jobList = ref<any[]>([])
+const jobList = ref<GetQuartzTasksVo[]>([])
 
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const jobId = ref<number | null>(null)
 
-const searchForm = ref({
+const searchForm = ref<GetQuartzTasksRequest>({
   keyword: '',
   status: null,
   pageNum: 1,
@@ -104,7 +106,9 @@ const total = ref(0)
 
 // 加载任务列表
 const loadJobs = async () => {
-  // 调用接口，你自己实现
+  const res = await getQuartzTasksApi(searchForm.value);
+  jobList.value = res.records;
+  total.value = res.total;
 }
 
 // 新增任务

@@ -25,6 +25,7 @@ import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -335,6 +336,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         return sysUsersMapper.getAvatar(id);
     }
 
+    @Override
+    public Long getPrimaryKeyByUsername(String username) {
+        return sysUsersMapper.getPrimaryKeyByUsername(username);
+    }
+
     /**
      * 调用websocket发送强制下线消息
      * @param id
@@ -342,13 +348,12 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
      */
     private void sendWebsocket(Long id) throws IOException {
         // 重置用户名后需强制用户离线
-        @SuppressWarnings("unchecked")
-        WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+        ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
         JSONObject forceOfflineParam = new JSONObject();
         forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
         forceOfflineParam.put("receiver", id);
         TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
-        webSocketConcreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
+        concreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
     }
 
     /**

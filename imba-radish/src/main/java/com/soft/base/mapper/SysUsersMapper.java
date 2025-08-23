@@ -48,6 +48,8 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
     SysUser getUserByEmail(@Param("email") String email);
 
     String getAvatar(@Param("id") Long id);
+
+    Long getPrimaryKeyByUsername(@Param("username") String username);
 }
 
 

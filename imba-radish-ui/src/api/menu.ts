@@ -36,7 +36,7 @@ export async function getSelectMenu(type?: string): Promise<GetSelectMenuVo[]> {
  * @param param 
  */
 export async function deleteMenuApi(param: number) {
-    await del(`/menu/${param}`, { flag: true });
+    await del('/menu', { params: { param }, flag: true });
 }
 
 /**
@@ -60,7 +60,7 @@ export async function addMenuStatusApi(data: SaveMenuRequest) {
  * @param id 
  */
 export async function enableMenuApi(id:number) {
-    await get(`/menu/enableMenu/${id}`, { flag: true })
+    await get('/menu/enableMenu', { params: { id }, flag: true })
 }
 
 /**
@@ -68,7 +68,7 @@ export async function enableMenuApi(id:number) {
  * @param id 
  */
 export async function disableMenuApi(id:number) {
-    await get(`/menu/disableMenu/${id}`, { flag: true })
+    await get('/menu/disableMenu', { params: { id }, flag: true })
 }
 
 /**
