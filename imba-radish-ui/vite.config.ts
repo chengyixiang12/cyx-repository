@@ -24,14 +24,23 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // 所有入口点使用相同命名模式
-        entryFileNames: 'js/[hash].js',
-        // 对chunk使用数字序列而不是基于组件名
-        chunkFileNames: 'js/[hash].js',
-        // 手动配置chunk分割
+        // 统一命名入口文件
+        entryFileNames: 'js/main.[hash].js',
+        // 统一命名chunk文件
+        chunkFileNames: 'js/chunk.[hash].js',
+        // 资源文件命名
+        assetFileNames: 'assets/[name].[hash].[ext]',
+        // 手动配置chunk分割，避免基于组件名的chunk
         manualChunks: {
-          vendor: ['vue', 'vue-router'],
-          // 其他依赖分组...
+          // 将Vue相关库打包在一起
+          vue: ['vue', 'vue-router'],
+          // 将Element Plus打包
+          element: ['element-plus'],
+          // 将工具库打包
+          utils: ['axios', 'crypto-js', 'uuid', 'shortid'],
+          // 其他依赖分组
+          markdown: ['markdown-it', 'vue3-markdown-it', 'github-markdown-css'],
+          cron: ['@vue-js-cron/element-plus', '@vue-js-cron/light', 'cronstrue']
         }
       }
     }
