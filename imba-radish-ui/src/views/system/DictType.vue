@@ -104,7 +104,7 @@ const total = ref<number>(0)
 
 // 跳转字典数据模块
 const goToData = (row: DictTypesVo) => {
-  router.push({ name: '/dictdata', query: { dictType: row.dictType, dictName: row.dictName } })
+  router.push({ name: 'dictData', query: { dictType: row.dictType, dictName: row.dictName } })
 }
 
 // 打开新增字典类型弹窗

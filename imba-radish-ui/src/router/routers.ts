@@ -3,6 +3,7 @@ import MainLayout from '../layouts/MainLayout.vue'
 import { MenuItem } from '../types/menu'
 import { getMenuRouteApi } from '@/api/menu'
 
+const viewModules = import.meta.glob('../views/**/*.vue', { eager: false });
 
 // 2. 基础路由
 const constantRoutes: RouteRecordRaw[] = [
@@ -73,14 +74,41 @@ function generateRoutes(menus: MenuItem[], parentPath: string = ''): RouteRecord
 }
 
 function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteRecordRaw {
-  // 移除开头的 views/ 如果存在
-  const cleanComponent = menu.component!.replace(/^views\//, '')
-  const componentPath = `../views/${cleanComponent}${cleanComponent.endsWith('.vue') ? '' : '.vue'}`
+  if (!menu.component) {
+    console.error(`菜单 ${menu.name} 缺少 component 配置`);
+    return { 
+      path: menu.path, 
+      component: () => import('../views/error/404.vue')
+    };
+  }
+
+  // 标准化 component 路径，生成与预加载匹配的 key
+  let componentKey = menu.component
+    .replace(/^(\/|views\/)/g, '') // 移除开头的 / 或 views/
+    .replace(/\/+/g, '/') // 合并斜杠
+    .replace(/\.vue$/g, ''); // 移除 .vue 后缀
+  componentKey = `../views/${componentKey}.vue`; // 生成与 import.meta.glob 匹配的路径
+
+  console.log(componentKey, 'aaa');
+  
+
+  // 从预加载的组件映射表中获取导入函数
+  const componentImport = viewModules[componentKey];
+  if (!componentImport) {
+    console.error(`组件未找到：${componentKey}，请检查文件是否存在`);
+    return { 
+      path: menu.path, 
+      component: () => import('../views/error/404.vue')
+    };
+  }
+
+  console.log(menu.path.replaceAll('/', ''), 'bbb');
+  
 
   return {
     path: menu.path.startsWith('/') ? menu.path : `/${menu.path}`,
-    name: menu.path.replace(/\s+/g, '-').toLowerCase(),
-    component: () => import(/* @vite-ignore */ componentPath),
+    name: menu.path.replaceAll('/', ''),
+    component: componentImport, // 使用预加载的导入函数
     meta: {
       title: menu.name,
       icon: menu.icon,
@@ -89,7 +117,7 @@ function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteReco
       isClose: true,
       visible: menu.visible
     }
-  }
+  };
 }
 
 // 6. 安全添加动态路由

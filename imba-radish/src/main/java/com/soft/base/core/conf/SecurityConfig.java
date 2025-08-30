@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,6 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -93,27 +95,33 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 // 禁用http basic认证
                 .httpBasic(AbstractHttpConfigurer::disable)
+                // 将SpringSecurity的安全上下文存储到http请求属性中
+                .securityContext(context -> context
+                        .securityContextRepository(new RequestAttributeSecurityContextRepository()))
                 // 允许iframe嵌套
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                        .xssProtection(Customizer.withDefaults())
+                        .cacheControl(Customizer.withDefaults()))
                 // 会话无状态
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 忽略不鉴权的路由
-                .authorizeHttpRequests(auth -> auth.requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
                         .anyRequest().authenticated())
                 .logout(item -> item.logoutUrl("/logout")
                         .logoutSuccessHandler(logoutAfterSuccessHandler))
                 // 认证失败处理类
-                .exceptionHandling(exc ->
-                                exc
+                .exceptionHandling(exc -> exc
                                         // 用于处理未认证的请求（如未登录用户访问受保护的资源）
                                         .authenticationEntryPoint(authenticationHandler)
                                         // 用于处理已认证但没有权限访问资源的请求
                                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
-                // 限流过滤器
-                .addFilterBefore(getRateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
                 // 鉴权过滤器
-                .addFilterBefore(getAuthorizationVerifyFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(getAuthorizationVerifyFilter(), UsernamePasswordAuthenticationFilter.class)
+                // 限流过滤器
+                .addFilterBefore(getRateLimitFilter(), AuthorizationVerifyFilter.class);
         return http.build();
     }
 

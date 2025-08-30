@@ -112,7 +112,7 @@ const searchForm = ref<DictDatasRequest>({
 
 // 返回字典类型模块
 const goBack = () => {
-  router.push({ name: '/dict' })
+  router.push({ name: 'dict' })
 }
 
 // 新增

@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@types/axios": "^0.14.4",
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "^22.9.0",
     "@types/uuid": "^10.0.0",
     "@vue-js-cron/element-plus": "^3.1.8",
     "@vue-js-cron/light": "^4.0.11",
@@ -29,6 +28,7 @@
     "vue3-markdown-it": "^1.0.10"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "@types/shortid": "^2.2.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "typescript": "~5.6.2",
