@@ -9,6 +9,10 @@ server:
     keep-alive-timeout: 30
     # 最大连接数
     max-connections: 1024
+    remoteip:
+      # 明确指定解析真实 IP 的头
+      remote-ip-header: X-Forwarded-For
+  forward-headers-strategy: native
 spring:
   ai:
     deepseek:

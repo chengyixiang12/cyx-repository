@@ -41,7 +41,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-        log.info("请求地址：{}", request.getRequestURI());
+        log.info("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
         if (rateLimitProperty.getEnable()) {
             String key = getIp(request);
             // 获取当前时间戳

@@ -33,7 +33,7 @@
         <tika.version>3.0.0</tika.version>
         <kaptcha.vesion>2.3.2</kaptcha.vesion>
         <jansi.version>2.4.0</jansi.version>
-        <spring.ai.version>1.0.0</spring.ai.version>
+        <spring.ai.version>1.0.1</spring.ai.version>
         <deepseek.version>1.0.0</deepseek.version>
         <flowable.version>7.1.0</flowable.version>
     </properties>

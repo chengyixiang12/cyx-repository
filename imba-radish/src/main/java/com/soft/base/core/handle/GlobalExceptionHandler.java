@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,6 +62,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccountStatusException.class)
     public ResponseEntity<R<Object>> accountStatusException(AccountStatusException ex) {
+        log.error(ex.getLocalizedMessage(), ex);
+        return new ResponseEntity<>(R.fail(ResultEnum.FAIL_NORMAL.getCode(), ex.getLocalizedMessage()), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<R<Object>> badCredentialsException(BadCredentialsException ex) {
         log.error(ex.getLocalizedMessage(), ex);
         return new ResponseEntity<>(R.fail(ResultEnum.FAIL_NORMAL.getCode(), ex.getLocalizedMessage()), HttpStatus.OK);
     }
