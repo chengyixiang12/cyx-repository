@@ -87,13 +87,13 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 }
             } else {
                 long fileSize = multipartFile.getSize();
-                String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
+                String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
                 String fileKey = universalUtil.fileKeyGen();
                 String objectKey = minioUtil.upload(multipartFile.getInputStream(), fileKey, fileSuffix, fileSize);
 
                 sysFile.setFileKey(fileKey);
                 sysFile.setFileSuffix(fileSuffix);
-                sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
+                sysFile.setLocation(BaseConstant.Minio.MINIO);
                 sysFile.setBucket(minioProperty.getDefaultBucket());
                 sysFile.setObjectKey(objectKey);
                 sysFile.setOriginalName(originalFilename);
@@ -122,8 +122,20 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     @Override
     public PageVo<FilesVo> getFiles(FilesRequest request) {
+        // 文件存储位置
+        final String FILE_STORAGE_LOCATION = "file_storage_location";
+
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
+
+//        page.getRecords().forEach(item -> {
+//            switch (item.getLocation()) {
+//                case BaseConstant.DEFAULT_STORAGE_LOCATION: {
+//                    item.setLocation();
+//                }
+//            }
+//        });
+
         PageVo<FilesVo> pageVo = new PageVo<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
@@ -160,13 +172,13 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 }
             } else {
                 long fileSize = multipartFile.getSize();
-                String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
+                String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
                 String fileKey = universalUtil.fileKeyGen();
                 String objectKey = minioUtil.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileKey, fileSuffix, fileSize);
 
                 sysFile.setFileKey(fileKey);
                 sysFile.setFileSuffix(fileSuffix);
-                sysFile.setLocation(BaseConstant.DEFAULT_STORAGE_LOCATION);
+                sysFile.setLocation(BaseConstant.Minio.MINIO);
                 sysFile.setBucket(minioProperty.getAvatarBucket());
                 sysFile.setObjectKey(objectKey);
                 sysFile.setOriginalName(originalFilename);

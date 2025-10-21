@@ -55,7 +55,7 @@ public class SysMenu implements Serializable {
      * 菜单类型：0-目录，1-菜单，2-按钮
      */
     @TableField(value = "type")
-    private String type;
+    private Integer type;
 
     /**
      * 排序号，数字越小，排序越靠前
@@ -108,10 +108,10 @@ public class SysMenu implements Serializable {
     private Long updateBy;
 
     /**
-     * 逻辑删除；1：存在；0：删除
+     * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     @Serial
     @TableField(exist = false)

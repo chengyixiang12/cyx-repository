@@ -25,7 +25,7 @@ public class SysDictData implements Serializable {
      * 排序
      */
     @TableField(value = "sort_order")
-    private Integer sortOrder;
+    private Long sortOrder;
 
     /**
      * 创建人
@@ -54,16 +54,10 @@ public class SysDictData implements Serializable {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除；1：存在；0：删除
+     * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
-
-    /**
-     * 编码
-     */
-    @TableField(value = "code")
-    private String code;
+    private Integer delFlag;
 
     /**
      * 标签

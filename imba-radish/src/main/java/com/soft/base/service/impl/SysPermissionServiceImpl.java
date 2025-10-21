@@ -54,7 +54,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     public void savePermission(SavePermissionRequest request) {
         SysPermission sysPermission = new SysPermission();
         BeanUtils.copyProperties(request, sysPermission);
-        sysPermission.setStatus(BaseConstant.PERMISSION_ENABLE);
+        sysPermission.setStatus(BaseConstant.Permission.ENABLE);
         sysPermissionMapper.insert(sysPermission);
     }
 

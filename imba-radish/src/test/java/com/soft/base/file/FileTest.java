@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import static com.soft.base.constants.BaseConstant.EMAIL_CONTENT_PATH;
-
 /**
  * @Author: cyx
  * @Description: TODO
@@ -33,7 +31,7 @@ public class FileTest {
 
     @Test
     public void test() {
-        ClassPathResource resource = new ClassPathResource(EMAIL_CONTENT_PATH);
+        ClassPathResource resource = new ClassPathResource("template/emailcontent.txt");
         try {
             InputStream inputStream = resource.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));

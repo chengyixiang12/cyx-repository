@@ -115,7 +115,7 @@ public class CaptchaConsume {
      */
     private void sendEmail(String email, String captChat) throws MessagingException, IOException {
         StringBuilder captchaInfo = new StringBuilder();
-        ClassPathResource resource = new ClassPathResource(BaseConstant.EMAIL_CONTENT_PATH);
+        ClassPathResource resource = new ClassPathResource("template/emailcontent.txt");
         try (InputStream inputStream = resource.getInputStream();
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             captchaInfo.append(reader.readLine());

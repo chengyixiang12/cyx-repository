@@ -30,7 +30,7 @@ public class MybatisPlusAutoConfig implements MetaObjectHandler {
             fillValIfNullByName("updateBy", getCurrentUsername(), metaObject);
         if (metaObject.hasSetter("delFlag"))
             // 自动填充逻辑删除
-            fillValIfNullByName("delFlag", BaseConstant.DEL_FLAG_EXIST, metaObject);
+            fillValIfNullByName("delFlag", BaseConstant.LogicDelete.EXIST, metaObject);
     }
 
     @Override

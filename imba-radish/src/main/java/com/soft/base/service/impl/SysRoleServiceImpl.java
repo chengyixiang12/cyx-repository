@@ -55,7 +55,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Override
     public Boolean fixRoleFlag(Long id) {
-        return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getId, id).eq(SysRole::getFixRole, BaseConstant.FIX_ROLE_FLAG));
+        return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getId, id).eq(SysRole::getFixRole, BaseConstant.Role.FIX_ROLE_FLAG));
     }
 
     @Override
@@ -144,7 +144,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Override
     public void editRole(EditRoleRequest request) {
-        if (BaseConstant.DEFAULT_ROLE_FLAG.equals(request.getIsDefault())) {
+        if (BaseConstant.Role.DEFAULT_ROLE_FLAG.equals(request.getIsDefault())) {
             sysRoleMapper.cancelDefaultRole();
         }
         SysRole sysRole = new SysRole();

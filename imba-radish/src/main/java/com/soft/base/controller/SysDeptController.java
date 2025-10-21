@@ -141,7 +141,7 @@ public class SysDeptController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         String fileName = request.getFileName();
         if (StringUtils.isBlank(fileName)) {
-            request.setFileName(BaseConstant.EXPORT_DEPT_EXCEL_NAME);
+            request.setFileName("部门.xlsx");
         }
         ClassPathResource resource = new ClassPathResource("template/exportDept.xlsx");
         try(InputStream is = resource.getInputStream();
@@ -165,7 +165,7 @@ public class SysDeptController {
 
             // 设置响应头
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // 设置文件类型
-            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileName.endsWith(BaseConstant.EXCEL_SUFFIX) ? fileName : fileName + BaseConstant.EXCEL_SUFFIX, StandardCharsets.UTF_8)).build()); // 设置文件名
+            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(request.getFileName(), StandardCharsets.UTF_8)).build()); // 设置文件名
             headers.setContentLength(byteArray.length);
 
             // 返回 ResponseEntity，带上文件内容和响应头

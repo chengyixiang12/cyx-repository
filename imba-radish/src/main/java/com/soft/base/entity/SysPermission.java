@@ -51,7 +51,7 @@ public class SysPermission implements Serializable {
      * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 权限名称
@@ -69,13 +69,13 @@ public class SysPermission implements Serializable {
      * 权限类型；1：菜单；2：按钮
      */
     @TableField(value = "type")
-    private String type;
+    private Integer type;
 
     /**
      * 状态；1：启用；0：禁用
      */
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
     /**
      * 描述

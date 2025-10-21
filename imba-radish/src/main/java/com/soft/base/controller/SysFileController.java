@@ -100,22 +100,16 @@ public class SysFileController {
                 File file;
 
                 // 根据存储位置来获取文件源
-                switch (fileDetail.getLocation()) {
-                    case BaseConstant.DEFAULT_STORAGE_LOCATION: {
-                        is = minioUtil.download(fileDetail.getObjectKey());
-                        break;
-                    }
-                    case BaseConstant.DISK_STORAGE_LOCATION: {
-                        file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
-                        if (!file.exists()) {
-                            throw new GlobalException("资源不存在");
-                        }
-                        is = new FileInputStream(file);
-                        break;
-                    }
-                    default: {
+                if (BaseConstant.Minio.MINIO.equals(fileDetail.getLocation())) {
+                    is = minioUtil.download(fileDetail.getObjectKey());
+                } else if (BaseConstant.Minio.DISK.equals(fileDetail.getLocation())) {
+                    file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
+                    if (!file.exists()) {
                         throw new GlobalException("资源不存在");
                     }
+                    is = new FileInputStream(file);
+                } else {
+                    throw new GlobalException("资源不存在");
                 }
 
                 while ((bytesRead = is.read(buffer)) != BaseConstant.FILE_OVER_SIGN) {

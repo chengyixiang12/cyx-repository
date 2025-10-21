@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.soft.base.constants.BaseConstant.HEADER_USER_AGENT;
 import static com.soft.base.constants.BaseConstant.LEFT_SLASH;
 
 
@@ -91,7 +90,7 @@ public class SysLogAspect {
                 }
 
                 // 获取 User-Agent
-                String userAgentString = servletRequest.getHeader(HEADER_USER_AGENT);
+                String userAgentString = servletRequest.getHeader("User-Agent");
                 UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
                 String osName = userAgent.getOperatingSystem().getName();
                 String browserName = userAgent.getBrowser().getName();

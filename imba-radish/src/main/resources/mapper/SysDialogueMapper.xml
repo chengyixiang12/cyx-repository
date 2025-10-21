@@ -43,7 +43,7 @@
         JOIN sys_user su ON
         sd.create_by = su.id
         WHERE
-        sd.del_flag = '1'
+        sd.del_flag = '0'
         <if test="userId != null and userId != ''">
             AND sd.create_by = #{userId}
         </if>

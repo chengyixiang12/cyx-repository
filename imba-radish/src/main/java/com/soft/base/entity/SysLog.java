@@ -38,7 +38,7 @@ public class SysLog implements Serializable {
      * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 日志级别
@@ -122,7 +122,7 @@ public class SysLog implements Serializable {
      * 日志类型
      */
     @TableField(value = "type")
-    private String type;
+    private Integer type;
 
     @Serial
     @TableField(exist = false)

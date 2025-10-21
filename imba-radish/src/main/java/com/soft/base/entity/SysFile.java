@@ -48,10 +48,10 @@ public class SysFile implements Serializable {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除；1：存在；0：删除
+     * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 源文件名
@@ -69,7 +69,7 @@ public class SysFile implements Serializable {
      * 存储地址；1：minio；2：磁盘
      */
     @TableField(value = "location")
-    private String location;
+    private Integer location;
 
     /**
      * 桶名

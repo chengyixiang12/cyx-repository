@@ -57,7 +57,6 @@ public class AuthServiceImpl implements AuthService {
 
     private final SysDeptService sysDeptService;
 
-    @Autowired
     public AuthServiceImpl(PasswordEncoder passwordEncoder,
                            RSAUtil rsaUtil,
                            SysUsersService sysUsersService,
@@ -116,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
                     request.setUsername(sysUser.getUsername());
                     String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getUsername());
                     if (!request.getEmailCaptcha().equals(emailCaptCha)) {
-                        throw new GlobalException("验证码错误");
+                        throw new BadCredentialsException("验证码错误");
                     }
                     redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
                     break;

@@ -48,10 +48,10 @@ public class SysSecretKey implements Serializable {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除；1：存在；0：删除
+     * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 公钥
@@ -69,7 +69,7 @@ public class SysSecretKey implements Serializable {
      * 类型
      */
     @TableField(value = "type")
-    private String type;
+    private Integer type;
 
     /**
      * 描述

@@ -1,7 +1,6 @@
 package com.soft.base.websocket.handle.message.concrete;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.WebSocketConstant;
@@ -9,12 +8,10 @@ import com.soft.base.entity.SysDialogueDetails;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.service.SysDialogueDetailsService;
-import com.soft.base.utils.SecurityUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.ChatRecParams;
 import com.soft.base.websocket.send.ChatSendParams;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.deepseek.DeepSeekAssistantMessage;

@@ -38,10 +38,10 @@ public class LocalCacheUtil {
         Storage storage = new Storage();
         long currentTime = System.currentTimeMillis();
         switch (timeUnit) {
-            case SECONDS -> storage.setExpire(currentTime + expire * BaseConstant.LOCAL_CACHE_EXPIRE_SECOND);
-            case DAYS -> storage.setExpire(currentTime + expire * BaseConstant.LOCAL_CACHE_EXPIRE_DAY);
-            case HOURS -> storage.setExpire(currentTime + expire * BaseConstant.LOCAL_CACHE_EXPIRE_HOURS);
-            case MINUTES -> storage.setExpire(currentTime + expire * BaseConstant.LOCAL_CACHE_EXPIRE_MINUTES);
+            case SECONDS -> storage.setExpire(currentTime + expire * 1000L);
+            case DAYS -> storage.setExpire(currentTime + expire * 24 * 60 * 60 * 1000L);
+            case HOURS -> storage.setExpire(currentTime + expire * 60 * 60 * 1000L);
+            case MINUTES -> storage.setExpire(currentTime + expire * 60 * 1000L);
             case MILLISECONDS -> storage.setExpire(currentTime + expire);
             default -> throw new GlobalException("不支持的时间单位");
         }

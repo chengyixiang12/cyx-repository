@@ -66,7 +66,7 @@ public class SysDictDataController {
     @PostMapping
     @Operation(summary = "添加字典数据")
     public R<Object> saveDictData(@RequestBody @Valid SaveDictDataRequest request) {
-        if (sysDictDataService.existCode(request.getCode())) {
+        if (sysDictDataService.existValue(request.getDictType(), request.getValue())) {
             return R.fail("字典编码已存在");
         }
         sysDictDataService.saveDictData(request);
@@ -79,7 +79,7 @@ public class SysDictDataController {
     @PutMapping
     @Operation(summary = "编辑字典数据")
     public R<Object> editDictData(@RequestBody @Valid EditDictDataRequest request) {
-        if (sysDictDataService.existCode(request.getCode(), request.getId())) {
+        if (sysDictDataService.existCode(request.getDictType(), request.getValue(), request.getId())) {
             return R.fail("字典编码已存在");
         }
         sysDictDataService.editDictData(request);

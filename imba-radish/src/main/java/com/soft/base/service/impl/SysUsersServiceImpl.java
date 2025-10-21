@@ -183,7 +183,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
         // 保存角色
         List<Long> roleIds = request.getRoleIds();
-        Long defaultRoleId = sysRoleService.getDefaultRole(BaseConstant.DEFAULT_ROLE_FLAG);
+        Long defaultRoleId = sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG);
         if (roleIds == null) {
             roleIds = new ArrayList<>();
 

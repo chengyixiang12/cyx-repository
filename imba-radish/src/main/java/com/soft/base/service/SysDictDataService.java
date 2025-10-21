@@ -29,9 +29,9 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void deleteDictDataBatch(DeleteRequest request);
 
-    boolean existCode(String code);
+    boolean existValue(String dictType, String value);
 
-    boolean existCode(String code, Long id);
+    boolean existCode(String dictType, String value, Long id);
 
     void enableDictData(Long id);
 

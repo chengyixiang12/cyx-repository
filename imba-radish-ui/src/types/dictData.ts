@@ -8,7 +8,6 @@ export interface DictDatasRequest {
 
 export interface DictDatasVo {
     id: number;
-    code: string;
     label: string;
     value: number;
     isDefault: number;
@@ -18,7 +17,6 @@ export interface DictDatasVo {
 
 export interface SaveDictDataRequest {
     sortOrder: number | null;
-    code: string;
     label: string;
     value: string;
     dictType: string;
@@ -32,7 +30,6 @@ export interface SaveDictDataRequest {
 export interface EditDictDataRequest {
     id: number | null;
     sortOrder: number | null;
-    code: string;
     label: string;
     value: string;
     dictType: string;
@@ -45,7 +42,6 @@ export interface EditDictDataRequest {
 
 export interface DictDataVo {
     id: number;
-    code: string;
     label: string;
     value: string;
     isDefault: number;

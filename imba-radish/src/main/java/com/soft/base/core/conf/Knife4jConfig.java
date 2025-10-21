@@ -75,10 +75,10 @@ public class Knife4jConfig {
     private boolean checkPermitUrl(String uri) {
         List<String> notPermitUrl = authorizationIgnoreProperty.getUrls();
         for (String c : notPermitUrl) {
-            if (BaseConstant.ALL_WILDCARD_CHARACTER.equals(c.substring(c.length() - 2)) &&
+            if ("**".equals(c.substring(c.length() - 2)) &&
                     uri.length() > c.length() &&
                     uri.substring(0, c.length() - 2)
-                            .equals(c.replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ALL_WILDCARD_CHARACTER, BaseConstant.BLANK_CHARACTER))) {
+                            .equals(c.replaceAll("\\**", ""))) {
                 return true;
             } else if (uri.equals(c)) {
                 return true;

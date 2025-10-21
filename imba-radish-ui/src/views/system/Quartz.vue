@@ -19,8 +19,8 @@
               </el-form-item>
               <el-form-item label="任务状态:">
                 <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
-                  <el-option label="启用" :value="1" />
-                  <el-option label="暂停" :value="0" />
+                  <el-option label="启用" value="1" />
+                  <el-option label="暂停" value="0" />
                 </el-select>
               </el-form-item>
               <el-form-item>
@@ -44,19 +44,17 @@
               <el-table-column prop="jobType" align="center" label="任务类型" show-overflow-tooltip />
               <el-table-column prop="status" label="状态" align="center" min-width="80">
                 <template #default="scope">
-                  <el-tag v-if="scope.row.status === '1'" type="success">启用</el-tag>
-                  <el-tag v-else type="info">暂停</el-tag>
+                  <el-switch v-model="scope.row.status" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66"
+                    inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="180" align="center">
+              <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
-                  <el-button size="small" type="primary" @click="startJob(scope.row.id)">启动</el-button>
-                  <el-button size="small" type="warning" @click="stopJob(scope.row.id)">停止</el-button>
-                  <el-button size="small" type="primary" @click="handleEdit(scope.row.id)">编辑</el-button>
+                  <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
                   <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
-                      <el-button size="small" type="danger">删除</el-button>
+                      <el-button size="small" type="danger" :icon="Delete" circle />
                     </template>
                   </el-popconfirm>
                 </template>
@@ -83,8 +81,10 @@
   <job-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :job-id="jobId"
     @submit="handleEditSubmit" />
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { Edit, Delete } from '@element-plus/icons-vue'
 import JobFormDialog from '@/components/system/JobFormDialog.vue'
 import { getQuartzTasksApi } from '@/api/quartz'
 import { GetQuartzTasksRequest, GetQuartzTasksVo } from '@/types/quartz'
@@ -152,6 +152,16 @@ const stopJob = async (id: number) => {
   await loadJobs()
 }
 
+// 状态变更处理
+const handleStatusChange = async (row: any) => {
+  if (row.status === '1') {
+    await startJob(row.id)
+  } else {
+    await stopJob(row.id)
+  }
+  await loadJobs()
+}
+
 // 分页变化
 const handlePageChange = (page: number) => {
   searchForm.value.pageNum = page
@@ -179,6 +189,7 @@ onMounted(() => {
   loadJobs()
 })
 </script>
+
 <style scoped>
 .schedule-container {
   height: 100%;

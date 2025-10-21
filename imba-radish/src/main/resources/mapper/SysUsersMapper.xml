@@ -37,7 +37,7 @@
 <!--        FROM-->
 <!--        sysUser u-->
 <!--        WHERE-->
-<!--        u.del_flag = '1'-->
+<!--        u.del_flag = '0'-->
 <!--        AND u.enabled = 1-->
 <!--        AND u.account_non_locked = 1-->
 <!--        AND u.credentials_non_expired = 1-->
@@ -60,7 +60,7 @@
         JOIN sys_dept sd
         ON u.dept_id = sd.id
         WHERE
-        u.del_flag = '1'
+        u.del_flag = '0'
         <if test="getUsersDto.deptIds != null and getUsersDto.deptIds.size > 0">
             AND u.dept_id IN
             <foreach collection="getUsersDto.deptIds" item="item" open="(" separator="," close=")">
@@ -101,7 +101,7 @@
         FROM
         sys_user su
         WHERE
-        su.del_flag = '1'
+        su.del_flag = '0'
         AND su.username = #{username}
     </select>
     <select id="getEmail" parameterType="java.lang.String" resultType="java.lang.String">
@@ -110,7 +110,7 @@
         FROM
         sys_user su
         WHERE
-        su.del_flag = '1'
+        su.del_flag = '0'
         AND su.username = #{username}
         OR su.email = #{username}
     </select>
@@ -125,21 +125,21 @@
         FROM
         sys_user su
         WHERE
-        su.del_flag = '1'
+        su.del_flag = '0'
         AND su.id = #{id}
     </select>
     <update id="lockUser" parameterType="java.lang.String">
         UPDATE `sys_user`
         SET account_non_locked = 0
         WHERE
-        del_flag = '1'
+        del_flag = '0'
         AND username = #{username}
     </update>
     <update id="unlockUser" parameterType="java.lang.String">
         UPDATE `sys_user`
         SET account_non_locked = 1
         WHERE
-        del_flag = '1'
+        del_flag = '0'
         AND username = #{username}
     </update>
     <select id="getUsernameById" parameterType="java.lang.Long" resultType="java.lang.String">
@@ -148,7 +148,7 @@
         FROM
         `sys_user` su
         WHERE
-        su.del_flag = '1'
+        su.del_flag = '0'
         AND su.`id` = #{id}
     </select>
     <select id="existsEmail" resultType="java.lang.Boolean">
@@ -157,7 +157,7 @@
         FROM
         `sys_user` su
         WHERE
-        su.del_flag = '1'
+        su.del_flag = '0'
         AND su.`id` <![CDATA[<>]]> #{id}
         AND su.email = #{email}
     </select>
@@ -185,7 +185,7 @@
         FROM
             sys_user su
         WHERE
-                    su.del_flag = '1'
+                    su.del_flag = '0'
                 AND su.username = #{param}
            OR su.email = #{param}
     </select>
@@ -195,7 +195,7 @@
         SET
             enabled = 1
         WHERE
-            del_flag = '1'
+            del_flag = '0'
           AND username = #{username}
     </update>
     <update id="forbiddenUser" parameterType="java.lang.String">
@@ -204,7 +204,7 @@
         SET
             enabled = 0
         WHERE
-            del_flag = '1'
+            del_flag = '0'
           AND username = #{username}
     </update>
     <select id="getUserByEmail" parameterType="java.lang.String" resultType="SysUser">
@@ -213,7 +213,7 @@
         FROM
             sys_user su
         WHERE
-            su.del_flag = '1'
+            su.del_flag = '0'
           AND su.email = #{email}
     </select>
     <select id="getAvatar" parameterType="java.lang.Long" resultType="java.lang.String">
@@ -230,7 +230,7 @@
     <select id="getPrimaryKeyByUsername" parameterType="java.lang.String" resultType="java.lang.Long">
         select t1.id
         from sys_user t1
-        where t1.del_flag = '1'
+        where t1.del_flag = '0'
           and t1.username = #{username}
     </select>
 </mapper>

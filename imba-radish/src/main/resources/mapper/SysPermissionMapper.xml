@@ -35,7 +35,7 @@
         FROM
         sys_permission sp
         WHERE
-        sp.del_flag = '1'
+        sp.del_flag = '0'
     </select>
     <select id="getPermissionsByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT DISTINCT
@@ -46,8 +46,8 @@
         JOIN sys_role sr ON srp.role_id = sr.id
         JOIN sys_user_role sur ON sur.role_id = sr.id
         WHERE
-        sp.del_flag = '1'
-        AND sr.del_flag = '1'
+        sp.del_flag = '0'
+        AND sr.del_flag = '0'
         AND sur.user_id = #{id}
     </select>
     <select id="getPermissionsByRoleCodes" parameterType="java.util.List" resultType="java.lang.String">
@@ -58,8 +58,8 @@
         JOIN sys_role_permission srp ON sp.`id` = srp.permission_id
         JOIN sys_role sr ON sr.`id` = srp.role_id
         WHERE
-        sp.del_flag = '1'
-        AND sr.del_flag = '1'
+        sp.del_flag = '0'
+        AND sr.del_flag = '0'
         AND sr.`code` IN
         <foreach collection="roleCodes" item="item" open="(" separator="," close=")">
             #{item}
@@ -72,7 +72,7 @@
         FROM
         sys_permission sp
         WHERE
-        sp.del_flag = '1'
+        sp.del_flag = '0'
     </select>
     <select id="getAssignPer" parameterType="java.lang.Long" resultType="GetAssignPerVo">
         SELECT sp.id,
@@ -81,7 +81,7 @@
                  JOIN sys_role_permission srp
                       ON
                           sp.id = srp.permission_id
-        WHERE sp.del_flag = '1'
+        WHERE sp.del_flag = '0'
           AND srp.role_id = #{roleId}
     </select>
 </mapper>

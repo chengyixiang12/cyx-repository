@@ -68,6 +68,6 @@ public class UniversalUtil {
      * @return
      */
     public String fileKeyGen() {
-        return UUID.randomUUID().toString().replaceAll(BaseConstant.ENG_DASH, BaseConstant.BLANK_CHARACTER);
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

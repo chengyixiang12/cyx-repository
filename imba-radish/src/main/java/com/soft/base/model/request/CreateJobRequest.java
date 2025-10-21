@@ -42,9 +42,9 @@ public class CreateJobRequest {
     private Integer jobInterval;
 
     @Schema(description = "间隔类型；0：毫秒；1：秒；2：分钟；3：小时")
-    private String intervalType;
+    private Integer intervalType;
 
     @Schema(description = "调度类型；0：简单调度；1：cron表达式调度")
     @NotBlank(message = "调度类型不能为空")
-    private String scheduleType;
+    private Integer scheduleType;
 }

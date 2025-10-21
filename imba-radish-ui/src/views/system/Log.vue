@@ -129,7 +129,7 @@ const loadLogs = async () => {
 
 // 查看日志详情
 const handleView = (row: LogsVo) => {
-    router.push({ name: '/logdetail', query: { id: row.id } })
+    router.push({ name: 'logDetail', query: { id: row.id } })
 }
 
 // 删除菜单

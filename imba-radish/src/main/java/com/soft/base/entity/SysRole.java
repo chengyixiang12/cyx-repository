@@ -28,7 +28,7 @@ public class SysRole implements Serializable {
      * 排序字段
      */
     @TableField(value = "sort_order")
-    private Integer sortOrder;
+    private Long sortOrder;
 
     /**
      * 创建人
@@ -57,10 +57,10 @@ public class SysRole implements Serializable {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除；1：存在；0：删除
+     * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 角色编码

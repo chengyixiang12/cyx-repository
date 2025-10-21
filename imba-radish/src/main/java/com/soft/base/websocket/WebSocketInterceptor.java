@@ -20,19 +20,11 @@ import java.util.Map;
 /**
  * @Author: cyx
  * @Description: websocket拦截器
- * @DateTime: 2024/11/21 20:02
+ * @DateTime: 2024/11/21
  **/
 @Slf4j
-public class WebSocketInterceptor implements HandshakeInterceptor {
-
-    private final UserDetailsService userDetailsService;
-
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    public WebSocketInterceptor(UserDetailsService userDetailsService, RedisTemplate<String, Object> redisTemplate) {
-        this.userDetailsService = userDetailsService;
-        this.redisTemplate = redisTemplate;
-    }
+public record WebSocketInterceptor(UserDetailsService userDetailsService,
+                                   RedisTemplate<String, Object> redisTemplate) implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(@NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response, @NotNull WebSocketHandler wsHandler, @NotNull Map<String, Object> attributes) {

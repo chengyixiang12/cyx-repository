@@ -48,7 +48,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             long currentTimestamp = System.currentTimeMillis();
 
             // 使用 Redis 存储请求的时间戳
-            Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * BaseConstant.WINDOW_SIZE_EXPAND_MULTIPLE, currentTimestamp);
+            Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * 1000L, currentTimestamp);
 
             // 如果超过最大请求次数，拒绝请求
             if (requestCount >= rateLimitProperty.getMaxRequest()) {
@@ -68,11 +68,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @NotNull
     private static String getIp(HttpServletRequest request) {
-        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
+        String clientIp = request.getRemoteAddr().replaceAll(":", ""); // 获取客户端 IP 地址
         //        String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
 //            log.info("用户ip：{}", clientIp);
 //            log.info("用户请求接口路径：{}", request.getRequestURI());
-        String escapedRegex = Pattern.quote(BaseConstant.FILE_POINT_SUFFIX);
-        return RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(escapedRegex, BaseConstant.BLANK_CHARACTER);
+        String escapedRegex = Pattern.quote(".");
+        return RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(escapedRegex, "");
     }
 }

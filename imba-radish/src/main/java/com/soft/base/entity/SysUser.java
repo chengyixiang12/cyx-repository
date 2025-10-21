@@ -88,10 +88,10 @@ public class SysUser implements Serializable {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除；1：存在；0：不存在
+     * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 修改人

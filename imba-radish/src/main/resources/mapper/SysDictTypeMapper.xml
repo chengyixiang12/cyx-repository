@@ -35,7 +35,7 @@
         FROM
         sys_dict_type sdt
         WHERE
-        sdt.del_flag = '1'
+        sdt.del_flag = '0'
         <if test="request.keyword != null and request.keyword != ''">
             AND ( sdt.dict_name LIKE concat('%', #{request.keyword}, '%') OR sdt.dict_type LIKE concat('%', #{request.keyword}, '%') )
         </if>
@@ -54,14 +54,14 @@
         FROM
         sys_dict_type sdt
         WHERE
-        sdt.del_flag = '1'
+        sdt.del_flag = '0'
         AND sdt.id = #{id}
     </select>
     <update id="deleteDictTypeBatch" parameterType="java.util.List">
         UPDATE sys_dict_type
         SET del_flag = '0'
         WHERE
-        del_flag = '1'
+        del_flag = '0'
         AND id IN
         <foreach collection="ids" item="item" open="(" separator="," close=")">
             #{item}
@@ -70,13 +70,13 @@
     <update id="enableDictType" parameterType="java.lang.Long">
         UPDATE sys_dict_type
         SET status = 1
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
         AND id = #{id}
     </update>
     <update id="forbiddenDictType" parameterType="java.lang.Long">
         UPDATE sys_dict_type
         SET status = 0
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
           AND id = #{id}
     </update>
 </mapper>

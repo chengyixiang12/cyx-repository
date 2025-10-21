@@ -12,7 +12,6 @@
             <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
-            <result property="code" column="code" jdbcType="VARCHAR"/>
             <result property="label" column="label" jdbcType="VARCHAR"/>
             <result property="value" column="value" jdbcType="VARCHAR"/>
             <result property="dictType" column="dict_type" jdbcType="VARCHAR"/>
@@ -26,7 +25,7 @@
     <sql id="Base_Column_List">
         id,sort_order,create_by,
         create_time,update_by,update_time,
-        del_flag,code,label,
+        del_flag,label,
         value,dict_type,css_class,
         list_class,is_default,status,
         remark
@@ -34,7 +33,6 @@
     <select id="getDictDatas" parameterType="DictDatasRequest" resultType="DictDatasVo">
         SELECT
         sdd.id,
-        sdd.`code`,
         sdd.label,
         sdd.`value`,
         sdd.is_default,
@@ -43,7 +41,7 @@
         FROM
         sys_dict_data sdd
         WHERE
-        sdd.del_flag = '1'
+        sdd.del_flag = '0'
         AND sdd.dict_type = #{request.dictType}
         <if test="request.keyword != null and request.keyword != ''">
             AND ( sdd.code LIKE concat('%', #{request.keyword}, '%') OR sdd.label LIKE concat('%', #{request.keyword}, '$') )
@@ -55,7 +53,6 @@
     <select id="getDictData" parameterType="java.lang.Long" resultType="DictDataVo">
         SELECT
         sdd.id,
-        sdd.`code`,
         sdd.label,
         sdd.`value`,
         sdd.is_default,
@@ -68,14 +65,14 @@
         FROM
         sys_dict_data sdd
         WHERE
-        sdd.del_flag = '1'
+        sdd.del_flag = '0'
         AND sdd.id = #{id}
     </select>
     <update id="deleteDictDataBatch" parameterType="DeleteRequest">
         UPDATE sys_dict_data sdd
         SET del_flag = '0'
         WHERE
-        del_flag = '1'
+        del_flag = '0'
         AND sdd.id IN
         <foreach collection="request.ids" item="item" open="(" separator="," close=")">
             #{item}
@@ -84,13 +81,13 @@
     <update id="enableDictData" parameterType="java.lang.Long">
         UPDATE sys_dict_data
         SET status = 1
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
         AND id = #{id}
     </update>
     <update id="forbiddenDictData" parameterType="java.lang.Long">
         UPDATE sys_dict_data
         SET status = 0
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
           AND id = #{id}
     </update>
     <update id="setNotDefault" parameterType="java.lang.String">

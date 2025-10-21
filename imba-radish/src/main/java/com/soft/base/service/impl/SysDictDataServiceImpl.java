@@ -53,7 +53,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     public void saveDictData(SaveDictDataRequest request) {
-        if (BaseConstant.DEF_STATUS.equals(request.getIsDefault())) {
+        if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
             sysDictDataMapper.setNotDefault(request.getDictType());
         }
         SysDictData sysDictData = new SysDictData();
@@ -63,7 +63,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     public void editDictData(EditDictDataRequest request) {
-        if (BaseConstant.DEF_STATUS.equals(request.getIsDefault())) {
+        if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
             sysDictDataMapper.setNotDefault(request.getDictType());
         }
         SysDictData sysDictData = new SysDictData();
@@ -82,13 +82,13 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public boolean existCode(String code) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getCode, code));
+    public boolean existValue(String dictType, String value) {
+        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getDictType, dictType).eq(SysDictData::getValue, value));
     }
 
     @Override
-    public boolean existCode(String code, Long id) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getCode, code).ne(SysDictData::getId, id));
+    public boolean existCode(String dictType, String value, Long id) {
+        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getDictType, dictType).eq(SysDictData::getValue, value).ne(SysDictData::getId, id));
     }
 
     @Override

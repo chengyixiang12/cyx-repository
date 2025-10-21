@@ -66,7 +66,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         // 源文件名
         String originalName = fileTransferOverRecParams.getOriginalName();
         // 文件后缀
-        String suffix = originalName.substring(originalName.lastIndexOf(BaseConstant.FILE_POINT_SUFFIX));
+        String suffix = originalName.substring(originalName.lastIndexOf("."));
         String objectKey = BaseConstant.LEFT_SLASH + dateUtil.date8Number() + BaseConstant.LEFT_SLASH + fileKey + suffix;
 
         byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
@@ -123,9 +123,9 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             sysFile.setUpdateTime(now);
             sysFile.setObjectKey(objectKey);
             sysFile.setFileSuffix(suffix);
-            sysFile.setLocation(BaseConstant.DISK_STORAGE_LOCATION);
+            sysFile.setLocation(BaseConstant.Minio.MINIO);
             sysFile.setFileKey(fileKey);
-            sysFile.setDelFlag(BaseConstant.DEL_FLAG_EXIST);
+            sysFile.setDelFlag(BaseConstant.LogicDelete.EXIST);
             sysFileService.save(sysFile);
             log.info("start save file data to database...");
 

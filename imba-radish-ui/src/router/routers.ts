@@ -88,8 +88,6 @@ function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteReco
     .replace(/\/+/g, '/') // 合并斜杠
     .replace(/\.vue$/g, ''); // 移除 .vue 后缀
   componentKey = `../views/${componentKey}.vue`; // 生成与 import.meta.glob 匹配的路径
-
-  console.log(componentKey, 'aaa');
   
 
   // 从预加载的组件映射表中获取导入函数
@@ -101,9 +99,6 @@ function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteReco
       component: () => import('../views/error/404.vue')
     };
   }
-
-  console.log(menu.path.replaceAll('/', ''), 'bbb');
-  
 
   return {
     path: menu.path.startsWith('/') ? menu.path : `/${menu.path}`,

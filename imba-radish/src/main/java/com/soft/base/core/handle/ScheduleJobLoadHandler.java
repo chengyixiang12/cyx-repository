@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.enums.JobEnum;
+import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.service.SysScheduleJobService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,14 +45,14 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("开始加载定时任务");
+        log.info("加载定时任务");
         Date startTime = new Date();
         Date endTime = null;
         LambdaQueryWrapper<SysScheduleJob> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysScheduleJob::getStatus, BaseConstant.QUARTZ_START);
+        wrapper.eq(SysScheduleJob::getStatus, BaseConstant.QuartzStatus.QUARTZ_START);
         List<SysScheduleJob> sysScheduleJobs = sysScheduleJobService.list(wrapper);
 
-        if (CollectionUtil.isNotEmpty(sysScheduleJobs)) {
+        if (CollectionUtil.isEmpty(sysScheduleJobs)) {
             return;
         }
 
@@ -83,11 +84,11 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
             }
 
             Trigger trigger;
-            if (BaseConstant.QUARTZ_SIMPLE_SCHEDULE.equals(sysScheduleJob.getScheduleType())) {
+            if (BaseConstant.QuartzType.QUARTZ_SIMPLE_SCHEDULE.equals(sysScheduleJob.getScheduleType())) {
 
                 // 根据不同的间隔类型选择不同的定时逻辑
-                switch (sysScheduleJob.getIntervalType()) {
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_MILLISECONDS -> trigger = TriggerBuilder.newTrigger()
+                switch (QuartzIntervalEnum.map.get(sysScheduleJob.getIntervalType())) {
+                    case MILLISECONDS -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
@@ -96,7 +97,7 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
                             .startAt(startTime)
                             .endAt(endTime)
                             .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_SECONDS -> trigger = TriggerBuilder.newTrigger()
+                    case SECONDS -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
@@ -105,7 +106,7 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
                             .startAt(startTime)
                             .endAt(endTime)
                             .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_MINUTES -> trigger = TriggerBuilder.newTrigger()
+                    case MINUTES -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
@@ -114,7 +115,7 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
                             .startAt(startTime)
                             .endAt(endTime)
                             .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_HOURS -> trigger = TriggerBuilder.newTrigger()
+                    case HOURS -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
@@ -137,8 +138,7 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
             }
 
             scheduler.scheduleJob(jobDetail, trigger);
-            log.info("{}-{}定时任务加载成功", sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+            log.debug("{}-{}定时任务加载", sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
         }
-        log.info("定时任务加载完成");
     }
 }

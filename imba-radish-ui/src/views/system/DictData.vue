@@ -39,7 +39,6 @@
                 </template>
               </el-table-column>
               <el-table-column prop="label" align="center" label="标签" />
-              <el-table-column prop="code" align="center" label="编码" />
               <el-table-column prop="value" align="center" label="值" />
               <el-table-column prop="isDefault" label="默认" min-width="80" align="center">
                 <template #default="scope">

@@ -44,10 +44,10 @@ public class SysScheduleJob {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除；1：存在；0：删除
+     * 逻辑删除
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 任务名称
@@ -77,7 +77,7 @@ public class SysScheduleJob {
      * 任务状态；1：启用；0：暂停
      */
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
     /**
      * 任务所需参数
@@ -107,11 +107,11 @@ public class SysScheduleJob {
      * 间隔类型；0：毫秒；1：秒；2：分钟；3：小时
      */
     @TableField(value = "interval_type")
-    private String intervalType;
+    private Integer intervalType;
 
     /**
      * 调度类型；0：简单调度；1：cron表达式调度
      */
     @TableField(value = "schedule_type")
-    private String scheduleType;
+    private Integer scheduleType;
 }

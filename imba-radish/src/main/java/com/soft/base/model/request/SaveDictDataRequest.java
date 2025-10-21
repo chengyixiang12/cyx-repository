@@ -17,10 +17,6 @@ public class SaveDictDataRequest {
     @Schema(description = "排序")
     private Integer sortOrder;
 
-    @Schema(description = "编码")
-    @NotBlank(message = "字典编码不能为空")
-    private String code;
-
     @Schema(description = "标签")
     private String label;
 

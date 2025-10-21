@@ -1,9 +1,10 @@
-import { post, get } from '@/utils/http';
-import { UploadFileVo } from '@/types/file';
+import { post, get, del } from '@/utils/http';
+import { FilesRequest, FilesVo, UploadFileVo } from '@/types/file';
+import { PaginatedData } from '@/types/api';
 
 /**
- * 
- * @param param 根据id获取文件
+ * 根据id获取文件
+ * @param param 
  * @returns 
  */
 export async function getFileById(param?: number): Promise<Blob> {
@@ -18,4 +19,22 @@ export async function getFileById(param?: number): Promise<Blob> {
 export async function uploadFile(params?: FormData): Promise<UploadFileVo> {
   const res = await post<UploadFileVo>('/file', params, { flag: true })
   return res.data;
+}
+
+/**
+ * 获取文件（复）
+ * @param data 
+ * @returns 
+ */
+export async function getFilesApi(data: FilesRequest): Promise<PaginatedData<FilesVo>> {
+  const res = await post<PaginatedData<FilesVo>>('/file/getFiles', data, { flag: true });
+  return res.data;
+}
+
+/**
+ * 删除文件
+ * @param id 
+ */
+export async function deleteFileApi(id: number) {
+  del('/file', { params: { id }, flag: true })
 }

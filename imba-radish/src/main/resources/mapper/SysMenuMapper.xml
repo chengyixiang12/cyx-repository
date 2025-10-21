@@ -44,9 +44,9 @@
         FROM
         sys_menu sm
         JOIN sys_role_menu srm ON sm.id = srm.menu_id
-        AND sm.del_flag = '1'
+        AND sm.del_flag = '0'
         JOIN sys_role sr ON srm.role_id = sr.id
-        AND sr.del_flag = '1'
+        AND sr.del_flag = '0'
         JOIN sys_user_role sur ON sur.role_id = sr.id
         WHERE
         sur.user_id = #{userId}
@@ -71,7 +71,7 @@
         LEFT JOIN `sys_menu` smp
         ON sm.parent_id = smp.id
         WHERE
-            sm.del_flag = '1'
+            sm.del_flag = '0'
         <if test="request.keyword != null and request.keyword != ''">
             AND ( sm.name LIKE concat('%', #{request.keyword}, '%') OR sm.path LIKE concat('%', #{request.keyword}, '%')
         </if>
@@ -102,7 +102,7 @@
         FROM
             `sys_menu` sm
         WHERE
-            sm.del_flag = '1'
+            sm.del_flag = '0'
           AND sm.id = #{id}
     </select>
     <select id="getByIds" parameterType="java.util.List" resultType="java.lang.Long">
@@ -111,7 +111,7 @@
         FROM
             sys_menu sm
         WHERE
-            sm.del_flag = '1'
+            sm.del_flag = '0'
           AND sm.parent_id IN
         <foreach collection="ids" item="item" open="(" separator="," close=")">
             #{item}
@@ -120,13 +120,13 @@
     <update id="enableMenu" parameterType="java.lang.Long">
         UPDATE sys_menu
         SET status = 1
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
         AND id = #{id}
     </update>
     <update id="disableMenu" parameterType="java.lang.Long">
         UPDATE sys_menu
         SET status = 0
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
           AND id = #{id}
     </update>
     <select id="getSelectMenu" parameterType="java.lang.String" resultType="GetSelectMenuVo">
@@ -136,7 +136,7 @@
         FROM
             sys_menu sm
         WHERE
-            sm.del_flag = '1'
+            sm.del_flag = '0'
         AND sm.type = #{type}
     </select>
     <select id="getMenuTree" resultType="GetMenuTreeVo">
@@ -147,7 +147,7 @@
         FROM
             sys_menu sm
         WHERE
-            sm.del_flag = '1'
+            sm.del_flag = '0'
           AND sm.status = 1
           AND sm.type IN ('0','1')
     </select>
@@ -165,7 +165,7 @@
         SET
             visible = 1
         WHERE
-            del_flag = '1'
+            del_flag = '0'
           AND id = #{id}
     </update>
     <update id="menuHide" parameterType="java.lang.Long">
@@ -174,7 +174,7 @@
         SET
             visible = 0
         WHERE
-            del_flag = '1'
+            del_flag = '0'
           AND id = #{id}
     </update>
     <select id="getLeftMenus" parameterType="java.lang.Long" resultType="MenusVo">
@@ -188,9 +188,9 @@
         FROM
             sys_menu sm
                 JOIN sys_role_menu srm ON sm.id = srm.menu_id
-                AND sm.del_flag = '1'
+                AND sm.del_flag = '0'
                 JOIN sys_role sr ON srm.role_id = sr.id
-                AND sr.del_flag = '1'
+                AND sr.del_flag = '0'
                 JOIN sys_user_role sur ON sur.role_id = sr.id
         WHERE
             sur.user_id = #{userId}

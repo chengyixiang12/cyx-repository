@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.enums.JobEnum;
+import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysScheduleJobMapper;
 import com.soft.base.model.request.CreateJobRequest;
@@ -68,7 +69,7 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
             sysScheduleJob.setJobGroup(request.getJobGroup());
             sysScheduleJob.setJobName(request.getJobName());
             sysScheduleJob.setJobParam(request.getJobParam());
-            sysScheduleJob.setStatus(BaseConstant.QUARTZ_START);
+            sysScheduleJob.setStatus(BaseConstant.QuartzStatus.QUARTZ_START);
             sysScheduleJob.setScheduleType(request.getScheduleType());
 
             LambdaQueryWrapper<SysScheduleJob> wrapper = new LambdaQueryWrapper<>();
@@ -101,42 +102,42 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
             }
 
             Trigger trigger;
-            if (BaseConstant.QUARTZ_SIMPLE_SCHEDULE.equals(request.getScheduleType())) {
+            if (BaseConstant.QuartzType.QUARTZ_SIMPLE_SCHEDULE.equals(request.getScheduleType())) {
 
                 // 根据不同的间隔类型选择不同的定时逻辑
-                switch (request.getIntervalType()) {
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_MILLISECONDS -> trigger = TriggerBuilder.newTrigger()
+                switch (QuartzIntervalEnum.map.get(sysScheduleJob.getIntervalType())) {
+                    case MILLISECONDS -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
-                                    .withIntervalInMilliseconds(request.getJobInterval())
+                                    .withIntervalInMilliseconds(sysScheduleJob.getJobInterval())
                                     .repeatForever())
                             .startAt(startTime)
                             .endAt(endTime)
                             .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_SECONDS -> trigger = TriggerBuilder.newTrigger()
+                    case SECONDS -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
-                                    .withIntervalInSeconds(request.getJobInterval())
+                                    .withIntervalInSeconds(sysScheduleJob.getJobInterval())
                                     .repeatForever())
                             .startAt(startTime)
                             .endAt(endTime)
                             .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_MINUTES -> trigger = TriggerBuilder.newTrigger()
+                    case MINUTES -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
-                                    .withIntervalInMinutes(request.getJobInterval())
+                                    .withIntervalInMinutes(sysScheduleJob.getJobInterval())
                                     .repeatForever())
                             .startAt(startTime)
                             .endAt(endTime)
                             .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_HOURS -> trigger = TriggerBuilder.newTrigger()
+                    case HOURS -> trigger = TriggerBuilder.newTrigger()
                             .withIdentity(triggerKey)
                             .withSchedule(SimpleScheduleBuilder
                                     .simpleSchedule()
-                                    .withIntervalInHours(request.getJobInterval())
+                                    .withIntervalInHours(sysScheduleJob.getJobInterval())
                                     .repeatForever())
                             .startAt(startTime)
                             .endAt(endTime)
