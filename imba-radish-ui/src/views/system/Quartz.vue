@@ -86,8 +86,9 @@
 import { ref, onMounted } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import JobFormDialog from './component/JobFormDialog.vue'
-import { getQuartzTasksApi } from '@/api/quartz'
+import { getQuartzTasksApi, startJobApi, stopJobApi } from '@/api/quartz'
 import { GetQuartzTasksRequest, GetQuartzTasksVo } from '@/types/quartz'
+import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
 const jobList = ref<GetQuartzTasksVo[]>([])
@@ -140,25 +141,15 @@ const handleDelete = async (id: number) => {
   await loadJobs()
 }
 
-// 启动任务
-const startJob = async (id: number) => {
-  // 调用接口，你自己实现
-  await loadJobs()
-}
-
-// 停止任务
-const stopJob = async (id: number) => {
-  // 调用接口，你自己实现
-  await loadJobs()
-}
-
 // 状态变更处理
 const handleStatusChange = async (row: any) => {
   if (row.status === '1') {
-    await startJob(row.id)
-  } else {
-    await stopJob(row.id)
-  }
+      await startJobApi(row.id)
+      showMessage('任务启动成功', 'success')
+    } else {
+      await stopJobApi(row.id)
+      showMessage('任务停止成功', 'success')
+    }
   await loadJobs()
 }
 
@@ -208,6 +199,7 @@ onMounted(() => {
   height: 6px;
   width: 5px;
 }
+
 .list-table::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 3px;

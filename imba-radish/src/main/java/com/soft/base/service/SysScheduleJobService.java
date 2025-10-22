@@ -7,6 +7,7 @@ import com.soft.base.model.request.GetQuartzTasksRequest;
 import com.soft.base.model.vo.GetQuartzTasksVo;
 import com.soft.base.model.vo.PageVo;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.quartz.SchedulerException;
 
 import java.util.List;
@@ -21,4 +22,8 @@ public interface SysScheduleJobService extends IService<SysScheduleJob> {
     void createJob(CreateJobRequest request);
 
     PageVo<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request);
+
+    void startJob(Long id);
+
+    void stopJob(Long id);
 }

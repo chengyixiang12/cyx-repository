@@ -67,7 +67,7 @@ import router from '@/router/routers';
 import { MoreFilled } from '@element-plus/icons-vue';
 import { deleteDialogueApi, getDialogueHistoriesApi, renameApi } from '@/api/dialogueHistory'
 import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo, GetTitleVo, RenameRequest } from '@/types/dialogueHistory';
-import AnswerFormDialog from '@/components/system/AnswerFormDialog.vue';
+import AnswerFormDialog from './component/AnswerFormDialog.vue';
 
 const visibleCards = ref<GetDialogueHistoriesVo[]>([]);
 const total = ref<number>(0);

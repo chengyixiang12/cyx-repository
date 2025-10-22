@@ -47,4 +47,16 @@
               and t1.status = #{request.status}
           </if>
     </select>
+    <select id="isStarted" parameterType="java.lang.Long" resultType="java.lang.Boolean">
+        select t1.status
+        from sys_schedule_job t1
+        where t1.del_flag = '0'
+          and id = #{id}
+    </select>
+    <update id="startJob" parameterType="java.lang.Long">
+        update sys_schedule_job set status = 1 where del_flag = '0' and id = #{id}
+    </update>
+    <update id="stopJob" parameterType="java.lang.Long">
+        update sys_schedule_job set status = 0 where del_flag = '0' and id = #{id}
+    </update>
 </mapper>

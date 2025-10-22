@@ -9,13 +9,11 @@ import com.soft.base.service.SysScheduleJobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: cyx
@@ -48,5 +46,19 @@ public class SysScheduleJobController {
     public R<PageVo<GetQuartzTasksVo>> getQuartzTasks(@RequestBody @Valid GetQuartzTasksRequest request) {
         PageVo<GetQuartzTasksVo> pageVo = sysScheduleJobService.getQuartzTasks(request);
         return R.ok(pageVo);
+    }
+
+    @GetMapping(value = "/startJob")
+    @Operation(summary = "启用任务")
+    public R<Object> startJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysScheduleJobService.startJob(id);
+        return R.ok("任务已启动");
+    }
+
+    @GetMapping(value = "/stopJob")
+    @Operation(summary = "停止任务")
+    public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysScheduleJobService.stopJob(id);
+        return R.ok("任务已停止");
     }
 }
