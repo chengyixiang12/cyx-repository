@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysFile;
+import com.soft.base.enums.LocationEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.model.dto.FileDetailDto;
@@ -122,19 +123,16 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     @Override
     public PageVo<FilesVo> getFiles(FilesRequest request) {
-        // 文件存储位置
-        final String FILE_STORAGE_LOCATION = "file_storage_location";
 
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
 
-//        page.getRecords().forEach(item -> {
-//            switch (item.getLocation()) {
-//                case BaseConstant.DEFAULT_STORAGE_LOCATION: {
-//                    item.setLocation();
-//                }
-//            }
-//        });
+        page.getRecords().forEach(item -> {
+            switch (LocationEnum.map.get(item.getLocation())) {
+                case MINIO -> item.setLocationName(LocationEnum.MINIO.getName());
+                case DISK -> item.setLocationName(LocationEnum.DISK.getName());
+            }
+        });
 
         PageVo<FilesVo> pageVo = new PageVo<>();
         pageVo.setTotal(page.getTotal());

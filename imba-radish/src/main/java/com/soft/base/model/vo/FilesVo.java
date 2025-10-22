@@ -19,7 +19,10 @@ public class FilesVo {
     private Long id;
 
     @Schema(description = "存储地址；1：minio；2：磁盘")
-    private String location;
+    private Integer location;
+
+    @Schema(description = "存储位置中文名称")
+    private String locationName;
 
     @Schema(description = "文件大小")
     private Long fileSize;

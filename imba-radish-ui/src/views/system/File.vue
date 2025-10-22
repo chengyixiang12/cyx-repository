@@ -34,10 +34,14 @@
                 </template>
               </el-table-column>
               <el-table-column prop="originalName" label="源文件名" align="center" show-overflow-tooltip />
-              <el-table-column prop="location" label="存储地址" align="center" show-overflow-tooltip />
+              <el-table-column prop="locationName" label="存储地址" align="center" show-overflow-tooltip />
               <el-table-column prop="createTime" label="上传时间" align="center" show-overflow-tooltip />
               <el-table-column prop="createBy" label="上传人" align="center" show-overflow-tooltip />
-              <el-table-column prop="fileSize" align="center" label="文件大小" />
+              <el-table-column prop="fileSize" align="center" label="文件大小">
+                <template #default="scope">
+                  {{ formatFileSize(scope.row.fileSize) }}
+                </template>
+              </el-table-column>
               <el-table-column label="操作" min-width="160" align="center">
                 <template #default="scope">
                   <el-popconfirm title="确认删除该部门？" @confirm="handleDelete(scope.row.id)">
@@ -87,6 +91,17 @@ const loadFiles = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 添加一个格式化文件大小的函数
+const formatFileSize = (size: number): string => {
+  if (size === 0) return '0 B'
+  
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  const k = 1024
+  const i = Math.floor(Math.log(size) / Math.log(k))
+  
+  return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + units[i]
 }
 
 const handleSearch = () => {
