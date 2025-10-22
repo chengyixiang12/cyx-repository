@@ -131,7 +131,7 @@ import {
   menuShowApi,
   menuHideApi
 } from '@/api/menu'
-import MenuFormDialog from '@/components/system/MenuFormDialog.vue'
+import MenuFormDialog from './component/MenuFormDialog.vue'
 import type { EditMenuRequest, GetMenuListRequest, GetMenuListVo, SaveMenuRequest } from '@/types/menu'
 
 const loading = ref(false)

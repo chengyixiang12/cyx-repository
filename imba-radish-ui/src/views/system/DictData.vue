@@ -87,7 +87,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
-import DictDataFormDialog from '@/components/system/DictDataFormDialog.vue'
+import DictDataFormDialog from './component/DictDataFormDialog.vue'
 import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi, setDefaultRoleApi } from '@/api/dictData'
 import { showMessage } from '@/utils/message'
 

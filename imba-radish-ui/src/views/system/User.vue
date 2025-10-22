@@ -151,7 +151,7 @@ import {
 } from '@/api/user'
 import type { AllUserVo, SaveUserRequest } from '@/types/user'
 import type { DeptTreeVo } from '@/types/dept'
-import UserFormDialog from '@/components/system/UserFormDialog.vue'
+import UserFormDialog from './component/UserFormDialog.vue'
 import { ElTooltip } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa'
 import { getPublicKey } from '@/api/auth'

@@ -80,7 +80,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
-import DeptFormDialog from '@/components/system/DeptFormDialog.vue'
+import DeptFormDialog from './component/DeptFormDialog.vue'
 import {
   getDeptsApi,
   deleteDeptApi,

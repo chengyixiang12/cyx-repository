@@ -118,7 +118,7 @@ import { ElTooltip } from 'element-plus';
 import type { MenuItem } from '@/types/menu';
 import { getMessageNumApi } from '@/api/message';
 import { getLeftMenusApi } from '@/api/dashboard';
-import ModuleTabs from '@/components/layout/ModuleTabs.vue';
+import ModuleTabs from './component/ModuleTabs.vue';
 import { useRoute } from 'vue-router'
 import { CachedTabsType } from '@/types/layout';
 import { getWebSocketInstance } from '@/utils/websocket';

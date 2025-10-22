@@ -85,7 +85,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
-import JobFormDialog from '@/components/system/JobFormDialog.vue'
+import JobFormDialog from './component/JobFormDialog.vue'
 import { getQuartzTasksApi } from '@/api/quartz'
 import { GetQuartzTasksRequest, GetQuartzTasksVo } from '@/types/quartz'
 

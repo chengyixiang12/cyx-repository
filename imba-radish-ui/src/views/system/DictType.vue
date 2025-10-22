@@ -85,7 +85,7 @@ import { Edit, Delete } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { getDictTypesApi, deleteDictTypeApi, enableDictTypeApi, forbiddenDictTypeApi, saveDictTypeApi, editDictTypeApi } from '@/api/dictType'
 import type { DictTypesVo, GetDictTypesRequest, SaveDictTypeRequest } from '@/types/dictType'
-import DictTypeFormDialog from '@/components/system/DictTypeFormDialog.vue'
+import DictTypeFormDialog from './component/DictTypeFormDialog.vue'
 
 const router = useRouter()
 const loading = ref(false)
