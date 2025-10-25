@@ -27,7 +27,7 @@
 
           <div class="list-table">
             <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading">
-              <el-table-column type="selection" min-width="50" align="center" />
+              <el-table-column type="selection" min-width="20" align="center" />
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}

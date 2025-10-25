@@ -101,8 +101,8 @@ const rangeStart = ref(0);
 const rangeEnd = ref(59);
 const intervalStart = ref(0);
 const intervalStep = ref(10);
-const checkedValues = ref<number[]>([14]);
-const cronExpression = ref<string[]>(['*', '14', '*', '*', '*', '?']);
+const checkedValues = ref<number[]>([0]);
+const cronExpression = ref<string[]>(['0', '0', '0', '*', '*', '?']);
 const nextRunTimes = ref<string[]>([]);
 
 // 计算属性
@@ -151,12 +151,20 @@ const isValidValue = (value: number) => {
   return value >= minValue.value && value <= maxValue.value;
 };
 
+// 添加一个新的计算属性来决定默认配置类型
+const getDefaultConfigType = (unit: string) => {
+  if (['second', 'minute', 'hour'].includes(unit)) {
+    return 'specific';
+  }
+  return 'wildcard';
+};
+
 const handleTimeUnitChange = () => {
   const index = getCronIndexByUnit(activeTimeUnit.value);
   const currentValue = cronExpression.value[index];
 
   if (currentValue === '*' || currentValue === '?') {
-    configType.value = 'wildcard';
+    configType.value = getDefaultConfigType(activeTimeUnit.value);
   } else if (currentValue.includes('/')) {
     const [start, step] = currentValue.split('/').map(Number);
     intervalStart.value = start;
@@ -176,8 +184,15 @@ const handleTimeUnitChange = () => {
       checkedValues.value = [numValue];
       configType.value = 'specific';
     } else {
-      configType.value = 'wildcard'; // 处理无效值的情况
+      configType.value = 'wildcard';
     }
+  }
+  
+  // 设置默认勾选值
+  if (['second', 'minute', 'hour'].includes(activeTimeUnit.value) && 
+      configType.value === 'specific' && 
+      checkedValues.value.length === 0) {
+    checkedValues.value = [0];
   }
 };
 
@@ -268,14 +283,10 @@ const calculateNextRunTimes = async () => {
   }
 };
 
-const parseCron = () => {
-  calculateNextRunTimes();
-  ElMessage.success('近5次表达式已生成');
-};
-
 watch([configType, rangeStart, rangeEnd, intervalStart, intervalStep, checkedValues], generateExpressionPart);
 
 onMounted(() => {
+  configType.value = getDefaultConfigType(activeTimeUnit.value);
   calculateNextRunTimes();
 });
 </script>
@@ -292,6 +303,11 @@ onMounted(() => {
   overflow-x: auto;
   padding-bottom: 8px;
   scrollbar-width: thin;
+}
+
+.time-unit-selector :deep(.el-radio-button__inner) {
+  padding: 8px 16px;
+  font-size: 14px;
 }
 
 .config-options {
