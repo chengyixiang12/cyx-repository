@@ -14,14 +14,6 @@
           <el-input v-model="formData.jobGroup" placeholder="请输入任务组名称" />
         </el-form-item>
 
-        <el-form-item label="Cron表达式" prop="cron" v-if="formData.scheduleType === '1'">
-          <!-- 关键：使用div包裹并设置明确高度，确保组件有足够空间渲染 -->
-          <div class="cron-wrapper">
-            <!-- Cron 生成器组件 -->
-            <vue3-cron v-model="formData.cron" :disabled="false" @change="handleCronChange" class="cron-editor" style="width: 100%" />
-          </div>
-        </el-form-item>
-
         <!-- 任务类型 -->
         <el-form-item label="任务类型" prop="jobType">
           <el-input v-model="formData.jobType" placeholder="请输入任务类型" />
@@ -33,6 +25,20 @@
             <el-radio value="0">简单调度</el-radio>
             <el-radio value="1">Cron调度</el-radio>
           </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="Cron表达式" prop="cron" v-if="formData.scheduleType === '1'">
+          <div class="cron-wrapper">
+            <el-button type="primary" @click="showCronDrawer = true" class="cron-generator-btn">
+              <el-icon>
+                <Calendar />
+              </el-icon>
+              生成 Cron 表达式
+            </el-button>
+            <div v-if="formData.cron" class="cron-preview">
+              当前表达式: {{ formData.cron }}
+            </div>
+          </div>
         </el-form-item>
 
         <!-- 任务状态 -->
@@ -87,14 +93,22 @@
       <el-button type="primary" @click="submitForm">确定</el-button>
     </template>
   </el-dialog>
+
+  <el-drawer v-model="showCronDrawer" title="Cron 表达式生成器" direction="rtl" size="50%">
+    <CronGenerate @confirm="handleCronConfirm" @cancel="showCronDrawer = false" />
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import CronGenerate from './CronGenerate.vue'
+import { Calendar } from '@element-plus/icons-vue'
 
 // 表单引用
 const formRef = ref<FormInstance>()
+
+const showCronDrawer = ref(false)
 
 // 控制弹窗显示
 const visible = computed({
@@ -106,7 +120,7 @@ const visible = computed({
 const formData = ref({
   jobName: '',
   jobGroup: '',
-  cron: '0 0 0/1 * * ?', // 默认值
+  cron: '0 0 0 * * ?', // 默认值
   jobType: '',
   scheduleType: '1', // 默认Cron调度
   status: '1',
@@ -184,18 +198,21 @@ const submitForm = async () => {
 // 调度类型变更处理
 const handleScheduleTypeChange = (value: string) => {
   if (value === '0') {
-    formData.value.cron = ''
+    formData.value.cron = '';
   } else {
-    formData.value.jobInterval = null
-    // 切换到Cron调度时，确保组件重新渲染
-    formData.value.cron = '0 0 0/1 * * ?'
+    // Cron调度时设置默认值（如果还没有的话）
+    if (!formData.value.cron) {
+      formData.value.cron = '0 0 0 * * ?';
+    }
+    formData.value.jobInterval = null;
   }
   formRef.value?.clearValidate()
 }
 
-// 处理Cron表达式变化
-const handleCronChange = (expression: string) => {
-  formData.value.cron = expression
+const handleCronConfirm = (cronExpression: string) => {
+  formData.value.cron = cronExpression;
+  showCronDrawer.value = false;
+  // 可以在这里处理生成的表达式，比如赋值给表单字段
 }
 
 // 获取任务详情（编辑模式）
@@ -239,22 +256,36 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-/* 关键：为Cron组件设置足够的高度和样式，确保下拉选择框可见 */
 .cron-wrapper {
-  padding: 15px;
+  padding: 12px;
   background-color: #f5f7fa;
   border-radius: 6px;
-  min-height: 300px; /* 确保有足够高度显示所有选择器 */
-  position: relative;
+  min-height: 80px;
 }
 
-/* 确保选择器下拉框不被遮挡 */
-.cron-editor {
-  z-index: 1000;
-  position: relative;
+.cron-generator-btn {
+  background-color: #409eff;
+  border-color: #409eff;
+  padding: 12px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.3s;
 }
 
-:deep(.cron-editor .el-select-dropdown) {
-  z-index: 2000 !important;
+.cron-generator-btn:hover {
+  background-color: #66b1ff;
+  border-color: #66b1ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+}
+
+.cron-preview {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #f0f9eb;
+  border: 1px solid #e1f3d8;
+  border-radius: 4px;
+  color: #67c23a;
+  font-size: 13px;
 }
 </style>

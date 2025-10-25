@@ -2,6 +2,7 @@ package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -34,8 +35,8 @@ public class SaveMenuRequest {
     private String icon;
 
     @Schema(description = "菜单类型：0-目录，1-菜单，2-按钮")
-    @NotBlank(message = "菜单类型不能为空")
-    private String type;
+    @NotNull(message = "菜单类型不能为空")
+    private Integer type;
 
     @Schema(description = "排序号，数字越小，排序越靠前")
     private Integer orderNum;

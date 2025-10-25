@@ -7,13 +7,22 @@ import com.soft.base.model.vo.PageVo;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysScheduleJobService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author: cyx
@@ -60,5 +69,28 @@ public class SysScheduleJobController {
     public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysScheduleJobService.stopJob(id);
         return R.ok("任务已停止");
+    }
+
+    @GetMapping(value = "/parseCron")
+    @Operation(summary = "解析cron表达式")
+    @Parameter(name = "cronExpress", description = "cron表达式", required = true, in = ParameterIn.QUERY)
+    public R<List<String>> parseCron(@RequestParam(value = "cronExpress", required = false) @NotBlank String cronExpress) {
+        List<String> resultList = new ArrayList<>();
+
+        CronExpression expression = CronExpression.parse(cronExpress);
+        LocalDateTime now = LocalDateTime.now();
+        List<LocalDateTime> nextTimes = new ArrayList<>();
+
+        LocalDateTime next = expression.next(now);
+        for (int i = 0; i < 5 && next != null; i++) {
+            nextTimes.add(next);
+            next = expression.next(next); // 获取下一个时间
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (LocalDateTime time : nextTimes) {
+            resultList.add(time.format(formatter));
+        }
+        return R.ok(resultList);
     }
 }

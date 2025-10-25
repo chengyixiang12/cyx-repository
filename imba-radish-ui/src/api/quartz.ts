@@ -27,3 +27,13 @@ export async function startJobApi(id: number): Promise<void> {
 export async function stopJobApi(id: number): Promise<void> {
   await get('/scheduleJob/stopJob', { flag: true, params: { id } });
 }
+
+/**
+ * 解析cron表达式
+ * @param cron 
+ * @returns 
+ */
+export async function parseCronApi(cron: string): Promise<string[]> {
+  const res = await get<string[]>('/scheduleJob/parseCron', { flag: true, params: { cronExpress: cron } });
+  return res.data;
+}

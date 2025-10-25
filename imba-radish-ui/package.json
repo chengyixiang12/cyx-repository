@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@types/axios": "^0.14.4",
     "@types/crypto-js": "^4.2.2",
     "@types/uuid": "^10.0.0",
@@ -22,11 +23,10 @@
     "shortid": "^2.2.17",
     "uuid": "^11.1.0",
     "vue-router": "^4.4.5",
-    "vue3-cron": "^1.1.8",
     "vue3-markdown-it": "^1.0.10"
   },
   "devDependencies": {
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.9.1",
     "@types/shortid": "^2.2.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "typescript": "~5.6.2",

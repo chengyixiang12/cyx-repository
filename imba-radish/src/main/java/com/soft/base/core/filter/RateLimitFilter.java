@@ -1,6 +1,5 @@
 package com.soft.base.core.filter;
 
-import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.enums.ResultEnum;
