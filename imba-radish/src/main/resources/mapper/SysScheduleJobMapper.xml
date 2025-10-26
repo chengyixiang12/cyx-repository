@@ -10,7 +10,8 @@
                t1.job_group,
                t1.cron,
                t1.job_type,
-               t1.status
+               t1.status,
+               t1.schedule_type
         from sys_schedule_job t1
         where t1.del_flag = '0'
           <if test="request.keyword != null and request.keyword != ''">
@@ -46,7 +47,8 @@
                t1.start_time,
                t1.schedule_type,
                t1.interval_type,
-               t1.remark
+               t1.remark,
+               t1.job_class
         from sys_schedule_job t1
         where t1.del_flag = '0'
           and t1.id = #{id}

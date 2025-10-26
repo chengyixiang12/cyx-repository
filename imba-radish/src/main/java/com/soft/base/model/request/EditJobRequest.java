@@ -61,4 +61,8 @@ public class EditJobRequest {
 
     @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "作业执行类")
+    @NotBlank(message = "作业执行类不能为空")
+    private String jobClass;
 }

@@ -27,6 +27,7 @@ export interface SaveJobRequest {
     intervalType: string;
     scheduleType: string;
     remark: string;
+    jobClass: string;
 }
 
 export interface GetJobVo {
@@ -43,6 +44,7 @@ export interface GetJobVo {
     intervalType: string;
     scheduleType: string;
     remark: string;
+    jobClass: string;
 }
 
 export interface EditJobRequest {
@@ -59,4 +61,5 @@ export interface EditJobRequest {
     intervalType: string;
     scheduleType: string;
     remark: string;
+    jobClass: string;
 }

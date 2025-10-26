@@ -75,14 +75,14 @@ public class SysScheduleJobController {
     @Operation(summary = "启用任务")
     public R<Object> startJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysScheduleJobService.startJob(id);
-        return R.ok("任务已启动");
+        return R.ok("任务已启动", null);
     }
 
     @GetMapping(value = "/stopJob")
     @Operation(summary = "停止任务")
     public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysScheduleJobService.stopJob(id);
-        return R.ok("任务已停止");
+        return R.ok("任务已停止", null);
     }
 
     @GetMapping(value = "/parseCron")

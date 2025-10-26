@@ -57,4 +57,7 @@ public class GetJobVo {
 
     @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "作业执行类")
+    private String jobClass;
 }

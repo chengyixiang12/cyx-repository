@@ -19,6 +19,10 @@
           <el-input v-model="formData.jobType" placeholder="请输入任务类型" />
         </el-form-item>
 
+        <el-form-item label="作业执行类" prop="jobClass">
+          <el-input v-model="formData.jobClass" placeholder="请输入作业执行类" />
+        </el-form-item>
+
         <!-- 调度类型 -->
         <el-form-item label="调度类型" prop="scheduleType">
           <el-radio-group v-model="formData.scheduleType" @change="handleScheduleTypeChange">
@@ -122,6 +126,7 @@ const formData = ref<GetJobVo>({
   jobName: '',
   jobGroup: 'default',
   cron: '0 0 0 * * ?',
+  jobClass: '',
   jobType: '',
   scheduleType: '1',
   status: 1,
@@ -134,9 +139,10 @@ const formData = ref<GetJobVo>({
 })
 
 // 表单验证规则 - 根据调度类型动态变化
-const rules = computed<FormRules>(() => ({
+const rules = {
   jobName: [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
   jobGroup: [{ required: true, message: '请输入任务组名称', trigger: 'blur' }],
+  jobClass: [{ required: true, message: '请输入作业执行类', trigger: 'blur' }],
   // 仅在Cron调度时验证cron表达式
   cron: formData.value.scheduleType === '1'
     ? [
@@ -157,7 +163,7 @@ const rules = computed<FormRules>(() => ({
   intervalType: formData.value.scheduleType === '0'
     ? [{ required: true, message: '请选择间隔类型', trigger: 'change' }]
     : []
-}))
+}
 
 interface FatherParam {
   visible: boolean

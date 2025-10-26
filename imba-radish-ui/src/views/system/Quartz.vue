@@ -19,8 +19,8 @@
               </el-form-item>
               <el-form-item label="任务状态:">
                 <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
-                  <el-option label="启用" value="1" />
-                  <el-option label="暂停" value="0" />
+                  <el-option label="启用" :value="1" />
+                  <el-option label="暂停" :value="0" />
                 </el-select>
               </el-form-item>
               <el-form-item>
@@ -41,9 +41,10 @@
               <el-table-column prop="jobName" align="center" label="任务名称" show-overflow-tooltip />
               <el-table-column prop="jobGroup" align="center" label="任务组" show-overflow-tooltip />
               <el-table-column prop="jobType" align="center" label="任务类型" show-overflow-tooltip />
+              <el-table-column prop="scheduleType" align="center" label="调度类型" show-overflow-tooltip />
               <el-table-column prop="status" label="状态" align="center" min-width="70">
                 <template #default="scope">
-                  <el-switch v-model="scope.row.status" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66"
+                  <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
                     inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
@@ -51,7 +52,7 @@
               <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-tooltip class="item" effect="dark" content="立即执行" placement="top">
-                    <el-button size="small" type="primary" @click="handleExecute(scope.row.id)" :icon="VideoPlay" circle />
+                    <el-button size="small" type="primary" :disabled="scope.row.status === 0" @click="handleExecute(scope.row.id)" :icon="VideoPlay" circle />
                   </el-tooltip>
                   <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
                   <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
@@ -91,7 +92,6 @@ import { Edit, Delete, VideoPlay } from '@element-plus/icons-vue'
 import JobFormDialog from './component/JobFormDialog.vue'
 import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi, deleteJobApi, execImmediately } from '@/api/quartz'
 import { EditJobRequest, GetQuartzTasksRequest, GetQuartzTasksVo, SaveJobRequest } from '@/types/quartz'
-import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
 const jobList = ref<GetQuartzTasksVo[]>([])
@@ -146,12 +146,10 @@ const handleDelete = async (id: number) => {
 
 // 状态变更处理
 const handleStatusChange = async (row: any) => {
-  if (row.status === '1') {
+  if (row.status === 1) {
       await startJobApi(row.id)
-      showMessage('任务启动成功', 'success')
     } else {
       await stopJobApi(row.id)
-      showMessage('任务停止成功', 'success')
     }
   await loadJobs()
 }

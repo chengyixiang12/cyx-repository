@@ -119,6 +119,7 @@ const handleEditType = (row: DictTypesVo) => {
 // 删除
 const deleteType = async (id: number) => {
   await deleteDictTypeApi(id);
+  await handleSearch();
 }
 // 状态切换接口
 const changeStatus = async (row: DictTypesVo) => {

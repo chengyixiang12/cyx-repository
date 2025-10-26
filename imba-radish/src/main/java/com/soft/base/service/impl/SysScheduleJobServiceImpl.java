@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
-import com.soft.base.enums.JobEnum;
 import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysScheduleJobMapper;
@@ -66,6 +65,11 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         PageVo<GetQuartzTasksVo> pageVo = new PageVo<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
+        pageVo.getRecords().forEach(item -> {
+            if (BaseConstant.QuartzType.QUARTZ_SIMPLE_SCHEDULE.equals(item.getScheduleType())) {
+                item.setScheduleType("");
+            }
+        });
         return pageVo;
     }
 
@@ -151,6 +155,9 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
      */
     private void configJob(SysScheduleJob sysScheduleJob) {
         try {
+            @SuppressWarnings("unchecked")
+            Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(sysScheduleJob.getJobClass());
+
             Date startTime = Optional.ofNullable(sysScheduleJob.getStartTime()).map(item -> Date.from(item.atZone(ZoneId.systemDefault()).toInstant())).orElse(new Date());
             Date endTime = Optional.ofNullable(sysScheduleJob.getEndTime()).map(item -> Date.from(item.atZone(ZoneId.systemDefault()).toInstant())).orElse(null);
 
@@ -158,7 +165,7 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
             TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
 
             JobDetail jobDetail = JobBuilder
-                    .newJob(JobEnum.getJobClass(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup()))
+                    .newJob(jobClass)
                     .withIdentity(jobKey)
                     .storeDurably()
                     .build();
@@ -198,6 +205,9 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         } catch (SchedulerException e) {
             log.error(e.getMessage(), e);
             throw new GlobalException("定时任务启动失败");
+        } catch (ClassNotFoundException e) {
+            log.error(e.getMessage(), e);
+            throw new GlobalException(e.getMessage(), e);
         }
     }
 

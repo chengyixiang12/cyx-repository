@@ -120,4 +120,10 @@ public class SysScheduleJob {
      */
     @TableField(value = "remark")
     private String remark;
+
+    /**
+     * 作业执行类
+     */
+    @TableField(value = "job_class")
+    private String jobClass;
 }

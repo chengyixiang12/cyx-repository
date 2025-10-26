@@ -5,11 +5,9 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
-import com.soft.base.enums.JobEnum;
 import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.service.SysScheduleJobService;
-import com.soft.base.service.impl.SysScheduleJobServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
@@ -58,6 +56,10 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
         }
 
         for (SysScheduleJob sysScheduleJob : sysScheduleJobs) {
+
+            @SuppressWarnings("unchecked")
+            Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(sysScheduleJob.getJobClass());
+
             if (sysScheduleJob.getStartTime() != null) {
                 startTime = Date.from(sysScheduleJob.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
             }
@@ -68,7 +70,7 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
             TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
 
             JobDetail jobDetail = JobBuilder
-                    .newJob(JobEnum.getJobClass(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup()))
+                    .newJob(jobClass)
                     .withIdentity(jobKey)
                     .build();
 

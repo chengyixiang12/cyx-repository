@@ -4,9 +4,6 @@
         <div class="dialog-body-wrapper">
             <el-form ref="formRef" :model="formData" :rules="rules" label-width="6vw" label-position="right"
                 class="scrollable-form">
-                <el-form-item label="编码" prop="code">
-                    <el-input v-model="formData.code" placeholder="请输入编码" />
-                </el-form-item>
 
                 <el-form-item label="标签" prop="label">
                     <el-input v-model="formData.label" placeholder="请输入标签" />

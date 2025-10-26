@@ -30,5 +30,8 @@ public class GetQuartzTasksVo {
     private String jobType;
 
     @Schema(description = "任务状态；1：启用；0：暂停")
-    private String status;
+    private Integer status;
+
+    @Schema(description = "调度类型；0：简单调度；1：cron表达式调度")
+    private String scheduleType;
 }
