@@ -1,6 +1,6 @@
 <template>
-  <el-dialog :title="isAdd ? '新增任务' : '编辑任务'" v-model="visible" width="60vw" :close-on-click-modal="false"
-    :before-close="handleClose" class="custom-dialog">
+  <el-dialog :title="isAdd ? '新增任务' : '编辑任务'" v-model="visible" width="50vw" :close-on-click-modal="false"
+    :before-close="handleClose">
     <div class="dialog-body-wrapper">
       <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px" label-position="right"
         class="scrollable-form">
@@ -41,29 +41,14 @@
           </div>
         </el-form-item>
 
-        <!-- 任务状态 -->
-        <el-form-item label="任务状态" prop="status">
-          <el-radio-group v-model="formData.status">
-            <el-radio value="1">启用</el-radio>
-            <el-radio value="0">暂停</el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <!-- 任务参数 -->
-        <el-form-item label="任务参数" prop="jobParam">
-          <el-input v-model="formData.jobParam" type="textarea" :rows="3" placeholder="请输入任务所需参数（JSON格式）" />
-        </el-form-item>
-
         <!-- 开始时间 -->
-        <el-form-item label="开始时间" prop="startTime">
-          <el-date-picker v-model="formData.startTime" type="datetime" placeholder="选择开始时间"
-            value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+        <el-form-item label="开始时间" prop="startTime" v-if="formData.scheduleType === '0'">
+          <el-date-picker v-model="formData.startTime" type="datetime" placeholder="选择开始时间" style="width: 100%" />
         </el-form-item>
 
         <!-- 结束时间 -->
-        <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker v-model="formData.endTime" type="datetime" placeholder="选择结束时间"
-            value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+        <el-form-item label="结束时间" prop="endTime" v-if="formData.scheduleType === '0'">
+          <el-date-picker v-model="formData.endTime" type="datetime" placeholder="选择结束时间" style="width: 100%" />
         </el-form-item>
 
         <!-- 间隔时间 (仅在简单调度时显示) -->
@@ -79,6 +64,19 @@
             <el-option label="分钟" value="2" />
             <el-option label="小时" value="3" />
           </el-select>
+        </el-form-item>
+
+        <!-- 任务状态 -->
+        <el-form-item label="任务状态" prop="status">
+          <el-radio-group v-model="formData.status">
+            <el-radio :value="1">启用</el-radio>
+            <el-radio :value="0">暂停</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
+        <!-- 任务参数 -->
+        <el-form-item label="任务参数" prop="jobParam">
+          <el-input v-model="formData.jobParam" type="textarea" :rows="3" placeholder="请输入任务所需参数（JSON格式）" />
         </el-form-item>
 
         <!-- 备注 -->
@@ -104,6 +102,8 @@ import { ref, onMounted, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import CronGenerate from './CronGenerate.vue'
 import { Calendar } from '@element-plus/icons-vue'
+import { getJobApi } from '@/api/quartz'
+import { GetJobVo } from '@/types/quartz'
 
 // 表单引用
 const formRef = ref<FormInstance>()
@@ -117,13 +117,14 @@ const visible = computed({
 })
 
 // 表单数据
-const formData = ref({
+const formData = ref<GetJobVo>({
+  id: null,
   jobName: '',
-  jobGroup: '',
-  cron: '0 0 0 * * ?', // 默认值
+  jobGroup: 'default',
+  cron: '0 0 0 * * ?',
   jobType: '',
-  scheduleType: '1', // 默认Cron调度
-  status: '1',
+  scheduleType: '1',
+  status: 1,
   jobParam: '',
   startTime: null,
   endTime: null,
@@ -158,23 +159,18 @@ const rules = computed<FormRules>(() => ({
     : []
 }))
 
-// Props
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false
-  },
-  isAdd: {
-    type: Boolean,
-    default: true
-  },
-  jobId: {
-    type: [Number, String, null],
-    default: null
-  }
+interface FatherParam {
+  visible: boolean
+  isAdd: boolean
+  jobId?: number | null
+}
+
+const props = withDefaults(defineProps<FatherParam>(), {
+  visible: false,
+  isAdd: false,
+  roleId: null,
 })
 
-// Emits
 const emit = defineEmits(['update:visible', 'submit'])
 
 // 关闭弹窗
@@ -184,14 +180,11 @@ const handleClose = () => {
 
 // 提交表单
 const submitForm = async () => {
-  if (!formRef.value) return
+  const valid = await formRef.value?.validate()
 
-  try {
-    await formRef.value.validate()
-    emit('submit', { ...formData.value })
+  if (valid) {
+    emit('submit', formData.value)
     emit('update:visible', false)
-  } catch (error) {
-    console.error('表单验证失败:', error)
   }
 }
 
@@ -200,7 +193,6 @@ const handleScheduleTypeChange = (value: string) => {
   if (value === '0') {
     formData.value.cron = '';
   } else {
-    // Cron调度时设置默认值（如果还没有的话）
     if (!formData.value.cron) {
       formData.value.cron = '0 0 0 * * ?';
     }
@@ -212,21 +204,18 @@ const handleScheduleTypeChange = (value: string) => {
 const handleCronConfirm = (cronExpression: string) => {
   formData.value.cron = cronExpression;
   showCronDrawer.value = false;
-  // 可以在这里处理生成的表达式，比如赋值给表单字段
 }
 
 // 获取任务详情（编辑模式）
 const fetchJobDetail = async () => {
   if (!props.isAdd && props.jobId) {
-    // 这里调用接口获取任务详情，示例为模拟数据
-    // const res = await getJobDetailApi(props.jobId)
-    // formData.value = res
+    const res = await getJobApi(props.jobId);
+    formData.value = res;
   }
 }
 
 onMounted(() => {
-  // 初始化时触发一次验证规则计算
-  rules.value
+  fetchJobDetail()
 })
 </script>
 

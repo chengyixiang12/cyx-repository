@@ -12,20 +12,23 @@ import org.quartz.Job;
 @Getter
 public enum JobEnum {
 
-    STORAGE_SCAN("storage_scan", NmapScanScheduler.class);
+    STORAGE_SCAN("storage_scan", "default", NmapScanScheduler.class);
 
     private final String jobType;
 
+    private final String jobGroup;
+
     private final Class<? extends Job> jobClass;
 
-    JobEnum(String jobType, Class<? extends Job> jobClass) {
+    JobEnum(String jobType, String jobGroup, Class<? extends Job> jobClass) {
         this.jobClass = jobClass;
         this.jobType = jobType;
+        this.jobGroup = jobGroup;
     }
 
-    public static Class<? extends Job> getJobClass(String jobType) {
+    public static Class<? extends Job> getJobClass(String jobType, String jobGroup) {
         for (JobEnum value : JobEnum.values()) {
-            if (value.getJobType().equals(jobType)) {
+            if (value.getJobType().equals(jobType) && value.getJobGroup().equals(jobGroup)) {
                 return value.jobClass;
             }
         }

@@ -1,7 +1,10 @@
 package com.soft.base.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.soft.base.model.request.CreateJobRequest;
+import com.soft.base.model.request.EditJobRequest;
 import com.soft.base.model.request.GetQuartzTasksRequest;
+import com.soft.base.model.vo.GetJobVo;
 import com.soft.base.model.vo.GetQuartzTasksVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.resultapi.R;
@@ -46,6 +49,9 @@ public class SysScheduleJobController {
     @PostMapping(value = "/createJob")
     @Operation(summary = "创建定时任务")
     public R<Object> createJob(@RequestBody @Valid CreateJobRequest request) {
+        if (sysScheduleJobService.existJobType(request.getJobType(), request.getJobGroup())) {
+            return R.fail(StrUtil.format("{}任务类型已存在{}", request.getJobGroup(), request.getJobType()));
+        }
         sysScheduleJobService.createJob(request);
         return R.ok("创建成功", null);
     }
@@ -92,5 +98,19 @@ public class SysScheduleJobController {
             resultList.add(time.format(formatter));
         }
         return R.ok(resultList);
+    }
+
+    @GetMapping(value = "/getJob")
+    @Operation(summary = "获取job详情")
+    public R<GetJobVo> getJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        GetJobVo getJobVo = sysScheduleJobService.getJob(id);
+        return R.ok(getJobVo);
+    }
+
+    @PutMapping(value = "/editJob")
+    @Operation(summary = "修改job")
+    public R<Object> editJob(@RequestBody @Valid EditJobRequest request) {
+        sysScheduleJobService.editJob(request);
+        return R.ok("修改成功", null);
     }
 }

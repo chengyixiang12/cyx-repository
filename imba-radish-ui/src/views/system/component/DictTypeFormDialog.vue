@@ -60,6 +60,7 @@ const props = withDefaults(defineProps<FatherParam>(), {
 const emit = defineEmits(['update:visible', 'submit'])
 
 const formRef = ref<FormInstance>()
+
 const formData = ref<SaveDictTypeRequest>({
     dictName: '',
     dictType: '',

@@ -28,6 +28,6 @@ public class NmapScanScheduler implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
+        log.info("扫描。。。");
     }
 }

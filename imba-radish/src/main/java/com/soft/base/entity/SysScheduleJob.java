@@ -107,11 +107,17 @@ public class SysScheduleJob {
      * 间隔类型；0：毫秒；1：秒；2：分钟；3：小时
      */
     @TableField(value = "interval_type")
-    private Integer intervalType;
+    private String intervalType;
 
     /**
      * 调度类型；0：简单调度；1：cron表达式调度
      */
     @TableField(value = "schedule_type")
-    private Integer scheduleType;
+    private String scheduleType;
+
+    /**
+     * 备注
+     */
+    @TableField(value = "remark")
+    private String remark;
 }

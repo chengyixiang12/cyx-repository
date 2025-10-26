@@ -11,13 +11,13 @@ import java.util.Map;
 
 public enum QuartzIntervalEnum {
 
-    MILLISECONDS(0), SECONDS(1), MINUTES(2), HOURS(3);
+    MILLISECONDS("0"), SECONDS("1"), MINUTES("2"), HOURS("3");
 
-    private final Integer value;
+    private final String value;
 
-    public static final Map<Integer, QuartzIntervalEnum> map = new HashMap<>();
+    public static final Map<String, QuartzIntervalEnum> map = new HashMap<>();
 
-    QuartzIntervalEnum(Integer value) {
+    QuartzIntervalEnum(String value) {
         this.value = value;
     }
 

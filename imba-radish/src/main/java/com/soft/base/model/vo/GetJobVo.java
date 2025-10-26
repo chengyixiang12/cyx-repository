@@ -1,21 +1,24 @@
-package com.soft.base.model.request;
+package com.soft.base.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
 
 /**
- * @Author: cyx
- * @Description: TODO
- * @DateTime: 2025/7/14 13:47
- **/
-@Schema(description = "创建定时任务请求参数")
+ * @author cyq
+ * @date 2025/10/26
+ * @description
+ */
 @Data
-public class CreateJobRequest {
+@Schema(description = "获取job详情")
+@Alias(value = "GetJobVo")
+public class GetJobVo {
+
+    @Schema(description = "主键")
+    private Long id;
 
     @Schema(description = "任务名称")
     private String jobName;
@@ -38,13 +41,9 @@ public class CreateJobRequest {
     private String jobParam;
 
     @Schema(description = "开始时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
     @Schema(description = "结束时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
     @Schema(description = "间隔")

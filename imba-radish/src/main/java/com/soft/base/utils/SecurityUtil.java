@@ -1,5 +1,6 @@
 package com.soft.base.utils;
 
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.model.dto.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,5 +37,13 @@ public class SecurityUtil {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
+    }
+
+    /**
+     * 是否是管理员
+     * @return
+     */
+    public boolean isAdmin() {
+        return getRoleCodes().contains(BaseConstant.MANAGER_ROLE_CODE);
     }
 }

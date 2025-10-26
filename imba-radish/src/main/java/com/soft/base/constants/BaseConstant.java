@@ -197,27 +197,15 @@ public class BaseConstant {
      */
     public static final String QUARTZ_DEFAULT_GROUP = "default";
 
-    public static class QuartzStatus {
-        /**
-         * 定时任务-暂停
-         */
-        public static final Integer QUARTZ_PAUSE = 0;
-
-        /**
-         * 定时任务-启用
-         */
-        public static final Integer QUARTZ_START = 1;
-    }
-
     public static class QuartzType {
         /**
          * 定时任务-简单调度
          */
-        public static final Integer QUARTZ_SIMPLE_SCHEDULE = 0;
+        public static final String QUARTZ_SIMPLE_SCHEDULE = "0";
 
         /**
          * 定时任务-cron调度
          */
-        public static final Integer QUARTZ_CRON_SCHEDULE = 1;
+        public static final String QUARTZ_CRON_SCHEDULE = "1";
     }
 }

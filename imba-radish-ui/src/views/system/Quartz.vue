@@ -40,7 +40,6 @@
               </el-table-column>
               <el-table-column prop="jobName" align="center" label="任务名称" show-overflow-tooltip />
               <el-table-column prop="jobGroup" align="center" label="任务组" show-overflow-tooltip />
-              <el-table-column prop="cron" align="center" label="Cron表达式" show-overflow-tooltip />
               <el-table-column prop="jobType" align="center" label="任务类型" show-overflow-tooltip />
               <el-table-column prop="status" label="状态" align="center" min-width="80">
                 <template #default="scope">
@@ -86,8 +85,8 @@
 import { ref, onMounted } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import JobFormDialog from './component/JobFormDialog.vue'
-import { getQuartzTasksApi, startJobApi, stopJobApi } from '@/api/quartz'
-import { GetQuartzTasksRequest, GetQuartzTasksVo } from '@/types/quartz'
+import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi } from '@/api/quartz'
+import { EditJobRequest, GetQuartzTasksRequest, GetQuartzTasksVo, SaveJobRequest } from '@/types/quartz'
 import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
@@ -124,14 +123,14 @@ const handleEdit = (id: number) => {
 }
 
 // 提交新增任务
-const handleAddSubmit = async (formData: any) => {
-  // 调用接口，你自己实现
-  await loadJobs()
+const handleAddSubmit = async (formData: SaveJobRequest) => {
+  await createJobApi(formData);
+  await loadJobs();
 }
 
 // 提交编辑任务
-const handleEditSubmit = async (formData: any) => {
-  // 调用接口，你自己实现
+const handleEditSubmit = async (formData: EditJobRequest) => {
+  await editJobApi(formData)
   await loadJobs()
 }
 

@@ -14,5 +14,6 @@ import org.apache.ibatis.type.Alias;
 @Alias(value = "SaveDialogueRequest")
 public class SaveDialogueRequest {
 
+    @Schema(description = "标题")
     private String title;
 }

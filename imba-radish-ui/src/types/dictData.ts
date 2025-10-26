@@ -25,6 +25,7 @@ export interface SaveDictDataRequest {
     isDefault: number;
     status: number;
     remark: string;
+    code: string;
 }
 
 export interface EditDictDataRequest {
