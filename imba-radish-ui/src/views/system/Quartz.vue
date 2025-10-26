@@ -145,7 +145,7 @@ const handleDelete = async (id: number) => {
 }
 
 // 状态变更处理
-const handleStatusChange = async (row: any) => {
+const handleStatusChange = async (row: GetQuartzTasksVo) => {
   if (row.status === 1) {
       await startJobApi(row.id)
     } else {

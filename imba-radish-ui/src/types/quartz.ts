@@ -11,7 +11,7 @@ export interface GetQuartzTasksVo {
     jobGroup: string;
     cron: string;
     jobType: string;
-    status: string;
+    status: number;
 }
 
 export interface SaveJobRequest {
