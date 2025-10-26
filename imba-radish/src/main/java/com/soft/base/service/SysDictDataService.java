@@ -10,6 +10,8 @@ import com.soft.base.model.vo.DictDataVo;
 import com.soft.base.model.vo.DictDatasVo;
 import com.soft.base.model.vo.PageVo;
 
+import java.util.List;
+
 /**
 * @author cyq
 * @description 针对表【sys_dict_data】的数据库操作Service
@@ -38,4 +40,6 @@ public interface SysDictDataService extends IService<SysDictData> {
     void forbiddenDictData(Long id);
 
     void setDefaultData(Long id, String dictType);
+
+    List<SysDictData> getByDictType(String dictType);
 }

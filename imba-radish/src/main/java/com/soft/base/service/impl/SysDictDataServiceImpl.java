@@ -1,5 +1,6 @@
 package com.soft.base.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,6 +20,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
 * @author cyq
@@ -106,6 +109,13 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     public void setDefaultData(Long id, String dictType) {
         sysDictDataMapper.setNotDefault(dictType);
         sysDictDataMapper.setDefaultData(id);
+    }
+
+    @Override
+    public List<SysDictData> getByDictType(String dictType) {
+        LambdaQueryWrapper<SysDictData> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysDictData::getDictType, dictType);
+        return sysDictDataMapper.selectList(wrapper);
     }
 }
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.entity.SysDictData;
 import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
@@ -15,6 +16,7 @@ import com.soft.base.model.request.GetQuartzTasksRequest;
 import com.soft.base.model.vo.GetJobVo;
 import com.soft.base.model.vo.GetQuartzTasksVo;
 import com.soft.base.model.vo.PageVo;
+import com.soft.base.service.SysDictDataService;
 import com.soft.base.service.SysScheduleJobService;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
@@ -26,8 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author cyq
@@ -42,11 +46,15 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
     private final Scheduler scheduler;
 
+    private final SysDictDataService sysDictDataService;
+
     @Autowired
     public SysScheduleJobServiceImpl(SysScheduleJobMapper sysScheduleJobMapper,
-                                     Scheduler scheduler) {
+                                     Scheduler scheduler,
+                                     SysDictDataService sysDictDataService) {
         this.sysScheduleJobMapper = sysScheduleJobMapper;
         this.scheduler = scheduler;
+        this.sysDictDataService = sysDictDataService;
     }
 
     @Override
@@ -65,9 +73,13 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         PageVo<GetQuartzTasksVo> pageVo = new PageVo<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
+
+        List<SysDictData> sysDictDataList = sysDictDataService.getByDictType("quartz_type");
+        Map<String, String> stringStringMap = sysDictDataList.stream().collect(Collectors.toMap(SysDictData::getValue, SysDictData::getLabel));
+
         pageVo.getRecords().forEach(item -> {
             if (BaseConstant.QuartzType.QUARTZ_SIMPLE_SCHEDULE.equals(item.getScheduleType())) {
-                item.setScheduleType("");
+                item.setScheduleType(stringStringMap.get(item.getScheduleType()));
             }
         });
         return pageVo;
