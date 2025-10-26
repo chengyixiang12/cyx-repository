@@ -31,4 +31,6 @@ public interface SysScheduleJobService extends IService<SysScheduleJob> {
     GetJobVo getJob(Long id);
 
     void editJob(EditJobRequest request);
+
+    void deleteJob(Long id);
 }

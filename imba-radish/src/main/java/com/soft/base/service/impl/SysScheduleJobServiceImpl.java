@@ -128,6 +128,23 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         }
     }
 
+    @Override
+    public void deleteJob(Long id) {
+        SysScheduleJob sysScheduleJob = sysScheduleJobMapper.selectById(id);
+
+        if (BaseConstant.Status.STATUS_ENABLE.equals(sysScheduleJob.getStatus())) {
+            try {
+                JobKey jobKey = new JobKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+                scheduler.deleteJob(jobKey);
+            } catch (SchedulerException e) {
+                log.error(e.getMessage(), e);
+                throw new GlobalException("任务停止失败");
+            }
+        }
+
+        sysScheduleJobMapper.deleteById(id);
+    }
+
     /**
      * 配置job
      * @param sysScheduleJob

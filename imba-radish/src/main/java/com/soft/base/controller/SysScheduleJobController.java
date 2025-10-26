@@ -1,6 +1,8 @@
 package com.soft.base.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.soft.base.constants.BaseConstant;
+import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.model.request.CreateJobRequest;
 import com.soft.base.model.request.EditJobRequest;
 import com.soft.base.model.request.GetQuartzTasksRequest;
@@ -17,6 +19,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.validation.annotation.Validated;
@@ -41,9 +46,12 @@ public class SysScheduleJobController {
 
     private final SysScheduleJobService sysScheduleJobService;
 
+    private final Scheduler scheduler;
+
     @Autowired
-    public SysScheduleJobController(SysScheduleJobService sysScheduleJobService) {
+    public SysScheduleJobController(SysScheduleJobService sysScheduleJobService, Scheduler scheduler) {
         this.sysScheduleJobService = sysScheduleJobService;
+        this.scheduler = scheduler;
     }
 
     @PostMapping(value = "/createJob")
@@ -112,5 +120,40 @@ public class SysScheduleJobController {
     public R<Object> editJob(@RequestBody @Valid EditJobRequest request) {
         sysScheduleJobService.editJob(request);
         return R.ok("修改成功", null);
+    }
+
+    @DeleteMapping(value = "/deleteJob")
+    public R<Object> deleteJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysScheduleJobService.deleteJob(id);
+        return R.ok("删除成功");
+    }
+
+    @GetMapping(value = "/execImmediately")
+    @Operation(summary = "立即执行")
+    public R<Object> execImmediately(@RequestParam(value = "id", required = false) Long id) {
+        SysScheduleJob sysScheduleJob = sysScheduleJobService.getById(id);
+        if (BaseConstant.Status.STATUS_BAN.equals(sysScheduleJob.getStatus())) {
+            return R.fail("任务还未启动");
+        }
+
+        String jobName = sysScheduleJob.getJobName();
+        String jobGroup = sysScheduleJob.getJobGroup();
+
+        try {
+            JobKey jobKey = new JobKey(jobName, jobGroup);
+
+            // 检查任务是否存在
+            if (scheduler.checkExists(jobKey)) {
+                // 立即触发任务执行
+                scheduler.triggerJob(jobKey);
+                return R.ok("任务执行成功", null);
+            } else {
+                log.warn("任务不存在: {}.{}", jobGroup, jobName);
+                return R.fail("任务还未启动");
+            }
+        } catch (SchedulerException e) {
+            log.error("立即执行任务失败: {}.{}", jobGroup, jobName, e);
+            return R.fail("立即执行任务失败");
+        }
     }
 }

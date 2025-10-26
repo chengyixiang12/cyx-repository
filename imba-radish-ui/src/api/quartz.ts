@@ -63,3 +63,19 @@ export async function getJobApi(param: number): Promise<GetJobVo> {
 export async function editJobApi(data: EditJobRequest): Promise<void> {
   await put('/scheduleJob/editJob', data, { flag: true });
 }
+
+/**
+ * 删除任务
+ * @param param 任务id
+ */
+export async function deleteJobApi(id: number): Promise<void> {
+  await del('/scheduleJob/deleteJob', { flag: true, params: { id } });
+}
+
+/**
+ * 立即执行
+ * @param id 
+ */
+export async function execImmediately(id: number): Promise<void> {
+  await get('/scheduleJob/execImmediately', { flag: true, params: { id } });
+}

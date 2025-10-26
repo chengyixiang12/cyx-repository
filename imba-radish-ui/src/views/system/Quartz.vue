@@ -41,14 +41,18 @@
               <el-table-column prop="jobName" align="center" label="任务名称" show-overflow-tooltip />
               <el-table-column prop="jobGroup" align="center" label="任务组" show-overflow-tooltip />
               <el-table-column prop="jobType" align="center" label="任务类型" show-overflow-tooltip />
-              <el-table-column prop="status" label="状态" align="center" min-width="80">
+              <el-table-column prop="status" label="状态" align="center" min-width="70">
                 <template #default="scope">
                   <el-switch v-model="scope.row.status" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66"
                     inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
+              <el-table-column prop="remark" align="center" label="备注" show-overflow-tooltip />
               <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
+                  <el-tooltip class="item" effect="dark" content="立即执行" placement="top">
+                    <el-button size="small" type="primary" @click="handleExecute(scope.row.id)" :icon="VideoPlay" circle />
+                  </el-tooltip>
                   <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
                   <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
@@ -83,9 +87,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Edit, Delete } from '@element-plus/icons-vue'
+import { Edit, Delete, VideoPlay } from '@element-plus/icons-vue'
 import JobFormDialog from './component/JobFormDialog.vue'
-import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi } from '@/api/quartz'
+import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi, deleteJobApi, execImmediately } from '@/api/quartz'
 import { EditJobRequest, GetQuartzTasksRequest, GetQuartzTasksVo, SaveJobRequest } from '@/types/quartz'
 import { showMessage } from '@/utils/message'
 
@@ -136,7 +140,7 @@ const handleEditSubmit = async (formData: EditJobRequest) => {
 
 // 删除任务
 const handleDelete = async (id: number) => {
-  // 调用接口，你自己实现
+  await deleteJobApi(id)
   await loadJobs()
 }
 
@@ -173,6 +177,11 @@ const resetSearch = () => {
   searchForm.value.status = null
   searchForm.value.keyword = ''
   loadJobs()
+}
+
+// 立即执行
+const handleExecute = async (id: number) => {
+  await execImmediately(id)
 }
 
 onMounted(() => {
