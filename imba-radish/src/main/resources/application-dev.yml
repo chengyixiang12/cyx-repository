@@ -2,9 +2,9 @@ spring:
   servlet:
     multipart:
       location: E:/tmp
-      max-file-size: 10MB
-      max-request-size: 20MB
-      file-size-threshold: 1MB
+      max-file-size: 500MB
+      max-request-size: 500MB
+      file-size-threshold: 20MB
   datasource:
     username: ${DATASOURCE_USERNAME_MYSQL}
     password: ${DATASOURCE_PASSWORD_MYSQL}

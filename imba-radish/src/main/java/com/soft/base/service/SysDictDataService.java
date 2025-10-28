@@ -11,6 +11,7 @@ import com.soft.base.model.vo.DictDatasVo;
 import com.soft.base.model.vo.PageVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author cyq
@@ -42,4 +43,6 @@ public interface SysDictDataService extends IService<SysDictData> {
     void setDefaultData(Long id, String dictType);
 
     List<SysDictData> getByDictType(String dictType);
+
+    Map<String, String> getByDictTypeMap(String dictType);
 }

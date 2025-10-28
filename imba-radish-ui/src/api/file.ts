@@ -1,4 +1,4 @@
-import { post, get, del } from '@/utils/http';
+import { post, get, del, getBlob } from '@/utils/http';
 import { FilesRequest, FilesVo, UploadFileVo } from '@/types/file';
 import { PaginatedData } from '@/types/api';
 
@@ -37,4 +37,14 @@ export async function getFilesApi(data: FilesRequest): Promise<PaginatedData<Fil
  */
 export async function deleteFileApi(id: number) {
   del('/file', { params: { id }, flag: true })
+}
+
+/**
+ * 下载文件
+ * @param id 
+ * @returns 
+ */
+export async function downloadFileApi(id: number): Promise<Blob> {
+  const blob = await getBlob<Blob>('/file/downloadFile', { flag: true, params: { id }});
+  return blob;
 }

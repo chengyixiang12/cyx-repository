@@ -45,7 +45,7 @@
         sf.file_size AS fileSize,
         sf.original_name AS originalName,
         sf.create_time AS createTime,
-        su.username AS createBy
+        su.nickname AS createBy
         FROM
         sys_file sf
         LEFT JOIN sys_user su ON sf.create_by = su.id

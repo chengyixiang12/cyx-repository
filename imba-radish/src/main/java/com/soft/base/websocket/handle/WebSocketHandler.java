@@ -35,6 +35,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             sendParams.setStatus(false);
             sendParams.setMessage("websocket连接异常，指令为空");
             log.info("websocket连接异常，指令为空");
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
         if (!WebSocketOrderEnum.exist(order)) {
@@ -42,6 +43,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             sendParams.setStatus(false);
             sendParams.setMessage("无效的指令");
             log.info("无效的指令");
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
 

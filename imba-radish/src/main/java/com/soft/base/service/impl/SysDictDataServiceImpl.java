@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysDictData;
 import com.soft.base.mapper.SysDictDataMapper;
 import com.soft.base.model.request.DeleteRequest;
@@ -18,10 +19,15 @@ import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysDictDataService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author cyq
@@ -29,14 +35,19 @@ import java.util.List;
 * @createDate 2024-11-05 17:23:13
 */
 @Service
+@CacheConfig(cacheNames="radish:dict")
 public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDictData>
     implements SysDictDataService{
 
     private final SysDictDataMapper sysDictDataMapper;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper) {
+    public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper,
+                                  RedisTemplate<String, Object> redisTemplate) {
         this.sysDictDataMapper = sysDictDataMapper;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -72,16 +83,19 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
         sysDictDataMapper.updateById(sysDictData);
+        removeCache(request.getId());
     }
 
     @Override
     public void deleteDictData(Long id) {
         sysDictDataMapper.deleteById(id);
+        removeCache(id);
     }
 
     @Override
     public void deleteDictDataBatch(DeleteRequest request) {
         sysDictDataMapper.deleteByIds(request.getIds());
+        request.getIds().forEach(this::removeCache);
     }
 
     @Override
@@ -97,11 +111,13 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void enableDictData(Long id) {
         sysDictDataMapper.enableDictData(id);
+        removeCache(id);
     }
 
     @Override
     public void forbiddenDictData(Long id) {
         sysDictDataMapper.forbiddenDictData(id);
+        removeCache(id);
     }
 
     @Override
@@ -115,7 +131,27 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     public List<SysDictData> getByDictType(String dictType) {
         LambdaQueryWrapper<SysDictData> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysDictData::getDictType, dictType);
+        wrapper.eq(SysDictData::getStatus, BaseConstant.Status.STATUS_ENABLE);
         return sysDictDataMapper.selectList(wrapper);
+    }
+
+    @Override
+    @Cacheable(key = "#dictType")
+    public Map<String, String> getByDictTypeMap(String dictType) {
+        LambdaQueryWrapper<SysDictData> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysDictData::getDictType, dictType);
+        wrapper.eq(SysDictData::getStatus, BaseConstant.Status.STATUS_ENABLE);
+        List<SysDictData> sysDictDataList = sysDictDataMapper.selectList(wrapper);
+        return sysDictDataList.stream().collect(Collectors.toMap(SysDictData::getValue, SysDictData::getLabel, (a, b) -> a));
+    }
+
+    /**
+     * 移除缓存
+     * @param id
+     */
+    private void removeCache(Long id) {
+        SysDictData sysDictData = sysDictDataMapper.selectById(id);
+        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictData.getDictType());
     }
 }
 

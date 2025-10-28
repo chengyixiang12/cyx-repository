@@ -23,6 +23,14 @@
           <el-input v-model="formData.jobClass" placeholder="请输入作业执行类" />
         </el-form-item>
 
+        <!-- 任务状态 -->
+        <el-form-item label="任务状态" prop="status">
+          <el-radio-group v-model="formData.status">
+            <el-radio :value="1">启用</el-radio>
+            <el-radio :value="0">暂停</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <!-- 调度类型 -->
         <el-form-item label="调度类型" prop="scheduleType">
           <el-radio-group v-model="formData.scheduleType" @change="handleScheduleTypeChange">
@@ -68,14 +76,6 @@
             <el-option label="分钟" value="2" />
             <el-option label="小时" value="3" />
           </el-select>
-        </el-form-item>
-
-        <!-- 任务状态 -->
-        <el-form-item label="任务状态" prop="status">
-          <el-radio-group v-model="formData.status">
-            <el-radio :value="1">启用</el-radio>
-            <el-radio :value="0">暂停</el-radio>
-          </el-radio-group>
         </el-form-item>
 
         <!-- 任务参数 -->

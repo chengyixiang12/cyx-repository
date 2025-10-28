@@ -135,7 +135,7 @@ public class SysFileController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysFileService.deleteFile(id);
-        return R.ok();
+        return R.ok("删除成功", null);
     }
 
     @PostMapping(value = "/getFiles")

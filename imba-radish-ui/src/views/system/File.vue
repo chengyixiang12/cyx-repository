@@ -44,6 +44,11 @@
               </el-table-column>
               <el-table-column label="操作" min-width="160" align="center">
                 <template #default="scope">
+                  <el-popconfirm title="确认下载？" @confirm="handleDownload(scope.row)">
+                    <template #reference>
+                      <el-button size="small" type="primary" :icon="Download" circle />
+                    </template>
+                  </el-popconfirm>
                   <el-popconfirm title="确认删除该部门？" @confirm="handleDelete(scope.row.id)">
                     <template #reference>
                       <el-button type="danger" size="small" :icon="Delete" circle />
@@ -68,9 +73,10 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { Delete } from '@element-plus/icons-vue'
+import { Delete, Download } from '@element-plus/icons-vue'
 import { FilesRequest, FilesVo } from '@/types/file'
-import { deleteFileApi, getFilesApi } from '@/api/file'
+import { deleteFileApi, getFilesApi, downloadFileApi } from '@/api/file'
+import { download } from '@/utils/download'
 
 const loading = ref(false)
 const total = ref(0)
@@ -114,6 +120,7 @@ const resetSearch = () => {
   loadFiles()
 }
 
+// 删除部门
 const handleDelete = async (id: number) => {
   await deleteFileApi(id)
   loadFiles()
@@ -127,6 +134,12 @@ const handlePageChange = (val: number) => {
 const handleSizeChange = (val: number) => {
   searchForm.value.pageSize = val
   loadFiles()
+}
+
+// 下载文件
+const handleDownload = async (row: FilesVo) => {
+  const blob = await downloadFileApi(row.id);
+  download(blob, row.originalName);
 }
 
 onMounted(() => {

@@ -4,9 +4,9 @@ server:
     context-path: /
   tomcat:
     # 连接超时（毫秒）
-    connection-timeout: 10000
+    connection-timeout: 30000
     # 保持连接时长（秒）
-    keep-alive-timeout: 30
+    keep-alive-timeout: 60
     # 最大连接数
     max-connections: 1024
     remoteip:

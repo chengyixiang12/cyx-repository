@@ -162,7 +162,7 @@ export async function getData<T = any>(
 }
 
 // 获取二进制流
-export async function getBlob(
+export async function getBlob<Blob>(
   url: string,
   config?: Omit<RequestConfig, 'responseType'>
 ): Promise<Blob> {
@@ -174,7 +174,7 @@ export async function getBlob(
 }
 
 // 获取二进制流
-export async function postBlob(
+export async function postBlob<Blob>(
   url: string,
   data?: any,
   config?: Omit<RequestConfig, 'responseType'>

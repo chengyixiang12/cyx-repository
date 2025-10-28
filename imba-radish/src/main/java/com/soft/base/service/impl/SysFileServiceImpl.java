@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysFile;
-import com.soft.base.enums.LocationEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.model.dto.FileDetailDto;
@@ -16,6 +15,7 @@ import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import com.soft.base.properties.MinioProperty;
+import com.soft.base.service.SysDictDataService;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.UniversalUtil;
@@ -31,6 +31,7 @@ import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
 * @author cyq
@@ -50,12 +51,19 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final MinioProperty minioProperty;
 
+    private final SysDictDataService sysDictDataService;
+
     @Autowired
-    public SysFileServiceImpl(SysFileMapper sysFileMapper, MinioUtil minioUtil, UniversalUtil universalUtil, MinioProperty minioProperty) {
+    public SysFileServiceImpl(SysFileMapper sysFileMapper,
+                              MinioUtil minioUtil,
+                              UniversalUtil universalUtil,
+                              MinioProperty minioProperty,
+                              SysDictDataService sysDictDataService) {
         this.sysFileMapper = sysFileMapper;
         this.minioUtil = minioUtil;
         this.universalUtil = universalUtil;
         this.minioProperty = minioProperty;
+        this.sysDictDataService = sysDictDataService;
     }
 
     @Override
@@ -127,12 +135,9 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
 
-        page.getRecords().forEach(item -> {
-            switch (LocationEnum.map.get(item.getLocation())) {
-                case MINIO -> item.setLocationName(LocationEnum.MINIO.getName());
-                case DISK -> item.setLocationName(LocationEnum.DISK.getName());
-            }
-        });
+        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap("file_storage_location");
+
+        page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
         PageVo<FilesVo> pageVo = new PageVo<>();
         pageVo.setTotal(page.getTotal());

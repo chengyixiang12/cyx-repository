@@ -92,4 +92,9 @@ public class RedisConstant {
      * 锁key
      */
     public final static String LOCK_KEY = "radish:lock:";
+
+    /**
+     * 字典key-value缓存key
+     */
+    public final static String DICT_KEY = "radish:dict::";
 }

@@ -59,6 +59,6 @@ export async function getDeptApi(id: number): Promise<DeptVo> {
  * @param ids 
  */
 export async function exportDept(ids: number[], fileName: string): Promise<ExportDeptVo> {
-  const { blob, filename } = await postBlob('/dept/exportDept', { ids, fileName }, { flag: true })
+  const { blob, filename } = await postBlob<Blob>('/dept/exportDept', { ids, fileName }, { flag: true })
   return { blob, filename };
 }
