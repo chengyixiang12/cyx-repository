@@ -1,7 +1,7 @@
 export interface WebsocketMessage {
   status: boolean
   order: string
-  message: string
+  msg: string
   [key: string]: any
 }
 
@@ -22,8 +22,8 @@ export class WebsocketManager {
   private url = ''
   private isActive = false;
   public onMessage: ((data: WebsocketMessage) => void) | null = null
-  public onForceLogout: (() => void) | null = null
-  public aiAnwser: ((message: WebsocketMessage) => void) | null = null
+  public onForceLogout: ((data: WebsocketMessage) => void) | null = null
+  public aiAnwser: ((data: WebsocketMessage) => void) | null = null
 
   constructor(url: string) {
     this.url = url
@@ -45,23 +45,23 @@ export class WebsocketManager {
     }
 
     this.socket.onmessage = (event: MessageEvent) => {
-      const message: WebsocketMessage = JSON.parse(event.data)
+      const data: WebsocketMessage = JSON.parse(event.data)
 
-      switch (message.order) {
+      switch (data.order) {
         case 'HEART_BEAT': {
           this.missedHeartbeats = 0
           break
         }
         case 'FORCE_OFFLINE': {
           this.close()
-          this.onForceLogout?.()
+          this.onForceLogout?.(data)
           break
         }
         case 'AI': {
-          this.aiAnwser?.(message)
+          this.aiAnwser?.(data)
         }
         default : {
-          this.onMessage?.(message)
+          this.onMessage?.(data)
           break
         }
       }

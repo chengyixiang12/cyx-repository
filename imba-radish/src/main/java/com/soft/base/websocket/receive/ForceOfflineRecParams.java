@@ -2,7 +2,6 @@ package com.soft.base.websocket.receive;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.lang.Nullable;
 
 /**
  * @Author: cyx
@@ -11,7 +10,7 @@ import org.springframework.lang.Nullable;
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ForceOfflineRecParams extends OrderReceiveParams {
+public class ForceOfflineRecParams extends AbstractReceiveParams {
 
     /**
      * 接收者

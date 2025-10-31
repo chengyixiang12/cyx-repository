@@ -4,12 +4,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * @Author: cyx
- * @Description: TODO
- * @DateTime: 2025/2/10 14:19
- **/
-
+ * @author cyq
+ * @date 2025/10/31
+ * @description
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class FilesTransferRecParams extends AbstractReceiveParams {
+public class ReceiveParams extends AbstractReceiveParams {
 }

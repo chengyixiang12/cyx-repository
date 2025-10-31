@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { Component } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { GetMenuVo, GetSelectMenuVo } from '@/types/menu'
@@ -168,7 +168,7 @@ const getIconComponent = (iconName: string): Component | null => {
   if (!iconName) return null
 
   // 去除前后空格
-  const trimmedName = iconName.trim()
+  const trimmedName = iconName.trim();
 
   // 直接查找（支持多种格式）
   return iconsMap.get(trimmedName) ||

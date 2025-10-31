@@ -1,6 +1,5 @@
 package com.soft.base.service.impl;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysUser;
@@ -16,10 +15,9 @@ import com.soft.base.service.SysUsersService;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
-import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
+import com.soft.base.websocket.receive.ForceOfflineRecParams;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -130,12 +128,15 @@ public class AuthServiceImpl implements AuthService {
 
             // 同一个用户只能有一个客户端登录
             WebSocketSession session = WebSocketSessionManager.getSession(id);
-            ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-            JSONObject forceOfflineParam = new JSONObject();
-            forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
-            forceOfflineParam.put("receiver", id);
-            TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
-            concreteHandler.handle(session, textMessage);
+            if (session != null) {
+                ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+                ForceOfflineRecParams forceOfflineParam = new ForceOfflineRecParams();
+                forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+                forceOfflineParam.setReceiver(id);
+                forceOfflineParam.setMsg("该账号已在其他地方登录");
+                TextMessage textMessage = new TextMessage(forceOfflineParam.toJsonString());
+                concreteHandler.handle(session, textMessage);
+            }
 
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();

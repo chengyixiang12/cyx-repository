@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class FileTransferOverRecParams extends OrderReceiveParams {
+public class FileTransferOverRecParams extends AbstractReceiveParams {
 
     /**
      * 源文件名

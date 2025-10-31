@@ -10,6 +10,7 @@ import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysScheduleJobMapper;
+import com.soft.base.model.dto.DictDataDto;
 import com.soft.base.model.request.CreateJobRequest;
 import com.soft.base.model.request.EditJobRequest;
 import com.soft.base.model.request.GetQuartzTasksRequest;
@@ -74,8 +75,8 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
 
-        List<SysDictData> sysDictDataList = sysDictDataService.getByDictType("quartz_type");
-        Map<String, String> stringStringMap = sysDictDataList.stream().collect(Collectors.toMap(SysDictData::getValue, SysDictData::getLabel));
+        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType("quartz_type");
+        Map<String, String> stringStringMap = sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel));
 
         pageVo.getRecords().forEach(item -> {
             if (BaseConstant.QuartzType.QUARTZ_SIMPLE_SCHEDULE.equals(item.getScheduleType())) {

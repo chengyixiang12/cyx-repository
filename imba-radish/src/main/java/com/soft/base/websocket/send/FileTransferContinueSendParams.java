@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class FileTransferContinueSendParams extends SendParams {
+public class FileTransferContinueSendParams extends AbstractSendParams {
 
     /**
      * 分片索引

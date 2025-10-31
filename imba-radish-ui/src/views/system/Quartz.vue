@@ -51,9 +51,12 @@
               <el-table-column prop="remark" align="center" label="备注" show-overflow-tooltip />
               <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
-                  <el-tooltip class="item" effect="dark" content="立即执行" placement="top">
-                    <el-button size="small" type="primary" :disabled="scope.row.status === 0" @click="handleExecute(scope.row.id)" :icon="VideoPlay" circle />
-                  </el-tooltip>
+                  <el-popconfirm title="确认执行？" confirm-button-text="确认" cancel-button-text="取消"
+                      @confirm="handleExecute(scope.row.id)">
+                      <template #reference>
+                        <el-button size="small" type="primary" :disabled="scope.row.status == 0" :icon="VideoPlay" circle />
+                      </template>
+                    </el-popconfirm>
                   <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
                   <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
@@ -147,10 +150,10 @@ const handleDelete = async (id: number) => {
 // 状态变更处理
 const handleStatusChange = async (row: GetQuartzTasksVo) => {
   if (row.status === 1) {
-      await startJobApi(row.id)
-    } else {
-      await stopJobApi(row.id)
-    }
+    await startJobApi(row.id)
+  } else {
+    await stopJobApi(row.id)
+  }
   await loadJobs()
 }
 

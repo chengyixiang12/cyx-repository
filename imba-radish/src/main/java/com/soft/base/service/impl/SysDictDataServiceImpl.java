@@ -1,6 +1,5 @@
 package com.soft.base.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +8,7 @@ import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysDictData;
 import com.soft.base.mapper.SysDictDataMapper;
+import com.soft.base.model.dto.DictDataDto;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.request.EditDictDataRequest;
@@ -128,21 +128,15 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public List<SysDictData> getByDictType(String dictType) {
-        LambdaQueryWrapper<SysDictData> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysDictData::getDictType, dictType);
-        wrapper.eq(SysDictData::getStatus, BaseConstant.Status.STATUS_ENABLE);
-        return sysDictDataMapper.selectList(wrapper);
+    public List<DictDataDto> getByDictType(String dictType) {
+        return sysDictDataMapper.getByDictType(dictType, BaseConstant.Status.STATUS_ENABLE);
     }
 
     @Override
-    @Cacheable(key = "#dictType")
+    @Cacheable(key = "#dictType", unless = "#result.size() == 0")
     public Map<String, String> getByDictTypeMap(String dictType) {
-        LambdaQueryWrapper<SysDictData> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysDictData::getDictType, dictType);
-        wrapper.eq(SysDictData::getStatus, BaseConstant.Status.STATUS_ENABLE);
-        List<SysDictData> sysDictDataList = sysDictDataMapper.selectList(wrapper);
-        return sysDictDataList.stream().collect(Collectors.toMap(SysDictData::getValue, SysDictData::getLabel, (a, b) -> a));
+        List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(dictType, BaseConstant.Status.STATUS_ENABLE);
+        return sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel, (a, b) -> a));
     }
 
     /**

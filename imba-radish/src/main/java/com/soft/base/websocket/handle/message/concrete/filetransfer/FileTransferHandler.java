@@ -56,7 +56,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
             log.info("文件创建失败，{}", file.getName());
             sendParams.setStatus(false);
             sendParams.setOrder(WebSocketOrderEnum.FILE_TRANSFER.toString());
-            sendParams.setMessage("文件创建失败");
+            sendParams.setMsg("文件创建失败");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }

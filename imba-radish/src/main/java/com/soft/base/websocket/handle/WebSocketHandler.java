@@ -4,7 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.OrderReceiveParams;
+import com.soft.base.websocket.receive.AbstractReceiveParams;
+import com.soft.base.websocket.receive.ReceiveParams;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,12 +29,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         // 获取消息体
         String payload = message.getPayload();
-        OrderReceiveParams orderReceiveParams = JSON.parseObject(payload, OrderReceiveParams.class);
-        String order = orderReceiveParams.getOrder();
+        AbstractReceiveParams abstractReceiveParams = JSON.parseObject(payload, ReceiveParams.class);
+        String order = abstractReceiveParams.getOrder();
         if (StringUtils.isBlank(order)) {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
-            sendParams.setMessage("websocket连接异常，指令为空");
+            sendParams.setMsg("websocket连接异常，指令为空");
             log.info("websocket连接异常，指令为空");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
@@ -41,7 +42,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         if (!WebSocketOrderEnum.exist(order)) {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
-            sendParams.setMessage("无效的指令");
+            sendParams.setMsg("无效的指令");
             log.info("无效的指令");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;

@@ -45,7 +45,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
         if (StringUtils.isBlank(fileHash) || !fileHash.equals(fileTransferContinueRecParams.getFileHash())) {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
-            sendParams.setMessage("文件hash值不一致");
+            sendParams.setMsg("文件hash值不一致");
             sendParams.setOrder(fileTransferContinueRecParams.getOrder());
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;

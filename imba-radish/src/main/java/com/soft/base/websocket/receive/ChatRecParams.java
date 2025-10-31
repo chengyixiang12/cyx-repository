@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ChatRecParams extends OrderReceiveParams {
+public class ChatRecParams extends AbstractReceiveParams {
 
     /**
      * 问题

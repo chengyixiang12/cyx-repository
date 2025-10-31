@@ -2,6 +2,7 @@ package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysDictData;
+import com.soft.base.model.dto.DictDataDto;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.request.EditDictDataRequest;
@@ -42,7 +43,7 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void setDefaultData(Long id, String dictType);
 
-    List<SysDictData> getByDictType(String dictType);
+    List<DictDataDto> getByDictType(String dictType);
 
     Map<String, String> getByDictTypeMap(String dictType);
 }

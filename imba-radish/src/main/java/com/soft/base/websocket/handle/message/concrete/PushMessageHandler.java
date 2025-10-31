@@ -29,8 +29,8 @@ public class PushMessageHandler implements WebSocketConcreteHandler<String> {
         PushMessageRecParams pushMessageRecParams = JSON.parseObject(message.getPayload(), PushMessageRecParams.class);
         JSONArray receivers = pushMessageRecParams.getReceivers();
         PushMessageSendParams pushMessageSendParams = new PushMessageSendParams();
-        pushMessageSendParams.setMessage(pushMessageRecParams.getMessage());
-        pushMessageSendParams.setMessage(pushMessageRecParams.getOrder());
+        pushMessageSendParams.setMsg(pushMessageRecParams.getMessage());
+        pushMessageSendParams.setMsg(pushMessageRecParams.getOrder());
         for (int i = 0; i < receivers.size(); i++) {
             WebSocketSession sendSession = WebSocketSessionManager.getSession(receivers.getLong(i));
             if (sendSession == null) {

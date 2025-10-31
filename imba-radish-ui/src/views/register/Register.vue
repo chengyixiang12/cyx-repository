@@ -67,7 +67,7 @@ const goToLogin = () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px;
+    padding: 150px;
 }
 
 .register-card {

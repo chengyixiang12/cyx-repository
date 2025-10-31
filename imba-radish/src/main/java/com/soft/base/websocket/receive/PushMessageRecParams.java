@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class PushMessageRecParams extends OrderReceiveParams {
+public class PushMessageRecParams extends AbstractReceiveParams {
 
     /**
      * 消息

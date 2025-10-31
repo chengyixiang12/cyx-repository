@@ -60,7 +60,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         if (!isCreate) {
 
             sendParams.setStatus(false);
-            sendParams.setMessage("文件夹创建失败");
+            sendParams.setMsg("文件夹创建失败");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             log.info("文件夹创建失败，{}", filePath);
             return;
@@ -75,7 +75,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         log.info("分片文件hash缓存成功");
 
         sendParams.setStatus(true);
-        sendParams.setMessage("文件夹创建成功");
+        sendParams.setMsg("文件夹创建成功");
         session.sendMessage(new TextMessage(sendParams.toJsonString()));
     }
 

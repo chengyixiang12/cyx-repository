@@ -330,7 +330,7 @@ const handleStatusChange = async (row: AllUserVo) => {
 
 const forceOffline = async (row: AllUserVo) => {
   const wsInstance = getWebSocketInstance();
-  wsInstance.send({ order: 'FORCE_OFFLINE', receiver: row.id })
+  wsInstance.send({ order: 'FORCE_OFFLINE', receiver: row.id, msg: '您已被强制下线' })
 }
 
 // 初始化加载

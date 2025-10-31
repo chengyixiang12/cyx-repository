@@ -127,10 +127,9 @@ const sendEmailCaptcha = async () => {
     return;
   }
   try {
-    const msg = await sendCaptchaApi(loginForm.value.email);
-    // showMessage(msg, 'success');
+    await sendCaptchaApi(loginForm.value.email);
     countdown.value = 60;
-    timer = setInterval(() => {
+    const timer = setInterval(() => {
       countdown.value--;
       if (countdown.value <= 0) clearInterval(timer);
     }, 1000);

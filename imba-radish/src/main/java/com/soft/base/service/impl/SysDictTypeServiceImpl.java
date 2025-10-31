@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysDictType;
 import com.soft.base.mapper.SysDictTypeMapper;
 import com.soft.base.model.request.EditDictTypeRequest;
@@ -15,6 +14,8 @@ import com.soft.base.model.vo.DictTypesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysDictTypeService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 * @createDate 2024-11-04 15:51:07
 */
 @Service
+@CacheConfig(cacheNames = "radish:dict")
 public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType>
     implements SysDictTypeService{
 

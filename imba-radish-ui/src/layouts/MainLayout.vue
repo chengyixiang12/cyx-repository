@@ -124,6 +124,7 @@ import { CachedTabsType } from '@/types/layout';
 import { getWebSocketInstance } from '@/utils/websocket';
 import { showMessage } from '@/utils/message';
 import { avatar_url } from '@/common/global-config';
+import { WebsocketMessage } from '@/utils/websocketManager';
 
 const router = useRouter();
 const user = ref({
@@ -246,13 +247,13 @@ const existDashboard = () => {
 const initWebsocket = async () => {
     const token = sessionStorage.getItem('Authorization') || ''
     // 连接websocket
-    const ws = getWebSocketInstance()
-    ws.connect(token)
-    ws.onForceLogout = () => {
+    const ws = getWebSocketInstance();
+    ws.connect(token);
+    ws.onForceLogout = (data: WebsocketMessage) => {
         clearCache()
         router.push('/login')
-        showMessage('您已被强制下线', 'warning')
-    }
+        showMessage(data.msg, 'warning')
+    };
 }
 
 // 获取用户头像

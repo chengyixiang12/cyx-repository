@@ -1,6 +1,5 @@
 package com.soft.base.websocket.send;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,10 +10,6 @@ import lombok.EqualsAndHashCode;
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ForceOfflineSendParams extends SendParams {
+public class ForceOfflineSendParams extends AbstractSendParams {
 
-    /**
-     * 指令
-     */
-    private String order;
 }

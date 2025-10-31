@@ -79,7 +79,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         sendParams.setOrder(fileTransferOverRecParams.getOrder());
         Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         if (maxIndex == null) {
-            sendParams.setMessage("分片文件索引为空");
+            sendParams.setMsg("分片文件索引为空");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             log.info("分片文件索引为空，{}", originalName);
             return;
@@ -89,12 +89,12 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         File file = new File(bigfileLocation + objectKey);
         if (!file.exists()) {
             if (file.getParentFile() != null && !file.getParentFile().mkdirs()) {
-                sendParams.setMessage("文件夹创建失败");
+                sendParams.setMsg("文件夹创建失败");
                 log.info("文件夹创建失败，{}", file.getParent());
                 return;
             }
             if (!file.createNewFile()) {
-                sendParams.setMessage("文件创建失败");
+                sendParams.setMsg("文件创建失败");
                 log.info("文件创建失败，{}", file.getName());
                 return;
             }
