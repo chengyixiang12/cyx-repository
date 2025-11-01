@@ -109,6 +109,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFile.setObjectKey(objectKey);
                 sysFile.setOriginalName(originalFilename);
                 sysFile.setFileSize(fileSize);
+                sysFile.setFileHash(hashCode);
                 sysFileMapper.insert(sysFile);
 
             }
