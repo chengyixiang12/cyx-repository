@@ -19,6 +19,7 @@ import com.soft.base.properties.MinioProperty;
 import com.soft.base.service.SysDictDataService;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
+import com.soft.base.utils.SecurityUtil;
 import com.soft.base.utils.UniversalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -55,17 +56,21 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final SysDictDataService sysDictDataService;
 
+    private final SecurityUtil securityUtil;
+
     @Autowired
     public SysFileServiceImpl(SysFileMapper sysFileMapper,
                               MinioUtil minioUtil,
                               UniversalUtil universalUtil,
                               MinioProperty minioProperty,
-                              SysDictDataService sysDictDataService) {
+                              SysDictDataService sysDictDataService,
+                              SecurityUtil securityUtil) {
         this.sysFileMapper = sysFileMapper;
         this.minioUtil = minioUtil;
         this.universalUtil = universalUtil;
         this.minioProperty = minioProperty;
         this.sysDictDataService = sysDictDataService;
+        this.securityUtil = securityUtil;
     }
 
     @Override
@@ -204,6 +209,22 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     @Override
     public List<SelectDeletedFileDto> selectDeletedFiles() {
         return sysFileMapper.selectDeletedFiles();
+    }
+
+    @Override
+    public PageVo<FilesVo> getMyFiles(FilesRequest request) {
+        IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+        Long userId = securityUtil.getUserInfo().getId();
+        page = sysFileMapper.getMyFiles(page, request, userId);
+
+        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(4L);
+
+        page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
+
+        PageVo<FilesVo> pageVo = new PageVo<>();
+        pageVo.setTotal(page.getTotal());
+        pageVo.setRecords(page.getRecords());
+        return pageVo;
     }
 }
 

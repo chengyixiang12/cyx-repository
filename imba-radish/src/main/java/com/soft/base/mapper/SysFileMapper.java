@@ -27,6 +27,10 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
     FileHashDto getFileByHash(@Param("hashCode") String hashCode);
 
     List<SelectDeletedFileDto> selectDeletedFiles();
+
+    IPage<FilesVo> getMyFiles(IPage<FilesVo> page,
+                               @Param("request") FilesRequest request,
+                               @Param("userId") Long userId);
 }
 
 

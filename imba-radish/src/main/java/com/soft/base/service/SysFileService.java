@@ -31,4 +31,6 @@ public interface SysFileService extends IService<SysFile> {
     UploadAvatarVo uploadAvatar(MultipartFile multipartFile);
 
     List<SelectDeletedFileDto> selectDeletedFiles();
+
+    PageVo<FilesVo> getMyFiles(FilesRequest request);
 }

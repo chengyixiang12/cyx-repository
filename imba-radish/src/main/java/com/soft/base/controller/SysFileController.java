@@ -152,4 +152,11 @@ public class SysFileController {
         UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
         return R.ok(uploadAvatarVo);
     }
+
+    @PostMapping(value = "/getMyFiles")
+    @Operation(summary = "获取我的文件（复）")
+    public R<PageVo<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
+        PageVo<FilesVo> pageVo = sysFileService.getMyFiles(request);
+        return R.ok(pageVo);
+    }
 }

@@ -78,4 +78,24 @@
         from sys_file t1
         where t1.del_flag = '1'
     </select>
+    <select id="getMyFiles" resultType="FilesVo">
+        SELECT
+        sf.id,
+        sf.location,
+        sf.file_size AS fileSize,
+        sf.original_name AS originalName,
+        sf.create_time AS createTime,
+        su.nickname AS createBy
+        FROM
+        sys_file sf
+        LEFT JOIN sys_user su ON sf.create_by = su.id
+        WHERE
+        sf.del_flag = '0'
+        AND sf.create_by = #{userId}
+        <if test="request.keyword != null and request.keyword != ''">
+            <bind name="request.keyword" value="'%'+ request.keyword + '%'"/>
+            AND sf.original_name like #{request.keyword}
+        </if>
+        ORDER BY sf.create_time DESC
+    </select>
 </mapper>

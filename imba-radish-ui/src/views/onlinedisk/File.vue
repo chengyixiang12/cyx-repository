@@ -83,7 +83,7 @@
 import { ref, onMounted } from 'vue'
 import { Delete, Download } from '@element-plus/icons-vue'
 import { FilesRequest, FilesVo } from '@/types/file'
-import { deleteFileApi, getFilesApi, downloadFileApi, uploadFileApi } from '@/api/file'
+import { deleteFileApi, downloadFileApi, uploadFileApi, getMyFilesApi } from '@/api/file'
 import { download } from '@/utils/download'
 import { showMessage } from '@/utils/message'
 
@@ -107,7 +107,7 @@ const searchForm = ref<FilesRequest>({
 const loadFiles = async () => {
   try {
     loading.value = true
-    const res = await getFilesApi(searchForm.value)
+    const res = await getMyFilesApi(searchForm.value)
     fileList.value = res.records
     total.value = res.total
   } finally {

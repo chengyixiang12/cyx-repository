@@ -32,6 +32,16 @@ export async function getFilesApi(data: FilesRequest): Promise<PaginatedData<Fil
 }
 
 /**
+ * 获取我的文件（复）
+ * @param data 
+ * @returns 
+ */
+export async function getMyFilesApi(data: FilesRequest): Promise<PaginatedData<FilesVo>> {
+  const res = await post<PaginatedData<FilesVo>>('/file/getMyFiles', data, { flag: true });
+  return res.data;
+}
+
+/**
  * 删除文件
  * @param id 
  */
