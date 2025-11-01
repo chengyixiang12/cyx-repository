@@ -26,5 +26,5 @@ public interface SysDialogueService extends IService<SysDialogue> {
 
     void rename(RenameRequest request);
 
-    GetTitleVo getTitle(Long id);
+    GetTitleVo getTitle(String id);
 }

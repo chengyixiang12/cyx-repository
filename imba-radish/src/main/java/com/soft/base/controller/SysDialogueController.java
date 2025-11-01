@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +57,8 @@ public class SysDialogueController {
     @DeleteMapping(value = "/deleteDialogue")
     @Operation(summary = "删除对话")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteDialogue(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysDialogueService.deleteDialogue(id);
+    public R<Object> deleteDialogue(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysDialogueService.deleteDialogue(Long.parseLong(id));
         return R.ok("删除成功");
     }
 
@@ -70,7 +71,7 @@ public class SysDialogueController {
 
     @GetMapping(value = "/getTitle")
     @Operation(summary = "获取标题")
-    public R<GetTitleVo> getTitle(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+    public R<GetTitleVo> getTitle(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
         GetTitleVo getTitleVo = sysDialogueService.getTitle(id);
         return R.ok(getTitleVo);
     }

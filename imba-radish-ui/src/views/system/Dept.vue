@@ -94,9 +94,9 @@ import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
 const total = ref(0)
-const deptId = ref<number | null>(null)
+const deptId = ref<string | null>(null)
 const deptList = ref<GetDeptsVo[]>([])
-const selectedIds = ref<number[]>([])
+const selectedIds = ref<string[]>([])
 
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)

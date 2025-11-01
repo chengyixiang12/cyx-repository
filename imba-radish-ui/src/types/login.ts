@@ -22,7 +22,7 @@ export interface LoginRequest {
   }
 
   export interface UserInfoVo {
-    id: number;
+    id: string;
     username: string;
     deptId: number;
     nickname: string;

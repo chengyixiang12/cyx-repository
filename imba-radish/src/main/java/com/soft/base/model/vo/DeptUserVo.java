@@ -16,11 +16,11 @@ import org.apache.ibatis.type.Alias;
 public class DeptUserVo {
 
     @Schema(description = "用户id")
-    private Long id;
+    private String id;
 
     @Schema(description = "昵称")
     private String nickname;
 
     @Schema(description = "部门id", hidden = true)
-    private Long deptId;
+    private String deptId;
 }

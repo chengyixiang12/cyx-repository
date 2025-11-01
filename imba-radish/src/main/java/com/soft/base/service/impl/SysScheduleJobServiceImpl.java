@@ -75,7 +75,7 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
 
-        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType("quartz_type");
+        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType(5L);
         Map<String, String> stringStringMap = sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel));
 
         pageVo.getRecords().forEach(item -> {

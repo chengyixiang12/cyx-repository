@@ -1,14 +1,14 @@
 export interface GetAllPermissionVo {
-    id: number,
+    id: string,
     name: string
 }
 
 export interface GetAssignPerVo {
-    id: number,
+    id: string,
     name: string
 }
 
 export interface SetPermissionsRequest {
-    roleId: number | null,
-    permissionIds: number[]
+    roleId: string | null,
+    permissionIds: string[]
 }

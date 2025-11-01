@@ -2,6 +2,7 @@ package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -24,9 +25,9 @@ public class SaveDictDataRequest {
     @NotBlank(message = "字典值不能为空")
     private String value;
 
-    @Schema(description = "字典类型")
-    @NotBlank(message = "字典类型不能为空")
-    private String dictType;
+    @Schema(description = "字典类型id")
+    @NotNull(message = "字典类型id不能为空")
+    private String parentId;
 
     @Schema(description = "样式属性（其他样式扩展）")
     private String cssClass;

@@ -80,8 +80,8 @@ public class SysMenuController {
     @DeleteMapping
     @Operation(summary = "删除菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteMenu(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        sysMenuService.deleteMenu(id);
+    public R<Object> deleteMenu(@RequestParam(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        sysMenuService.deleteMenu(Long.parseLong(id));
         return R.ok("删除成功", null);
     }
 
@@ -95,8 +95,8 @@ public class SysMenuController {
     @GetMapping(value = "/getMenu")
     @Operation(summary = "获取菜单（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<GetMenuVo> getMenu(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        GetMenuVo getMenuVo = sysMenuService.getMenu(id);
+    public R<GetMenuVo> getMenu(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        GetMenuVo getMenuVo = sysMenuService.getMenu(Long.parseLong(id));
         return R.ok(getMenuVo);
     }
 
@@ -104,8 +104,8 @@ public class SysMenuController {
     @GetMapping(value = "/enableMenu")
     @Operation(summary = "启用菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> enableMenu(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        sysMenuService.enableMenu(id);
+    public R<Object> enableMenu(@RequestParam(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        sysMenuService.enableMenu(Long.parseLong(id));
         return R.ok("启用成功", null);
     }
 
@@ -113,8 +113,8 @@ public class SysMenuController {
     @GetMapping(value = "/disableMenu")
     @Operation(summary = "禁用菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> disableMenu(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        sysMenuService.disableMenu(id);
+    public R<Object> disableMenu(@RequestParam(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        sysMenuService.disableMenu(Long.parseLong(id));
         return R.ok("禁用成功", null);
     }
 
@@ -128,24 +128,24 @@ public class SysMenuController {
     @GetMapping(value = "/getAssignedMenu")
     @Operation(summary = "获取已分配的菜单")
     @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
-    public R<List<GetAssignedMenuVo>> getAssignedMenu(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
-        List<GetAssignedMenuVo> menuIds = sysMenuService.getAssignedMenu(roleId);
+    public R<List<GetAssignedMenuVo>> getAssignedMenu(@RequestParam(value = "roleId", required = false) @NotBlank(message = "角色id不能为空") String roleId) {
+        List<GetAssignedMenuVo> menuIds = sysMenuService.getAssignedMenu(Long.parseLong(roleId));
         return R.ok(menuIds);
     }
 
     @GetMapping(value = "/menuShow")
     @Operation(summary = "显示菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> menuShow(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysMenuService.menuShow(id);
+    public R<Object> menuShow(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysMenuService.menuShow(Long.parseLong(id));
         return R.ok("菜单已显示", null);
     }
 
     @GetMapping(value = "/menuHide")
     @Operation(summary = "隐藏菜单")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> menuHide(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysMenuService.menuHide(id);
+    public R<Object> menuHide(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysMenuService.menuHide(Long.parseLong(id));
         return R.ok("菜单已隐藏", null);
     }
 

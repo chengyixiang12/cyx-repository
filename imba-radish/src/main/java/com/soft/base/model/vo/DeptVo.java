@@ -15,7 +15,7 @@ import org.apache.ibatis.type.Alias;
 public class DeptVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "排序")
     private Integer sortOrder;
@@ -27,7 +27,7 @@ public class DeptVo {
     private String name;
 
     @Schema(description = "父级主键")
-    private Long parentId;
+    private String parentId;
 
     @Schema(description = "父级名称")
     private String parentName;

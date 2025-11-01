@@ -106,13 +106,13 @@ Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
 interface FatherParam {
   visible: boolean;
   isAdd: boolean;
-  menuId?: number | null;
+  menuId?: string;
   type?: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
   isAdd: false,
-  menuId: null,
+  menuId: '',
   type: '',
   visible: false
 })
@@ -121,8 +121,8 @@ const emit = defineEmits(['update:visible', 'submit'])
 
 const formRef = ref<FormInstance>()
 const formData = ref<GetMenuVo>({
-  id: 0,
-  parentId: null,
+  id: '',
+  parentId: '',
   name: '',
   path: '',
   component: '',
@@ -178,7 +178,7 @@ const getIconComponent = (iconName: string): Component | null => {
 
 // 监听类型变化，处理父级菜单逻辑
 const handleTypeChange = () => {
-  formData.value.parentId = null
+  formData.value.parentId = ''
 
   // 动态修改验证规则
   if (formData.value.type === '0') {

@@ -29,12 +29,12 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
 
     DeptVo getDept(@Param("id") Long id);
 
-    List<ExportDeptDto> exportDept(@Param("ids") List<Long> ids);
+    List<ExportDeptDto> exportDept(@Param("ids") List<String> ids);
 
     IPage<GetDeptsVo> getDepts(@Param("page") IPage<GetDeptsVo> page,
                                 @Param("request") GetDeptsRequest request);
 
-    List<Long> getChildDeptIds(@Param("deptIds") List<Long> deptIds);
+    List<String> getChildDeptIds(@Param("deptIds") List<String> deptIds);
 
     Long getRootDept();
 }

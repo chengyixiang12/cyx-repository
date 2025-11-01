@@ -23,10 +23,6 @@ public class SaveDictTypeRequest {
     @NotBlank(message = "字典类型名称不能为空")
     private String dictName;
 
-    @Schema(description = "字典类型")
-    @NotBlank(message = "字典类型不能为空")
-    private String dictType;
-
     @Schema(description = "状态")
     private Integer status;
 

@@ -160,12 +160,12 @@ import { getWebSocketInstance } from '@/utils/websocket'
 const loading = ref(false)
 const userList = ref<AllUserVo[]>([])
 const deptTree = ref<DeptTreeVo[]>([])
-const selectedDept = ref<string | number>('')
+const selectedDept = ref<string | null>(null)
 
 // 弹窗相关状态
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
-const userId = ref<number | null>(null)
+const userId = ref<string>('')
 
 // 搜索表单
 const searchForm = ref({
@@ -276,7 +276,7 @@ const handleExpandChange = (node: DeptTreeVo, expanded: boolean) => {
   }
 }
 
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteUserById(id);
   await loadUsers();
 }

@@ -6,7 +6,7 @@ export interface GetQuartzTasksRequest  {
 }
 
 export interface GetQuartzTasksVo {
-    id: number;
+    id: string;
     jobName: string;
     jobGroup: string;
     cron: string;
@@ -31,7 +31,7 @@ export interface SaveJobRequest {
 }
 
 export interface GetJobVo {
-    id: number | null;
+    id: string;
     jobName: string;
     jobGroup: string;
     cron: string;
@@ -48,15 +48,15 @@ export interface GetJobVo {
 }
 
 export interface EditJobRequest {
-    id: number | null;
+    id: string | null;
     jobName: string;
     jobGroup: string;
     cron: string;
     jobType: string;
     status: string;
     jobParam: string;
-    startTime: Date | null;
-    endTime: Date | null;
+    startTime: string | null;
+    endTime: string | null;
     jobInterval: number;
     intervalType: string;
     scheduleType: string;

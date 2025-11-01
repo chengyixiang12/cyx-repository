@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -15,5 +16,5 @@ public class DeleteRequest {
 
     @Schema(description = "主键")
     @NotEmpty(message = "ids不能为空")
-    private List<@NotNull(message = "ids不能为空") Long> ids;
+    private List<@NotBlank(message = "ids不能为空") String> ids;
 }

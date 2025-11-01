@@ -49,7 +49,7 @@ export async function updateDeptApi(data: EditDeptRequest) {
  * 获取部门（单）
  * @param id 
  */
-export async function getDeptApi(id: number): Promise<DeptVo> {
+export async function getDeptApi(id: string): Promise<DeptVo> {
   const res = await get('/dept', { params: { id }, flag: true })
   return res.data;
 }
@@ -58,7 +58,7 @@ export async function getDeptApi(id: number): Promise<DeptVo> {
  * 导出部门
  * @param ids 
  */
-export async function exportDept(ids: number[], fileName: string): Promise<ExportDeptVo> {
+export async function exportDept(ids: string[], fileName: string): Promise<ExportDeptVo> {
   const { blob, filename } = await postBlob<Blob>('/dept/exportDept', { ids, fileName }, { flag: true })
   return { blob, filename };
 }

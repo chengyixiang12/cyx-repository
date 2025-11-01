@@ -3,6 +3,7 @@ package com.soft.base.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,46 +13,10 @@ import java.time.LocalDateTime;
  * 
  * @TableName sys_permission
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_permission")
 @Data
-public class SysPermission implements Serializable {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 修改时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
-
-    /**
-     * 逻辑删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private Integer delFlag;
+public class SysPermission extends BaseEntity {
 
     /**
      * 权限名称
@@ -82,8 +47,4 @@ public class SysPermission implements Serializable {
      */
     @TableField(value = "description")
     private String description;
-
-    @Serial
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }

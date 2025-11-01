@@ -19,7 +19,7 @@ import java.util.List;
 public class MenusVo implements MenuTree<MenusVo> {
 
     @Schema(description = "菜单唯一标识")
-    private Long id;
+    private String id;
 
     @Schema(description = "菜单名称")
     private String name;
@@ -34,7 +34,7 @@ public class MenusVo implements MenuTree<MenusVo> {
     private String component;
 
     @Schema(description = "父菜单 ID")
-    private Long parentId;
+    private String parentId;
 
     @Schema(description = "显示状态；1：显示；0：隐藏")
     private Integer visible;

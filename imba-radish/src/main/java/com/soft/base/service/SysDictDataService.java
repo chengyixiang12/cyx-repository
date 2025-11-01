@@ -33,17 +33,17 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void deleteDictDataBatch(DeleteRequest request);
 
-    boolean existValue(String dictType, String value);
+    boolean existValue(Long parentId, String value);
 
-    boolean existCode(String dictType, String value, Long id);
+    boolean existCode(Long parentId, String value, Long id);
 
     void enableDictData(Long id);
 
     void forbiddenDictData(Long id);
 
-    void setDefaultData(Long id, String dictType);
+    void setDefaultData(Long id, Long parentId);
 
-    List<DictDataDto> getByDictType(String dictType);
+    List<DictDataDto> getByDictType(Long parentId);
 
-    Map<String, String> getByDictTypeMap(String dictType);
+    Map<String, String> getByDictTypeMap(Long parentId);
 }

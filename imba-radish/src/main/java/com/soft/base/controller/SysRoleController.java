@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -81,7 +82,7 @@ public class SysRoleController {
         if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
             return R.fail("无效的角色编码");
         }
-        if (sysRoleService.existCode(request.getCode(), request.getId())) {
+        if (sysRoleService.existCode(request.getCode(), Long.parseLong(request.getId()))) {
             return R.fail("角色编码已存在");
         }
         if (request.getStatus() == null) {
@@ -96,8 +97,8 @@ public class SysRoleController {
     @DeleteMapping
     @Operation(summary = "删除角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteRole(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        Boolean fixRoleFlag = sysRoleService.fixRoleFlag(id);
+    public R<Object> deleteRole(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        Boolean fixRoleFlag = sysRoleService.fixRoleFlag(Long.parseLong(id));
         if (fixRoleFlag) {
             return R.fail("固定角色不可删除");
         }
@@ -135,8 +136,8 @@ public class SysRoleController {
     @GetMapping(value = "/{id}")
     @Operation(summary = "获取角色（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<SysRoleVo> getRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        SysRoleVo sysRoleVo = sysRoleService.getRole(id);
+    public R<SysRoleVo> getRole(@PathVariable(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        SysRoleVo sysRoleVo = sysRoleService.getRole(Long.parseLong(id));
         return R.ok(sysRoleVo);
     }
 
@@ -152,8 +153,8 @@ public class SysRoleController {
     @GetMapping(value = "/enableRole/{id}")
     @Operation(summary = "启用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> enableRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        sysRoleService.enableRole(id);
+    public R<Object> enableRole(@PathVariable(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        sysRoleService.enableRole(Long.parseLong(id));
         return R.ok("启用成功", null);
     }
 
@@ -162,8 +163,8 @@ public class SysRoleController {
     @GetMapping(value = "/forbiddenRole/{id}")
     @Operation(summary = "禁用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> forbiddenRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        sysRoleService.forbiddenRole(id);
+    public R<Object> forbiddenRole(@PathVariable(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        sysRoleService.forbiddenRole(Long.parseLong(id));
         return R.ok("禁用成功", null);
     }
 
@@ -173,8 +174,8 @@ public class SysRoleController {
     @GetMapping(value = "/setDefaultRole/{id}")
     @Operation(summary = "设置默认角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> setDefaultRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        sysRoleService.setDefaultRole(id);
+    public R<Object> setDefaultRole(@PathVariable(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        sysRoleService.setDefaultRole(Long.parseLong(id));
         return R.ok("设置成功", null);
     }
 
@@ -205,8 +206,8 @@ public class SysRoleController {
     @GetMapping(value = "/setFixRole")
     @Operation(summary = "设置固定角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> setFixRole(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysRoleService.setFixRole(id);
+    public R<Object> setFixRole(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysRoleService.setFixRole(Long.parseLong(id));
         return R.ok("设置成功", null);
     }
 
@@ -214,8 +215,8 @@ public class SysRoleController {
     @GetMapping(value = "/cancelFixRole")
     @Operation(summary = "取消固定角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> cancelFixRole(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysRoleService.cancelFixRole(id);
+    public R<Object> cancelFixRole(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysRoleService.cancelFixRole(Long.parseLong(id));
         return R.ok("取消成功", null);
     }
 

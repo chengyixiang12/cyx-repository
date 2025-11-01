@@ -140,7 +140,7 @@ const menuList = ref<GetMenuListVo[]>([])
 // 弹窗相关状态
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
-const menuId = ref<number | null>(null)
+const menuId = ref<string>('')
 const type = ref<string>('')
 const total = ref(0)
 
@@ -244,7 +244,7 @@ const handleVisibleChange = async (row: GetMenuListVo) => {
 }
 
 // 删除菜单
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteMenuApi(id)
   loadMenus()
 }

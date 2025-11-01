@@ -3,6 +3,7 @@ package com.soft.base.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,14 +13,10 @@ import java.time.LocalDateTime;
  * 菜单信息表
  * @TableName sys_menu
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_menu")
 @Data
-public class SysMenu implements Serializable {
-    /**
-     * 菜单唯一标识符，主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+public class SysMenu extends BaseEntity {
 
     /**
      * 父菜单ID，顶级菜单的父ID通常为0
@@ -76,44 +73,8 @@ public class SysMenu implements Serializable {
     private Integer visible;
 
     /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
-
-    /**
      * 备注信息
      */
     @TableField(value = "remark")
     private String remark;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 修改人
-     */
-    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 逻辑删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private Integer delFlag;
-
-    @Serial
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }

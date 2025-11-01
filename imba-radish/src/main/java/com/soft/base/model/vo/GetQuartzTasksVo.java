@@ -15,7 +15,7 @@ import org.apache.ibatis.type.Alias;
 public class GetQuartzTasksVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "任务名称")
     private String jobName;

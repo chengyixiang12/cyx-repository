@@ -15,7 +15,7 @@ import java.util.List;
 public class UserInfoVo {
 
     @Schema(description = "用户id")
-    private Long id;
+    private String id;
 
     @Schema(description = "用户名")
     private String username;

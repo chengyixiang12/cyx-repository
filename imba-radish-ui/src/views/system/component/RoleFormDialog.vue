@@ -55,20 +55,20 @@ import { SysRoleVo } from '@/types/role'
 interface FatherParam {
   visible: boolean;
   isAdd: boolean;
-  roleId?: number | null
+  roleId?: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
   visible: false,
   isAdd: false,
-  roleId: null,
+  roleId: '',
 })
 
 const emit = defineEmits(['update:visible', 'submit'])
 
 const formRef = ref<FormInstance>()
 const formData = ref<SysRoleVo>({
-  id: 0,
+  id: '',
   name: '',
   sortOrder: null,
   code: '',

@@ -95,10 +95,10 @@ const router = useRouter()
 const route = useRoute()
 const loading = ref(false)
 const total = ref<number>(0)
-const dictDataId = ref<number | null>(null)
+const dictDataId = ref<string>('')
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
-const dictType = ref<string>(route.query.dictType as string)
+const parentId = ref<string>(route.query.parentId as string)
 
 const dictDataList = ref<DictDatasVo[]>([])
 const searchForm = ref<DictDatasRequest>({
@@ -106,7 +106,7 @@ const searchForm = ref<DictDatasRequest>({
   status: null,
   pageNum: 1,
   pageSize: 10,
-  dictType: dictType.value
+  parentId: parentId.value
 })
 
 // 返回字典类型模块
@@ -127,14 +127,14 @@ const editData = async (row: DictDatasVo) => {
 
 // 新增数据提交
 const handleAddSubmit = async (formdata: SaveDictDataRequest) => {
-  formdata.dictType = dictType.value;
+  formdata.parentId = parentId.value;
   await saveDictDataApi(formdata)
   await handleSearch()
 }
 
 // 编辑数据提交
 const handleEditSubmit = async (formdata: SaveDictDataRequest) => {
-  formdata.dictType = dictType.value;
+  formdata.parentId = parentId.value;
   await editDictDataApi({
     ...formdata,
     id: dictDataId.value
@@ -142,7 +142,7 @@ const handleEditSubmit = async (formdata: SaveDictDataRequest) => {
 }
 
 // 删除
-const deleteData = async (id: number) => {
+const deleteData = async (id: string) => {
   await deleteDictDataApi(id)
   await handleSearch()
 }
@@ -173,7 +173,7 @@ const resetSearch = () => {
 // 设置默认
 const setDefault = async (row: DictDatasVo) => {
   if (row.isDefault === 1) {
-    await setDefaultRoleApi(row.id, dictType.value);
+    await setDefaultRoleApi(row.id, parentId.value);
   } else {
     showMessage('非法操作', 'warning');
     row.isDefault = 1

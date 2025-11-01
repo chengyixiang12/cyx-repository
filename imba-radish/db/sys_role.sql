@@ -1,6 +1,6 @@
 create table sys_role
 (
-    id          bigint auto_increment comment '主键'
+    id          bigint       not null comment '主键'
         primary key,
     sort_order  int          null comment '排序字段',
     create_by   bigint       null comment '创建人',
@@ -21,12 +21,5 @@ create index idx_code
     on sys_role (code)
     comment '角色编码普通索引';
 
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (1, 1, 1, '2024-10-25 15:07:55', 1, '2025-04-26 10:37:08', '1', 'ROLE_ADMIN', '管理员', '拥有所有权限', 1, 0, 1);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (2, 2, 1, '2024-10-25 15:08:15', 1, '2024-10-25 15:08:07', '1', 'ROLE_NORMAL', '普通用户', '没有任何权限', 1, 1, 1);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (3, 3, 1, '2024-10-25 15:21:10', 1, '2024-10-25 15:21:18', '1', 'ROLE_DPEPT_HEADER', '部门负责人', '负责自己的部门', 1, 0, 0);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (4, 4, 1, '2024-10-25 15:19:19', 1, '2024-10-25 15:21:21', '1', 'ROLE_TEAM_HEADER', '组长', '负责自己的小组', 0, 0, 0);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (5, 5, 1, '2024-10-25 15:26:12', 1, '2024-10-25 15:28:01', '1', 'ROLE_PROGRAM_MANAGER', '项目经理', '负责项目研发、测试、部署、运维', 0, 0, 0);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (6, 6, 1, '2024-10-25 15:29:03', 1, '2024-10-25 15:29:03', '1', 'ROLE_PROJECT_MANAGER', '产品经理', '负责项目设计、客户对接', 0, 0, 0);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (7, 7, 1, '2024-10-25 16:18:56', 1, '2024-10-25 16:18:56', '1', 'ROLE_JAVA_ENGINEER', 'Java开发工程师', '负责java项目的开发', 1, 0, 0);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (8, 8, 1, '2025-04-20 21:52:02', 1, '2025-04-20 22:00:10', '0', 'ROLE_REACT_ENGINEER', 'React研发工程师', '从事于react项目研发', 0, 0, 0);
-INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (9, 10, 1, '2025-04-21 20:29:54', 1, '2025-07-14 20:04:55', '0', 'ROLE_RECAT_ENGINEER', 'React开发工程师', null, 1, 0, 0);
+INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (1984489247068725249, 1, 1984481955388682242, '2024-10-25 15:07:55', 1984481955388682242, '2025-04-26 10:37:08', '0', 'ROLE_ADMIN', '管理员', '拥有所有权限', 1, 0, 1);
+INSERT INTO radish_master.sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES (1984489247123251201, 2, 1984481955388682242, '2024-10-25 15:08:15', 1984481955388682242, '2024-10-25 15:08:07', '0', 'ROLE_NORMAL', '普通用户', '没有任何权限', 1, 1, 1);

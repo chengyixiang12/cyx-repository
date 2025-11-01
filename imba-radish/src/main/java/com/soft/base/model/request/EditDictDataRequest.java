@@ -16,8 +16,8 @@ import lombok.Data;
 public class EditDictDataRequest {
 
     @Schema(description = "主键")
-    @NotNull(message = "id不能为空")
-    private Long id;
+    @NotBlank(message = "id不能为空")
+    private String id;
 
     @Schema(description = "排序")
     private Integer sortOrder;
@@ -29,9 +29,9 @@ public class EditDictDataRequest {
     @NotBlank(message = "字典值不能为空")
     private String value;
 
-    @Schema(description = "字典类型")
-    @NotBlank(message = "字典类型不能为空")
-    private String dictType;
+    @Schema(description = "字典类型id")
+    @NotNull(message = "字典类型id不能为空")
+    private String parentId;
 
     @Schema(description = "样式属性（其他样式扩展）")
     private String cssClass;

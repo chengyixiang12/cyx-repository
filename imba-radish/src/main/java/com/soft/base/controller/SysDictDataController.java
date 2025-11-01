@@ -66,7 +66,7 @@ public class SysDictDataController {
     @PostMapping
     @Operation(summary = "添加字典数据")
     public R<Object> saveDictData(@RequestBody @Valid SaveDictDataRequest request) {
-        if (sysDictDataService.existValue(request.getDictType(), request.getValue())) {
+        if (sysDictDataService.existValue(Long.parseLong(request.getParentId()), request.getValue())) {
             return R.fail("字典编码已存在");
         }
         sysDictDataService.saveDictData(request);
@@ -79,7 +79,7 @@ public class SysDictDataController {
     @PutMapping
     @Operation(summary = "编辑字典数据")
     public R<Object> editDictData(@RequestBody @Valid EditDictDataRequest request) {
-        if (sysDictDataService.existCode(request.getDictType(), request.getValue(), request.getId())) {
+        if (sysDictDataService.existCode(Long.parseLong(request.getParentId()), request.getValue(), Long.parseLong(request.getId()))) {
             return R.fail("字典编码已存在");
         }
         sysDictDataService.editDictData(request);
@@ -91,8 +91,8 @@ public class SysDictDataController {
     @DeleteMapping
     @Operation(summary = "删除字典数据")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        sysDictDataService.deleteDictData(id);
+    public R<Object> deleteDictData(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
+        sysDictDataService.deleteDictData(Long.parseLong(id));
         return R.ok();
     }
 
@@ -109,8 +109,8 @@ public class SysDictDataController {
     @GetMapping(value = "/enableDictData")
     @Operation(summary = "启用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> enableDictData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysDictDataService.enableDictData(id);
+    public R<Object> enableDictData(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysDictDataService.enableDictData(Long.parseLong(id));
         return R.ok("启用成功", null);
     }
 
@@ -118,8 +118,8 @@ public class SysDictDataController {
     @GetMapping(value = "/forbiddenDictData")
     @Operation(summary = "禁用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> forbiddenDictData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysDictDataService.forbiddenDictData(id);
+    public R<Object> forbiddenDictData(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysDictDataService.forbiddenDictData(Long.parseLong(id));
         return R.ok("禁用成功", null);
     }
 
@@ -129,11 +129,11 @@ public class SysDictDataController {
     @Operation(summary = "设置默认")
     @Parameters({
             @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY),
-            @Parameter(name = "dictType", description = "字典类型", required = true, in = ParameterIn.QUERY)
+            @Parameter(name = "parentId", description = "字典类型id", required = true, in = ParameterIn.QUERY)
     })
-    public R<Object> setDefaultData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id,
-                                    @RequestParam(value = "dictType", required = false) @NotBlank(message = "字典类型不能为空") String dictType) {
-        sysDictDataService.setDefaultData(id, dictType);
+    public R<Object> setDefaultData(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id,
+                                    @RequestParam(value = "parentId", required = false) @NotBlank(message = "字典类型id不能为空") Long parentId) {
+        sysDictDataService.setDefaultData(Long.parseLong(id), parentId);
         return R.ok("设置成功", null);
     }
 }

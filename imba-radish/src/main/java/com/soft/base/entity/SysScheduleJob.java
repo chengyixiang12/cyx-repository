@@ -2,6 +2,7 @@ package com.soft.base.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
@@ -10,44 +11,10 @@ import java.time.LocalDateTime;
  * 调度任务表
  * @TableName sys_schedule_job
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_schedule_job")
 @Data
-public class SysScheduleJob {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 修改时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
-
-    /**
-     * 逻辑删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private Integer delFlag;
+public class SysScheduleJob extends BaseEntity {
 
     /**
      * 任务名称

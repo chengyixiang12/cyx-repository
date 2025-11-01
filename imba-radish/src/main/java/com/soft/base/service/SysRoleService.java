@@ -36,17 +36,17 @@ public interface SysRoleService extends IService<SysRole> {
 
     void setDefaultRole(Long id);
 
-    List<FixRolesDto> fixRolesFlag(List<Long> ids);
+    List<FixRolesDto> fixRolesFlag(List<String> ids);
 
     void setMenus(SetMenusRequest request);
 
     void setPermissions(SetPermissionsRequest request);
 
-    List<Long> getUserRole(Long userId);
+    List<String> getUserRole(Long userId);
 
     List<String> getRoleCodesByUserId(Long userId);
 
-    Long getDefaultRole(Integer defaultRoleFlag);
+    String getDefaultRole(Integer defaultRoleFlag);
 
     void setFixRole(Long id);
 

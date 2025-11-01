@@ -22,13 +22,13 @@ import java.util.List;
 public class GetMenuTreeVo implements MenuTree<GetMenuTreeVo> {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "菜单名称")
     private String name;
 
     @Schema(description = "上级菜单")
-    private Long parentId;
+    private String parentId;
 
     @Schema(description = "子集")
     private List<GetMenuTreeVo> children = new ArrayList<>();

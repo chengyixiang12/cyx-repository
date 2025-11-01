@@ -60,14 +60,14 @@ interface FatherParam {
   visible: boolean;
   isAdd: boolean;
   deptTree: DeptTreeVo[];
-  userId?: number | null;
+  userId?: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
   visible: false,
   isAdd: false,
   deptTree: () => [],
-  userId: null
+  userId: ''
 })
 
 const emit = defineEmits(['update:visible', 'submit'])
@@ -88,7 +88,7 @@ const formData = ref<SaveUserRequest>({
   nickname: '',
   email: '',
   phone: '',
-  deptId: null,
+  deptId: '',
   roleIds: []
 })
 
@@ -121,7 +121,7 @@ const handleSubmit = async () => {
 }
 
 // 获取用户
-const getUserById = async (id: number) => {
+const getUserById = async (id: string) => {
   const userInfo = await getUser(id)
   formData.value = {
     username: userInfo.username,
@@ -129,7 +129,7 @@ const getUserById = async (id: number) => {
     nickname: userInfo.nickname,
     email: userInfo.email,
     phone: userInfo.phone || '',
-    deptId: userInfo.deptId || 0,
+    deptId: userInfo.deptId,
     roleIds: userInfo.roleIds || []
   }
 }

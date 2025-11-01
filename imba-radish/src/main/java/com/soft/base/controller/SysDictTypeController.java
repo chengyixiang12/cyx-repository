@@ -17,7 +17,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,14 +36,10 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "字典类型")
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 public class SysDictTypeController {
 
     private final SysDictTypeService sysDictTypeService;
-
-    @Autowired
-    public SysDictTypeController(SysDictTypeService sysDictTypeService) {
-        this.sysDictTypeService = sysDictTypeService;
-    }
 
     @PostMapping(value = "/getDictTypes")
     @Operation(summary = "获取字典类型（复）")
@@ -56,9 +54,6 @@ public class SysDictTypeController {
     @PostMapping
     @Operation(summary = "添加字典类型")
     public R<Object> saveDictType(@RequestBody @Valid SaveDictTypeRequest request) {
-        if (sysDictTypeService.existDictType(request.getDictType())) {
-            return R.fail("字典类型已存在");
-        }
         sysDictTypeService.saveDictType(request);
         return R.ok();
     }
@@ -76,8 +71,8 @@ public class SysDictTypeController {
     @GetMapping
     @Operation(summary = "获取字典类型（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<DictTypeVo> getDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        DictTypeVo dictTypeVo = sysDictTypeService.getDictType(id);
+    public R<DictTypeVo> getDictType(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        DictTypeVo dictTypeVo = sysDictTypeService.getDictType(Long.parseLong(id));
         return R.ok(dictTypeVo);
     }
 
@@ -86,8 +81,8 @@ public class SysDictTypeController {
     @DeleteMapping(value = "/{id}")
     @Operation(summary = "删除字典类型")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteDictType(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        sysDictTypeService.deleteDictType(id);
+    public R<Object> deleteDictType(@PathVariable(value = "id") @NotBlank(message = "主键不能为空") String id) {
+        sysDictTypeService.deleteDictType(Long.parseLong(id));
         return R.ok();
     }
 
@@ -103,16 +98,16 @@ public class SysDictTypeController {
     @GetMapping(value = "/enableDictType")
     @Operation(summary = "启用字典类型")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> enableDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysDictTypeService.enableDictType(id);
+    public R<Object> enableDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") String id) {
+        sysDictTypeService.enableDictType(Long.parseLong(id));
         return R.ok("启用成功", null);
     }
 
     @GetMapping(value = "/forbiddenDictType")
     @Operation(summary = "禁用字典类型")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> forbiddenDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysDictTypeService.forbiddenDictType(id);
+    public R<Object> forbiddenDictType(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysDictTypeService.forbiddenDictType(Long.parseLong(id));
         return R.ok("禁用成功", null);
     }
 }

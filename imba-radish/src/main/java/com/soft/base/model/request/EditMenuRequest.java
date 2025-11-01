@@ -18,10 +18,10 @@ public class EditMenuRequest {
 
     @Schema(description = "主键")
     @NotNull(message = "主键不能不能为空")
-    private Long id;
+    private String id;
 
     @Schema(description = "父级id，若为根节点则不传")
-    private Long parentId;
+    private String parentId;
 
     @Schema(description = "菜单名称")
     @NotBlank(message = "菜单名称不能为空")

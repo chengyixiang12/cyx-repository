@@ -13,7 +13,7 @@ public class EditRoleRequest {
 
     @Schema(description = "主键")
     @NotNull(message = "主键不能为空")
-    private Long id;
+    private String id;
 
     @Schema(description = "排序")
     private Integer sortOrder;

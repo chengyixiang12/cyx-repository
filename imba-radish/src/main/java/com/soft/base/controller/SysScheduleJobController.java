@@ -73,15 +73,15 @@ public class SysScheduleJobController {
 
     @GetMapping(value = "/startJob")
     @Operation(summary = "启用任务")
-    public R<Object> startJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysScheduleJobService.startJob(id);
+    public R<Object> startJob(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysScheduleJobService.startJob(Long.parseLong(id));
         return R.ok("任务已启动", null);
     }
 
     @GetMapping(value = "/stopJob")
     @Operation(summary = "停止任务")
-    public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysScheduleJobService.stopJob(id);
+    public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysScheduleJobService.stopJob(Long.parseLong(id));
         return R.ok("任务已停止", null);
     }
 
@@ -110,8 +110,8 @@ public class SysScheduleJobController {
 
     @GetMapping(value = "/getJob")
     @Operation(summary = "获取job详情")
-    public R<GetJobVo> getJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        GetJobVo getJobVo = sysScheduleJobService.getJob(id);
+    public R<GetJobVo> getJob(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
+        GetJobVo getJobVo = sysScheduleJobService.getJob(Long.parseLong(id));
         return R.ok(getJobVo);
     }
 
@@ -123,14 +123,14 @@ public class SysScheduleJobController {
     }
 
     @DeleteMapping(value = "/deleteJob")
-    public R<Object> deleteJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        sysScheduleJobService.deleteJob(id);
+    public R<Object> deleteJob(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
+        sysScheduleJobService.deleteJob(Long.parseLong(id));
         return R.ok("删除成功");
     }
 
     @GetMapping(value = "/execImmediately")
     @Operation(summary = "立即执行")
-    public R<Object> execImmediately(@RequestParam(value = "id", required = false) Long id) {
+    public R<Object> execImmediately(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
         SysScheduleJob sysScheduleJob = sysScheduleJobService.getById(id);
         if (BaseConstant.Status.STATUS_BAN.equals(sysScheduleJob.getStatus())) {
             return R.fail("任务还未启动");

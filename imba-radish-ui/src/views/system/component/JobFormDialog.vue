@@ -55,12 +55,12 @@
 
         <!-- 开始时间 -->
         <el-form-item label="开始时间" prop="startTime" v-if="formData.scheduleType === '0'">
-          <el-date-picker v-model="formData.startTime" type="datetime" placeholder="选择开始时间" style="width: 100%" />
+          <el-date-picker v-model="formData.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="选择开始时间" style="width: 100%" />
         </el-form-item>
 
         <!-- 结束时间 -->
         <el-form-item label="结束时间" prop="endTime" v-if="formData.scheduleType === '0'">
-          <el-date-picker v-model="formData.endTime" type="datetime" placeholder="选择结束时间" style="width: 100%" />
+          <el-date-picker v-model="formData.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="选择结束时间" style="width: 100%" />
         </el-form-item>
 
         <!-- 间隔时间 (仅在简单调度时显示) -->
@@ -122,7 +122,7 @@ const visible = computed({
 
 // 表单数据
 const formData = ref<GetJobVo>({
-  id: null,
+  id: '',
   jobName: '',
   jobGroup: 'default',
   cron: '0 0 0 * * ?',

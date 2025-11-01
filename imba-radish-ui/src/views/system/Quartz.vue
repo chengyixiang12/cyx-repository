@@ -52,12 +52,14 @@
               <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-popconfirm title="确认执行？" confirm-button-text="确认" cancel-button-text="取消"
-                      @confirm="handleExecute(scope.row.id)">
-                      <template #reference>
-                        <el-button size="small" type="primary" :disabled="scope.row.status == 0" :icon="VideoPlay" circle />
-                      </template>
-                    </el-popconfirm>
-                  <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
+                    @confirm="handleExecute(scope.row.id)">
+                    <template #reference>
+                      <el-button size="small" type="primary" :disabled="scope.row.status == 0" :icon="VideoPlay"
+                        circle />
+                    </template>
+                  </el-popconfirm>
+                  <el-button size="small" type="primary" @click="handleEdit(scope.row.id)"
+                    :disabled="scope.row.status == 1" :icon="Edit" circle />
                   <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
@@ -142,7 +144,7 @@ const handleEditSubmit = async (formData: EditJobRequest) => {
 }
 
 // 删除任务
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteJobApi(id)
   await loadJobs()
 }
@@ -181,7 +183,7 @@ const resetSearch = () => {
 }
 
 // 立即执行
-const handleExecute = async (id: number) => {
+const handleExecute = async (id: string) => {
   await execImmediately(id)
 }
 

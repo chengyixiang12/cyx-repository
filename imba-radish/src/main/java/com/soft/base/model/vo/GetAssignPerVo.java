@@ -16,7 +16,7 @@ import org.apache.ibatis.type.Alias;
 public class GetAssignPerVo {
 
     @Schema(description = "权限id")
-    private Long id;
+    private String id;
 
     @Schema(description = "权限名称")
     private String name;

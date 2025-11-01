@@ -68,7 +68,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void saveDictData(SaveDictDataRequest request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
-            sysDictDataMapper.setNotDefault(request.getDictType());
+            sysDictDataMapper.setNotDefault(Long.parseLong(request.getParentId()));
         }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
@@ -78,12 +78,12 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void editDictData(EditDictDataRequest request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
-            sysDictDataMapper.setNotDefault(request.getDictType());
+            sysDictDataMapper.setNotDefault(Long.parseLong(request.getParentId()));
         }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
         sysDictDataMapper.updateById(sysDictData);
-        removeCache(request.getId());
+        removeCache(Long.parseLong(request.getId()));
     }
 
     @Override
@@ -95,17 +95,17 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void deleteDictDataBatch(DeleteRequest request) {
         sysDictDataMapper.deleteByIds(request.getIds());
-        request.getIds().forEach(this::removeCache);
+        request.getIds().stream().map(Long::parseLong).forEach(this::removeCache);
     }
 
     @Override
-    public boolean existValue(String dictType, String value) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getDictType, dictType).eq(SysDictData::getValue, value));
+    public boolean existValue(Long parentId, String value) {
+        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getParentId, parentId).eq(SysDictData::getValue, value));
     }
 
     @Override
-    public boolean existCode(String dictType, String value, Long id) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getDictType, dictType).eq(SysDictData::getValue, value).ne(SysDictData::getId, id));
+    public boolean existCode(Long parentId, String value, Long id) {
+        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getParentId, parentId).eq(SysDictData::getValue, value).ne(SysDictData::getId, id));
     }
 
     @Override
@@ -122,20 +122,20 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setDefaultData(Long id, String dictType) {
-        sysDictDataMapper.setNotDefault(dictType);
+    public void setDefaultData(Long id, Long parentId) {
+        sysDictDataMapper.setNotDefault(parentId);
         sysDictDataMapper.setDefaultData(id);
     }
 
     @Override
-    public List<DictDataDto> getByDictType(String dictType) {
-        return sysDictDataMapper.getByDictType(dictType, BaseConstant.Status.STATUS_ENABLE);
+    public List<DictDataDto> getByDictType(Long parentId) {
+        return sysDictDataMapper.getByDictType(parentId, BaseConstant.Status.STATUS_ENABLE);
     }
 
     @Override
-    @Cacheable(key = "#dictType", unless = "#result.size() == 0")
-    public Map<String, String> getByDictTypeMap(String dictType) {
-        List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(dictType, BaseConstant.Status.STATUS_ENABLE);
+    @Cacheable(key = "#parentId", unless = "#result.size() == 0")
+    public Map<String, String> getByDictTypeMap(Long parentId) {
+        List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(parentId, BaseConstant.Status.STATUS_ENABLE);
         return sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel, (a, b) -> a));
     }
 

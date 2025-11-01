@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +73,8 @@ public class SysPermissionController {
     @GetMapping(value = "/getAssignPer")
     @Operation(summary = "获取被赋予的权限")
     @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
-    public R<List<GetAssignPerVo>> getAssignPer(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
-        List<GetAssignPerVo> notAssignPerVos = sysPermissionService.getAssignPer(roleId);
+    public R<List<GetAssignPerVo>> getAssignPer(@RequestParam(value = "roleId", required = false) @NotBlank(message = "角色id不能为空") String roleId) {
+        List<GetAssignPerVo> notAssignPerVos = sysPermissionService.getAssignPer(Long.parseLong(roleId));
         return R.ok(notAssignPerVos);
     }
 

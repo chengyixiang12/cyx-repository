@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +52,9 @@ public class SysLogController {
     @GetMapping(value = "/getLog")
     @Operation(summary = "获取日志")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<GetLogVo> getLog(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+    public R<GetLogVo> getLog(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
         try {
-            GetLogVo getLogVo = sysLogService.getLog(id);
+            GetLogVo getLogVo = sysLogService.getLog(Long.parseLong(id));
             return R.ok(getLogVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -65,8 +66,8 @@ public class SysLogController {
     @DeleteMapping
     @Operation(summary = "删除日志")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteLog(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysLogService.deleteLog(id);
+    public R<Object> deleteLog(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysLogService.deleteLog(Long.parseLong(id));
         return R.ok("删除成功", null);
     }
 }

@@ -1,6 +1,7 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class ExportDeptRequest {
 
     @Schema(description = "部门id数组")
     @NotEmpty
-    private List<@NotNull Long> ids;
+    private List<@NotBlank String> ids;
 
     @Schema(description = "文件名")
     private String fileName;

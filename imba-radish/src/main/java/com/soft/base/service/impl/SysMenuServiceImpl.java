@@ -190,7 +190,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
      */
     private <T extends MenuTree<T>> List<T> buildTree(List<T> menusVos) {
 
-        Map<Long, T> map = new HashMap<>();
+        Map<String, T> map = new HashMap<>();
         List<T> tree = new ArrayList<>();
 
         // 将菜单存入映射

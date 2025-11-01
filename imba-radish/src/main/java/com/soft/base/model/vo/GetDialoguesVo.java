@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class GetDialoguesVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "创建人")
     private String createBy;

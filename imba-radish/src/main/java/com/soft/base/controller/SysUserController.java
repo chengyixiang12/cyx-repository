@@ -120,10 +120,10 @@ public class SysUserController {
     @PutMapping
     @Operation(summary = "编辑用户")
     public R<Object> editUser(@RequestBody @Valid EditUserRequest request) {
-        if (sysUsersService.existsEmail(request.getId(), request.getEmail())) {
+        if (sysUsersService.existsEmail(Long.parseLong(request.getId()), request.getEmail())) {
             return R.fail("邮箱已注册");
         }
-        String username = sysUsersService.getUsername(request.getId());
+        String username = sysUsersService.getUsername(Long.parseLong(request.getId()));
         sysUsersService.editUser(request, username);
         return R.ok();
     }
@@ -186,7 +186,7 @@ public class SysUserController {
         if (sysUsersService.existsUsername(request.getUsername())) {
             return R.fail("用户名重复");
         }
-        String username = sysUsersService.getUsername(request.getId());
+        String username = sysUsersService.getUsername(Long.parseLong(request.getId()));
         sysUsersService.resetUsername(request, username);
         return R.ok();
     }

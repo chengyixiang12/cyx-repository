@@ -16,7 +16,7 @@ export async function getAllPermissionsApi(): Promise<GetAllPermissionVo[]> {
  * @param id 
  * @returns 
  */
-export async function getAssignPerApi(id: number): Promise<GetAssignPerVo[]> {
+export async function getAssignPerApi(id: string): Promise<GetAssignPerVo[]> {
     const res = await get<GetAssignPerVo[]>('/permission/getAssignPer', { flag: true, params: { roleId: id } });
     return res.data;
 }

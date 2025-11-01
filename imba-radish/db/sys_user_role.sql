@@ -7,9 +7,4 @@ create table sys_user_role
 )
     comment '用户角色表';
 
-INSERT INTO radish_master.sys_user_role (role_id, user_id) VALUES (1, 1);
-INSERT INTO radish_master.sys_user_role (role_id, user_id) VALUES (1, 2);
-INSERT INTO radish_master.sys_user_role (role_id, user_id) VALUES (2, 11);
-INSERT INTO radish_master.sys_user_role (role_id, user_id) VALUES (2, 12);
-INSERT INTO radish_master.sys_user_role (role_id, user_id) VALUES (2, 13);
-INSERT INTO radish_master.sys_user_role (role_id, user_id) VALUES (2, 14);
+INSERT INTO radish_master.sys_user_role (role_id, user_id) VALUES (1984489247068725249, 1984481955388682242);

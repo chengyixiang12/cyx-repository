@@ -85,7 +85,7 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
   global-config:
     db-config:
-      id-type: auto
+      id-type: assign_id
       logic-delete-value: 1
       logic-not-delete-value: 0
       logic-delete-field: delFlag

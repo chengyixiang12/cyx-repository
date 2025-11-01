@@ -4,11 +4,11 @@ import { PaginatedData } from '@/types/api';
 
 /**
  * 根据id获取文件
- * @param param 
+ * @param id 
  * @returns 
  */
-export async function getFileById(param?: number): Promise<Blob> {
-  const res = await get<Blob>('/file/downloadFile', { flag: true, params: { id: param }, responseType: 'blob'});
+export async function getFileById(id: string): Promise<Blob> {
+  const res = await get<Blob>('/file/downloadFile', { flag: true, params: { id }, responseType: 'blob'});
   return res.data;
 }
 
@@ -16,7 +16,7 @@ export async function getFileById(param?: number): Promise<Blob> {
  * 上传文件
  * @param params 
  */
-export async function uploadFile(params?: FormData): Promise<UploadFileVo> {
+export async function uploadFile(params: FormData): Promise<UploadFileVo> {
   const res = await post<UploadFileVo>('/file', params, { flag: true })
   return res.data;
 }
@@ -35,7 +35,7 @@ export async function getFilesApi(data: FilesRequest): Promise<PaginatedData<Fil
  * 删除文件
  * @param id 
  */
-export async function deleteFileApi(id: number) {
+export async function deleteFileApi(id: string) {
   del('/file', { params: { id }, flag: true })
 }
 
@@ -44,7 +44,7 @@ export async function deleteFileApi(id: number) {
  * @param id 
  * @returns 
  */
-export async function downloadFileApi(id: number): Promise<Blob> {
+export async function downloadFileApi(id: string): Promise<Blob> {
   const blob = await getBlob<Blob>('/file/downloadFile', { flag: true, params: { id }});
   return blob;
 }

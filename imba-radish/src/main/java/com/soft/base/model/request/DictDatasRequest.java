@@ -15,9 +15,9 @@ import lombok.EqualsAndHashCode;
 @Schema(description = "字典数据请求参数")
 public class DictDatasRequest extends PageRequest {
 
-    @Schema(description = "字典类型")
-    @NotBlank(message = "字典类型不能为空")
-    private String dictType;
+    @Schema(description = "字典类型id")
+    @NotBlank(message = "字典类型id不能为空")
+    private String parentId;
 
     @Schema(description = "关键字")
     private String keyword;

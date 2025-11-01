@@ -14,5 +14,5 @@ public interface SysUserRoleService extends IService<SysUserRole> {
 
     void insertBatch(List<SysUserRole> userRoles);
 
-    List<Long> getByUserId(Long UserId);
+    List<String> getByUserId(Long UserId);
 }

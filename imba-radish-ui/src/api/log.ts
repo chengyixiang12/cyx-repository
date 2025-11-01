@@ -15,7 +15,7 @@ export async function getLogsApi(data: LogsRequest): Promise<PaginatedData<LogsV
  * 删除日志
  * @param id 
  */
-export async function deleteLogApi(id: number) {
+export async function deleteLogApi(id: string) {
     await del('/log', { flag: true, params: { id } });
 }
 
@@ -23,7 +23,7 @@ export async function deleteLogApi(id: number) {
  * 获取日志
  * @param id 
  */
-export async function getLogDetailApi(id: number): Promise<GetLogVo> {
+export async function getLogDetailApi(id: string): Promise<GetLogVo> {
     const res = await get('/log/getLog', { flag: true, params: { id } });
     return res.data;
 }

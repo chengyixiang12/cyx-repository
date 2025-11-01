@@ -18,7 +18,7 @@ import java.util.List;
 public class GetUsersDto {
 
     @Schema(description = "部门ids")
-    private List<Long> deptIds;
+    private List<String> deptIds;
 
     @Schema(description = "关键字检索")
     private String nameLikeQry;

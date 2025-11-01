@@ -48,13 +48,13 @@ import type { SaveDictTypeRequest } from '@/types/dictType'
 interface FatherParam {
     visible: boolean
     isAdd: boolean
-    dictTypeId?: number | null
+    dictTypeId?: string
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
     visible: false,
     isAdd: false,
-    dictTypeId: null
+    dictTypeId: ''
 })
 
 const emit = defineEmits(['update:visible', 'submit'])

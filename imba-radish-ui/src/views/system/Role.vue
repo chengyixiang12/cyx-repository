@@ -128,7 +128,7 @@ const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const assignPermissionVisible = ref(false)
 const assignMenuVisible = ref(false)
-const roleId = ref<number | null>(null)
+const roleId = ref<string>('')
 
 const searchForm = ref<GetRolesRequest>({
   keyword: '',
@@ -164,7 +164,7 @@ const handleAssignPermissionSubmit = async (request: SetPermissionsRequest) => {
 }
 
 // 保存被赋予的菜单
-const handleAssignMenuSubmit = async (data: { roleId: number, menuIds: number[] }) => {
+const handleAssignMenuSubmit = async (data: { roleId: string, menuIds: string[] }) => {
   await updateRoleMenusApi(data)
   assignMenuVisible.value = false
   await loadRoles()
@@ -176,7 +176,7 @@ const handleAdd = () => {
 }
 
 // 编辑角色
-const handleEdit = (id: number) => {
+const handleEdit = (id: string) => {
   roleId.value = id
   editDialogVisible.value = true
 }
@@ -194,7 +194,7 @@ const handleEditSubmit = async (formData: EditRoleRequest) => {
 }
 
 // 删除角色
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteRoleApi(id)
   await loadRoles()
 }
@@ -242,13 +242,13 @@ const handleFixRoleChange = async (row: SysRoleVo) => {
 }
 
 // 赋予权限
-const handleAssignPermission = (id: number) => {
+const handleAssignPermission = (id: string) => {
   roleId.value = id;
   assignPermissionVisible.value = true;
 }
 
 // 赋予菜单
-const handleAssignMenu = (id: number) => {
+const handleAssignMenu = (id: string) => {
   roleId.value = id;
   assignMenuVisible.value = true;
 }

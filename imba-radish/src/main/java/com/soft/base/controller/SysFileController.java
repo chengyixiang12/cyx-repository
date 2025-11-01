@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,10 +78,10 @@ public class SysFileController {
     @GetMapping (value = "/downloadFile")
     @Operation(summary = "下载文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+    public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
         HttpHeaders headers = new HttpHeaders();
 
-        FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
+        FileDetailDto fileDetail = sysFileService.getFileDetailById(Long.parseLong(id));
         if (fileDetail == null) {
             throw new GlobalException("不存在的文件");
         }
@@ -133,8 +134,8 @@ public class SysFileController {
     @DeleteMapping
     @Operation(summary = "删除文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        sysFileService.deleteFile(id);
+    public R<Object> deleteFile(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        sysFileService.deleteFile(Long.parseLong(id));
         return R.ok("删除成功", null);
     }
 

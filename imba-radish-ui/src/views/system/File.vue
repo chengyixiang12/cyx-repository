@@ -121,7 +121,7 @@ const resetSearch = () => {
 }
 
 // 删除部门
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteFileApi(id)
   loadFiles()
 }

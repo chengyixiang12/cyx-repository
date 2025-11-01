@@ -11,10 +11,3 @@ declare module 'vue3-markdown-it' {
     source: string
   }>
 }
-
-declare module 'quartz-cron-parser' {
-  const quartzCronParser: {
-    parseExpression: (cron: string, options?: any) => any;
-  };
-  export = quartzCronParser;
-}

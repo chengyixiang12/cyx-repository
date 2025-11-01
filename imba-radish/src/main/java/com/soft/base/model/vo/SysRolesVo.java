@@ -16,7 +16,7 @@ import org.apache.ibatis.type.Alias;
 public class SysRolesVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "排序字段")
     private Integer sortOrder;

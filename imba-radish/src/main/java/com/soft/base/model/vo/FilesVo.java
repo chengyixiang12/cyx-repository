@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class FilesVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "存储地址；1：minio；2：磁盘")
     private Integer location;

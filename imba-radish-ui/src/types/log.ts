@@ -1,5 +1,5 @@
 export interface LogsVo {
-    id: number;
+    id: string;
     nickname: string;
     moduleName: string;
     requestMethod: string;

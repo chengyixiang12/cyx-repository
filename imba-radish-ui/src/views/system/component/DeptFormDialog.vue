@@ -40,7 +40,7 @@ import { DeptTreeVo, DeptVo } from '@/types/dept'
 interface FatherParam {
   visible: boolean;
   isAdd: boolean;
-  deptId?: number | null
+  deptId?: string | null
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
@@ -51,7 +51,7 @@ const props = withDefaults(defineProps<FatherParam>(), {
 const emit = defineEmits(['update:visible', 'submit'])
 const formRef = ref<FormInstance>()
 const formData = ref<DeptVo>({
-  id: 0,
+  id: null,
   name: '',
   sortOrder: null,
   code: '',

@@ -16,7 +16,7 @@ import org.apache.ibatis.type.Alias;
 public class UploadAvatarVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "上传头像uri")
     private String uri;

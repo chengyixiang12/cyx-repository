@@ -16,10 +16,10 @@ import org.apache.ibatis.type.Alias;
 public class GetMenuVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "父级主键")
-    private Long parentId;
+    private String parentId;
 
     @Schema(description = "菜单名称")
     private String name;

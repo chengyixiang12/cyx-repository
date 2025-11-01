@@ -4,6 +4,7 @@ package com.soft.base.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.ibatis.type.Alias;
 
 import java.io.Serial;
@@ -15,15 +16,12 @@ import java.time.LocalDateTime;
  *
  * @TableName users
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value ="sys_user")
 @Alias(value = "SysUser")
-public class SysUser implements Serializable {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+public class SysUser extends BaseEntity {
+
 
     /**
      * 用户名
@@ -74,38 +72,6 @@ public class SysUser implements Serializable {
     private String phone;
 
     /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    /**
-     * 修改时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
-
-    /**
-     * 逻辑删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private Integer delFlag;
-
-    /**
-     * 修改人
-     */
-    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
      * 昵称
      */
     @TableField(value = "nickname")
@@ -122,10 +88,6 @@ public class SysUser implements Serializable {
      */
     @TableField(value = "avatar")
     private Long avatar;
-
-    @Serial
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 
     /**
      * 设置默认值

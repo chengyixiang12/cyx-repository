@@ -91,7 +91,7 @@ const router = useRouter()
 const loading = ref(false)
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
-const dictTypeId = ref<number | null>(null);
+const dictTypeId = ref<string>('');
 
 const dictTypeList = ref<DictTypesVo[]>([])
 const searchForm = ref<GetDictTypesRequest>({
@@ -104,7 +104,7 @@ const total = ref<number>(0)
 
 // 跳转字典数据模块
 const goToData = (row: DictTypesVo) => {
-  router.push({ name: 'dictData', query: { dictType: row.dictType, dictName: row.dictName } })
+  router.push({ name: 'dictData', query: { parentId: row.id, dictName: row.dictName } })
 }
 
 // 打开新增字典类型弹窗
@@ -117,7 +117,7 @@ const handleEditType = (row: DictTypesVo) => {
   dictTypeId.value = row.id;
 }
 // 删除
-const deleteType = async (id: number) => {
+const deleteType = async (id: string) => {
   await deleteDictTypeApi(id);
   await handleSearch();
 }

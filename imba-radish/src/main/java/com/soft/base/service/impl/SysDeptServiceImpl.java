@@ -69,7 +69,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
 
     @Override
     public void saveDept(SaveDeptRequest request) {
-        String level = sysDeptMapper.getLevel(request.getParentId());
+        String level = sysDeptMapper.getLevel(Long.parseLong(request.getParentId()));
         SysDept sysDept = new SysDept();
         BeanUtils.copyProperties(request, sysDept);
         sysDept.setLevel(String.valueOf(Integer.parseInt(level) + BaseConstant.DEPT_LEVEL_ADD_ONE));
@@ -78,7 +78,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
 
     @Override
     public void editDept(EditDeptRequest request) {
-        String level = sysDeptMapper.getLevel(request.getParentId());
+        String level = sysDeptMapper.getLevel(Long.parseLong(request.getParentId()));
         SysDept sysDept = new SysDept();
         BeanUtils.copyProperties(request, sysDept);
         sysDept.setLevel(level);
@@ -111,7 +111,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
-    public List<Long> getChildDeptIds(List<Long> deptIds) {
+    public List<String> getChildDeptIds(List<String> deptIds) {
         return sysDeptMapper.getChildDeptIds(deptIds);
     }
 
@@ -130,7 +130,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
             throw new GlobalException("组织架构为空");
         }
 
-        Map<Long, DeptTreeVo> map = new HashMap<>();
+        Map<String, DeptTreeVo> map = new HashMap<>();
         List<DeptTreeVo> tree = new ArrayList<>();
 
         // 将部门存入映射

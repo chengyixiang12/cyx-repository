@@ -15,7 +15,7 @@ import java.util.List;
 public class GetUserVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "用户名")
     private String username;
@@ -30,8 +30,8 @@ public class GetUserVo {
     private String phone;
 
     @Schema(description = "部门id")
-    private Long deptId;
+    private String deptId;
 
     @Schema(description = "角色id")
-    private List<Long> roleIds;
+    private List<String> roleIds;
 }

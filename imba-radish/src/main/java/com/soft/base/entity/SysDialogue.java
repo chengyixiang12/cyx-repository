@@ -4,55 +4,22 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.time.LocalDateTime;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 智能对话表
  * @TableName sys_dialogue
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_dialogue")
 @Data
-public class SysDialogue {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+public class SysDialogue extends BaseEntity {
 
     /**
-     * 排序
+     * 排序字段
      */
     @TableField(value = "sort_order")
     private Long sortOrder;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 修改时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
-
-    /**
-     * 逻辑删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private Integer delFlag;
 
     /**
      * 标题

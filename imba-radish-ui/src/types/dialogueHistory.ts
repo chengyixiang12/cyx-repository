@@ -5,7 +5,7 @@ export interface GetDialogueHistoriesRequest {
 }
 
 export interface GetDialogueHistoriesVo {
-    id: number;
+    id: string;
     createBy: string;
     createTime: string;
     content: string;
@@ -17,11 +17,11 @@ export interface SaveDialogueRequest {
 }
 
 export interface RenameRequest {
-    id: number;
+    id: string | null;
     title: string;
 }
 
 export interface GetTitleVo {
-    id: number | null;
-    title: string | null;
+    id: string;
+    title: string;
 }

@@ -22,12 +22,12 @@ import { SetMenusRequest } from '@/types/role';
 
 interface FatherParam {
   modelValue: boolean;
-  roleId: number | null;
+  roleId: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
   modelValue: false,
-  roleId: null
+  roleId: ''
 })
 
 const emit = defineEmits(['update:modelValue', 'submit'])
@@ -38,10 +38,10 @@ const visible = computed({
 })
 
 const menuTree = ref<GetMenuTreeVo[]>([])
-const selectedMenuIds = ref<number[]>([])
+const selectedMenuIds = ref<string[]>([])
 const menuTreeRef = ref()
 
-const loadMenus = async (roleId: number) => {
+const loadMenus = async (roleId: string) => {
   const [allMenus, assignedMenus] = await Promise.all([
     getAllMenuTreeApi(),
     getAssignedMenuApi(roleId)
@@ -57,7 +57,7 @@ const loadMenus = async (roleId: number) => {
 watch(
   () => [visible.value, props.roleId],
   async ([vis, id]) => {
-    if (vis && typeof id === 'number') {
+    if (vis && typeof id === 'string') {
       await loadMenus(id)
     }
   },
@@ -65,8 +65,8 @@ watch(
 )
 
 const handleSubmit = () => {
-  const checkedKeys = menuTreeRef.value.getCheckedKeys() as number[]
-  const halfCheckedKeys = menuTreeRef.value.getHalfCheckedKeys() as number[]
+  const checkedKeys = menuTreeRef.value.getCheckedKeys() as string[]
+  const halfCheckedKeys = menuTreeRef.value.getHalfCheckedKeys() as string[]
 
   const allSelected = [...new Set([...checkedKeys, ...halfCheckedKeys])]
 

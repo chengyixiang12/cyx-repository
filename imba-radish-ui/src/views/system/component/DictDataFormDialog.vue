@@ -52,23 +52,22 @@ import { getDictDataApi } from '@/api/dictData'
 interface FatherParam {
     visible: boolean
     isAdd: boolean
-    dictDataId?: number | null
+    dictDataId?: string | null
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
     visible: false,
     isAdd: false,
-    dictDataId: null
+    dictDataId: ''
 })
 
 const emit = defineEmits(['update:visible', 'submit'])
 const formRef = ref<FormInstance>()
 const formData = ref<SaveDictDataRequest>({
     sortOrder: null,
-    code: '',
     label: '',
     value: '',
-    dictType: '',
+    parentId: props.dictDataId,
     cssClass: '',
     listClass: '',
     isDefault: 0,

@@ -4,7 +4,7 @@ export interface UploadFileVo {
 }
 
 export interface FilesVo {
-    id: number;
+    id: string;
     location: string;
     fileSize: number;
     originalName: string;

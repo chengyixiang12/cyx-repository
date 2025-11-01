@@ -93,14 +93,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public List<FixRolesDto> fixRolesFlag(List<Long> ids) {
+    public List<FixRolesDto> fixRolesFlag(List<String> ids) {
         return sysRoleMapper.fixRolesFlag(ids);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void setMenus(SetMenusRequest request) {
-        sysRoleMapper.deleteRoleMenus(request.getRoleId());
+        sysRoleMapper.deleteRoleMenus(Long.parseLong(request.getRoleId()));
         if (CollectionUtil.isEmpty(request.getMenuIds())) {
             return;
         }
@@ -118,7 +118,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public List<Long> getUserRole(Long userId) {
+    public List<String> getUserRole(Long userId) {
         return sysRoleMapper.getUserRole(userId);
     }
 
@@ -128,7 +128,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public Long getDefaultRole(Integer defaultRoleFlag) {
+    public String getDefaultRole(Integer defaultRoleFlag) {
         return sysRoleMapper.getDefaultRole(defaultRoleFlag);
     }
 

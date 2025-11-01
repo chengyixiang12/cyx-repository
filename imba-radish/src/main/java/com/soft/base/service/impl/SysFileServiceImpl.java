@@ -110,7 +110,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFileMapper.insert(sysFile);
 
             }
-            uploadFileVo.setFileId(sysFile.getId());
+            uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
             uploadFileVo.setFileName(sysFile.getOriginalName());
 
             return uploadFileVo;
@@ -135,7 +135,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
 
-        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap("file_storage_location");
+        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(4L);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
@@ -189,7 +189,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFileMapper.insert(sysFile);
 
             }
-            uploadAvatarVo.setId(sysFile.getId());
+            uploadAvatarVo.setId(String.valueOf(sysFile.getId()));
             uploadAvatarVo.setUri(sysFile.getObjectKey());
 
             return uploadAvatarVo;

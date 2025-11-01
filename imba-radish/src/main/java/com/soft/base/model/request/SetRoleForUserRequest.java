@@ -16,8 +16,8 @@ import org.apache.ibatis.type.Alias;
 public class SetRoleForUserRequest {
 
     @Schema(description = "用户id")
-    private Long userId;
+    private String userId;
 
     @Schema(description = "角色id")
-    private Long roleId;
+    private String roleId;
 }

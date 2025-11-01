@@ -16,7 +16,7 @@ export async function getQuartzTasksApi(data: GetQuartzTasksRequest): Promise<Pa
  * 启动任务
  * @param id 任务id
  */
-export async function startJobApi(id: number): Promise<void> {
+export async function startJobApi(id: string): Promise<void> {
   await get('/scheduleJob/startJob', { flag: true, params: { id } });
 }
 
@@ -24,7 +24,7 @@ export async function startJobApi(id: number): Promise<void> {
  * 暂停任务
  * @param id 任务id
  */
-export async function stopJobApi(id: number): Promise<void> {
+export async function stopJobApi(id: string): Promise<void> {
   await get('/scheduleJob/stopJob', { flag: true, params: { id } });
 }
 
@@ -48,11 +48,11 @@ export async function createJobApi(data: SaveJobRequest): Promise<void> {
 
 /**
  * 获取任务详情
- * @param param 任务id
+ * @param id 任务id
  * @returns 
  */
-export async function getJobApi(param: number): Promise<GetJobVo> {
-  const res = await get<GetJobVo>('/scheduleJob/getJob', { flag: true, params: { id: param } });
+export async function getJobApi(id: number): Promise<GetJobVo> {
+  const res = await get<GetJobVo>('/scheduleJob/getJob', { flag: true, params: { id } });
   return res.data;
 }
 
@@ -68,7 +68,7 @@ export async function editJobApi(data: EditJobRequest): Promise<void> {
  * 删除任务
  * @param param 任务id
  */
-export async function deleteJobApi(id: number): Promise<void> {
+export async function deleteJobApi(id: string): Promise<void> {
   await del('/scheduleJob/deleteJob', { flag: true, params: { id } });
 }
 
@@ -76,6 +76,6 @@ export async function deleteJobApi(id: number): Promise<void> {
  * 立即执行
  * @param id 
  */
-export async function execImmediately(id: number): Promise<void> {
+export async function execImmediately(id: string): Promise<void> {
   await get('/scheduleJob/execImmediately', { flag: true, params: { id } });
 }

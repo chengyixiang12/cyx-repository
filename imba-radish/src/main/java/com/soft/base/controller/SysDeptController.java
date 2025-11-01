@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -100,7 +101,7 @@ public class SysDeptController {
     @PutMapping
     @Operation(summary = "编辑部门")
     public R<Object> editDept(@RequestBody @Valid EditDeptRequest request) {
-        if (sysDeptService.existCode(request.getCode(), request.getId())) {
+        if (sysDeptService.existCode(request.getCode(), Long.parseLong(request.getId()))) {
             return R.fail("部门编码已存在");
         }
         sysDeptService.editDept(request);
@@ -112,7 +113,7 @@ public class SysDeptController {
     @DeleteMapping
     @Operation(summary = "删除部门")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+    public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
         sysDeptService.removeById(id);
         return R.ok();
     }
@@ -129,8 +130,8 @@ public class SysDeptController {
     @GetMapping
     @Operation(summary = "获取部门（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        DeptVo deptVo = sysDeptService.getDept(id);
+    public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
+        DeptVo deptVo = sysDeptService.getDept(Long.parseLong(id));
         return R.ok(deptVo);
     }
 

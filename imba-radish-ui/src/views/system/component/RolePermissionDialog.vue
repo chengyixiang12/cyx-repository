@@ -26,12 +26,12 @@ import { GetAllPermissionVo, SetPermissionsRequest } from '@/types/permissionts'
 
 interface FatherParam {
     modelValue: boolean;
-    roleId: number | null;
+    roleId: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
     modelValue: false,
-    roleId: null
+    roleId: ''
 })
 
 const emit = defineEmits(['update:modelValue', 'submit'])
@@ -42,9 +42,9 @@ const visible = computed({
 })
 
 const permissionOptions = ref<GetAllPermissionVo[]>([])
-const selectedPermissions = ref<number[]>([])
+const selectedPermissions = ref<string[]>([])
 
-const loadPermissions = async (id: number) => {
+const loadPermissions = async (id: string) => {
     // 获取全部权限数据
     const allPermissions = await getAllPermissionsApi()
     permissionOptions.value = allPermissions
@@ -65,7 +65,7 @@ const handleSubmit = async () => {
 watch(
     () => [visible.value, props.roleId],
     async ([vis, id]) => {
-        if (vis && typeof id === 'number') {
+        if (vis && typeof id === 'string') {
             await loadPermissions(id)
         }
     },

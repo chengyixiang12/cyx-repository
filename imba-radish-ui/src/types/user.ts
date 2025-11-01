@@ -5,33 +5,33 @@ export interface SaveUserRequest {
     username: string;
     password: string;
     nickname: string;
-    deptId: number | null;
+    deptId: string;
     email: string;
     phone: string;
-    roleIds: number[];
+    roleIds: string[];
 }
 
 export interface EditUserRequest {
-    id: number | null;
+    id: string | null;
     nickname: string;
-    deptId: number | null;
+    deptId: string;
     email: string;
     phone: string;
-    roleIds: number[];
+    roleIds: string[];
 }
 
 export interface GetUserVo {
-    id: number;
+    id: string;
     username: string;
     nickname: string;
     email: string;
     phone: string;
-    deptId: number;
-    roleIds: number[];
+    deptId: string | null;
+    roleIds: string[];
 }
 
 export interface AllUserVo {
-    id: number;
+    id: string;
     username: string;
     phone: string;
     email: string;

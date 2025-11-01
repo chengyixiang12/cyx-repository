@@ -133,7 +133,7 @@ const handleView = (row: LogsVo) => {
 }
 
 // 删除菜单
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
     await deleteLogApi(id)
     loadLogs()
 }

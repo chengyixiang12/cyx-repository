@@ -30,7 +30,7 @@ export async function updateUser(params: EditUserRequest): Promise<any> {
  * @param id 
  * @returns 
  */
-export async function getUser(id: number): Promise<GetUserVo> {
+export async function getUser(id: string): Promise<GetUserVo> {
    const res = await get<GetUserVo>('/user/getUser', { flag: true, params: { id } })
    return res.data;
 }
@@ -40,15 +40,15 @@ export async function getUser(id: number): Promise<GetUserVo> {
  * @param param 
  * @returns 
  */
-export async function deleteUserById(param: number): Promise<ApiResponse<any>> {
-   return await del('/user', { params: { id: param }, flag: true })
+export async function deleteUserById(id: string): Promise<ApiResponse<any>> {
+   return await del('/user', { params: { id }, flag: true })
 }
 
 /**
  * 锁定用户
  * @param id 
  */
-export async function lockUserApi(id: number) {
+export async function lockUserApi(id: string) {
    await get('/user/lockUser', { flag: true, params: { id } })
 }
 
@@ -56,7 +56,7 @@ export async function lockUserApi(id: number) {
  * 解锁用户
  * @param id 
  */
-export async function unlockUserApi(id: number) {
+export async function unlockUserApi(id: string) {
    await get('/user/unlockUser', { flag: true, params: { id } })
 }
 
@@ -64,7 +64,7 @@ export async function unlockUserApi(id: number) {
  * 启用用户
  * @param id 
  */
-export async function enableUserApi(id: number) {
+export async function enableUserApi(id: string) {
    await get('/user/enableUser', { flag: true, params: { id } })
 }
 
@@ -72,7 +72,7 @@ export async function enableUserApi(id: number) {
  * 禁用用户
  * @param id 
  */
-export async function forbiddenUser(id: number) {
+export async function forbiddenUser(id: string) {
    await get('/user/forbiddenUser', { flag: true, params: { id } })
 }
 
@@ -80,7 +80,7 @@ export async function forbiddenUser(id: number) {
  * 获取用户头像
  * @param params 
  */
-export async function getAvatarApi(id: number): Promise<string> {
+export async function getAvatarApi(id: string): Promise<string> {
    const res = await get('/user/getAvatar', { flag: true,  params: { id } })
    return res.data;
 }
