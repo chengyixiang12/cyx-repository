@@ -62,7 +62,7 @@
         WHERE del_flag = '0'
           AND id = #{id}
     </update>
-    <update id="setNotDefault" parameterType="java.lang.String">
+    <update id="setNotDefault" parameterType="java.lang.Long">
         UPDATE
             sys_dict_data
         SET

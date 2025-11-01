@@ -72,4 +72,10 @@
             sf.del_flag = '0'
           AND sf.file_hash = #{hashCode}
     </select>
+    <select id="selectDeletedFiles" resultType="SelectDeletedFileDto">
+        select t1.bucket,
+               t1.object_key
+        from sys_file t1
+        where t1.del_flag = '1'
+    </select>
 </mapper>

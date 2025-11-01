@@ -55,7 +55,7 @@ public class SysDictTypeController {
     @Operation(summary = "添加字典类型")
     public R<Object> saveDictType(@RequestBody @Valid SaveDictTypeRequest request) {
         sysDictTypeService.saveDictType(request);
-        return R.ok();
+        return R.ok("添加成功", null);
     }
 
     @SysLock(name = "dictType")
@@ -65,7 +65,7 @@ public class SysDictTypeController {
     @Operation(summary = "编辑字典类型")
     public R<Object> editDictType(@RequestBody @Valid EditDictTypeRequest request) {
         sysDictTypeService.editDictType(request);
-        return R.ok();
+        return R.ok("修改成功", null);
     }
 
     @GetMapping
@@ -83,7 +83,7 @@ public class SysDictTypeController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteDictType(@PathVariable(value = "id") @NotBlank(message = "主键不能为空") String id) {
         sysDictTypeService.deleteDictType(Long.parseLong(id));
-        return R.ok();
+        return R.ok("删除成功", null);
     }
 
     @SysLog(value = "批量删除字典类型", module = LogModuleEnum.DICT_TYPE)
@@ -92,22 +92,22 @@ public class SysDictTypeController {
     @Operation(summary = "批量删除字典类型")
     public R<Object> deleteDictTypeBatch(@RequestBody DeleteRequest request) {
         sysDictTypeService.deleteDictTypeBatch(request.getIds());
-        return R.ok();
+        return R.ok("删除成功", null);
     }
 
     @GetMapping(value = "/enableDictType")
     @Operation(summary = "启用字典类型")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> enableDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") String id) {
-        sysDictTypeService.enableDictType(Long.parseLong(id));
+    public R<Object> enableDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysDictTypeService.enableDictType(id);
         return R.ok("启用成功", null);
     }
 
     @GetMapping(value = "/forbiddenDictType")
     @Operation(summary = "禁用字典类型")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> forbiddenDictType(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
-        sysDictTypeService.forbiddenDictType(Long.parseLong(id));
+    public R<Object> forbiddenDictType(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysDictTypeService.forbiddenDictType(id);
         return R.ok("禁用成功", null);
     }
 }

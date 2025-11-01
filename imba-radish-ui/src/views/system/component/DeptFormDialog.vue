@@ -34,7 +34,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import { getDeptApi, getDeptTree } from '@/api/dept'
+import { getDeptApi, getDeptTreeApi } from '@/api/dept'
 import { DeptTreeVo, DeptVo } from '@/types/dept'
 
 interface FatherParam {
@@ -103,7 +103,7 @@ const getDept = async () => {
 // 获取父级部门树
 const loadDeptTree = async () => {
   try {
-    const res = await getDeptTree()
+    const res = await getDeptTreeApi(props.deptId)
     deptTree.value = res
   } catch (error) {
     console.error('加载部门树失败:', error)

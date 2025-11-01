@@ -27,7 +27,7 @@ public class SysDept extends BaseEntity {
      * 排序字段
      */
     @TableField(value = "sort_order")
-    private Long sortOrder;
+    private Integer sortOrder;
 
     /**
      * 部门编码

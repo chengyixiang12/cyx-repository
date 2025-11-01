@@ -41,7 +41,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     List<String> getRoleCodeByUserId(@Param("userId") Long id);
 
-    List<FixRolesDto> fixRolesFlag(@Param("ids") List<String> ids);
+    List<FixRolesDto> fixRolesFlag(@Param("ids") List<Long> ids);
 
     void setMenus(@Param("request") SetMenusRequest request);
 
@@ -55,7 +55,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     List<String> getRoleCodesByUserId(@Param("userId") Long userId);
 
-    String getDefaultRole(@Param("defaultRoleFlag") Integer defaultRoleFlag);
+    Long getDefaultRole(@Param("defaultRoleFlag") Integer defaultRoleFlag);
 
     void setFixRole(@Param("id") Long id);
 

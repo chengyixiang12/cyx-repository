@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class EditJobRequest {
 
     @Schema(description = "id")
-    private String id;
+    private Long id;
 
     @Schema(description = "任务名称")
     private String jobName;

@@ -128,8 +128,8 @@ const editData = async (row: DictDatasVo) => {
 // 新增数据提交
 const handleAddSubmit = async (formdata: SaveDictDataRequest) => {
   formdata.parentId = parentId.value;
-  await saveDictDataApi(formdata)
-  await handleSearch()
+  await saveDictDataApi(formdata);
+  await handleSearch();
 }
 
 // 编辑数据提交
@@ -138,30 +138,31 @@ const handleEditSubmit = async (formdata: SaveDictDataRequest) => {
   await editDictDataApi({
     ...formdata,
     id: dictDataId.value
-  })
+  });
+  await handleSearch();
 }
 
 // 删除
 const deleteData = async (id: string) => {
-  await deleteDictDataApi(id)
-  await handleSearch()
+  await deleteDictDataApi(id);
+  await handleSearch();
 }
 
 // 修改状态
 const changeStatus = async (row: DictDatasVo) => {
   if (row.status === 1) {
-    await enableDictDataApi(row.id)
+    await enableDictDataApi(row.id);
   } else {
-    await forbiddenDictDataApi(row.id)
+    await forbiddenDictDataApi(row.id);
   }
   await handleSearch();
 }
 
 // 列表条件查询
 const handleSearch = async () => {
-  const res = await getDictDatasApi(searchForm.value)
-  dictDataList.value = res.records
-  total.value = res.total
+  const res = await getDictDatasApi(searchForm.value);
+  dictDataList.value = res.records;
+  total.value = res.total;
 }
 
 // 重置
@@ -176,7 +177,7 @@ const setDefault = async (row: DictDatasVo) => {
     await setDefaultRoleApi(row.id, parentId.value);
   } else {
     showMessage('非法操作', 'warning');
-    row.isDefault = 1
+    row.isDefault = 1;
   }
   await handleSearch();
 }
@@ -185,7 +186,7 @@ const handlePageChange = (val: number) => { searchForm.value.pageNum = val }
 const handleSizeChange = (val: number) => { searchForm.value.pageSize = val }
 
 onMounted(() => {
-  handleSearch()
+  handleSearch();
 })
 </script>
 <style scoped>

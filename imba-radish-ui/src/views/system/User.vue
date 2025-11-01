@@ -137,7 +137,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
-import { getDeptTree } from '@/api/dept'
+import { getDeptTreeApi } from '@/api/dept'
 import { Edit, Delete, RemoveFilled } from '@element-plus/icons-vue'
 import {
   getUserList,
@@ -225,7 +225,7 @@ const pagination = ref({
 // 加载部门树
 const loadDeptTree = async () => {
   try {
-    const res = await getDeptTree()
+    const res = await getDeptTreeApi(null)
     deptTree.value = res || []
     if (deptTree.value.length > 0) {
       await nextTick();

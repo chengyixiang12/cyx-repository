@@ -11,9 +11,9 @@ import org.apache.ibatis.type.Alias;
 @Alias(value = "RenameRequest")
 public class RenameRequest {
 
-    @NotBlank(message = "主键不能为空")
+    @NotNull(message = "主键不能为空")
     @Schema(description = "主键")
-    private String id;
+    private Long id;
 
     @Schema(description = "对话名称")
     private String title;

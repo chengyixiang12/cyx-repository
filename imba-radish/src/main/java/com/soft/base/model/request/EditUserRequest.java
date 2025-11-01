@@ -21,14 +21,14 @@ public class EditUserRequest {
 
     @Schema(description = "主键")
     @NotNull(message = "id不能为空")
-    private String id;
+    private Long id;
 
     @Schema(description = "昵称")
     private String nickname;
 
     @Schema(description = "部门")
     @NotNull(message = "部门不能为空")
-    private String deptId;
+    private Long deptId;
 
     @Schema(description = "邮箱")
     @NotBlank(message = "邮箱不能为空")
@@ -38,7 +38,7 @@ public class EditUserRequest {
     private String phone;
 
     @Schema(description = "角色")
-    private List<String> roleIds;
+    private List<Long> roleIds;
 
     @Schema(description = "用户头像")
     private String avatar;

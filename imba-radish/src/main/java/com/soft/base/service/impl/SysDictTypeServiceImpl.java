@@ -77,7 +77,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
-    public void deleteDictTypeBatch(List<String> ids) {
+    public void deleteDictTypeBatch(List<Long> ids) {
         sysDictTypeMapper.deleteByIds(ids);
     }
 

@@ -52,9 +52,9 @@ public class SysLogController {
     @GetMapping(value = "/getLog")
     @Operation(summary = "获取日志")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<GetLogVo> getLog(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+    public R<GetLogVo> getLog(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         try {
-            GetLogVo getLogVo = sysLogService.getLog(Long.parseLong(id));
+            GetLogVo getLogVo = sysLogService.getLog(id);
             return R.ok(getLogVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -66,8 +66,8 @@ public class SysLogController {
     @DeleteMapping
     @Operation(summary = "删除日志")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteLog(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
-        sysLogService.deleteLog(Long.parseLong(id));
+    public R<Object> deleteLog(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysLogService.deleteLog(id);
         return R.ok("删除成功", null);
     }
 }

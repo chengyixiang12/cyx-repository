@@ -30,8 +30,6 @@ public class UpdatePrimaryKey implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        List<SysScheduleJob> list = service.list();
-        list.forEach(item -> item.setId(null));
-        service.saveBatch(list);
+        log.info("修改主键");
     }
 }

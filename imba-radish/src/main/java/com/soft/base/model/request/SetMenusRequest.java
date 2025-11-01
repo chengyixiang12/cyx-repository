@@ -18,8 +18,8 @@ public class SetMenusRequest {
 
     @Schema(description = "角色id")
     @NotNull(message = "角色主键不能为空")
-    private String roleId;
+    private Long roleId;
 
     @Schema(description = "菜单id集合")
-    private List<String> menuIds;
+    private List<Long> menuIds;
 }

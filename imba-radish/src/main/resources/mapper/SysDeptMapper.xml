@@ -109,7 +109,7 @@
         </if>
         ORDER BY sd.sort_order, sd.create_time DESC
     </select>
-    <select id="getChildDeptIds" parameterType="java.util.List" resultType="java.lang.String">
+    <select id="getChildDeptIds" parameterType="java.util.List" resultType="java.lang.Long">
         SELECT
             sd.id
         FROM

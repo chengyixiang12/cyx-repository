@@ -16,5 +16,5 @@ public class DeleteRequest {
 
     @Schema(description = "主键")
     @NotEmpty(message = "ids不能为空")
-    private List<@NotBlank(message = "ids不能为空") String> ids;
+    private List<@NotNull(message = "ids不能为空") Long> ids;
 }

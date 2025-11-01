@@ -17,7 +17,7 @@ import org.apache.ibatis.type.Alias;
 public class ResetPasswordRequest {
 
     @Schema(description = "主键")
-    private String id;
+    private Long id;
 
     @Schema(description = "密码")
     @NotBlank(message = "新密码不能为空")

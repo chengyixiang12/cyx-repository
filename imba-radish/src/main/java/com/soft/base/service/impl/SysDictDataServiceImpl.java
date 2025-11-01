@@ -68,7 +68,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void saveDictData(SaveDictDataRequest request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
-            sysDictDataMapper.setNotDefault(Long.parseLong(request.getParentId()));
+            sysDictDataMapper.setNotDefault(request.getParentId());
         }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
@@ -78,12 +78,12 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void editDictData(EditDictDataRequest request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
-            sysDictDataMapper.setNotDefault(Long.parseLong(request.getParentId()));
+            sysDictDataMapper.setNotDefault(request.getParentId());
         }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
         sysDictDataMapper.updateById(sysDictData);
-        removeCache(Long.parseLong(request.getId()));
+        removeCache(request.getId());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void deleteDictDataBatch(DeleteRequest request) {
         sysDictDataMapper.deleteByIds(request.getIds());
-        request.getIds().stream().map(Long::parseLong).forEach(this::removeCache);
+        request.getIds().forEach(this::removeCache);
     }
 
     @Override

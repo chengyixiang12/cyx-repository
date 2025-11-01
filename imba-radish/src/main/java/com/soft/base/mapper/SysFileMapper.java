@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysFile;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.dto.FileHashDto;
+import com.soft.base.model.dto.SelectDeletedFileDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author cyq
@@ -23,6 +26,7 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
 
     FileHashDto getFileByHash(@Param("hashCode") String hashCode);
 
+    List<SelectDeletedFileDto> selectDeletedFiles();
 }
 
 

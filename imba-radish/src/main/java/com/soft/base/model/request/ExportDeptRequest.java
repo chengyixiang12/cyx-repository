@@ -21,7 +21,7 @@ public class ExportDeptRequest {
 
     @Schema(description = "部门id数组")
     @NotEmpty
-    private List<@NotBlank String> ids;
+    private List<@NotNull Long> ids;
 
     @Schema(description = "文件名")
     private String fileName;

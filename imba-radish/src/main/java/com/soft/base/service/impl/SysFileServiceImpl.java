@@ -9,6 +9,7 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.dto.FileHashDto;
+import com.soft.base.model.dto.SelectDeletedFileDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
@@ -31,6 +32,7 @@ import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -196,6 +198,11 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         } catch (NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<SelectDeletedFileDto> selectDeletedFiles() {
+        return sysFileMapper.selectDeletedFiles();
     }
 }
 

@@ -58,7 +58,7 @@ public class SysScheduleJobController {
     @Operation(summary = "创建定时任务")
     public R<Object> createJob(@RequestBody @Valid CreateJobRequest request) {
         if (sysScheduleJobService.existJobType(request.getJobType(), request.getJobGroup())) {
-            return R.fail(StrUtil.format("{}任务类型已存在{}", request.getJobGroup(), request.getJobType()));
+            return R.fail(StrUtil.format("“{}”任务类型已存在于“{}”组中", request.getJobType(), request.getJobGroup()));
         }
         sysScheduleJobService.createJob(request);
         return R.ok("创建成功", null);
@@ -73,15 +73,15 @@ public class SysScheduleJobController {
 
     @GetMapping(value = "/startJob")
     @Operation(summary = "启用任务")
-    public R<Object> startJob(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
-        sysScheduleJobService.startJob(Long.parseLong(id));
+    public R<Object> startJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysScheduleJobService.startJob(id);
         return R.ok("任务已启动", null);
     }
 
     @GetMapping(value = "/stopJob")
     @Operation(summary = "停止任务")
-    public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
-        sysScheduleJobService.stopJob(Long.parseLong(id));
+    public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysScheduleJobService.stopJob(id);
         return R.ok("任务已停止", null);
     }
 
@@ -110,8 +110,8 @@ public class SysScheduleJobController {
 
     @GetMapping(value = "/getJob")
     @Operation(summary = "获取job详情")
-    public R<GetJobVo> getJob(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
-        GetJobVo getJobVo = sysScheduleJobService.getJob(Long.parseLong(id));
+    public R<GetJobVo> getJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        GetJobVo getJobVo = sysScheduleJobService.getJob(id);
         return R.ok(getJobVo);
     }
 
@@ -123,24 +123,24 @@ public class SysScheduleJobController {
     }
 
     @DeleteMapping(value = "/deleteJob")
-    public R<Object> deleteJob(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
-        sysScheduleJobService.deleteJob(Long.parseLong(id));
+    public R<Object> deleteJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysScheduleJobService.deleteJob(id);
         return R.ok("删除成功");
     }
 
     @GetMapping(value = "/execImmediately")
     @Operation(summary = "立即执行")
-    public R<Object> execImmediately(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
+    public R<Object> execImmediately(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         SysScheduleJob sysScheduleJob = sysScheduleJobService.getById(id);
         if (BaseConstant.Status.STATUS_BAN.equals(sysScheduleJob.getStatus())) {
             return R.fail("任务还未启动");
         }
 
-        String jobName = sysScheduleJob.getJobName();
+        String jobType = sysScheduleJob.getJobType();
         String jobGroup = sysScheduleJob.getJobGroup();
 
         try {
-            JobKey jobKey = new JobKey(jobName, jobGroup);
+            JobKey jobKey = new JobKey(jobType, jobGroup);
 
             // 检查任务是否存在
             if (scheduler.checkExists(jobKey)) {
@@ -148,11 +148,11 @@ public class SysScheduleJobController {
                 scheduler.triggerJob(jobKey);
                 return R.ok("任务执行成功", null);
             } else {
-                log.warn("任务不存在: {}.{}", jobGroup, jobName);
+                log.warn("任务不存在: {}.{}", jobGroup, jobType);
                 return R.fail("任务还未启动");
             }
         } catch (SchedulerException e) {
-            log.error("立即执行任务失败: {}.{}", jobGroup, jobName, e);
+            log.error("立即执行任务失败: {}.{}", jobGroup, jobType, e);
             return R.fail("立即执行任务失败");
         }
     }

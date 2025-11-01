@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 public class GetUsersRequest extends PageRequest {
 
     @Schema(description = "部门id")
-    private String deptId;
+    private Long deptId;
 
     @Schema(description = "关键字检索")
     private String nameLikeQry;

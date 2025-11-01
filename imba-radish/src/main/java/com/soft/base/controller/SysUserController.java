@@ -95,7 +95,7 @@ public class SysUserController {
     @Operation(summary = "重置密码")
     public R<Object> resetPassword(@RequestBody ResetPasswordRequest request) {
         sysUsersService.resetPassword(request);
-        return R.ok();
+        return R.ok("密码重置成功", null);
     }
 
     @SysLock(name = "user")
@@ -111,7 +111,7 @@ public class SysUserController {
             return R.fail("邮箱已注册");
         }
         sysUsersService.saveUser(request);
-        return R.ok();
+        return R.ok("添加成功", null);
     }
 
     @SysLock(name = "user")
@@ -120,12 +120,12 @@ public class SysUserController {
     @PutMapping
     @Operation(summary = "编辑用户")
     public R<Object> editUser(@RequestBody @Valid EditUserRequest request) {
-        if (sysUsersService.existsEmail(Long.parseLong(request.getId()), request.getEmail())) {
+        if (sysUsersService.existsEmail(request.getId(), request.getEmail())) {
             return R.fail("邮箱已注册");
         }
-        String username = sysUsersService.getUsername(Long.parseLong(request.getId()));
+        String username = sysUsersService.getUsername(request.getId());
         sysUsersService.editUser(request, username);
-        return R.ok();
+        return R.ok("修改成功", null);
     }
 
     @GetMapping(value = "/getUserInfo")
@@ -186,7 +186,7 @@ public class SysUserController {
         if (sysUsersService.existsUsername(request.getUsername())) {
             return R.fail("用户名重复");
         }
-        String username = sysUsersService.getUsername(Long.parseLong(request.getId()));
+        String username = sysUsersService.getUsername(request.getId());
         sysUsersService.resetUsername(request, username);
         return R.ok();
     }

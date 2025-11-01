@@ -29,5 +29,5 @@ public class SaveDeptRequest {
     private Integer sortOrder;
 
     @Schema(description = "父级id")
-    private String parentId;
+    private Long parentId;
 }

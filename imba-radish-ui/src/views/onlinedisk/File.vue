@@ -5,9 +5,17 @@
         <el-card>
           <template #header>
             <div class="list-header">
+              <div class="left-placeholder"></div>
+              <div class="center-progress" v-if="showProgress">
+                <el-progress :percentage="uploadProgress" :show-text="false" />
+              </div>
               <div class="right-header">
-                <!-- <el-button type="primary" @click="handleExport">导出</el-button>
-                <el-button type="primary" @click="handleAdd">新增</el-button> -->
+                <el-upload class="upload-demo" :action="uploadAction" :on-success="handleUploadSuccess"
+                  :on-error="handleUploadError" :before-upload="beforeUpload" :show-file-list="false" multiple="false"
+                  name="multipartFile" :on-progress="handleProgress" :headers="uploadHeaders"
+                  enctype="multipart/form-data">
+                  <el-button type="primary">上传</el-button>
+                </el-upload>
               </div>
             </div>
           </template>
@@ -75,13 +83,20 @@
 import { ref, onMounted } from 'vue'
 import { Delete, Download } from '@element-plus/icons-vue'
 import { FilesRequest, FilesVo } from '@/types/file'
-import { deleteFileApi, getFilesApi, downloadFileApi } from '@/api/file'
+import { deleteFileApi, getFilesApi, downloadFileApi, uploadFileApi } from '@/api/file'
 import { download } from '@/utils/download'
 import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
 const total = ref(0)
 const fileList = ref<FilesVo[]>([])
+const uploadAction = ref('api/file/upload')
+const uploadHeaders = ref({
+  Authorization: `Bearer ${sessionStorage.getItem('Authorization')}`
+})
+const uploadProgress = ref<number>(0)
+const showProgress = ref<boolean>(false)
+
 
 const searchForm = ref<FilesRequest>({
   keyword: '',
@@ -103,11 +118,11 @@ const loadFiles = async () => {
 // 添加一个格式化文件大小的函数
 const formatFileSize = (size: number): string => {
   if (size === 0) return '0 B'
-  
+
   const units = ['B', 'KB', 'MB', 'GB', 'TB']
   const k = 1024
   const i = Math.floor(Math.log(size) / Math.log(k))
-  
+
   return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + units[i]
 }
 
@@ -144,6 +159,37 @@ const handleDownload = async (row: FilesVo) => {
   download(blob, row.originalName);
 }
 
+// 上传文件前置
+const beforeUpload = (file: File) => {
+  // 可以添加文件类型或大小限制检查
+  const isLt100M = file.size / 1024 / 1024 < 500
+  if (!isLt100M) {
+    showMessage('文件大小不能超过100M', 'error')
+  }
+  return isLt100M
+}
+
+// 上传成功
+const handleUploadSuccess = async (response: any, file: File, fileList: File[]) => {
+  showProgress.value = false
+  uploadProgress.value = 0
+  showMessage('上传成功', 'success')
+  await loadFiles(); // 重新加载文件列表
+}
+
+// 上传失败
+const handleUploadError = (error: any, file: File, fileList: File[]) => {
+  showProgress.value = false
+  uploadProgress.value = 0
+  showMessage('上传失败', 'error')
+}
+
+// 上传进度
+const handleProgress = (event: any, file: File, fileList: File[]) => {
+  uploadProgress.value = event.percent
+  showProgress.value = true
+}
+
 onMounted(() => {
   loadFiles()
 })
@@ -156,28 +202,22 @@ onMounted(() => {
   background-color: #f5f7fa;
 }
 
-.list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
 .list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 36px;
   padding: 0 12px;
+}
+
+.center-progress {
+  flex: 1;
+  margin: 0 20px;
+  max-width: 300px;
+}
+
+.left-placeholder {
+  flex: 1;
 }
 
 .right-header {
@@ -190,6 +230,20 @@ onMounted(() => {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
+.list-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+}
+
+.right-header {
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
 :deep(.el-card__header) {
   padding: 8px 12px !important;
   min-height: 36px !important;
@@ -197,7 +251,7 @@ onMounted(() => {
 }
 
 :deep(.el-card__body) {
-    padding: 14px !important;
+  padding: 14px !important;
 }
 
 .search-container {
@@ -225,6 +279,23 @@ onMounted(() => {
 :deep(.el-form-item__label) {
   padding-right: 8px;
   color: #606266;
+}
+
+.list-table {
+  width: 100%;
+  height: 52vh;
+  overflow: auto;
+  padding-top: 12px;
+}
+
+.list-table::-webkit-scrollbar {
+  height: 6px;
+  width: 5px;
+}
+
+.list-table::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
 .list-pagination {

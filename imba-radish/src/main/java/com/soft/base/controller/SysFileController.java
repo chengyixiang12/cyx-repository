@@ -68,20 +68,20 @@ public class SysFileController {
         this.minioUtil = minioUtil;
     }
 
-    @PostMapping
+    @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
     public R<UploadFileVo> uploadFile(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
         UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
-        return R.ok(uploadFileVo);
+        return R.ok("上传成功", uploadFileVo);
     }
 
     @GetMapping (value = "/downloadFile")
     @Operation(summary = "下载文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+    public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         HttpHeaders headers = new HttpHeaders();
 
-        FileDetailDto fileDetail = sysFileService.getFileDetailById(Long.parseLong(id));
+        FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
         if (fileDetail == null) {
             throw new GlobalException("不存在的文件");
         }
@@ -134,8 +134,8 @@ public class SysFileController {
     @DeleteMapping
     @Operation(summary = "删除文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteFile(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
-        sysFileService.deleteFile(Long.parseLong(id));
+    public R<Object> deleteFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        sysFileService.deleteFile(id);
         return R.ok("删除成功", null);
     }
 

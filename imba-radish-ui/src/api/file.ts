@@ -7,7 +7,7 @@ import { PaginatedData } from '@/types/api';
  * @param id 
  * @returns 
  */
-export async function getFileById(id: string): Promise<Blob> {
+export async function getFileByIdApi(id: string): Promise<Blob> {
   const res = await get<Blob>('/file/downloadFile', { flag: true, params: { id }, responseType: 'blob'});
   return res.data;
 }
@@ -16,7 +16,7 @@ export async function getFileById(id: string): Promise<Blob> {
  * 上传文件
  * @param params 
  */
-export async function uploadFile(params: FormData): Promise<UploadFileVo> {
+export async function uploadFileApi(params: FormData): Promise<UploadFileVo> {
   const res = await post<UploadFileVo>('/file', params, { flag: true })
   return res.data;
 }

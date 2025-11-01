@@ -65,16 +65,16 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     @Override
     public void rename(RenameRequest request) {
         SysDialogue sysDialogue = new SysDialogue();
-        sysDialogue.setId(Long.parseLong(request.getId()));
+        sysDialogue.setId(request.getId());
         sysDialogue.setTitle(request.getTitle());
         sysDialogueMapper.updateById(sysDialogue);
     }
 
     @Override
-    public GetTitleVo getTitle(String id) {
+    public GetTitleVo getTitle(Long id) {
         GetTitleVo getTitleVo = new GetTitleVo();
         SysDialogue sysDialogue = sysDialogueMapper.selectById(id);
-        getTitleVo.setId(id);
+        getTitleVo.setId(String.valueOf(id));
         getTitleVo.setTitle(sysDialogue.getTitle());
         return getTitleVo;
     }

@@ -75,14 +75,13 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
 
-        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType(5L);
-        Map<String, String> stringStringMap = sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel));
+        // 调度类型id
+        final Long scheduleTypeId = 1984484774405574661L;
 
-        pageVo.getRecords().forEach(item -> {
-            if (BaseConstant.QuartzType.QUARTZ_SIMPLE_SCHEDULE.equals(item.getScheduleType())) {
-                item.setScheduleType(stringStringMap.get(item.getScheduleType()));
-            }
-        });
+        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType(scheduleTypeId);
+        Map<String, String> scheduleTypeMap = sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel));
+
+        pageVo.getRecords().forEach(item -> item.setScheduleType(scheduleTypeMap.get(item.getScheduleType())));
         return pageVo;
     }
 
@@ -111,7 +110,7 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
         try {
             SysScheduleJob sysScheduleJob = sysScheduleJobMapper.selectById(id);
-            JobKey jobKey = new JobKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+            JobKey jobKey = new JobKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
             scheduler.deleteJob(jobKey);
         } catch (SchedulerException e) {
             log.error(e.getMessage(), e);
@@ -151,7 +150,7 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
         if (BaseConstant.Status.STATUS_ENABLE.equals(sysScheduleJob.getStatus())) {
             try {
-                JobKey jobKey = new JobKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+                JobKey jobKey = new JobKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
                 scheduler.deleteJob(jobKey);
             } catch (SchedulerException e) {
                 log.error(e.getMessage(), e);
@@ -174,8 +173,8 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
             Date startTime = Optional.ofNullable(sysScheduleJob.getStartTime()).map(item -> Date.from(item.atZone(ZoneId.systemDefault()).toInstant())).orElse(new Date());
             Date endTime = Optional.ofNullable(sysScheduleJob.getEndTime()).map(item -> Date.from(item.atZone(ZoneId.systemDefault()).toInstant())).orElse(null);
 
-            JobKey jobKey = JobKey.jobKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
-            TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+            JobKey jobKey = JobKey.jobKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
+            TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
 
             JobDetail jobDetail = JobBuilder
                     .newJob(jobClass)

@@ -66,8 +66,8 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
             if (sysScheduleJob.getEndTime() != null) {
                 endTime = Date.from(sysScheduleJob.getEndTime().atZone(ZoneId.systemDefault()).toInstant());
             }
-            JobKey jobKey = JobKey.jobKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
-            TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+            JobKey jobKey = JobKey.jobKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
+            TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
 
             JobDetail jobDetail = JobBuilder
                     .newJob(jobClass)

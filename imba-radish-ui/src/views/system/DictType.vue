@@ -43,7 +43,6 @@
                   <el-link @click="goToData(scope.row)" type="primary">{{ scope.row.dictName }}</el-link>
                 </template>
               </el-table-column>
-              <el-table-column prop="dictType" label="字典类型" align="center" show-overflow-tooltip />
               <el-table-column prop="sortOrder" label="排序" align="center" min-width="80" sortable />
               <el-table-column prop="status" label="状态" min-width="80" align="center">
                 <template #default="scope">

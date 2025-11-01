@@ -27,7 +27,7 @@ public class SaveDictDataRequest {
 
     @Schema(description = "字典类型id")
     @NotNull(message = "字典类型id不能为空")
-    private String parentId;
+    private Long parentId;
 
     @Schema(description = "样式属性（其他样式扩展）")
     private String cssClass;

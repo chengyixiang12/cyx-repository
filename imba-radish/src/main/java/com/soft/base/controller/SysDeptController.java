@@ -63,9 +63,9 @@ public class SysDeptController {
 
     @GetMapping(value = "/getDeptTree")
     @Operation(summary = "获取组织架构")
-    public R<List<DeptTreeVo>> getDeptTree() {
+    public R<List<DeptTreeVo>> getDeptTree(@RequestParam(value = "id", required = false) Long id) {
         try {
-            List<DeptTreeVo> deptTreeVos = sysDeptService.getDeptTree();
+            List<DeptTreeVo> deptTreeVos = sysDeptService.getDeptTree(id);
             return R.ok(deptTreeVos);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -92,7 +92,7 @@ public class SysDeptController {
             return R.fail("编码：" + request.getCode() + "已存在");
         }
         sysDeptService.saveDept(request);
-        return R.ok();
+        return R.ok("添加成功", null);
     }
 
     @SysLock(name = "dept")
@@ -101,11 +101,11 @@ public class SysDeptController {
     @PutMapping
     @Operation(summary = "编辑部门")
     public R<Object> editDept(@RequestBody @Valid EditDeptRequest request) {
-        if (sysDeptService.existCode(request.getCode(), Long.parseLong(request.getId()))) {
+        if (sysDeptService.existCode(request.getCode(), request.getId())) {
             return R.fail("部门编码已存在");
         }
         sysDeptService.editDept(request);
-        return R.ok();
+        return R.ok("修改成功", null);
     }
 
     @SysLog(value = "删除部门", module = LogModuleEnum.DEPT)
@@ -113,7 +113,7 @@ public class SysDeptController {
     @DeleteMapping
     @Operation(summary = "删除部门")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
+    public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysDeptService.removeById(id);
         return R.ok();
     }
@@ -130,8 +130,8 @@ public class SysDeptController {
     @GetMapping
     @Operation(summary = "获取部门（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotBlank(message = "id不能为空") String id) {
-        DeptVo deptVo = sysDeptService.getDept(Long.parseLong(id));
+    public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        DeptVo deptVo = sysDeptService.getDept(id);
         return R.ok(deptVo);
     }
 

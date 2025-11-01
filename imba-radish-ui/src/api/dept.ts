@@ -6,8 +6,8 @@ import { PaginatedData } from '@/types/api';
  * 
  * @returns 获取部门树
  */
-export async function getDeptTree(): Promise<DeptTreeVo[]> {
-  const res = await get('/dept/getDeptTree', { flag: true });
+export async function getDeptTreeApi(id: string | null): Promise<DeptTreeVo[]> {
+  const res = await get('/dept/getDeptTree', { flag: true, params: { id }});
   return res.data;
 }
 

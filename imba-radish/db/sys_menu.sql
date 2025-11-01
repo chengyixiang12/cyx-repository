@@ -13,7 +13,7 @@ create table sys_menu
     component   varchar(255)                       null comment '前端组件路径',
     icon        varchar(50)                        null comment '菜单图标（如字体图标类名）',
     type        char                               not null comment '菜单类型：0-目录，1-菜单，2-按钮',
-    order_num   int      default 0                 null comment '排序号，数字越小，排序越靠前',
+    order_num   int                                null comment '排序号，数字越小，排序越靠前',
     status      tinyint  default 1                 null comment '菜单状态：0-禁用，1-启用',
     visible     tinyint  default 1                 null comment '是否显示：0-隐藏，1-显示',
     remark      varchar(255)                       null comment '备注信息'

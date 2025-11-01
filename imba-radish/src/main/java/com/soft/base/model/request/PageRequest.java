@@ -7,7 +7,7 @@ import org.apache.ibatis.type.Alias;
 @Data
 @Schema(description = "分页")
 @Alias(value = "PageRequest")
-public class PageRequest {
+public abstract class PageRequest {
 
     @Schema(description = "当前页码", example = "1")
     private Long pageNum = 1L;

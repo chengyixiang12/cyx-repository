@@ -98,11 +98,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     public PageVo<UsersVo> getUsers(GetUsersRequest request) {
         IPage<UsersVo> page = new Page<>(request.getPageNum(), request.getPageSize());
-        List<String> deptIds = new ArrayList<>();
+        List<Long> deptIds = new ArrayList<>();
         GetUsersDto getUsersDto = new GetUsersDto();
 
         // 获取部门id集合
-        String deptId = request.getDeptId();
+        Long deptId = request.getDeptId();
         if (deptId != null) {
             getChildDeptIds(Stream.of(deptId).toList(), deptIds);
             deptIds.add(deptId);
@@ -146,7 +146,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Transactional(rollbackFor = Exception.class)
     public void resetPassword(ResetPasswordRequest request) {
         try {
-            long id = Long.parseLong(request.getId());
+            long id = request.getId();
             sendWebsocket(id);
 
             String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
@@ -183,8 +183,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         sysUsersMapper.insert(sysUser);
 
         // 保存角色
-        List<String> roleIds = request.getRoleIds();
-        String defaultRoleId = sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG);
+        List<Long> roleIds = request.getRoleIds();
+        Long defaultRoleId = sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG);
         if (roleIds == null) {
             roleIds = new ArrayList<>();
 
@@ -195,7 +195,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         List<SysUserRole> userRoles = new ArrayList<>();
         roleIds.forEach(item -> {
             SysUserRole sysUserRole = new SysUserRole();
-            sysUserRole.setRoleId(Long.parseLong(item));
+            sysUserRole.setRoleId(item);
             sysUserRole.setUserId(sysUser.getId());
             userRoles.add(sysUserRole);
         });
@@ -210,15 +210,15 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         BeanUtils.copyProperties(request, sysUser);
         sysUsersMapper.updateById(sysUser);
 
-        List<String> roleIds = request.getRoleIds();
+        List<Long> roleIds = request.getRoleIds();
         if (roleIds == null) {
             return;
         }
         //修改角色
-        List<String> roles = sysUserRoleService.getByUserId(Long.parseLong(request.getId()));
+        List<Long> roles = sysUserRoleService.getByUserId(request.getId());
 
         // 取两集合的交集
-        Set<String> intersection = roleIds.stream()
+        Set<Long> intersection = roleIds.stream()
                 .filter(new HashSet<>(roles)::contains)
                 .collect(Collectors.toSet());
         roleIds.removeAll(intersection);
@@ -235,8 +235,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             List<SysUserRole> userRoles = new ArrayList<>();
             roleIds.forEach(item -> {
                 SysUserRole sysUserRole = new SysUserRole();
-                sysUserRole.setUserId(Long.parseLong(request.getId()));
-                sysUserRole.setRoleId(Long.parseLong(item));
+                sysUserRole.setUserId(request.getId());
+                sysUserRole.setRoleId(item);
                 userRoles.add(sysUserRole);
             });
             sysUserRoleService.insertBatch(userRoles);
@@ -272,10 +272,10 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Transactional(rollbackFor = Exception.class)
     public void resetUsername(ResetUsernameRequest request, String username) {
         try {
-            sendWebsocket(Long.parseLong(request.getId()));
+            sendWebsocket(request.getId());
 
             SysUser sysUser = new SysUser();
-            sysUser.setId(Long.parseLong(request.getId()));
+            sysUser.setId(request.getId());
             sysUser.setUsername(request.getUsername());
             sysUsersMapper.updateById(sysUser);
         } catch (IOException e) {
@@ -363,11 +363,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
      * @param childDeptIds
      * @return
      */
-    private void getChildDeptIds(List<String> deptIds, List<String> childDeptIds) {
+    private void getChildDeptIds(List<Long> deptIds, List<Long> childDeptIds) {
         if (CollectionUtil.isEmpty(deptIds)) {
             return;
         }
-        List<String> tmpList = sysDeptService.getChildDeptIds(deptIds);
+        List<Long> tmpList = sysDeptService.getChildDeptIds(deptIds);
         childDeptIds.addAll(tmpList);
         getChildDeptIds(tmpList, childDeptIds);
     }

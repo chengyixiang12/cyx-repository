@@ -18,8 +18,8 @@ import org.apache.ibatis.type.Alias;
 public class EditDeptRequest {
 
     @Schema(description = "主键")
-    @NotBlank(message = "id不能为空")
-    private String id;
+    @NotNull(message = "id不能为空")
+    private Long id;
 
     @Schema(description = "排序")
     private Integer sortOrder;
@@ -33,5 +33,5 @@ public class EditDeptRequest {
     private String name;
 
     @Schema(description = "父级id")
-    private String parentId;
+    private Long parentId;
 }

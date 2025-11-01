@@ -31,7 +31,7 @@ public class SaveUserRequest {
 
     @Schema(description = "部门")
     @NotNull(message = "部门不能为空")
-    private String deptId;
+    private Long deptId;
 
     @Schema(description = "邮箱")
     @NotBlank(message = "邮箱不能为空")
@@ -41,7 +41,7 @@ public class SaveUserRequest {
     private String phone;
 
     @Schema(description = "角色")
-    private List<String> roleIds;
+    private List<Long> roleIds;
 
     @Schema(description = "用户头像")
     private String avatar;
