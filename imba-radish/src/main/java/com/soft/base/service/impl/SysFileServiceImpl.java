@@ -112,7 +112,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
                 String fileKey = universalUtil.fileKeyGen();
                 String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
-                fileUploadAsync.upload(multipartFile.getInputStream(), fileSize, objectKey);
+
+                minioUtil.upload(multipartFile.getInputStream(), fileSize, objectKey);
 
                 sysFile.setFileKey(fileKey);
                 sysFile.setFileSuffix(fileSuffix);
@@ -194,7 +195,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
                 String fileKey = universalUtil.fileKeyGen();
                 String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
-                fileUploadAsync.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileSize, objectKey);
+                minioUtil.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileSize, objectKey);
 
                 sysFile.setFileKey(fileKey);
                 sysFile.setFileSuffix(fileSuffix);

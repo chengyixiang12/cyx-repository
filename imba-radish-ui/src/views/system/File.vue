@@ -123,8 +123,8 @@ const resetSearch = () => {
 
 // 删除文件
 const handleDelete = async (id: string) => {
-  await deleteFileApi(id)
-  await loadFiles()
+  await deleteFileApi(id);
+  await loadFiles();
 }
 
 const handlePageChange = (val: number) => {
