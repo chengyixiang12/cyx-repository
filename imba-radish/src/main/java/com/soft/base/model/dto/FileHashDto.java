@@ -15,9 +15,6 @@ import org.apache.ibatis.type.Alias;
 @Alias(value = "FileHashDto")
 public class FileHashDto {
 
-    @Schema(description = "主键")
-    private Long id;
-
     @Schema(description = "源文件名")
     private String originalName;
 
@@ -35,4 +32,7 @@ public class FileHashDto {
 
     @Schema(description = "文件大小；单位：B")
     private String fileSize;
+
+    @Schema(description = "文件hash")
+    private String fileHash;
 }

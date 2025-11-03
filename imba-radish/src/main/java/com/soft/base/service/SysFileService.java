@@ -33,4 +33,6 @@ public interface SysFileService extends IService<SysFile> {
     List<SelectDeletedFileDto> selectDeletedFiles();
 
     PageVo<FilesVo> getMyFiles(FilesRequest request);
+
+    void deleteRealByIds(List<Long> list);
 }

@@ -14,9 +14,15 @@ import org.apache.ibatis.type.Alias;
 @Schema(description = "查询已删除的文件")
 public class SelectDeletedFileDto {
 
+    @Schema(description = "主键")
+    private Long id;
+
     @Schema(description = "桶名")
     private String bucket;
 
     @Schema(description = "文件存储路径")
     private String objectKey;
+
+    @Schema(description = "是否保留")
+    private Boolean retain;
 }

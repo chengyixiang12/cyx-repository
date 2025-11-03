@@ -59,13 +59,13 @@
     </select>
     <select id="getFileByHash" parameterType="java.lang.String" resultType="FileHashDto">
         SELECT
-            sf.id,
             sf.original_name,
             sf.file_key,
             sf.location,
             sf.object_key,
             sf.file_suffix,
-            sf.file_size
+            sf.file_size,
+            sf.file_hash
         FROM
             sys_file sf
         WHERE
@@ -74,7 +74,9 @@
     </select>
     <select id="selectDeletedFiles" resultType="SelectDeletedFileDto">
         select t1.bucket,
-               t1.object_key
+               t1.object_key,
+               t1.id,
+               exists (select 1 from sys_file a where a.del_flag = '0' and a.file_hash = t1.file_hash) as retain
         from sys_file t1
         where t1.del_flag = '1'
     </select>
@@ -97,5 +99,13 @@
             AND sf.original_name like #{request.keyword}
         </if>
         ORDER BY sf.create_time DESC
+    </select>
+    <select id="deleteRealByIds" parameterType="java.util.List">
+        delete from sys_file
+               where del_flag = '1'
+                 and id in
+               <foreach collection="ids" item="item" open="(" separator="," close=")">
+                   #{item}
+               </foreach>
     </select>
 </mapper>

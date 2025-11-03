@@ -98,9 +98,10 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
             if (fileHashDto != null) {
                 BeanUtils.copyProperties(fileHashDto, sysFile);
-                if (!originalFilename.equals(fileHashDto.getOriginalName())) {
-                    sysFileMapper.insert(sysFile);
+                if (!originalFilename.equals(sysFile.getOriginalName())) {
+                    sysFile.setOriginalName(originalFilename);
                 }
+                sysFileMapper.insert(sysFile);
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
@@ -143,7 +144,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
 
-        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(4L);
+        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(1984484774405574660L);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
@@ -178,9 +179,10 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
             if (fileHashDto != null) {
                 BeanUtils.copyProperties(fileHashDto, sysFile);
-                if (!originalFilename.equals(fileHashDto.getOriginalName())) {
-                    sysFileMapper.insert(sysFile);
+                if (!originalFilename.equals(sysFile.getOriginalName())) {
+                    sysFile.setOriginalName(originalFilename);
                 }
+                sysFileMapper.insert(sysFile);
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
@@ -217,7 +219,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         Long userId = securityUtil.getUserInfo().getId();
         page = sysFileMapper.getMyFiles(page, request, userId);
 
-        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(4L);
+        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(1984484774405574660L);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
@@ -225,6 +227,11 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
+    }
+
+    @Override
+    public void deleteRealByIds(List<Long> list) {
+        sysFileMapper.deleteRealByIds(list);
     }
 }
 

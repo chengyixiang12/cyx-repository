@@ -31,6 +31,8 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
     IPage<FilesVo> getMyFiles(IPage<FilesVo> page,
                                @Param("request") FilesRequest request,
                                @Param("userId") Long userId);
+
+    void deleteRealByIds(@Param("ids") List<Long> ids);
 }
 
 

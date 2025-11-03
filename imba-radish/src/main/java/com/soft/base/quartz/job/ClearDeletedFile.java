@@ -1,5 +1,6 @@
 package com.soft.base.quartz.job;
 
+import com.soft.base.entity.SysFile;
 import com.soft.base.model.dto.SelectDeletedFileDto;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
@@ -39,7 +40,14 @@ public class ClearDeletedFile implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         List<SelectDeletedFileDto> selectDeletedFileDtoList = sysFileService.selectDeletedFiles();
         log.info("本次共计清理{}个文件", selectDeletedFileDtoList.size());
-        selectDeletedFileDtoList.forEach(item -> minioUtil.delete(item.getBucket(), item.getObjectKey()));
+        selectDeletedFileDtoList.forEach(item -> {
+            if (item.getRetain()) {
+                // 因其它文件数据引用了该文件，所以保留
+                return;
+            }
+            minioUtil.delete(item.getBucket(), item.getObjectKey());
+        });
+        sysFileService.deleteRealByIds(selectDeletedFileDtoList.stream().map(SelectDeletedFileDto::getId).toList());
         log.info("清理完毕");
     }
 }
