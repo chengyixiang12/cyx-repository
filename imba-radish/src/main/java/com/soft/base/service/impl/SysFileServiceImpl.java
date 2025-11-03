@@ -3,6 +3,7 @@ package com.soft.base.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
@@ -58,19 +59,23 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final SecurityUtil securityUtil;
 
+    private final FileUploadAsync fileUploadAsync;
+
     @Autowired
     public SysFileServiceImpl(SysFileMapper sysFileMapper,
                               MinioUtil minioUtil,
                               UniversalUtil universalUtil,
                               MinioProperty minioProperty,
                               SysDictDataService sysDictDataService,
-                              SecurityUtil securityUtil) {
+                              SecurityUtil securityUtil,
+                              FileUploadAsync fileUploadAsync) {
         this.sysFileMapper = sysFileMapper;
         this.minioUtil = minioUtil;
         this.universalUtil = universalUtil;
         this.minioProperty = minioProperty;
         this.sysDictDataService = sysDictDataService;
         this.securityUtil = securityUtil;
+        this.fileUploadAsync = fileUploadAsync;
     }
 
     @Override
@@ -106,7 +111,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
                 String fileKey = universalUtil.fileKeyGen();
-                String objectKey = minioUtil.upload(multipartFile.getInputStream(), fileKey, fileSuffix, fileSize);
+                String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
+                fileUploadAsync.upload(multipartFile.getInputStream(), fileSize, objectKey);
 
                 sysFile.setFileKey(fileKey);
                 sysFile.setFileSuffix(fileSuffix);
@@ -187,7 +193,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
                 String fileKey = universalUtil.fileKeyGen();
-                String objectKey = minioUtil.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileKey, fileSuffix, fileSize);
+                String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
+                fileUploadAsync.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileSize, objectKey);
 
                 sysFile.setFileKey(fileKey);
                 sysFile.setFileSuffix(fileSuffix);
@@ -197,7 +204,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFile.setOriginalName(originalFilename);
                 sysFile.setFileSize(fileSize);
                 sysFileMapper.insert(sysFile);
-
             }
             uploadAvatarVo.setId(String.valueOf(sysFile.getId()));
             uploadAvatarVo.setUri(sysFile.getObjectKey());

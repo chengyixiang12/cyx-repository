@@ -54,48 +54,43 @@ public class MinioUtil {
      * @param fileSuffix 文件后缀
      * @return
      */
-    private String getObjectKey(String fileKey, String fileSuffix) {
+    public String getObjectKey(String fileKey, String fileSuffix) {
         return dateUtil.date8Number() + BaseConstant.LEFT_SLASH + fileKey + fileSuffix;
     }
 
     /**
      * 上传
      * @param is 输入流
-     * @param fileKey 文件名
-     * @param fileSuffix 文件后缀
      * @param fileSize 文件大小 B
      * @return
      * @throws GlobalException
      */
-    public String upload(InputStream is, String fileKey, String fileSuffix, Long fileSize) {
-        String objectKey = getObjectKey(fileKey, fileSuffix);
-        try {
-            if (!existBucket()) {
-                createBucket();
-            }
-            minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(minioProperty.getDefaultBucket())
-                    .object(objectKey)
-                    .stream(is, fileSize, fileSize < BURST_SIZE ? BURST_FALSE : BURST_SIZE)
-                    .build());
-            return objectKey;
-        } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
-        }
+    public String upload(InputStream is, Long fileSize, String objectKey) {
+        putObject(is, minioProperty.getDefaultBucket(), fileSize, objectKey);
+        return objectKey;
     }
 
     /**
      * 上传
      * @param is 输入流
      * @param bucket 桶名
-     * @param fileKey 文件名
-     * @param fileSuffix 文件后缀
      * @param fileSize 文件大小 B
      * @return
      * @throws GlobalException
      */
-    public String upload(InputStream is, String bucket, String fileKey, String fileSuffix, Long fileSize) {
-        String objectKey = getObjectKey(fileKey, fileSuffix);
+    public String upload(InputStream is, String bucket, Long fileSize, String objectKey) {
+        putObject(is, bucket, fileSize, objectKey);
+        return objectKey;
+    }
+
+    /**
+     * 调用minio的上传
+     * @param is
+     * @param bucket
+     * @param fileSize
+     * @param objectKey
+     */
+    public void putObject(InputStream is, String bucket, Long fileSize, String objectKey) {
         try {
             if (!existBucket(bucket)) {
                 createBucket(bucket);
@@ -105,7 +100,6 @@ public class MinioUtil {
                     .object(objectKey)
                     .stream(is, fileSize, fileSize < BURST_SIZE ? BURST_FALSE : BURST_SIZE)
                     .build());
-            return objectKey;
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
