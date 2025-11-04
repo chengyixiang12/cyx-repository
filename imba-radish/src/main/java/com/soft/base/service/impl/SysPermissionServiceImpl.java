@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysPermission;
 import com.soft.base.mapper.SysPermissionMapper;
+import com.soft.base.model.request.EditPermissionRequest;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
 import com.soft.base.model.vo.GetAllPermissionVo;
@@ -54,7 +55,6 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     public void savePermission(SavePermissionRequest request) {
         SysPermission sysPermission = new SysPermission();
         BeanUtils.copyProperties(request, sysPermission);
-        sysPermission.setStatus(BaseConstant.Permission.ENABLE);
         sysPermissionMapper.insert(sysPermission);
     }
 
@@ -76,6 +76,28 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     @Override
     public List<GetAssignPerVo> getAssignPer(Long roleId) {
         return sysPermissionMapper.getAssignPer(roleId);
+    }
+
+    @Override
+    public void editPermission(EditPermissionRequest request) {
+        SysPermission sysPermission = new SysPermission();
+        BeanUtils.copyProperties(request, sysPermission);
+        sysPermissionMapper.updateById(sysPermission);
+    }
+
+    @Override
+    public void deletePermission(Long id) {
+        sysPermissionMapper.deleteById(id);
+    }
+
+    @Override
+    public void enablePermission(Long id) {
+        sysPermissionMapper.enablePermission(id);
+    }
+
+    @Override
+    public void forbiddenPermission(Long id) {
+        sysPermissionMapper.forbiddenPermission(id);
     }
 }
 

@@ -43,12 +43,6 @@ public class SysDictData extends BaseEntity {
     private String value;
 
     /**
-     * 字典类型
-     */
-    @TableField(value = "dict_type")
-    private String dictType;
-
-    /**
      * 样式属性（其他样式扩展）
      */
     @TableField(value = "css_class")

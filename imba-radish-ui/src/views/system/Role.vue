@@ -119,7 +119,7 @@ import { EditRoleRequest, GetRolesRequest, SaveRoleRequest, SysRolesVo, SysRoleV
 import { showMessage } from '@/utils/message'
 import RolePermissionDialog from './component/RolePermissionDialog.vue'
 import RoleMenuDialog from './component/RoleMenuDialog.vue'
-import { SetPermissionsRequest } from '@/types/permissionts'
+import { SetPermissionsRequest } from '@/types/permission'
 
 const loading = ref(false)
 const roleList = ref<SysRolesVo[]>([])

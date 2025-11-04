@@ -84,4 +84,16 @@
         WHERE sp.del_flag = '0'
           AND srp.role_id = #{roleId}
     </select>
+    <update id="enablePermission" parameterType="java.lang.Long">
+        update sys_permission
+        set status = 1
+        where del_flag = '0'
+        and id = #{id}
+    </update>
+    <update id="forbiddenPermission" parameterType="java.lang.Long">
+        update sys_permission
+        set status = 0
+        where del_flag = '0'
+          and id = #{id}
+    </update>
 </mapper>

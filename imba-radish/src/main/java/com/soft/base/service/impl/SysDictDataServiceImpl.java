@@ -20,6 +20,7 @@ import com.soft.base.service.SysDictDataService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
+    @CacheEvict(key = "#request.parentId")
     public void editDictData(EditDictDataRequest request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
             sysDictDataMapper.setNotDefault(request.getParentId());
@@ -83,7 +85,6 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
         sysDictDataMapper.updateById(sysDictData);
-        removeCache(request.getId());
     }
 
     @Override
@@ -134,7 +135,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     @Cacheable(key = "#parentId", unless = "#result.size() == 0")
-    public Map<String, String> getByDictTypeMap(Long parentId) {
+    public Map<String, String> getDictDataMap(Long parentId) {
         List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(parentId, BaseConstant.Status.STATUS_ENABLE);
         return sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel, (a, b) -> a));
     }
@@ -145,7 +146,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
      */
     private void removeCache(Long id) {
         SysDictData sysDictData = sysDictDataMapper.selectById(id);
-        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictData.getDictType());
+        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictData.getParentId());
     }
 }
 

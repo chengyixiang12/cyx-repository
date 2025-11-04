@@ -1,5 +1,5 @@
 import { PaginatedData } from '@/types/api';
-import { SetPermissionsRequest } from '@/types/permissionts';
+import { SetPermissionsRequest } from '@/types/permission';
 import { EditRoleRequest, GetRoleSelectVo, GetRolesRequest, SaveRoleRequest, SetMenusRequest, SysRoleVo, SysRolesVo } from '@/types/role';
 import { get, post, put, del } from '@/utils/http';
 

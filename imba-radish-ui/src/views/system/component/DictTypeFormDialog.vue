@@ -7,9 +7,6 @@
                 <el-form-item label="字典名称" prop="dictName">
                     <el-input v-model="formData.dictName" placeholder="请输入字典名称" />
                 </el-form-item>
-                <el-form-item label="字典类型" prop="dictType" v-if="isAdd">
-                    <el-input v-model="formData.dictType" placeholder="请输入字典类型（唯一标识）" />
-                </el-form-item>
                 <el-form-item label="状态" prop="status">
                     <el-radio-group v-model="formData.status">
                         <el-radio :value="1">启用</el-radio>

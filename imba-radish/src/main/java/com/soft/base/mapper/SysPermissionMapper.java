@@ -29,6 +29,10 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     List<GetAllPermissionVo> getAllPermission();
 
     List<GetAssignPerVo> getAssignPer(@Param("roleId") Long roleId);
+
+    void enablePermission(@Param("id") Long id);
+
+    void forbiddenPermission(@Param("id") Long id);
 }
 
 

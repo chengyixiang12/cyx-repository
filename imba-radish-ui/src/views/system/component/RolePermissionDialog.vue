@@ -22,7 +22,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { getAllPermissionsApi, getAssignPerApi } from '@/api/permission'
-import { GetAllPermissionVo, SetPermissionsRequest } from '@/types/permissionts';
+import { GetAllPermissionVo, SetPermissionsRequest } from '@/types/permission';
 
 interface FatherParam {
     modelValue: boolean;

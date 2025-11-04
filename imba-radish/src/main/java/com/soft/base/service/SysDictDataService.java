@@ -45,5 +45,5 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     List<DictDataDto> getByDictType(Long parentId);
 
-    Map<String, String> getByDictTypeMap(Long parentId);
+    Map<String, String> getDictDataMap(Long parentId);
 }

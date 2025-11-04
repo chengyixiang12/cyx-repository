@@ -151,7 +151,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
 
-        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(1984484774405574660L);
+        Map<String, String> fileStorageLocation = sysDictDataService.getDictDataMap(1984484774405574660L);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
@@ -226,7 +226,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         Long userId = securityUtil.getUserInfo().getId();
         page = sysFileMapper.getMyFiles(page, request, userId);
 
-        Map<String, String> fileStorageLocation = sysDictDataService.getByDictTypeMap(1984484774405574660L);
+        Map<String, String> fileStorageLocation = sysDictDataService.getDictDataMap(1984484774405574660L);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
