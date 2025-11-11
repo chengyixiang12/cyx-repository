@@ -20,7 +20,4 @@ public class PermissionsRequest extends PageRequest {
 
     @Schema(description = "状态")
     private Integer status;
-
-    @Schema(description = "权限类型；1：菜单；2：按钮")
-    private String type;
 }

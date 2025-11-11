@@ -51,7 +51,7 @@
         AND sur.user_id = #{id}
     </select>
     <select id="getPermissionsByRoleCodes" parameterType="java.util.List" resultType="java.lang.String">
-        SELECT DISTINCT
+        SELECT
         sp.`code`
         FROM
         sys_permission sp

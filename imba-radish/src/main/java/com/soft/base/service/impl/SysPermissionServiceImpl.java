@@ -1,5 +1,6 @@
 package com.soft.base.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +19,7 @@ import com.soft.base.service.SysPermissionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -98,6 +100,14 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     @Override
     public void forbiddenPermission(Long id) {
         sysPermissionMapper.forbiddenPermission(id);
+    }
+
+    @Override
+    public boolean existEnableCode(String[] permissions) {
+        LambdaQueryWrapper<SysPermission> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysPermission::getStatus, BaseConstant.Status.STATUS_ENABLE);
+        wrapper.in(SysPermission::getCode, Arrays.asList(permissions));
+        return sysPermissionMapper.exists(wrapper);
     }
 }
 

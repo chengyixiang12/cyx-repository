@@ -9,7 +9,6 @@ import com.soft.base.model.vo.GetAllPermissionVo;
 import com.soft.base.model.vo.GetAssignPerVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.PermissionsVo;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -41,4 +40,6 @@ public interface SysPermissionService extends IService<SysPermission> {
     void enablePermission(Long id);
 
     void forbiddenPermission(Long id);
+
+    boolean existEnableCode(String[] permissions);
 }

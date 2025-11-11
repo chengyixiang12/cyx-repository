@@ -3,6 +3,7 @@ package com.soft.base.core.permission;
 import cn.hutool.core.collection.CollectionUtil;
 import com.soft.base.service.SysPermissionService;
 import com.soft.base.utils.SecurityUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
@@ -16,6 +17,7 @@ import java.util.List;
  * @DateTime: 2024/11/20 19:23
  **/
 @Component(value = "cps")
+@Slf4j
 public class CustomPermissionService {
 
     private final SecurityUtil securityUtil;
@@ -33,6 +35,13 @@ public class CustomPermissionService {
         if (permissions == null) {
             return false;
         }
+
+        boolean enableCodeFlag = sysPermissionService.existEnableCode(permissions);
+        if (!enableCodeFlag) {
+            log.debug("权限被禁用或不存在");
+            return true;
+        }
+
         List<String> roleCodes = securityUtil.getRoleCodes();
         if (CollectionUtil.isEmpty(roleCodes)) {
             return false;

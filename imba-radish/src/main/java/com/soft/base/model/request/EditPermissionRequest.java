@@ -21,9 +21,6 @@ public class EditPermissionRequest {
     @Schema(description = "权限编码")
     private String code;
 
-    @Schema(description = "权限类型")
-    private String type;
-
     @Schema(description = "状态")
     private String status;
 

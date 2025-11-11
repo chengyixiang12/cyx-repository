@@ -31,12 +31,6 @@ public class SysPermission extends BaseEntity {
     private String code;
 
     /**
-     * 权限类型；1：菜单；2：按钮
-     */
-    @TableField(value = "type")
-    private Integer type;
-
-    /**
      * 状态；1：启用；0：禁用
      */
     @TableField(value = "status")
