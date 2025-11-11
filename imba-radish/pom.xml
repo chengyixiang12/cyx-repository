@@ -23,6 +23,7 @@
         <mysql.version>8.0.31</mysql.version>
         <minio.version>8.5.1</minio.version>
         <mybatisplus.version>3.5.9</mybatisplus.version>
+        <mybaitsplusdynamic.version>4.3.1</mybaitsplusdynamic.version>
         <jwt.version>0.9.1</jwt.version>
         <knife4j.version>4.6.0</knife4j.version>
         <hutool.version>5.8.28</hutool.version>
@@ -36,6 +37,7 @@
         <spring.ai.version>1.0.1</spring.ai.version>
         <deepseek.version>1.0.0</deepseek.version>
         <flowable.version>7.1.0</flowable.version>
+        <postgresql.version>42.3.8</postgresql.version>
     </properties>
 
     <dependencyManagement>
@@ -126,6 +128,11 @@
             <version>${mysql.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-deepseek</artifactId>
         </dependency>
@@ -182,6 +189,11 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
             <version>${mybatisplus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <version>${mybaitsplusdynamic.version}</version>
         </dependency>
         <!--已弃用-->
         <dependency>

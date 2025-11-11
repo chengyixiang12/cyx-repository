@@ -6,10 +6,19 @@ spring:
       max-request-size: 500MB
       file-size-threshold: 20MB
   datasource:
-    username: ${DATASOURCE_USERNAME_MYSQL}
-    password: ${DATASOURCE_PASSWORD_MYSQL}
-    url: ${DATASOURCE_URL_MYSQL}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          username: ${DATASOURCE_USERNAME_MYSQL_MASTER}
+          password: ${DATASOURCE_PASSWORD_MYSQL_MASTER}
+          url: ${DATASOURCE_URL_MYSQL_MASTER}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        slave:
+          username: ${DATASOURCE_USERNAME_POSTGRESQL_SLAVE}
+          password: ${DATASOURCE_PASSWORD_POSTGRESQL_SLAVE}
+          url: ${DATASOURCE_URL_POSTGRESQL_SLAVE}
+          driver-class-name: org.postgresql.Driver
     hikari:
       # 连接池最大连接数
       maximum-pool-size: 10
