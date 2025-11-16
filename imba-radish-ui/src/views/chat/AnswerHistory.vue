@@ -63,7 +63,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import router from '@/router/routers';
 import { MoreFilled } from '@element-plus/icons-vue';
 import { deleteDialogueApi, getDialogueHistoriesApi, renameApi } from '@/api/dialogueHistory'
 import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo, GetTitleVo, RenameRequest } from '@/types/dialogueHistory';
@@ -72,7 +71,7 @@ import AnswerFormDialog from './component/AnswerFormDialog.vue';
 const visibleCards = ref<GetDialogueHistoriesVo[]>([]);
 const total = ref<number>(0);
 const renameVisible = ref(false);
-const dialogId = ref<number | null>(null);
+const dialogId = ref<string | null>(null);
 
 const searchForm = ref<GetDialogueHistoriesRequest>({
     pageNum: 1,
@@ -88,13 +87,13 @@ const loadMore = async () => {
 }
 
 // 打开重命名对话框
-const renameCard = async (id: number) => {
+const renameCard = async (id: string) => {
     renameVisible.value = true;
     dialogId.value = id;
 }
 
 // 删除
-const deleteCard = async(id: number) => {
+const deleteCard = async(id: string) => {
     await deleteDialogueApi(id);
     await loadMore();
 }
@@ -115,7 +114,7 @@ const handleSizeChange = (val: number) => {
   loadMore()
 }
 
-const goToDetail = (id: number | null) => {
+const goToDetail = (id: string) => {
     // router.push({ path: `/card-detail/${id}` });
 }
 

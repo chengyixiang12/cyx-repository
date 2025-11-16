@@ -354,16 +354,6 @@ onMounted(() => {
   padding-top: 12px;
 }
 
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
 /* 优化左侧树样式 */
 .tree-card {
   height: calc(100vh - 130px);

@@ -88,15 +88,6 @@ const handleSubmit = () => {
   padding-right: 10px;
 }
 
-.tree-wrapper::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.tree-wrapper::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
 .dialog-footer {
   text-align: right;
   padding: 10px 20px;

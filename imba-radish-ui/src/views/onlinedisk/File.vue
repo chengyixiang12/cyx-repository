@@ -162,7 +162,7 @@ const handleDownload = async (row: FilesVo) => {
 // 上传文件前置
 const beforeUpload = (file: File) => {
   // 可以添加文件类型或大小限制检查
-  const isLt100M = file.size / 1024 / 1024 < 500
+  const isLt100M = file.size / 1024 / 1024 < 50
   if (!isLt100M) {
     showMessage('文件大小不能超过100M', 'error')
   }

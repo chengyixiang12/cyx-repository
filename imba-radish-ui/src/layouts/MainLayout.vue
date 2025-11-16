@@ -306,7 +306,9 @@ onMounted(() => {
     background: #b3b9bf;
     border-radius: 4px;
     margin-right: 10px;
+    max-height: 100vh;
     overflow: hidden;
+    overflow-y: auto;
     /* height: 90vh; */
 }
 
@@ -443,13 +445,4 @@ onMounted(() => {
 .collapse-icon:hover {
     color: #99c0e7;
 }
-
-/* .content-wrapper {
-    flex: 1;
-    overflow: hidden;
-    padding: 10px;
-    background: #f0f2f5;
-    border-radius: 4px;
-    min-height: 0;
-} */
 </style>

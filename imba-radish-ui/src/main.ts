@@ -6,6 +6,8 @@ import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn' // 导入中文语言包
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import '@/assets/styles/message.css'
+import '@/assets/styles/table.css'
+import '@/assets/styles/form.css'
 
 const app = createApp(App)
 // 注册所有Element Plus图标

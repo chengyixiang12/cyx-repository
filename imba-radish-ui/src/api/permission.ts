@@ -1,5 +1,5 @@
 import { PaginatedData } from '@/types/api';
-import { GetAssignPerVo, GetAllPermissionVo, PermissionsRequest, PermissionsVo, SavePermissionRequest, EditPermissionRequest } from '@/types/permission';
+import { GetAssignPerVo, GetAllPermissionVo, PermissionsRequest, PermissionsVo, SavePermissionRequest, EditPermissionRequest, GetPermissionVo } from '@/types/permission';
 import { get, post, put, del } from '@/utils/http';
 
 /**
@@ -70,4 +70,14 @@ export async function enablePermissionApi(id: string) {
  */
 export async function forbiddenPermissionApi(id: string) {
     await get('/permission/forbiddenPermission', { params: { id }, flag: true });
+}
+
+/**
+ * 获取权限详情
+ * @param id 
+ * @returns 
+ */
+export async function getPermissionApi(id: string): Promise<GetPermissionVo> {
+    const res = await get<GetPermissionVo>('/permission/getPermission', { flag: true, params: { id } });
+    return res.data;
 }

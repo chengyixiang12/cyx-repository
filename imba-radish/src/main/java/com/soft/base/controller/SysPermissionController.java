@@ -5,10 +5,7 @@ import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.EditPermissionRequest;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
-import com.soft.base.model.vo.GetAllPermissionVo;
-import com.soft.base.model.vo.GetAssignPerVo;
-import com.soft.base.model.vo.PageVo;
-import com.soft.base.model.vo.PermissionsVo;
+import com.soft.base.model.vo.*;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysPermissionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -110,6 +107,13 @@ public class SysPermissionController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> forbiddenPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysPermissionService.forbiddenPermission(id);
-        return R.ok("启用成功", null);
+        return R.ok("禁用成功", null);
+    }
+
+    @GetMapping(value = "/getPermission")
+    @Operation(summary = "获取权限")
+    public R<GetPermissionVo> getPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        GetPermissionVo getPermissionVo =  sysPermissionService.getPermission(id);
+        return R.ok(getPermissionVo);
     }
 }

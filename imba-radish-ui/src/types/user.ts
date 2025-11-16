@@ -5,7 +5,7 @@ export interface SaveUserRequest {
     username: string;
     password: string;
     nickname: string;
-    deptId: string;
+    deptId: string | null;
     email: string;
     phone: string;
     roleIds: string[];
@@ -14,7 +14,7 @@ export interface SaveUserRequest {
 export interface EditUserRequest {
     id: string | null;
     nickname: string;
-    deptId: string;
+    deptId: string | null;
     email: string;
     phone: string;
     roleIds: string[];

@@ -1,8 +1,7 @@
 package com.soft.base.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

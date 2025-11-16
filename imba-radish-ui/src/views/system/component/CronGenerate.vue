@@ -320,16 +320,6 @@ onMounted(() => {
   overflow: auto;
 }
 
-.config-options::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-
-.config-options::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
 .config-option {
   display: block;
   margin-bottom: 8px;

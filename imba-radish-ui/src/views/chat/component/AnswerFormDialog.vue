@@ -31,7 +31,7 @@ const formData = ref<GetTitleVo>({
 
 interface FatherParam {
   visible: boolean;
-  dialogId: number | null;
+  dialogId: string | null;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {

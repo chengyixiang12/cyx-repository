@@ -1,13 +1,9 @@
 package com.soft.base.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * 
@@ -41,4 +37,10 @@ public class SysPermission extends BaseEntity {
      */
     @TableField(value = "description")
     private String description;
+
+    /**
+     * 权限类型
+     */
+    @TableField(value = "type")
+    private String type;
 }

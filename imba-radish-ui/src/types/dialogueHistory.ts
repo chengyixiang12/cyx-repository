@@ -22,6 +22,6 @@ export interface RenameRequest {
 }
 
 export interface GetTitleVo {
-    id: string;
-    title: string;
+    id: string | null;
+    title: string | null;
 }

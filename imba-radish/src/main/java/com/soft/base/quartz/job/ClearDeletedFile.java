@@ -1,6 +1,5 @@
 package com.soft.base.quartz.job;
 
-import com.soft.base.entity.SysFile;
 import com.soft.base.model.dto.SelectDeletedFileDto;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;

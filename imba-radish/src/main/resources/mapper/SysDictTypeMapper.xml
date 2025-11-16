@@ -8,7 +8,6 @@
         SELECT
         sdt.id,
         sdt.dict_name,
-        sdt.dict_type,
         sdt.`status`,
         sdt.sort_order
         FROM
@@ -16,7 +15,7 @@
         WHERE
         sdt.del_flag = '0'
         <if test="request.keyword != null and request.keyword != ''">
-            AND ( sdt.dict_name LIKE concat('%', #{request.keyword}, '%') OR sdt.dict_type LIKE concat('%', #{request.keyword}, '%') )
+            AND sdt.dict_name LIKE concat('%', #{request.keyword}, '%')
         </if>
         <if test="request.status != null">
             AND sdt.status = #{request.status}

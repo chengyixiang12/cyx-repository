@@ -2,7 +2,9 @@ package com.soft.base.core.conf;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -16,8 +18,13 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class TransactionConfig {
 
+    /**
+     * 动态数据源事务管理器
+     * dynamic-datasource 会自动创建名为 'dataSource' 的 Bean
+     */
     @Bean
-    public DataSourceTransactionManager transactionManager(DataSource dataSource) {
+    @Primary
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 }

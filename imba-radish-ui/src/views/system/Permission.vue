@@ -85,11 +85,11 @@
   </div>
 
   <!-- 新增菜单弹窗 -->
-  <menu-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
+  <permission-from-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
     @submit="handleAddSubmit" />
 
   <!-- 编辑菜单弹窗 -->
-  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible"
+  <permission-from-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible"
     :permission-id="permissionId" @submit="handleEditSubmit" />
 </template>
 
@@ -104,7 +104,7 @@ import {
   getPermissionsApi,
   savePermissionApi
 } from '@/api/permission'
-import MenuFormDialog from './component/MenuFormDialog.vue'
+import PermissionFromDialog from './component/PermissionFormDialog.vue'
 import type { EditPermissionRequest, PermissionsRequest, PermissionsVo, SavePermissionRequest } from '@/types/permission'
 
 const loading = ref(false)
@@ -231,16 +231,6 @@ onMounted(() => {
   height: 52vh;
   overflow: auto;
   padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .el-card {

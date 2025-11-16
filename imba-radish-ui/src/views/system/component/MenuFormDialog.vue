@@ -240,15 +240,6 @@ onMounted(() => {
   padding-right: 10px;
 }
 
-.dialog-body-wrapper::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.dialog-body-wrapper::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
 .scrollable-form {
   padding: 25px;
 }

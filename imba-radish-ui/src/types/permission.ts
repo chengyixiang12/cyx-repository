@@ -47,3 +47,12 @@ export interface EditPermissionRequest {
     description: string | null
 
 }
+
+export interface GetPermissionVo {
+    id: string,
+    name: string,
+    code: string,
+    type: string,
+    status: number,
+    description: string | null
+}

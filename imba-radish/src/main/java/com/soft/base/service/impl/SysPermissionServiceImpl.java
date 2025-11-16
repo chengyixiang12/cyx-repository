@@ -11,10 +11,7 @@ import com.soft.base.mapper.SysPermissionMapper;
 import com.soft.base.model.request.EditPermissionRequest;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
-import com.soft.base.model.vo.GetAllPermissionVo;
-import com.soft.base.model.vo.GetAssignPerVo;
-import com.soft.base.model.vo.PageVo;
-import com.soft.base.model.vo.PermissionsVo;
+import com.soft.base.model.vo.*;
 import com.soft.base.service.SysPermissionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -108,6 +105,14 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
         wrapper.eq(SysPermission::getStatus, BaseConstant.Status.STATUS_ENABLE);
         wrapper.in(SysPermission::getCode, Arrays.asList(permissions));
         return sysPermissionMapper.exists(wrapper);
+    }
+
+    @Override
+    public GetPermissionVo getPermission(Long id) {
+        GetPermissionVo getPermissionVo = new GetPermissionVo();
+        SysPermission sysPermission = sysPermissionMapper.selectById(id);
+        BeanUtils.copyProperties(sysPermission, getPermissionVo);
+        return getPermissionVo;
     }
 }
 

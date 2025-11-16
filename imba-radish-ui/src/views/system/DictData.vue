@@ -250,15 +250,6 @@ onMounted(() => {
   padding-top: 12px;
 }
 
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
 .list-pagination {
   margin-top: 16px;
   display: flex;
