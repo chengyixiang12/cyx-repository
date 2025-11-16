@@ -3,6 +3,7 @@ import { ApiResponse, ApiError, RequestConfig } from '@/types/method';
 import router from '@/router/routers';
 import { clearCache } from '@/utils/clearCache';
 import { showMessage } from './message';
+import { Metrics } from '@/types/actuator';
 
 const instance = axios.create({
   baseURL: '/api',
@@ -44,7 +45,7 @@ instance.interceptors.response.use(
 
 // 响应数据处理
 function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
-  if (response.data.msg !== '') {
+  if (response.data && response.data.msg && response.data.msg !== '') {
     showCustomMessage(response.data.msg, response.data.code);
   }
   return response;
@@ -81,7 +82,7 @@ function handleErrorCode(data: ApiResponse) {
   showCustomMessage(data.msg, data.code)
 }
 
-// 核心请求方法（重载版本）
+// 核心请求方法
 async function request<T = any>(
   method: Method,
   url: string,
@@ -128,12 +129,19 @@ async function request<T = any>(
 
     // JSON 响应
     const res = response.data as ApiResponse<T>;
-    if (res.code !== 2001) throw new Error(res.msg);
+    if (res.code && res.code !== 2001) throw new Error(res.msg);
     return res;
 
   } catch (error) {
     return handleRequestError(error as ApiError, config?.silent);
   }
+}
+
+// Actuator专用请求方法
+export async function getActuator<Metrics>(endpoint: string): Promise<Metrics> {
+  endpoint = `/actuator/${endpoint}`
+  const response = await instance.get<Metrics>(endpoint)
+  return response.data;
 }
 
 // 请求错误处理
@@ -151,14 +159,6 @@ export async function get<T = any>(
   config?: RequestConfig
 ): Promise<ApiResponse<T>> {
   return request('GET', url, config);
-}
-
-// 获取纯数据（自动解构）
-export async function getData<T = any>(
-  url: string,
-  config?: RequestConfig
-): Promise<T> {
-  return get<T>(url, config).then(res => res.data);
 }
 
 // 获取二进制流
