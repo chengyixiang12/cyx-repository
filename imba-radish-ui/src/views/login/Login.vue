@@ -71,12 +71,13 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { FormInstance, FormRules } from 'element-plus';
-import { getGraphicCaptcha, login, getUserInfo, sendCaptchaApi } from '@/api/login';
+import { getGraphicCaptcha, login, sendCaptchaApi } from '@/api/login';
 import { getPublicKey } from '@/api/auth';
 import { RSAUtil } from '@/utils/rsa';
 import { showMessage } from '@/utils/message';
 import router from '@/router/routers';
 import { LoginRequest } from '@/types/login';
+import { getUserInfoApi } from '@/api/user';
 
 const currentLoginType = ref<'password' | 'email'>('password');
 const loginFormRef = ref<FormInstance>();
@@ -166,7 +167,7 @@ const handleLogin = async () => {
 
     const data = await login(loginParam);
     sessionStorage.setItem('Authorization', data.token);
-    const userInfo = await getUserInfo();
+    const userInfo = await getUserInfoApi();
     sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
     await router.push('/dashboard');
     showMessage('登录成功', 'success');

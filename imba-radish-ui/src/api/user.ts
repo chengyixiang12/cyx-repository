@@ -1,7 +1,7 @@
 import { get, post, put, del } from '@/utils/http';
 import { SaveUserRequest, EditUserRequest, GetUserVo, AllUserVo } from '@/types/user';
 import { PaginatedData } from '@/types/api'
-import { ApiResponse } from '@/types/login';
+import { ApiResponse, UserInfoVo } from '@/types/login';
 
 export async function getUserList(data: any): Promise<PaginatedData<AllUserVo>> {
    const res = await post<PaginatedData<AllUserVo>>('/user/getUsers', data, { flag: true });
@@ -21,7 +21,7 @@ export async function addUser(params: SaveUserRequest): Promise<any> {
  * 修改用户
  * @param params 
  */
-export async function updateUser(params: EditUserRequest): Promise<any> {
+export async function updateUserApi(params: EditUserRequest): Promise<any> {
    return put('/user', params, { flag: true })
 }
 
@@ -83,4 +83,21 @@ export async function forbiddenUser(id: string) {
 export async function getAvatarApi(id: string): Promise<string> {
    const res = await get('/user/getAvatar', { flag: true,  params: { id } })
    return res.data;
+}
+
+/**
+* 获取登录用户信息
+* @param params 登录参数
+*/
+export async function getUserInfoApi(): Promise<UserInfoVo> {
+  const res = await get<UserInfoVo>('/user/getUserInfo', { flag: true });
+  return res.data;
+}
+
+/**
+ * 修改用户密码
+ * @param params 
+ */
+export async function updatePasswordApi(data: { originalPass: string, targetPass: string }): Promise<any> {
+  return put('/user/editPassword', data, { flag: true })
 }

@@ -17,3 +17,8 @@ export interface FilesRequest {
     pageSize: number;
     keyword: string;
 }
+
+export interface UploadAvatarVo {
+    id: string;
+    uri: string | null;
+}

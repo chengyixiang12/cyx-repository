@@ -1,4 +1,4 @@
-import { LoginRequest, LoginVo, UserInfoVo } from '../types/login';
+import { LoginRequest, LoginVo } from '../types/login';
 import { post, get, getBlob } from '@/utils/http';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -6,7 +6,7 @@ export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uu
   // 生成或使用传入的唯一标识
   const finalUKey = uuid || uuidv4();
   // 调用method.ts的get方法（明确指定responseType为'blob'）
-  const blob = await getBlob(
+  const blob = await getBlob<Blob>(
     '/auth/getGraphicCaptcha', { flag: false, params: { uuid: finalUKey }}
   );
   return { blob, uuid: finalUKey };
@@ -19,15 +19,6 @@ export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uu
  */
 export async function login(data: LoginRequest): Promise<LoginVo> {
   const res = await post<LoginVo>('/auth/login', data, { flag: false, silent: true });
-  return res.data;
-}
-
-/**
-* 获取登录用户信息
-* @param params 登录参数
-*/
-export async function getUserInfo(): Promise<UserInfoVo> {
-  const res = await get<UserInfoVo>('/user/getUserInfo', { flag: true });
   return res.data;
 }
 

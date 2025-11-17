@@ -148,7 +148,7 @@ public class SysFileController {
 
     @PostMapping(value = "/uploadAvatar")
     @Operation(summary = "上传用户头像")
-    public R<Object> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
+    public R<UploadAvatarVo> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
         UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
         return R.ok(uploadAvatarVo);
     }

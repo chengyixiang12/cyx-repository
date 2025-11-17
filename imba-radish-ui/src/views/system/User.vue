@@ -142,7 +142,7 @@ import { Edit, Delete, RemoveFilled } from '@element-plus/icons-vue'
 import {
   getUserList,
   addUser,
-  updateUser,
+  updateUserApi,
   deleteUserById,
   lockUserApi,
   unlockUserApi,
@@ -200,7 +200,7 @@ const handleAddSubmit = async (formData: SaveUserRequest) => {
 
 // 提交编辑用户
 const handleEditSubmit = async (formData: SaveUserRequest) => {
-  await updateUser({
+  await updateUserApi({
     id: userId.value,
     nickname: formData.nickname,
     deptId: formData.deptId,

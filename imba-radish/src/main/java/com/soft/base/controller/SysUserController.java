@@ -5,6 +5,7 @@ import com.soft.base.core.annotation.SysLog;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.SecretKeyEnum;
+import com.soft.base.model.dto.UserDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
@@ -133,7 +134,10 @@ public class SysUserController {
     public R<UserInfoVo> getUserInfo() {
         try {
             UserInfoVo userInfoVo = new UserInfoVo();
-            BeanUtils.copyProperties(securityUtil.getUserInfo(), userInfoVo);
+            UserDto userInfo = securityUtil.getUserInfo();
+            BeanUtils.copyProperties(userInfo, userInfoVo);
+            userInfoVo.setId(userInfoVo.getId());
+
             List<String> roleCodes = securityUtil.getRoleCodes();
             if (roleCodes != null && !roleCodes.isEmpty()) {
                 userInfoVo.setPermissions(sysPermissionService.getPermissionsByRoleCodes(roleCodes));

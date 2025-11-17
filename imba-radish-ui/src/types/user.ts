@@ -13,21 +13,21 @@ export interface SaveUserRequest {
 
 export interface EditUserRequest {
     id: string | null;
-    nickname: string;
+    nickname: string | null;
     deptId: string | null;
-    email: string;
-    phone: string;
-    roleIds: string[];
+    email: string | null;
+    phone: string | null;
+    roleIds: string[] | null;
 }
 
 export interface GetUserVo {
     id: string;
-    username: string;
-    nickname: string;
-    email: string;
-    phone: string;
+    username: string | null;
+    nickname: string | null;
+    email: string | null;
+    phone: string | null;
     deptId: string | null;
-    roleIds: string[];
+    roleIds: string[] | null;
 }
 
 export interface AllUserVo {

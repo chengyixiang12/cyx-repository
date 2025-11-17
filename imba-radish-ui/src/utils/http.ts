@@ -139,7 +139,7 @@ async function request<T = any>(
 
 // Actuator专用请求方法
 export async function getActuator<Metrics>(endpoint: string): Promise<Metrics> {
-  endpoint = `/actuator/${endpoint}`
+  endpoint = `/actuator${endpoint}`
   const response = await instance.get<Metrics>(endpoint)
   return response.data;
 }

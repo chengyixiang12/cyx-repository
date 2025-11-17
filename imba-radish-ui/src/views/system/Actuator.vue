@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import {
   getCpuUsageApi,
   getDiskTotalApi,
@@ -147,6 +147,8 @@ const cpuUsage = ref(0);
 const cpuCoreCount = ref(0);
 // 健康详情数据
 const healthDetails = ref<Health>();
+//定时器
+const metricsTimer = ref<number | null>(null);
 // 内存信息
 const heapMemory = ref({
   percent: 0,
@@ -221,7 +223,7 @@ const getUptime = (seconds: number): string => {
   if (days > 0) parts.push(`${days}天`);
   if (hours > 0) parts.push(`${hours}小时`);
   if (minutes > 0) parts.push(`${minutes}分钟`);
-  if (secs > 0 || parts.length === 0) parts.push(`${secs}秒`);
+  // if (secs > 0 || parts.length === 0) parts.push(`${secs}秒`);
 
   return parts.join(' ');
 }
@@ -291,7 +293,16 @@ const fetchMetricsInfo = async () => {
 
 // 组件挂载时获取数据
 onMounted(() => {
-  fetchMetricsInfo()
+  fetchMetricsInfo();
+  // 每10秒刷新一次数据
+  metricsTimer.value = window.setInterval(fetchMetricsInfo, 5000)
+})
+
+// 添加 onUnmounted 清理定时器
+onUnmounted(() => {
+  if (metricsTimer.value) {
+    clearInterval(metricsTimer.value)
+  }
 })
 </script>
 

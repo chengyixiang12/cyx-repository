@@ -1,5 +1,5 @@
 import { post, get, del, getBlob } from '@/utils/http';
-import { FilesRequest, FilesVo, UploadFileVo } from '@/types/file';
+import { FilesRequest, FilesVo, UploadAvatarVo, UploadFileVo } from '@/types/file';
 import { PaginatedData } from '@/types/api';
 
 /**
@@ -57,4 +57,14 @@ export async function deleteFileApi(id: string) {
 export async function downloadFileApi(id: string): Promise<Blob> {
   const blob = await getBlob<Blob>('/file/downloadFile', { flag: true, params: { id }});
   return blob;
+}
+
+/**
+ * 上传用户头像
+ * @param params 
+ * @returns 
+ */
+export async function uploadAvatarApi(params: FormData): Promise<UploadAvatarVo> {
+  const res = await post<UploadAvatarVo>('/user/uploadAvatar', params, { flag: true })
+  return res.data;
 }
