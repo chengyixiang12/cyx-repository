@@ -45,9 +45,6 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
         try {
             UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
             String token = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);
-            // 重新设置用户在线状态
-            redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
-            WebSocketSessionManager.addSession(userDto.getId(), session);
 
             HeartBeatSendParams heartBeatSendParams = new HeartBeatSendParams();
 
@@ -64,6 +61,10 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
                 heartBeatSendParams.setToken(token);
                 log.info("{} token refresh...", userDto.getUsername());
             }
+
+            // 重新设置用户在线状态
+            redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
+            WebSocketSessionManager.addSession(userDto.getId(), session);
 
             heartBeatSendParams.setStatus(true);
             heartBeatSendParams.setOrder(WebSocketOrderEnum.HEART_BEAT.toString());
