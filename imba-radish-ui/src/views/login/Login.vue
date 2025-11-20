@@ -84,7 +84,6 @@ const loginFormRef = ref<FormInstance>();
 const loading = ref(false);
 const captchaUrl = ref('');
 const countdown = ref(0);
-let timer: number;
 
 const loginForm = ref({
   username: '',

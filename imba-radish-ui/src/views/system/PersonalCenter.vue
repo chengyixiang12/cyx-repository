@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="profile-container">
     <el-card class="profile-card">
       <template #header>
@@ -407,4 +407,4 @@ onMounted(() => {
 :deep(.el-tabs__content) {
   padding: 20px 0;
 }
-</style>
+</style> -->

@@ -24,6 +24,7 @@ export class WebsocketManager {
   public onMessage: ((data: WebsocketMessage) => void) | null = null
   public onForceLogout: ((data: WebsocketMessage) => void) | null = null
   public aiAnwser: ((data: WebsocketMessage) => void) | null = null
+  public heartbeat: ((data: WebsocketMessage) => void) | null = null
 
   constructor(url: string) {
     this.url = url
@@ -49,6 +50,7 @@ export class WebsocketManager {
 
       switch (data.order) {
         case 'HEART_BEAT': {
+          this.heartbeat?.(data)
           this.missedHeartbeats = 0
           break
         }

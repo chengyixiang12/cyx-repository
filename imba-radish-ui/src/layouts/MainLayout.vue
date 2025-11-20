@@ -254,6 +254,13 @@ const initWebsocket = async () => {
         router.push('/login')
         showMessage(data.msg, 'warning')
     };
+    ws.heartbeat = (data: WebsocketMessage) => {
+        const token = data.token;
+        // 刷新token
+        if (token) {
+            sessionStorage.setItem('Authorization', token);
+        }
+    }
 }
 
 // 获取用户头像
