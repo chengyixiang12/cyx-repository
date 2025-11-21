@@ -5,13 +5,13 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @Author: cyx
- * @Description: TODO
- * @DateTime: 2025/1/4 10:03
+ * @Description: 文件传输开始接收参数
+ * @DateTime: 2024/12/30 15:37
  **/
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class FileTransferContinueRecParams extends AbstractReceiveParams {
+public class FileTransferStartRecParam extends AbstractRecParam {
 
     /**
      * 文件hash值

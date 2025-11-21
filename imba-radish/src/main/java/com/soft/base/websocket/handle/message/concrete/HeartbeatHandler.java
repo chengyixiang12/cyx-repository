@@ -31,9 +31,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
 
-    @Value(value = "${radish.token.expire-time}")
-    private Long authorizationExpire;
-
     private final RedisTemplate<String, Object> redisTemplate;
     @Autowired
     public HeartbeatHandler(RedisTemplate<String, Object> redisTemplate) {
@@ -44,31 +41,21 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         try {
             UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
-            String token = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);
-
-            HeartBeatSendParams heartBeatSendParams = new HeartBeatSendParams();
-
-            // 校验token是否过期，实现token无感刷新
-            Long expire = redisTemplate.getExpire(RedisConstant.AUTHORIZATION_USERNAME + token);
-            if (expire < 60) {
-                token = UUID.randomUUID().toString();
-                // 更新attributes的token
-                session.getAttributes().put(WebSocketConstant.AUTHORIZATION, token);
-                // 删掉之前的token
-                redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + token);
-                // 存储token
-                redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, userDto.getUsername(), authorizationExpire, TimeUnit.SECONDS);
-                heartBeatSendParams.setToken(token);
-                log.info("{} token refresh...", userDto.getUsername());
-            }
 
             // 重新设置用户在线状态
             redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
             WebSocketSessionManager.addSession(userDto.getId(), session);
 
-            heartBeatSendParams.setStatus(true);
+            String token = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);
+            // 校验token是否过期，实现token无感刷新
+            Long expire = redisTemplate.getExpire(RedisConstant.AUTHORIZATION_USERNAME + token);
+            HeartBeatSendParams heartBeatSendParams = new HeartBeatSendParams();
+            if (expire < 60) {
+                heartBeatSendParams.setRefreshFlag(true);
+            }
             heartBeatSendParams.setOrder(WebSocketOrderEnum.HEART_BEAT.toString());
             session.sendMessage(new TextMessage(heartBeatSendParams.toJsonString()));
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

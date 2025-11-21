@@ -16,8 +16,9 @@ import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
-import com.soft.base.websocket.receive.ForceOfflineRecParams;
+import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -130,12 +131,18 @@ public class AuthServiceImpl implements AuthService {
             WebSocketSession session = WebSocketSessionManager.getSession(id);
             if (session != null) {
                 ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-                ForceOfflineRecParams forceOfflineParam = new ForceOfflineRecParams();
+                ForceOfflineRecParam forceOfflineParam = new ForceOfflineRecParam();
                 forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
                 forceOfflineParam.setReceiver(id);
                 forceOfflineParam.setMsg("该账号已在其他地方登录");
                 TextMessage textMessage = new TextMessage(forceOfflineParam.toJsonString());
                 concreteHandler.handle(session, textMessage);
+            }
+
+            // 客户端指纹
+            String fingerprint = request.getFingerprint();
+            if (StringUtils.isNotBlank(fingerprint)) {
+                redisTemplate.opsForValue().set(RedisConstant.FINGERPRINT + request.getUsername(), fingerprint);
             }
 
             LoginVo loginVo = new LoginVo();

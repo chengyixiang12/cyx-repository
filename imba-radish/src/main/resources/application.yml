@@ -129,7 +129,7 @@ radish:
     expire-time: 60
   token:
     # token过期时间（秒）
-    expire-time: 300
+    expire-time: 120
   lock:
     # 锁过期时间（秒）
     expire: 10

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@fingerprintjs/fingerprintjs": "^4.6.2",
     "@types/axios": "^0.14.4",
     "@types/crypto-js": "^4.2.2",
     "@types/uuid": "^10.0.0",

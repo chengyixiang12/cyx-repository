@@ -9,7 +9,7 @@ import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.service.SysDialogueDetailsService;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.ChatRecParams;
+import com.soft.base.websocket.receive.ChatRecParam;
 import com.soft.base.websocket.send.ChatSendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.Message;
@@ -52,18 +52,18 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        ChatRecParams chatRecParams = JSON.parseObject(message.getPayload(), ChatRecParams.class);
+        ChatRecParam chatRecParam = JSON.parseObject(message.getPayload(), ChatRecParam.class);
         UserDto user = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
         // 问题
         SysDialogueDetails question = new SysDialogueDetails();
         question.setCreateBy(user.getId());
         question.setUpdateBy(user.getId());
-        question.setContent(chatRecParams.getQuestion());
+        question.setContent(chatRecParam.getQuestion());
         question.setTag(BaseConstant.CHAT_TAG_USER);
-        question.setParentId(chatRecParams.getDialogueId());
+        question.setParentId(chatRecParam.getDialogueId());
         sysDialogueDetailsService.save(question);
-        List<String> recentContext = sysDialogueDetailsService.getRecentContext(chatRecParams.getDialogueId(), maxContextNum);
+        List<String> recentContext = sysDialogueDetailsService.getRecentContext(chatRecParam.getDialogueId(), maxContextNum);
 
         List<Message> messages = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(recentContext)) {
@@ -100,7 +100,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
                 throw new RuntimeException(e);
             }
         }, () -> {
-            answer.setParentId(chatRecParams.getDialogueId());
+            answer.setParentId(chatRecParam.getDialogueId());
             answer.setContent(answerStr.toString());
             answer.setTag(BaseConstant.CHAT_TAG_AI);
             answer.setCreateBy(user.getId());

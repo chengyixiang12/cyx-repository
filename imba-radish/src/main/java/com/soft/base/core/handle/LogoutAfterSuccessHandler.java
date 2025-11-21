@@ -54,6 +54,7 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
         keys.add(redisKeyAuth);
         keys.add(RedisConstant.USER_INFO + username);
         keys.add(RedisConstant.WS_USER_SESSION + userDto.getId());
+        keys.add(RedisConstant.FINGERPRINT + username);
 
         redisTemplate.delete(keys);
 

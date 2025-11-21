@@ -9,7 +9,7 @@ import lombok.Data;
  * @DateTime: 2024/11/23 21:34
  **/
 @Data
-public abstract class AbstractReceiveParams {
+public abstract class AbstractRecParam {
 
     /**
      * 指令

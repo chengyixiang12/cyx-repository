@@ -6,7 +6,7 @@ import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.FileTransferContinueRecParams;
+import com.soft.base.websocket.receive.FileTransferContinueRecParam;
 import com.soft.base.websocket.send.FileTransferContinueSendParams;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
@@ -40,13 +40,13 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
-        FileTransferContinueRecParams fileTransferContinueRecParams = JSON.parseObject(message.getPayload(), FileTransferContinueRecParams.class);
+        FileTransferContinueRecParam fileTransferContinueRecParam = JSON.parseObject(message.getPayload(), FileTransferContinueRecParam.class);
         String fileHash = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INFO + username);
-        if (StringUtils.isBlank(fileHash) || !fileHash.equals(fileTransferContinueRecParams.getFileHash())) {
+        if (StringUtils.isBlank(fileHash) || !fileHash.equals(fileTransferContinueRecParam.getFileHash())) {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
             sendParams.setMsg("文件hash值不一致");
-            sendParams.setOrder(fileTransferContinueRecParams.getOrder());
+            sendParams.setOrder(fileTransferContinueRecParam.getOrder());
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
@@ -55,7 +55,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
         FileTransferContinueSendParams fileTransferContinueSendParams = new FileTransferContinueSendParams();
         fileTransferContinueSendParams.setStatus(true);
         fileTransferContinueSendParams.setIndex(currIndex);
-        fileTransferContinueSendParams.setOrder(fileTransferContinueRecParams.getOrder());
+        fileTransferContinueSendParams.setOrder(fileTransferContinueRecParam.getOrder());
         session.sendMessage(new TextMessage(fileTransferContinueSendParams.toJsonString()));
     }
 

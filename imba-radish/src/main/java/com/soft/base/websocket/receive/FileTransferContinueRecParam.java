@@ -1,18 +1,17 @@
 package com.soft.base.websocket.receive;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * @Author: cyx
- * @Description: 文件传输开始接收参数
- * @DateTime: 2024/12/30 15:37
+ * @Description: TODO
+ * @DateTime: 2025/1/4 10:03
  **/
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class FileTransferStartRecParams extends AbstractReceiveParams {
+public class FileTransferContinueRecParam extends AbstractRecParam {
 
     /**
      * 文件hash值

@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ForceOfflineRecParams extends AbstractReceiveParams {
+public class ForceOfflineRecParam extends AbstractRecParam {
 
     /**
      * 接收者

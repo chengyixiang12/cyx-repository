@@ -7,6 +7,7 @@ export interface LoginRequest {
     uuid?: string;
     email?: string;
     emailCaptcha?: string;
+    fingerprint?: string | null;
   }
   
   // 登录成功响应

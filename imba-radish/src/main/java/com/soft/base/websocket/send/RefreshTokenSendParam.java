@@ -5,16 +5,15 @@ import lombok.EqualsAndHashCode;
 
 /**
  * @author cyq
- * @date 2025/11/20
+ * @date 2025/11/21
  * @description
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class HeartBeatSendParams extends AbstractSendParams {
+public class RefreshTokenSendParam extends AbstractSendParams {
 
     /**
-     * 是否刷新token
+     * 刷新后的token
      */
-    private boolean refreshFlag = false;
-
+    private String token;
 }

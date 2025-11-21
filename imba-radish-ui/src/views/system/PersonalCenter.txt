@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div class="profile-container">
     <el-card class="profile-card">
       <template #header>
@@ -161,14 +161,14 @@ const uploadHeaders = {
 }
 
 // 用户信息表单
-const profileForm = reactive<GetUserVo>({
-  id: '',
-  nickname: null,
-  email: null,
-  phone: null,
-  avatar: '',
-  deptId: null
-})
+// const profileForm = reactive<GetUserVo>({
+//   id: '',
+//   nickname: null,
+//   email: null,
+//   phone: null,
+//   avatar: '',
+//   deptId: null
+// })
 
 // 密码修改表单
 const passwordForm = reactive({
@@ -244,14 +244,14 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
 }
 
 // 头像上传成功处理
-const handleAvatarSuccess: UploadProps['onSuccess'] = (response) => {
-  if (response.code === 200) {
-    profileForm.avatar = avatar_url + '/' + response.data
-    ElMessage.success('头像上传成功')
-  } else {
-    ElMessage.error(response.msg || '头像上传失败')
-  }
-}
+// const handleAvatarSuccess: UploadProps['onSuccess'] = (response) => {
+//   if (response.code === 200) {
+//     profileForm.avatar = avatar_url + '/' + response.data
+//     ElMessage.success('头像上传成功')
+//   } else {
+//     ElMessage.error(response.msg || '头像上传失败')
+//   }
+// }
 
 // 头像上传失败处理
 const handleAvatarError: UploadProps['onError'] = () => {
@@ -259,68 +259,68 @@ const handleAvatarError: UploadProps['onError'] = () => {
 }
 
 // 删除头像
-const removeAvatar = () => {
-  profileForm.avatar = ''
-  ElMessage.success('头像已删除')
-}
+// const removeAvatar = () => {
+//   profileForm.avatar = ''
+//   ElMessage.success('头像已删除')
+// }
 
 // 更新用户信息
-const updateProfile = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate(async (valid, fields) => {
-    if (valid) {
-      try {
-        const res = await updateUserApi({
-          id: profileForm.id,
-          nickname: profileForm.nickname,
-          email: profileForm.email,
-          phone: profileForm.phone,
-          deptId: 
-        })
-        if (res.code === 200) {
-          ElMessage.success('信息更新成功')
-          // 更新sessionStorage中的用户信息
-          const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
-          userInfo.nickname = profileForm.nickname
-          sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
-        } else {
-          ElMessage.error(res.msg || '信息更新失败')
-        }
-      } catch (error) {
-        ElMessage.error('信息更新失败')
-      }
-    }
-  })
-}
+// const updateProfile = async (formEl: FormInstance | undefined) => {
+//   if (!formEl) return
+//   await formEl.validate(async (valid, fields) => {
+//     if (valid) {
+//       try {
+//         const res = await updateUserApi({
+//           id: profileForm.id,
+//           nickname: profileForm.nickname,
+//           email: profileForm.email,
+//           phone: profileForm.phone,
+//           deptId: 
+//         })
+//         if (res.code === 200) {
+//           ElMessage.success('信息更新成功')
+//           // 更新sessionStorage中的用户信息
+//           const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
+//           userInfo.nickname = profileForm.nickname
+//           sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
+//         } else {
+//           ElMessage.error(res.msg || '信息更新失败')
+//         }
+//       } catch (error) {
+//         ElMessage.error('信息更新失败')
+//       }
+//     }
+//   })
+// }
 
 // 修改密码
-const updatePassword = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate(async (valid, fields) => {
-    if (valid) {
-      try {
-        const res = await updatePasswordApi({
-          oldPassword: passwordForm.oldPassword,
-          newPassword: passwordForm.newPassword
-        })
-        if (res.code === 200) {
-          ElMessage.success('密码修改成功')
-          resetPasswordForm(formEl)
-        } else {
-          ElMessage.error(res.msg || '密码修改失败')
-        }
-      } catch (error) {
-        ElMessage.error('密码修改失败')
-      }
-    }
-  })
-}
+// const updatePassword = async (formEl: FormInstance | undefined) => {
+//   if (!formEl) return
+//   await formEl.validate(async (valid, fields) => {
+//     if (valid) {
+//       try {
+//         const res = await updatePasswordApi({
+//           oldPassword: passwordForm.oldPassword,
+//           newPassword: passwordForm.newPassword
+//         })
+//         if (res.code === 200) {
+//           ElMessage.success('密码修改成功')
+//           resetPasswordForm(formEl)
+//         } else {
+//           ElMessage.error(res.msg || '密码修改失败')
+//         }
+//       } catch (error) {
+//         ElMessage.error('密码修改失败')
+//       }
+//     }
+//   })
+// }
 
 // 重置基本信息表单
-const resetBasicForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  getUserInfo()
-}
+// const resetBasicForm = (formEl: FormInstance | undefined) => {
+//   if (!formEl) return
+//   getUserInfo()
+// }
 
 // 重置密码表单
 const resetPasswordForm = (formEl: FormInstance | undefined) => {
@@ -329,26 +329,26 @@ const resetPasswordForm = (formEl: FormInstance | undefined) => {
 }
 
 // 获取用户信息
-const getUserInfo = async () => {
-  try {
-    const res = await getUserInfoApi()
-    if (res.code === 200) {
-      profileForm.id = res.data.id
-      profileForm.username = res.data.username
-      profileForm.nickname = res.data.nickname
-      profileForm.email = res.data.email
-      profileForm.phone = res.data.phone
-      profileForm.avatar = res.data.avatar ? avatar_url + '/' + res.data.avatar : ''
-    }
-  } catch (error) {
-    ElMessage.error('获取用户信息失败')
-  }
-}
+// const getUserInfo = async () => {
+//   try {
+//     const res = await getUserInfoApi()
+//     if (res.code === 200) {
+//       profileForm.id = res.data.id
+//       profileForm.username = res.data.username
+//       profileForm.nickname = res.data.nickname
+//       profileForm.email = res.data.email
+//       profileForm.phone = res.data.phone
+//       profileForm.avatar = res.data.avatar ? avatar_url + '/' + res.data.avatar : ''
+//     }
+//   } catch (error) {
+//     ElMessage.error('获取用户信息失败')
+//   }
+// }
 
 // 页面加载时获取用户信息
-onMounted(() => {
-  getUserInfo()
-})
+// onMounted(() => {
+//   getUserInfo()
+// })
 </script>
 
 <style scoped>
@@ -407,4 +407,4 @@ onMounted(() => {
 :deep(.el-tabs__content) {
   padding: 20px 0;
 }
-</style> -->
+</style>

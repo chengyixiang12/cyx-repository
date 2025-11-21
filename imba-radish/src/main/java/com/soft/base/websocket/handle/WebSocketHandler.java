@@ -4,8 +4,8 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.AbstractReceiveParams;
-import com.soft.base.websocket.receive.ReceiveParams;
+import com.soft.base.websocket.receive.AbstractRecParam;
+import com.soft.base.websocket.receive.RecParam;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +29,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         // 获取消息体
         String payload = message.getPayload();
-        AbstractReceiveParams abstractReceiveParams = JSON.parseObject(payload, ReceiveParams.class);
-        String order = abstractReceiveParams.getOrder();
+        AbstractRecParam abstractRecParam = JSON.parseObject(payload, RecParam.class);
+        String order = abstractRecParam.getOrder();
         if (StringUtils.isBlank(order)) {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);

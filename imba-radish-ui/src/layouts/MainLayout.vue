@@ -125,6 +125,7 @@ import { getWebSocketInstance } from '@/utils/websocket';
 import { showMessage } from '@/utils/message';
 import { avatar_url } from '@/common/global-config';
 import { WebsocketMessage } from '@/utils/websocketManager';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 const router = useRouter();
 const user = ref({
@@ -255,12 +256,16 @@ const initWebsocket = async () => {
         showMessage(data.msg, 'warning')
     };
     ws.heartbeat = (data: WebsocketMessage) => {
-        const token = data.token;
-        // 刷新token
-        if (token) {
-            sessionStorage.setItem('Authorization', token);
+        if (data.refreshFlag) {
+            const fingerprint = sessionStorage.getItem('fingerprint');
+            ws.send({ order: 'REFRESH_TOKEN', fingerprint })
         }
     }
+    ws.refreshToken = (data: WebsocketMessage) => {
+        console.log('收到刷新令牌请求')
+        const token = data.token;
+        sessionStorage.setItem('Authorization', token);
+    };
 }
 
 // 获取用户头像

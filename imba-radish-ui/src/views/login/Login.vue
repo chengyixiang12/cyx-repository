@@ -78,6 +78,7 @@ import { showMessage } from '@/utils/message';
 import router from '@/router/routers';
 import { LoginRequest } from '@/types/login';
 import { getUserInfoApi } from '@/api/user';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 const currentLoginType = ref<'password' | 'email'>('password');
 const loginFormRef = ref<FormInstance>();
@@ -92,7 +93,7 @@ const loginForm = ref({
   email: '',
   emailCaptcha: '',
   loginMethod: 'password',
-  uuid: ''
+  uuid: '',
 });
 
 const loginRules = computed<FormRules>(() => {
@@ -164,6 +165,12 @@ const handleLogin = async () => {
       loginParam.emailCaptcha = loginForm.value.emailCaptcha;
     }
 
+    // 获取设备指纹
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    loginParam.fingerprint = result.visitorId;
+    sessionStorage.setItem('fingerprint', loginParam.fingerprint);
+
     const data = await login(loginParam);
     sessionStorage.setItem('Authorization', data.token);
     const userInfo = await getUserInfoApi();
@@ -171,6 +178,7 @@ const handleLogin = async () => {
     await router.push('/dashboard');
     showMessage('登录成功', 'success');
   } catch (error) {
+    console.error('登录失败:', error);
     if (currentLoginType.value === 'password') refreshCaptcha();
   } finally {
     loading.value = false;

@@ -10,7 +10,7 @@ import com.soft.base.model.dto.UserDto;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.DateUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.FileTransferOverRecParams;
+import com.soft.base.websocket.receive.FileTransferOverRecParam;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +58,13 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
     }
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        FileTransferOverRecParams fileTransferOverRecParams = JSON.parseObject(message.getPayload(), FileTransferOverRecParams.class);
+        FileTransferOverRecParam fileTransferOverRecParam = JSON.parseObject(message.getPayload(), FileTransferOverRecParam.class);
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         Long userId = userDto.getId();
         String username = userDto.getUsername();
         String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
         // 源文件名
-        String originalName = fileTransferOverRecParams.getOriginalName();
+        String originalName = fileTransferOverRecParam.getOriginalName();
         // 文件后缀
         String suffix = originalName.substring(originalName.lastIndexOf("."));
         String objectKey = BaseConstant.LEFT_SLASH + dateUtil.date8Number() + BaseConstant.LEFT_SLASH + fileKey + suffix;
@@ -76,7 +76,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
 
         SendParams sendParams = new SendParams();
         sendParams.setStatus(false);
-        sendParams.setOrder(fileTransferOverRecParams.getOrder());
+        sendParams.setOrder(fileTransferOverRecParam.getOrder());
         Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         if (maxIndex == null) {
             sendParams.setMsg("分片文件索引为空");
