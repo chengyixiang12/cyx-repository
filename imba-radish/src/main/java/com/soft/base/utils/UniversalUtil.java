@@ -1,6 +1,5 @@
 package com.soft.base.utils;
 
-import com.soft.base.constants.BaseConstant;
 import com.soft.base.exception.GlobalException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

@@ -23,7 +23,7 @@ export async function getCpuCoreCountApi(): Promise<Metrics> {
  * 获取jvm内存使用量
  */
 export async function getMemoryUsageApi(): Promise<Metrics> {
-    const res = await getActuator<Metrics>('/metrics/jvm.memory.used');
+    const res = await getActuator<Metrics>('/metrics/jvm.memory.used?tag=area:heap');
     return res;
 }
 
@@ -31,7 +31,7 @@ export async function getMemoryUsageApi(): Promise<Metrics> {
  * 获取jvm内存总量
  */
 export async function getMemoryTotalApi(): Promise<Metrics> {
-    const res = await getActuator<Metrics>('/metrics/jvm.memory.max');
+    const res = await getActuator<Metrics>('/metrics/jvm.memory.max?tag=area:heap');
     return res;
 }
 

@@ -92,6 +92,7 @@ springdoc:
 # 日志
 logging:
   level:
+    org.springframework.boot: info
     com.baomidou.mybatisplus: info
     org.mybatis: info
     com.soft.base.mapper: debug

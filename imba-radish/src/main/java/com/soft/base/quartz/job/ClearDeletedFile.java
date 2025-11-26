@@ -1,5 +1,6 @@
 package com.soft.base.quartz.job;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.soft.base.model.dto.SelectDeletedFileDto;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
@@ -46,7 +47,11 @@ public class ClearDeletedFile implements Job {
             }
             minioUtil.delete(item.getBucket(), item.getObjectKey());
         });
-        sysFileService.deleteRealByIds(selectDeletedFileDtoList.stream().map(SelectDeletedFileDto::getId).toList());
-        log.info("清理完毕");
+        List<Long> list = selectDeletedFileDtoList.stream().map(SelectDeletedFileDto::getId).toList();
+        if (CollectionUtil.isNotEmpty(list)) {
+            sysFileService.deleteRealByIds(list);
+            log.info("清理完毕");
+        }
+
     }
 }

@@ -262,7 +262,6 @@ const initWebsocket = async () => {
         }
     }
     ws.refreshToken = (data: WebsocketMessage) => {
-        console.log('收到刷新令牌请求')
         const token = data.token;
         sessionStorage.setItem('Authorization', token);
     };

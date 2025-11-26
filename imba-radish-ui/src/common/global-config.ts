@@ -1,6 +1,14 @@
 // 服务端接口地址
-export const base_url = 'http://127.0.0.1:8081';
+// export const base_url = 'http://127.0.0.1:8081';
+// // 用户头像获取地址
+// export const avatar_url = 'http://192.168.226.130:9002';
+// // websocket地址
+// export const websocket_url = 'ws://127.0.0.1:8081/ws';
+
+// 生产环境
+// 服务端接口地址
+export const base_url = 'http://8.148.28.172';
 // 用户头像获取地址
-export const avatar_url = 'http://192.168.226.130:9002';
-// websocket地址
-export const websocket_url = 'ws://127.0.0.1:8081/ws';
+export const avatar_url = 'http://8.148.28.172:9002';
+// websocket地址8.148.28.172
+export const websocket_url = 'ws://8.148.28.172/ws';

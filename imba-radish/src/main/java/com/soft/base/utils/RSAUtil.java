@@ -56,12 +56,6 @@ public class RSAUtil {
      * @param decryptedData
      * @param privateKey
      * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     * @throws NoSuchPaddingException
-     * @throws InvalidKeyException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
      */
     public String decrypt(String decryptedData, String privateKey) {
         try {
@@ -88,13 +82,6 @@ public class RSAUtil {
      * @param encryptedData
      * @param publicKey
      * @return
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     * @throws NoSuchPaddingException
-     * @throws InvalidKeyException
-     * @throws UnsupportedEncodingException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
      */
     public String encrypt(String encryptedData, String publicKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException {
         // 加载公钥
