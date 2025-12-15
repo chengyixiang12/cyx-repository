@@ -42,7 +42,7 @@ spring:
         # 最大重试间隔 单位：ms
         max-interval: 10000
     # 每次询问最多保留上下文数量
-    max-context-num: 6
+    max-context-num: 7
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
