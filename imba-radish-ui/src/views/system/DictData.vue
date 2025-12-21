@@ -182,8 +182,14 @@ const setDefault = async (row: DictDatasVo) => {
   await handleSearch();
 }
 
-const handlePageChange = (val: number) => { searchForm.value.pageNum = val }
-const handleSizeChange = (val: number) => { searchForm.value.pageSize = val }
+const handlePageChange = (val: number) => {
+  searchForm.value.pageNum = val;
+  handleSearch()
+ }
+const handleSizeChange = (val: number) => {
+  searchForm.value.pageSize = val;
+  handleSearch()
+}
 
 onMounted(() => {
   handleSearch();

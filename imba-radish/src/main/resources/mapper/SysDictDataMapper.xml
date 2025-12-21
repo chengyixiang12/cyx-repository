@@ -93,4 +93,14 @@
           AND t1.parent_id = #{parentId}
           AND t1.status = #{statusEnable}
     </select>
+    <select id="getDictDataByValue" resultType="java.lang.String">
+        SELECT
+            t1.label
+        FROM
+            sys_dict_data t1
+        WHERE
+            t1.del_flag = '0'
+          AND t1.parent_id = #{parentId}
+          AND t1.value = #{value}
+    </select>
 </mapper>

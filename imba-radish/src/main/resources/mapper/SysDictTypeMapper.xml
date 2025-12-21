@@ -25,7 +25,6 @@
         SELECT
         sdt.id,
         sdt.dict_name,
-        sdt.dict_type,
         sdt.sort_order,
         sdt.status,
         sdt.remark

@@ -1,5 +1,6 @@
 package com.soft.base.utils;
 
+import com.soft.base.exception.GlobalException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -44,23 +45,23 @@ public class BeanUtil {
      * @param classType
      * @return
      * @param <T>
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
      */
-    public <T> T map2bean(Map<String,Object> map, Class<T> classType) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        T instance = classType.getConstructor().newInstance();
-        Set<String> keys = map.keySet();
-        Field[] declaredFields = instance.getClass().getDeclaredFields();
-        for (Field c : declaredFields) {
-            String name = c.getName();
-            if (keys.contains(name) && c.getType().isInstance(map.get(name))) {
-                c.setAccessible(true);
-                c.set(instance, map.get(name));
+    public <T> T map2bean(Map<String,Object> map, Class<T> classType) {
+        try {
+            T instance = classType.getConstructor().newInstance();
+            Set<String> keys = map.keySet();
+            Field[] declaredFields = instance.getClass().getDeclaredFields();
+            for (Field c : declaredFields) {
+                String name = c.getName();
+                if (keys.contains(name) && c.getType().isInstance(map.get(name))) {
+                    c.setAccessible(true);
+                    c.set(instance, map.get(name));
+                }
             }
+            return instance;
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            throw new GlobalException(e);
         }
-        return instance;
     }
 
 }

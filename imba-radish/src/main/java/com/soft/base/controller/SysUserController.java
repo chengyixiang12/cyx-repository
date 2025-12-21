@@ -92,10 +92,10 @@ public class SysUserController {
 
     @SysLog(value = "重置密码", module = LogModuleEnum.USER)
     @PreAuthorize(value = "@cps.hasPermission('sys_user_reset')")
-    @PutMapping(value = "/resetPassword")
+    @GetMapping(value = "/resetPassword")
     @Operation(summary = "重置密码")
-    public R<Object> resetPassword(@RequestBody ResetPasswordRequest request) {
-        sysUsersService.resetPassword(request);
+    public R<Object> resetPassword(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysUsersService.resetPassword(id);
         return R.ok("密码重置成功", null);
     }
 

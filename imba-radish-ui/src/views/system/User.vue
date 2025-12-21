@@ -101,6 +101,9 @@
               <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
+                  <el-tooltip class="item" effect="dark" content="重置密码" placement="top">
+                    <el-button size="small" type="primary" @click="handleResetPassword(scope.row.id)" :icon="RefreshLeft" circle />
+                  </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="强制下线" placement="top">
                     <el-button v-show="scope.row.isOnline === 1" size="small" type="primary"
                       @click="forceOffline(scope.row)" :icon="RemoveFilled" circle />
@@ -138,7 +141,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTreeApi } from '@/api/dept'
-import { Edit, Delete, RemoveFilled } from '@element-plus/icons-vue'
+import { Edit, Delete, RemoveFilled, RefreshLeft } from '@element-plus/icons-vue'
 import {
   getUserList,
   addUser,
@@ -147,7 +150,8 @@ import {
   lockUserApi,
   unlockUserApi,
   enableUserApi,
-  forbiddenUser
+  forbiddenUser,
+  resetPasswordApi
 } from '@/api/user'
 import type { AllUserVo, SaveUserRequest } from '@/types/user'
 import type { DeptTreeVo } from '@/types/dept'
@@ -331,6 +335,11 @@ const handleStatusChange = async (row: AllUserVo) => {
 const forceOffline = async (row: AllUserVo) => {
   const wsInstance = getWebSocketInstance();
   wsInstance.send({ order: 'FORCE_OFFLINE', receiver: row.id, msg: '您已被强制下线' })
+}
+
+// 重置密码
+const handleResetPassword = async (id: number) => {
+  resetPasswordApi(id)
 }
 
 // 初始化加载

@@ -152,8 +152,14 @@ const resetSearch = () => {
   }
   handleSearch();
 }
-const handlePageChange = (val: number) => { searchForm.value.pageNum = val }
-const handleSizeChange = (val: number) => { searchForm.value.pageNum = val }
+const handlePageChange = (val: number) => {
+  searchForm.value.pageNum = val;
+  handleSearch()
+ }
+const handleSizeChange = (val: number) => {
+  searchForm.value.pageSize = val;
+  handleSearch()
+}
 
 const handleSearch = async () => {
   try {

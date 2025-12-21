@@ -40,7 +40,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-        log.info("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
         if (rateLimitProperty.getEnable()) {
             String key = getIp(request);
             // 获取当前时间戳
@@ -54,6 +53,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
                 return;
             }
+
+            log.info("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
 
             // 记录请求时间戳
             redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);

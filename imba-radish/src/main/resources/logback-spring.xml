@@ -29,11 +29,44 @@
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>         <!-- 匹配ERROR：拒绝写入 -->
+            <onMismatch>NEUTRAL</onMismatch> <!-- 不匹配：继续后续过滤 -->
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>             <!-- 最高接受级别为WARN -->
+            <onMatch>ACCEPT</onMatch>       <!-- 匹配：接受写入 -->
+        </filter>
+    </appender>
+
+    <!-- 错误日志文件输出：只包含ERROR及以上级别 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/error.log</file>
+        <prudent>false</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>20GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <rolloverOnStartup>true</rolloverOnStartup>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} [%thread] - %msg%n</pattern>
+        </encoder>
+        <!-- 只记录ERROR级别日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
     </appender>
 
     <!-- 日志级别 -->
     <root level="info">
         <appender-ref ref="CONSOLE" /> <!-- 控制台输出 -->
-        <appender-ref ref="FILE" /> <!-- 文件输出 -->
+        <appender-ref ref="FILE" /> <!-- 文件输出INFO -->
+        <appender-ref ref="ERROR_FILE" /> <!-- 文件输出ERROR -->
     </root>
 </configuration>

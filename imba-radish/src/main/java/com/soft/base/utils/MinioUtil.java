@@ -5,6 +5,7 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.properties.MinioProperty;
 import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * @Author: cyx
@@ -39,7 +41,7 @@ public class MinioUtil {
     /**
      * 不分片
      */
-    private final static Long BURST_FALSE = -1L;
+    private static final Long BURST_FALSE = -1L;
 
     @Autowired
     public MinioUtil(MinioClient minioClient, DateUtil dateUtil, MinioProperty minioProperty) {
@@ -135,18 +137,6 @@ public class MinioUtil {
      * 创建桶
      * @throws GlobalException
      */
-    private void createBucket() {
-        try {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(minioProperty.getDefaultBucket()).build());
-        } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
-        }
-    }
-
-    /**
-     * 创建桶
-     * @throws GlobalException
-     */
     private void createBucket(String bucket) {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
@@ -210,6 +200,51 @@ public class MinioUtil {
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
                  InternalException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 生成文件url
+     * @param bucket
+     * @param objectKey
+     * @param headerMap
+     * @return
+     */
+    public String generateUrl(String bucket, String objectKey, Map<String, String> headerMap) {
+        try {
+            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .bucket(bucket)
+                    .object(objectKey)
+                    .method(Method.GET)
+                    .extraQueryParams(headerMap)
+                    .expiry(minioProperty.getExpire(), minioProperty.getTimeUnit())
+                    .build());
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    /**
+     * 生成文件url
+     * @param bucket
+     * @param objectKey
+     * @return
+     */
+    public String generateUrl(String bucket, String objectKey) {
+        try {
+            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .bucket(bucket)
+                    .object(objectKey)
+                    .method(Method.GET)
+                    .expiry(minioProperty.getExpire(), minioProperty.getTimeUnit())
+
+                    .build());
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new GlobalException(e.getMessage());
         }
     }
 }

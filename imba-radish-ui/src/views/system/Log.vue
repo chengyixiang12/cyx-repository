@@ -141,17 +141,16 @@ const handleDelete = async (id: string) => {
 // 分页变化
 const handlePageChange = (page: number) => {
     searchForm.value.pageNum = page
-    loadLogs()
+    handleSearch()
 }
 
 const handleSizeChange = (size: number) => {
     searchForm.value.pageSize = size
-    loadLogs()
+    handleSearch()
 }
 
 // 搜索
 const handleSearch = () => {
-    searchForm.value.pageNum = 1
     loadLogs()
 }
 

@@ -1,5 +1,6 @@
 package com.soft.base.controller;
 
+import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.enums.LogModuleEnum;
@@ -15,6 +16,7 @@ import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -158,5 +160,18 @@ public class SysFileController {
     public R<PageVo<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
         PageVo<FilesVo> pageVo = sysFileService.getMyFiles(request);
         return R.ok(pageVo);
+    }
+
+    @SysLock(name = "file")
+    @GetMapping(value = "/getFileUrl")
+    @Operation(summary = "获取文件url")
+    @Parameters({
+            @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "isInline", description = "是否在线预览；1：是；0：否", in = ParameterIn.QUERY)
+    })
+    public R<String> getFileUrl(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id,
+                                @RequestParam(value = "isInline", required = false, defaultValue = "0") String isInline) {
+        String url = sysFileService.getFileUrl(id, isInline);
+        return R.ok(url);
     }
 }

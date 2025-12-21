@@ -11,37 +11,35 @@ public class RabbitmqConstant {
     /**
      * 直接交换机队列
      */
-    public final static String DIRECT_QUEUE_ONE = "radish-direct-queue";
+    public static final String DIRECT_QUEUE_ONE = "radish-direct-queue";
 
     /**
      * 直接交换机
      */
-    public final static String DIRECT_EXCHANGE = "radish-direct-exchange";
+    public static final String DIRECT_EXCHANGE = "radish-direct-exchange";
 
     /**
      * 直接交换机路由
      */
-    public final static String DIRECT_ROUTEKEY_ONE = "radish-direct-route-key";
+    public static final String DIRECT_ROUTEKEY_ONE = "radish-direct-route-key";
 
     /*****************************************主题交换机*****************************************/
     /**
      * 主题交换机队列
      */
-    public final static String TOPIC_QUEUE_SEND_REGIST_CAPTCHA = "radish-topic-queue-regist";
-    public final static String TOPIC_QUEUE_SEND_LOGIN_CAPTCHA = "radish-topic-queue-login";
-    public final static String TOPIC_QUEUE_SEND_DEAD = "radish-topic-queue-dead";
+    public static final String TOPIC_QUEUE_SEND_DEAD = "radish-topic-queue-dead";
+    public static final String TOPIC_QUEUE_SEND_EMAIL = "radish-topic-email";
 
     /**
      * 主题交换机
      */
-    public final static String TOPIC_EXCHANGE = "radish-topic-exchange";
+    public static final String TOPIC_EXCHANGE = "radish-topic-exchange";
 
     /**
      * 主题交换机路由
      */
-    public final static String TOPIC_ROUTE_KEY_REGIST = "radish.topic.regist";
-    public final static String TOPIC_ROUTE_KEY_LOGIN = "radish.topic.login";
-    public final static String TOPIC_ROUTE_KEY_DEAD = "radish.topic.dead";
+    public static final String TOPIC_ROUTE_KEY_DEAD = "radish.topic.dead";
+    public static final String TOPIC_ROUTE_KEY_EMAIL = "radish.topic.email";
 
 
 }

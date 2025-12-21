@@ -140,6 +140,11 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
         return sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel, (a, b) -> a));
     }
 
+    @Override
+    public String getDictDataByValue(String value, Long parentId) {
+        return sysDictDataMapper.getDictDataByValue(value, parentId);
+    }
+
     /**
      * 移除缓存
      * @param id

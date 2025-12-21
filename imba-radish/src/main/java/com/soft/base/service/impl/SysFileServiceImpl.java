@@ -3,8 +3,8 @@ package com.soft.base.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysFileMapper;
@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,18 +35,19 @@ import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
-* @author cyq
-* @description 针对表【sys_file】的数据库操作Service实现
-* @createDate 2024-10-26 15:19:23
-*/
+ * @author cyq
+ * @description 针对表【sys_file】的数据库操作Service实现
+ * @createDate 2024-10-26 15:19:23
+ */
 @Service
 @Slf4j
 public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
-    implements SysFileService{
+        implements SysFileService {
 
     private final SysFileMapper sysFileMapper;
 
@@ -59,7 +61,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final SecurityUtil securityUtil;
 
-    private final FileUploadAsync fileUploadAsync;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
     public SysFileServiceImpl(SysFileMapper sysFileMapper,
@@ -68,14 +70,14 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                               MinioProperty minioProperty,
                               SysDictDataService sysDictDataService,
                               SecurityUtil securityUtil,
-                              FileUploadAsync fileUploadAsync) {
+                              RedisTemplate<String, Object> redisTemplate) {
         this.sysFileMapper = sysFileMapper;
         this.minioUtil = minioUtil;
         this.universalUtil = universalUtil;
         this.minioProperty = minioProperty;
         this.sysDictDataService = sysDictDataService;
         this.securityUtil = securityUtil;
-        this.fileUploadAsync = fileUploadAsync;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -239,6 +241,35 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     @Override
     public void deleteRealByIds(List<Long> list) {
         sysFileMapper.deleteRealByIds(list);
+    }
+
+    @Override
+    public String getFileUrl(Long id, String isInline) {
+        String redisKey = RedisConstant.FILE_SIGNATURE_URL + id;
+        String url = (String) redisTemplate.opsForValue().get(redisKey);
+        if (StringUtils.isBlank(url)) {
+            SysFile sysFile = sysFileMapper.selectById(id);
+
+
+            if ("1".equals(isInline)) {
+                Map<String, String> headerMap = new HashMap<>();
+                String value = sysFile.getFileSuffix().toLowerCase().replaceFirst("\\.", "");
+                final Long parentId = 2001266854774767618L;
+                String label = sysDictDataService.getDictDataByValue(value, parentId);
+                headerMap.put("response-content-type", label);
+                headerMap.put("response-content-disposition", "inline");
+                url = minioUtil.generateUrl(sysFile.getBucket(), sysFile.getObjectKey(), headerMap);
+            } else {
+                url = minioUtil.generateUrl(sysFile.getBucket(), sysFile.getObjectKey());
+            }
+
+
+
+            redisTemplate.opsForValue().set(redisKey, url);
+            // 减5是为了防止minio签名过期，redis未过期，导致获取失败
+            redisTemplate.expire(redisKey, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
+        }
+        return url;
     }
 }
 

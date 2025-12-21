@@ -36,6 +36,9 @@ public interface SysDictDataMapper extends BaseMapper<SysDictData> {
 
     List<DictDataDto> getByDictType(@Param("parentId") Long parentId,
                                     @Param("statusEnable") Integer statusEnable);
+
+    String getDictDataByValue(@Param("value") String value,
+                              @Param("parentId") Long parentId);
 }
 
 

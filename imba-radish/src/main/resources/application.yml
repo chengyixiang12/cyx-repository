@@ -13,6 +13,7 @@ server:
       # 明确指定解析真实 IP 的头
       remote-ip-header: X-Forwarded-For
   forward-headers-strategy: native
+
 spring:
   ai:
     deepseek:
@@ -77,6 +78,7 @@ spring:
           starttls:
             enable: true
     default-encoding: UTF-8
+
 # mybatis配置
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
@@ -90,6 +92,7 @@ mybatis-plus:
       logic-not-delete-value: 0
       logic-delete-field: delFlag
   type-aliases-package: com.soft.base.entity, com.soft.base.model.request, com.soft.base.model.vo, com.soft.base.model.dto
+
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:
@@ -104,6 +107,7 @@ springdoc:
     - group: 'system'
       paths-to-match: '/**'
       packages-to-scan: com.soft.base.controller
+
 # knife4j的增强配置
 knife4j:
   production: false
@@ -111,12 +115,14 @@ knife4j:
   setting:
     language: zh_cn
     swagger-model-name: 实体列表
+
 # jwt；已弃用
 jwt:
   # 密钥
   secret-key: abcdefghijklmnopq123456789
   # 单位秒；1小时过期
   expire: 3600000
+
 # 登录验证码
 radish:
   captcha:
@@ -129,7 +135,7 @@ radish:
     expire-time: 60
   token:
     # token过期时间（秒）
-    expire-time: 600
+    expire-time: 36000
   lock:
     # 锁过期时间（秒）
     expire: 10
@@ -137,9 +143,24 @@ radish:
     max-retry: 5
     #重试间隔时间（毫秒）
     retry-interval-time: 2000
+
 # webclient配置
 web-client:
   # 响应超时；单位：秒
   response-timeout: 5
   # 连接超时；单位：毫秒
   connect-timeout: 5000
+
+# minio对象存储
+minio:
+  url: ${MINIO_URL}
+  accessKey: ${MINIO_ACCESS_KEY}
+  secretKey: ${MINIO_SECRET_KEY}
+  # 文件桶名
+  default-bucket: ${MINIO_DEFAULT_BUCKET}
+  # 用户头像桶名
+  avatar-bucket: ${MINIO_AVATAR_BUCKET}
+  # 文件url过期时间
+  expire: 3600
+  # 时间单位
+  time-unit: seconds

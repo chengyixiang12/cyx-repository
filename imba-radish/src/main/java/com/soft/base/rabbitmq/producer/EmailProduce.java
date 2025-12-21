@@ -1,6 +1,7 @@
 package com.soft.base.rabbitmq.producer;
 
 import com.soft.base.constants.RabbitmqConstant;
+import com.soft.base.model.dto.rabbitmq.EmailDto;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,28 +13,20 @@ import org.springframework.stereotype.Component;
  **/
 
 @Component
-public class CaptchaProduce {
+public class EmailProduce {
 
     private final RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public CaptchaProduce(RabbitTemplate rabbitTemplate) {
+    public EmailProduce(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
      * 发送登录验证码
-     * @param username
-     */
-    public void sendLoginCaptcha(String username) {
-        rabbitTemplate.convertAndSend(RabbitmqConstant.TOPIC_EXCHANGE, RabbitmqConstant.TOPIC_ROUTE_KEY_LOGIN, username);
-    }
-
-    /**
-     * 发送注册验证码
      * @param email
      */
-    public void sendRegistCaptcha(String email) {
-        rabbitTemplate.convertAndSend(RabbitmqConstant.TOPIC_EXCHANGE, RabbitmqConstant.TOPIC_ROUTE_KEY_REGIST, email);
+    public void sendEmail(String email, String content) {
+        rabbitTemplate.convertAndSend(RabbitmqConstant.TOPIC_EXCHANGE, RabbitmqConstant.TOPIC_ROUTE_KEY_EMAIL, EmailDto.builder().email(email).content(content).build());
     }
 }

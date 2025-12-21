@@ -9,6 +9,10 @@ public class GlobalException extends RuntimeException {
         super(message);
     }
 
+    public GlobalException(Throwable e) {
+        super(e);
+    }
+
     public GlobalException(String message, Throwable e) {
         super(message, e);
     }

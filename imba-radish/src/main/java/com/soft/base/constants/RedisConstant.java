@@ -29,7 +29,7 @@ public class RedisConstant {
     public static final String SYS_LOG_CACHE = "radish:log:";
 
     /**
-     * 用户信息，注意：此处的"::"不能改为":"
+     * 用户信息，tips：此处的"::"不能改为":"
      */
     public static final String USER_INFO = "radish:users::";
 
@@ -94,7 +94,7 @@ public class RedisConstant {
     public static final String LOCK_KEY = "radish:lock:";
 
     /**
-     * 字典key-value缓存key
+     * 字典key-value缓存key，tips：此处的"::"不能改为":"
      */
     public static final String DICT_KEY = "radish:dict::";
 
@@ -102,4 +102,9 @@ public class RedisConstant {
      * 客户端指纹
      */
     public static final String FINGERPRINT = "radish:fingerprint:";
+
+    /**
+     * 文件url签名
+     */
+    public static final String FILE_SIGNATURE_URL = "radish:file:signature:url:";
 }

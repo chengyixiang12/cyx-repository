@@ -101,3 +101,11 @@ export async function getUserInfoApi(): Promise<UserInfoVo> {
 export async function updatePasswordApi(data: { originalPass: string, targetPass: string }): Promise<any> {
   return put('/user/editPassword', data, { flag: true })
 }
+
+/**
+ * 重置用户密码
+ * @param params 
+ */
+export async function resetPasswordApi(id: number) {
+   return get('/user/resetPassword', { flag: true, params: { id } })
+}
