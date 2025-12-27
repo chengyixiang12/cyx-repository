@@ -103,7 +103,7 @@ public class MinioUtil {
                     .stream(is, fileSize, fileSize < BURST_SIZE ? BURST_FALSE : BURST_SIZE)
                     .build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -116,7 +116,7 @@ public class MinioUtil {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioProperty.getDefaultBucket()).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -129,7 +129,7 @@ public class MinioUtil {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -141,7 +141,7 @@ public class MinioUtil {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -155,7 +155,7 @@ public class MinioUtil {
         try {
             return minioClient.getObject(GetObjectArgs.builder().bucket(minioProperty.getDefaultBucket()).object(objectKey).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -170,7 +170,7 @@ public class MinioUtil {
         try {
             return minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(objectKey).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 

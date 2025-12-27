@@ -78,10 +78,10 @@ public class SysDictTypeController {
 
     @SysLog(value = "删除字典类型", module = LogModuleEnum.DICT_TYPE)
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_del')")
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping
     @Operation(summary = "删除字典类型")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> deleteDictType(@PathVariable(value = "id") @NotBlank(message = "主键不能为空") String id) {
+    public R<Object> deleteDictType(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
         sysDictTypeService.deleteDictType(Long.parseLong(id));
         return R.ok("删除成功", null);
     }

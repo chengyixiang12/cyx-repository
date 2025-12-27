@@ -1,8 +1,8 @@
 package com.soft.base.controller;
 
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
-import com.soft.base.constants.BaseConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.dto.FileDetailDto;
@@ -21,8 +21,8 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -34,14 +34,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @Author: cyx
@@ -54,25 +56,23 @@ import java.nio.file.Paths;
 @Tag(name = "文件")
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 public class SysFileController {
 
     @Value(value = "${storage.big-file.location}")
     private String bigfileLocation;
 
+    @Value(value = "${tmp.path}")
+    private String tmp;
+
     private final SysFileService sysFileService;
 
     private final MinioUtil minioUtil;
 
-    @Autowired
-    public SysFileController(SysFileService sysFileService,
-                             MinioUtil minioUtil) {
-        this.sysFileService = sysFileService;
-        this.minioUtil = minioUtil;
-    }
 
     @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
-    public R<UploadFileVo> uploadFile(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
+    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
         UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
         return R.ok("上传成功", uploadFileVo);
     }
@@ -173,5 +173,74 @@ public class SysFileController {
                                 @RequestParam(value = "isInline", required = false, defaultValue = "0") String isInline) {
         String url = sysFileService.getFileUrl(id, isInline);
         return R.ok(url);
+    }
+
+    @PostMapping(value = "/uploadChunk")
+    @Operation(summary = "上传分片")
+    @Parameters({
+            @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "chunkIndex", description = "索引", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "chunk", description = "分片", required = true, in = ParameterIn.QUERY)
+    })
+    public R<Object> uploadChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5,
+                                 @RequestParam(value = "chunkIndex", required = false) @NotNull(message = "索引不能为空") Integer chunkIndex,
+                                 @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") MultipartFile chunk) throws IOException {
+
+        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+        if (!chunkDir.exists()) {
+            boolean flag = chunkDir.mkdirs();
+            if (!flag) {
+                return R.fail("分片目录创建失败");
+            }
+        }
+
+        File chunkFile = new File(chunkDir, chunkIndex.toString());
+        chunk.transferTo(chunkFile);
+        return R.ok();
+    }
+
+    @GetMapping(value = "/mergeChunk")
+    @Operation(summary = "合并分片")
+    public R<Object> mergeChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5,
+                                @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName,
+                                @RequestParam(value = "total", required = false) @NotNull(message = "分片总数不能为空") Integer total) {
+        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+        File[] chunks = chunkDir.listFiles();
+
+        if (chunks == null) {
+            return R.fail("分片未找到");
+        }
+
+        if (!Objects.equals(total, chunks.length)) {
+            return R.fail("分片数量错误");
+        }
+
+        OutputStream os;
+        try {
+            File fileTemp = new File(chunkDir, fileName);
+            if (!fileTemp.exists()) {
+                boolean flag = fileTemp.createNewFile();
+                if (!flag) {
+                    return R.fail("文件缓存创建失败");
+                }
+            }
+
+            os = new FileOutputStream(fileTemp);
+            Map<String, File> chunkMap = Arrays.stream(chunks).collect(Collectors.toMap(File::getName, Function.identity()));
+            for (int i = 0; i < total; i++) {
+                File chunk = chunkMap.get(String.valueOf(i));
+                byte[] bytes = Files.readAllBytes(chunk.toPath());
+                os.write(bytes);
+                chunk.delete();
+            }
+            os.flush();
+            os.close();
+
+            UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp);
+
+            return R.ok("上传成功", uploadFileVo);
+        } catch (IOException e) {
+            throw new GlobalException(e);
+        }
     }
 }

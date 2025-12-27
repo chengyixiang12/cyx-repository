@@ -26,7 +26,7 @@ export async function getDictTypeApi(id: string): Promise<DictTypeVo> {
  * @param id 
  */
 export async function deleteDictTypeApi(id: string) {
-    await del(`/dictType/${id}`, { flag: true })
+    await del(`/dictType`, null, { flag: true, params: { id } })
 }
 
 /**

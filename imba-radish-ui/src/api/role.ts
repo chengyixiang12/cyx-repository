@@ -44,7 +44,7 @@ export async function updateRoleApi(data: EditRoleRequest) {
  * @param id 删除角色
  */
 export async function deleteRoleApi(id: string) {
-    await del('/role', { flag: true, params: { id } })
+    await del('/role', null, { flag: true, params: { id } })
 }
 
 /**

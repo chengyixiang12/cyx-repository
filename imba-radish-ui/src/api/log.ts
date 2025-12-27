@@ -16,7 +16,7 @@ export async function getLogsApi(data: LogsRequest): Promise<PaginatedData<LogsV
  * @param id 
  */
 export async function deleteLogApi(id: string) {
-    await del('/log', { flag: true, params: { id } });
+    await del('/log', null, { flag: true, params: { id } });
 }
 
 /**

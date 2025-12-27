@@ -1,12 +1,19 @@
 package com.soft.base.utils;
 
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.exception.GlobalException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.math.BigInteger;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,8 +127,30 @@ public class UniversalUtil {
      * @param charPool 字符池
      * @return 随机字符
      */
-    private static char getRandomChar(String charPool) {
+    private char getRandomChar(String charPool) {
         int randomIndex = SECURE_RANDOM.nextInt(charPool.length());
         return charPool.charAt(randomIndex);
+    }
+
+    /**
+     * 获取文件hash
+     * @param is
+     * @return
+     */
+    public String generateFileHash(InputStream is) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance(BaseConstant.TYPE_ALGORITHM);
+            try (DigestInputStream dis = new DigestInputStream(is, digest)) {
+                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
+                int length = BaseConstant.BUFFER_SIZE;
+                while (length != BaseConstant.FILE_OVER_SIGN) {
+                    length = dis.read(buffer);
+                }
+            }
+            byte[] hashBytes = digest.digest();
+            return new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
+        } catch (NoSuchAlgorithmException | IOException e) {
+            throw new GlobalException(e);
+        }
     }
 }

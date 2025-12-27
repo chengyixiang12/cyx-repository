@@ -17,7 +17,7 @@ export async function getFileByIdApi(id: string): Promise<Blob> {
  * @param params 
  */
 export async function uploadFileApi(params: FormData): Promise<UploadFileVo> {
-  const res = await post<UploadFileVo>('/file', params, { flag: true })
+  const res = await post<UploadFileVo>('/file/upload', params, { flag: true, headers: { 'Content-Type': 'multipart/form-data'} })
   return res.data;
 }
 
@@ -46,7 +46,7 @@ export async function getMyFilesApi(data: FilesRequest): Promise<PaginatedData<F
  * @param id 
  */
 export async function deleteFileApi(id: string) {
-  del('/file', { params: { id }, flag: true })
+  del('/file', null, { params: { id }, flag: true })
 }
 
 /**
@@ -61,10 +61,32 @@ export async function downloadFileApi(id: string): Promise<Blob> {
 
 /**
  * 上传用户头像
- * @param params 
+ * @param data 
  * @returns 
  */
-export async function uploadAvatarApi(params: FormData): Promise<UploadAvatarVo> {
-  const res = await post<UploadAvatarVo>('/user/uploadAvatar', params, { flag: true })
+export async function uploadAvatarApi(data: FormData): Promise<UploadAvatarVo> {
+  const res = await post<UploadAvatarVo>('/file/uploadAvatar', data, { flag: true, headers: { 'Content-Type': 'multipart/form-data'} });
+  return res.data;
+}
+
+/**
+ * 上传分片
+ * @param fileMd5 
+ * @param chunkIndex 
+ * @param chunk 
+ * @returns 
+ */
+export async function uploadChunkApi(formData: FormData) {
+  await post<any>('/file/uploadChunk', formData, { flag: true, headers: { 'Content-Type': 'multipart/form-data'} });
+}
+
+/**
+ * 合并分片
+ * @param fileMd5 
+ * @param fileName 
+ * @param total 
+ */
+export async function mergeChunkApi(fileMd5: string, fileName: string, total: number): Promise<UploadFileVo> {
+  const res = await get<UploadFileVo>('/file/mergeChunk', { flag: true, params: { fileMd5, fileName, total}});
   return res.data;
 }

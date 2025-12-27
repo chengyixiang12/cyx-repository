@@ -41,7 +41,7 @@ export async function getUser(id: string): Promise<GetUserVo> {
  * @returns 
  */
 export async function deleteUserById(id: string): Promise<ApiResponse<any>> {
-   return await del('/user', { params: { id }, flag: true })
+   return await del('/user', null, { params: { id }, flag: true })
 }
 
 /**

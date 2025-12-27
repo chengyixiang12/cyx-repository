@@ -69,7 +69,7 @@ export async function editJobApi(data: EditJobRequest): Promise<void> {
  * @param param 任务id
  */
 export async function deleteJobApi(id: string): Promise<void> {
-  await del('/scheduleJob/deleteJob', { flag: true, params: { id } });
+  await del('/scheduleJob/deleteJob', null, { flag: true, params: { id } });
 }
 
 /**

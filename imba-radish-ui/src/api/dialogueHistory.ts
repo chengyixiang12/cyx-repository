@@ -27,7 +27,7 @@ export async function saveDialogueApi(data: SaveDialogueRequest): Promise<number
  * @param id 
  */
 export async function deleteDialogueApi(id: string) {
-    del('/dialogue/deleteDialogue', { flag: true, params: { id } });
+    del('/dialogue/deleteDialogue', null, { flag: true, params: { id } });
 }
 
 /**

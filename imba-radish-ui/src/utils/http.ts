@@ -3,11 +3,13 @@ import { ApiResponse, ApiError, RequestConfig } from '@/types/method';
 import router from '@/router/routers';
 import { clearCache } from '@/utils/clearCache';
 import { showMessage } from './message';
-import { Metrics } from '@/types/actuator';
 
 const instance = axios.create({
   baseURL: '/api',
   timeout: 30000, // 延长超时时间
+  headers: {
+    'Content-Type': 'application/json' // 设置默认请求头
+  }
 });
 
 // 请求拦截器
@@ -23,13 +25,6 @@ instance.interceptors.request.use(
     if (config.headers?.flag !== undefined) {
       config.headers['X-Flag'] = config.headers.flag; // 重命名为更标准的X-Flag
       delete config.headers.flag;
-    }
-
-    // 确保JSON请求头
-    if (!config.headers?.['Content-Type'] && typeof config.data === 'object') {
-      // 使用 Axios 的标准方式设置 headers
-      config.headers = axios.AxiosHeaders.from(config.headers);
-      config.headers.set('Content-Type', 'application/json');
     }
 
     return config;
@@ -86,48 +81,45 @@ function handleErrorCode(data: ApiResponse) {
 async function request<T = any>(
   method: Method,
   url: string,
-  config?: AxiosRequestConfig & {
-    flag?: boolean;
-    silent?: boolean;
-  }
-): Promise<ApiResponse<T>>;
-
-async function request(
-  method: Method,
-  url: string,
-  config: AxiosRequestConfig & {
-    flag?: boolean;
-    silent?: boolean;
-    responseType: 'blob' | 'arraybuffer';
-  }
-): Promise<Blob>;
-
-async function request<T = any>(
-  method: Method,
-  url: string,
-  config?: any
+  config?: any,
 ): Promise<any> {
   try {
-    const { silent, ...axiosConfig } = config || {};
-    const response = await instance.request({
+    // 1. 解构配置：分离 业务配置(silent/flag)、axios 核心配置(data/params/headers等)
+    const { 
+      silent, 
+      flag, // 单独解构 flag，不混入 axiosConfig
+      ...axiosConfig 
+    } = config || {};
+
+    // 2. 构建最终的 axios 配置：明确区分 data（请求体）、params（URL参数）
+    const finalConfig = {
       method,
       url,
-      ...axiosConfig,
+      // 核心：仅保留 axios 标准配置（避免业务配置污染）
+      data: axiosConfig.data, // 请求体（POST/PUT/DELETE 用）
+      params: axiosConfig.params, // URL 查询参数（GET/DELETE 用）
       headers: {
-        ...axiosConfig?.headers,
-        ...(config?.flag !== undefined && { 'X-Flag': String(config.flag) }),
+        ...instance.defaults.headers, // 实例默认头（如 Content-Type: application/json）
+        ...axiosConfig.headers, // 自定义 headers
+        ...(flag !== undefined && { 'X-Flag': String(flag) }), // 仅处理 flag 到 headers
       },
-    });
+      // 其他 axios 标准配置（如 responseType/timeout 等）
+      responseType: axiosConfig.responseType,
+      timeout: axiosConfig.timeout,
+    };
 
-    // 二进制响应
-    if (config?.responseType === 'blob' || config?.responseType === 'arraybuffer') {
+    // 3. 发送请求
+    const response = await instance.request(finalConfig);
+
+    // 4. 二进制响应处理（保留你的原有逻辑）
+    if (finalConfig.responseType === 'blob' || finalConfig.responseType === 'arraybuffer') {
       if (!(response.data instanceof Blob)) {
         throw new Error(`Expected Blob but got ${typeof response.data}`);
       }
       return response.data;
     }
 
-    // JSON 响应
+    // 5. JSON 响应处理（保留你的原有逻辑）
     const res = response.data as ApiResponse<T>;
     if (res.code && res.code !== 2001) throw new Error(res.msg);
     return res;
@@ -135,13 +127,6 @@ async function request<T = any>(
   } catch (error) {
     return handleRequestError(error as ApiError, config?.silent);
   }
-}
-
-// Actuator专用请求方法
-export async function getActuator<Metrics>(endpoint: string): Promise<Metrics> {
-  endpoint = `/actuator${endpoint}`
-  const response = await instance.get<Metrics>(endpoint)
-  return response.data;
 }
 
 // 请求错误处理
@@ -159,6 +144,33 @@ export async function get<T = any>(
   config?: RequestConfig
 ): Promise<ApiResponse<T>> {
   return request('GET', url, config);
+}
+
+export async function post<T = any>(
+  url: string,
+  data?: any,
+  config?: RequestConfig
+): Promise<ApiResponse<T>> {
+  return request('POST', url, { ...config, data });
+}
+
+export async function put<T = any>(
+  url: string,
+  data?: any,
+  config?: RequestConfig
+): Promise<ApiResponse<T>> {
+  return request('PUT', url, { ...config, data });
+}
+
+export async function del<T = any>(
+  url: string,
+  data?: any,
+  config?: RequestConfig
+): Promise<ApiResponse<T>> {
+  return request<T>('DELETE', url, {
+    ...config,
+    data: data
+  });
 }
 
 // 获取二进制流
@@ -200,40 +212,11 @@ export async function postBlob<Blob>(
   }
 }
 
-export async function post<T = any>(
-  url: string,
-  data?: any,
-  config?: {
-    params?: Record<string, any>;
-    flag?: boolean;
-    silent?: boolean;
-  }
-): Promise<ApiResponse<T>> {
-  return request('POST', url, { ...config, data });
-}
-
-export async function put<T = any>(
-  url: string,
-  data?: any,
-  config?: {
-    params?: Record<string, any>;
-    flag?: boolean;
-    silent?: boolean;
-  }
-): Promise<ApiResponse<T>> {
-  return request('PUT', url, { ...config, data });
-}
-
-export async function del<T = any>(
-  url: string,
-  config?: {
-    params?: Record<string, any>;
-    data?: any;
-    flag?: boolean;
-    silent?: boolean;
-  }
-): Promise<ApiResponse<T>> {
-  return request('DELETE', url, config);
+// Actuator专用请求方法
+export async function getActuator<Metrics>(endpoint: string): Promise<Metrics> {
+  endpoint = `/actuator${endpoint}`
+  const response = await instance.get<Metrics>(endpoint)
+  return response.data;
 }
 
 /**

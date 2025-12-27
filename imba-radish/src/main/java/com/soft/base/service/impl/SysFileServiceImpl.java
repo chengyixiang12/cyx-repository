@@ -3,6 +3,7 @@ package com.soft.base.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysFile;
@@ -22,6 +23,7 @@ import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.SecurityUtil;
 import com.soft.base.utils.UniversalUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -30,8 +32,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -46,6 +51,7 @@ import java.util.Map;
  */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         implements SysFileService {
 
@@ -63,22 +69,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    public SysFileServiceImpl(SysFileMapper sysFileMapper,
-                              MinioUtil minioUtil,
-                              UniversalUtil universalUtil,
-                              MinioProperty minioProperty,
-                              SysDictDataService sysDictDataService,
-                              SecurityUtil securityUtil,
-                              RedisTemplate<String, Object> redisTemplate) {
-        this.sysFileMapper = sysFileMapper;
-        this.minioUtil = minioUtil;
-        this.universalUtil = universalUtil;
-        this.minioProperty = minioProperty;
-        this.sysDictDataService = sysDictDataService;
-        this.securityUtil = securityUtil;
-        this.redisTemplate = redisTemplate;
-    }
+    private final FileUploadAsync fileUploadAsync;
 
     @Override
     public UploadFileVo uploadFile(MultipartFile multipartFile) {
@@ -270,6 +261,40 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             redisTemplate.expire(redisKey, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
         }
         return url;
+    }
+
+    @Override
+    public UploadFileVo mergeChunk(File fileTemp) {
+        String fileName = fileTemp.getName();
+        try (InputStream hashcodeIs = Files.newInputStream(fileTemp.toPath())) {
+            String fileKey = universalUtil.fileKeyGen();
+            String hashcode = universalUtil.generateFileHash(hashcodeIs);
+            String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
+            long fileSize = fileTemp.length();
+            String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
+
+            fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize);
+
+            SysFile sysFile = new SysFile();
+            sysFile.setFileKey(fileKey);
+            sysFile.setFileSuffix(fileSuffix);
+            sysFile.setLocation(BaseConstant.Minio.MINIO);
+            sysFile.setBucket(minioProperty.getDefaultBucket());
+            sysFile.setObjectKey(objectKey);
+            sysFile.setOriginalName(fileName);
+            sysFile.setFileSize(fileSize);
+            sysFile.setFileHash(hashcode);
+            sysFile.setFileSize(fileSize);
+            sysFileMapper.insert(sysFile);
+
+            UploadFileVo uploadFileVo = new UploadFileVo();
+            uploadFileVo.setFileName(fileName);
+            uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
+
+            return uploadFileVo;
+        } catch (IOException e) {
+            throw new GlobalException(e);
+        }
     }
 }
 

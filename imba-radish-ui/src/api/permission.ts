@@ -53,7 +53,7 @@ export async function editPermissionApi(data: EditPermissionRequest) {
  * @param id 
  */
 export async function deletePermissionApi(id: string) {
-    await del('/permission', { params: { id }, flag: true });
+    await del('/permission', null, { params: { id }, flag: true });
 }
 
 /**

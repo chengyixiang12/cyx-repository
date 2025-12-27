@@ -1,19 +1,13 @@
 <template>
-  <div class="dept-container">
+  <div class="file-container">
     <el-row :gutter="20">
       <el-col :span="24">
         <el-card>
           <template #header>
             <div class="list-header">
-              <div class="left-placeholder"></div>
-              <div class="center-progress" v-if="showProgress">
-                <el-progress :percentage="uploadProgress" :show-text="false" />
-              </div>
               <div class="right-header">
-                <el-upload class="upload-demo" :action="uploadAction" :on-success="handleUploadSuccess"
-                  :on-error="handleUploadError" :before-upload="beforeUpload" :show-file-list="false" multiple="false"
-                  name="multipartFile" :on-progress="handleProgress" :headers="uploadHeaders"
-                  enctype="multipart/form-data">
+                <el-upload class="upload-demo" :action="''" :auto-upload="true" :show-file-list="false" multiple="false"
+                  name="multipartFile" :http-request="customChunkUpload" ref="uploadRef" enctype="multipart/form-data">
                   <el-button type="primary">上传</el-button>
                 </el-upload>
               </div>
@@ -76,6 +70,20 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 上传进度弹窗 -->
+    <el-dialog title="上传" v-model="uploadDialogVisible" :close-on-click-modal="false" :show-close="false" :modal="true"
+      :destroy-on-close="true" width="240px">
+      <div class="progress-container">
+        <el-progress type="circle" :percentage="uploadProgress" :stroke-width="12" :width="120">
+          <template #default>
+            <span v-if="uploadProgress == 0">解析中...</span>
+            <span v-if="uploadProgress > 0" class="progress-text">{{ uploadProgress }}%</span>
+          </template>
+        </el-progress>
+        <p class="progress-desc">请等待上传完成，请勿关闭此窗口</p>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,20 +91,18 @@
 import { ref, onMounted } from 'vue'
 import { Delete, Download } from '@element-plus/icons-vue'
 import { FilesRequest, FilesVo } from '@/types/file'
-import { deleteFileApi, downloadFileApi, uploadFileApi, getMyFilesApi } from '@/api/file'
+import { deleteFileApi, downloadFileApi, uploadChunkApi, getMyFilesApi, mergeChunkApi, uploadFileApi } from '@/api/file'
 import { download } from '@/utils/download'
 import { showMessage } from '@/utils/message'
+import SparkMD5 from 'spark-md5';
 
-const loading = ref(false)
-const total = ref(0)
-const fileList = ref<FilesVo[]>([])
-const uploadAction = ref('api/file/upload')
-const uploadHeaders = ref({
-  Authorization: `Bearer ${sessionStorage.getItem('Authorization')}`
-})
-const uploadProgress = ref<number>(0)
-const showProgress = ref<boolean>(false)
+const loading = ref(false);
+const total = ref(0);
+const fileList = ref<FilesVo[]>([]);
 
+const uploadProgress = ref<number>(0);
+const chunkSize = 5 * 1024 * 1024;
+const uploadDialogVisible = ref(false);
 
 const searchForm = ref<FilesRequest>({
   keyword: '',
@@ -159,36 +165,112 @@ const handleDownload = async (row: FilesVo) => {
   download(blob, row.originalName);
 }
 
-// 上传文件前置
-const beforeUpload = (file: File) => {
-  // 可以添加文件类型或大小限制检查
-  const isLt100M = file.size / 1024 / 1024 < 500
-  if (!isLt100M) {
-    showMessage('文件大小不能超过100M', 'error')
+/**
+ * 计算文件MD5（用于分片唯一标识）
+ */
+const calculateFileMd5 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const spark = new SparkMD5.ArrayBuffer();
+    const fileReader = new FileReader();
+    const chunks = Math.ceil(file.size / chunkSize);
+    let currentChunk = 0;
+
+    fileReader.onload = (e) => {
+      try {
+        spark.append(e.target?.result as ArrayBuffer);
+        currentChunk++;
+        // 读取完所有块后计算MD5
+        if (currentChunk >= chunks) {
+          resolve(spark.end());
+        } else {
+          loadNextChunk();
+        }
+      } catch (err) {
+        reject(err);
+      }
+    };
+
+    fileReader.onerror = (err) => {
+      reject(err);
+      showMessage('文件上传失败', 'error');
+    };
+
+    // 读取下一块
+    const loadNextChunk = () => {
+      const start = currentChunk * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      fileReader.readAsArrayBuffer(file.slice(start, end));
+    };
+
+    // 开始读取第一块
+    loadNextChunk();
+  });
+};
+
+/**
+ * 上传单个分片
+ */
+const uploadSingleChunk = async (
+  chunk: Blob,
+  chunkIndex: number,
+  fileMd5: string
+) => {
+  const formData = new FormData();
+  formData.append('chunk', chunk);
+  formData.append('fileMd5', fileMd5);
+  formData.append('chunkIndex', chunkIndex.toString());
+  await uploadChunkApi(formData);
+};
+
+/**
+ * 合并分片
+ */
+const mergeChunks = async (fileMd5: string, fileName: string, totalChunks: number) => {
+  await mergeChunkApi(fileMd5, fileName, totalChunks);
+};
+
+const customChunkUpload = async (options: any) => {
+  const { file } = options;
+
+  if (file.size <= chunkSize) {
+    const formData = new FormData();
+    formData.append('multipartFile', file);
+    await uploadFileApi(formData);
+  } else {
+    uploadDialogVisible.value = true;
+    try {
+      // 1. 重置进度
+      uploadProgress.value = 0;
+      const fileName = file.name;
+
+      // 2. 计算文件MD5（唯一标识）
+      const fileMd5 = await calculateFileMd5(file);
+
+      // 3. 拆分文件分片
+      const totalChunks = Math.ceil(file.size / chunkSize);
+
+      // 4. 依次上传所有分片（也可改为并发上传，提升速度）
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
+        await uploadSingleChunk(chunk, i, fileMd5);
+        uploadProgress.value = Math.round((i + 1) / totalChunks * 100);
+      }
+
+      // 5. 所有分片上传完成，请求合并
+      await mergeChunks(fileMd5, fileName, totalChunks);
+
+      // 6. 上传完成
+      uploadProgress.value = 100;
+      uploadDialogVisible.value = false;
+    } catch (error) {
+      uploadProgress.value = 0;
+      uploadDialogVisible.value = false;
+    }
   }
-  return isLt100M
-}
-
-// 上传成功
-const handleUploadSuccess = async (response: any, file: File, fileList: File[]) => {
-  showProgress.value = false
-  uploadProgress.value = 0
-  showMessage('上传成功', 'success')
-  await loadFiles(); // 重新加载文件列表
-}
-
-// 上传失败
-const handleUploadError = (error: any, file: File, fileList: File[]) => {
-  showProgress.value = false
-  uploadProgress.value = 0
-  showMessage('上传失败', 'error')
-}
-
-// 上传进度
-const handleProgress = (event: any, file: File, fileList: File[]) => {
-  uploadProgress.value = event.percent
-  showProgress.value = true
-}
+  loadFiles();
+};
 
 onMounted(() => {
   loadFiles()
@@ -196,7 +278,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dept-container {
+.file-container {
   height: 100%;
   padding: 10px;
   background-color: #f5f7fa;
@@ -208,16 +290,6 @@ onMounted(() => {
   align-items: center;
   height: 36px;
   padding: 0 12px;
-}
-
-.center-progress {
-  flex: 1;
-  margin: 0 20px;
-  max-width: 300px;
-}
-
-.left-placeholder {
-  flex: 1;
 }
 
 .right-header {
@@ -302,5 +374,32 @@ onMounted(() => {
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+}
+
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 0;
+  height: 160px;
+}
+
+.progress-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:deep(.el-dialog__body) {
+  padding: 10px 15px !important;
+}
+
+:deep(.el-dialog__header) {
+  padding: 12px 15px !important;
+}
+
+:deep(.el-dialog__title) {
+  font-size: 16px !important;
 }
 </style>

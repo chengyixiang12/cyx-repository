@@ -31,4 +31,5 @@ export interface RequestConfig extends AxiosRequestConfig {
   params?: Record<string, any>;
   flag?: boolean;
   silent?: boolean;
+  responseType?: "blob" | "arraybuffer" | "json" | "text" | "stream";
 }

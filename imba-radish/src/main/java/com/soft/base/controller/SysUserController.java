@@ -1,8 +1,8 @@
 package com.soft.base.controller;
 
+import com.soft.base.constants.RegexConstant;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
-import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.model.dto.UserDto;
@@ -23,9 +23,9 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Tag(name = "用户")
 @Validated
+@RequiredArgsConstructor
 public class SysUserController {
 
     private final SysUsersService sysUsersService;
@@ -52,21 +53,6 @@ public class SysUserController {
     private final SecretKeyService secretKeyService;
 
     private final SysPermissionService sysPermissionService;
-
-    @Autowired
-    public SysUserController(SysUsersService sysUsersService,
-                             RSAUtil rsaUtil,
-                             SecurityUtil securityUtil,
-                             PasswordEncoder passwordEncoder,
-                             SecretKeyService secretKeyService,
-                             SysPermissionService sysPermissionService) {
-        this.sysUsersService = sysUsersService;
-        this.rsaUtil = rsaUtil;
-        this.securityUtil = securityUtil;
-        this.passwordEncoder = passwordEncoder;
-        this.secretKeyService = secretKeyService;
-        this.sysPermissionService = sysPermissionService;
-    }
 
     @PostMapping(value = "/getUsers")
     @Operation(summary = "获取用户（复）")
@@ -203,7 +189,7 @@ public class SysUserController {
     public R<Object> deleteUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.deleteUser(id, username);
-        return R.ok();
+        return R.ok("删除成功", null);
     }
 
     @SysLog(value = "启用用户", module = LogModuleEnum.USER)

@@ -36,7 +36,7 @@ export async function getSelectMenu(type?: string): Promise<GetSelectMenuVo[]> {
  * @param id 
  */
 export async function deleteMenuApi(id: string) {
-    await del('/menu', { params: { id }, flag: true });
+    await del('/menu', null, { params: { id }, flag: true });
 }
 
 /**

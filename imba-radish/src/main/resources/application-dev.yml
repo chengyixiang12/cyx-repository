@@ -1,10 +1,10 @@
 spring:
   servlet:
     multipart:
-      location: tmp
-      max-file-size: 50MB
-      max-request-size: 200MB
-      file-size-threshold: 5MB
+      location: E:\java\cyx-repository\imba-radish\tmp
+      max-file-size: 5MB
+      max-request-size: 10MB
+      file-size-threshold: 1MB
   datasource:
     dynamic:
       primary: master
@@ -101,7 +101,7 @@ log:
     home: logs
 # 临时文件存储路径
 tmp:
-  path: tmp
+  path: E:\java\cyx-repository\imba-radish\tmp
 # 不鉴权url
 permit:
   urls:
@@ -119,9 +119,9 @@ rate-limit:
   # 是否开启限流
   enable: true
   # 最大请求数；单位：个
-  max-request: 100
+  max-request: 60
   # 窗口大小；单位：秒
-  window-size: 15
+  window-size: 1
 # 大文件存储路径
 storage:
   big-file:
