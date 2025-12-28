@@ -6,8 +6,9 @@
           <template #header>
             <div class="list-header">
               <div class="right-header">
-                <el-upload class="upload-demo" :action="''" :auto-upload="true" :show-file-list="false" multiple="false"
-                  name="multipartFile" :http-request="customChunkUpload" ref="uploadRef" enctype="multipart/form-data">
+                <el-upload class="upload-demo" :action="''" :auto-upload="true" :show-file-list="false"
+                  :multiple="false" name="multipartFile" :http-request="customChunkUpload" ref="uploadRef"
+                  enctype="multipart/form-data" :limit="1">
                   <el-button type="primary">上传</el-button>
                 </el-upload>
               </div>
