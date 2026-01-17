@@ -239,7 +239,6 @@ public class MinioUtil {
                     .object(objectKey)
                     .method(Method.GET)
                     .expiry(minioProperty.getExpire(), minioProperty.getTimeUnit())
-
                     .build());
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |

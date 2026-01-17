@@ -81,6 +81,7 @@ public class SysUserController {
     @GetMapping(value = "/resetPassword")
     @Operation(summary = "重置密码")
     public R<Object> resetPassword(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+
         sysUsersService.resetPassword(id);
         return R.ok("密码重置成功", null);
     }

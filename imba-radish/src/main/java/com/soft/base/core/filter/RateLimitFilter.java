@@ -40,28 +40,30 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-        if (rateLimitProperty.getEnable()) {
-            String key = getIp(request);
-            // 获取当前时间戳
-            long currentTimestamp = System.currentTimeMillis();
-
-            // 使用 Redis 存储请求的时间戳
-            Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * 1000L, currentTimestamp);
-
-            // 如果超过最大请求次数，拒绝请求
-            if (requestCount >= rateLimitProperty.getMaxRequest()) {
-                ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
-                return;
-            }
-
-            log.info("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
-
-            // 记录请求时间戳
-            redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
-
-            // 设置请求过期时间为窗口大小，确保缓存不会无限增大
-            redisTemplate.expire(key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
+        if (!rateLimitProperty.getEnable()) {
+            return;
         }
+
+        String key = getIp(request);
+        // 获取当前时间戳
+        long currentTimestamp = System.currentTimeMillis();
+
+        // 使用 Redis 存储请求的时间戳
+        Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * 1000L, currentTimestamp);
+
+        // 如果超过最大请求次数，拒绝请求
+        if (requestCount >= rateLimitProperty.getMaxRequest()) {
+            ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
+            return;
+        }
+
+        log.debug("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
+
+        // 记录请求时间戳
+        redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
+
+        // 设置请求过期时间为窗口大小，确保缓存不会无限增大
+        redisTemplate.expire(key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
 
         filterChain.doFilter(request, response);
     }

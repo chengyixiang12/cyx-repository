@@ -1,9 +1,9 @@
 spring:
   servlet:
     multipart:
-      location: /app/tmp
-      max-file-size: 50MB
-      max-request-size: 100MB
+      location: /opt/docker/project/tmp
+      max-file-size: 5MB
+      max-request-size: 10MB
       file-size-threshold: 1MB
   datasource:
     dynamic:
@@ -14,16 +14,11 @@ spring:
           password: ${DATASOURCE_PASSWORD_MYSQL_MASTER}
           url: ${DATASOURCE_URL_MYSQL_MASTER}
           driver-class-name: com.mysql.cj.jdbc.Driver
-        slave:
-          username: ${DATASOURCE_USERNAME_POSTGRESQL_SLAVE}
-          password: ${DATASOURCE_PASSWORD_POSTGRESQL_SLAVE}
-          url: ${DATASOURCE_URL_POSTGRESQL_SLAVE}
-          driver-class-name: org.postgresql.Driver
       hikari:
         # 连接池最大连接数
-        maximum-pool-size: 20
+        maximum-pool-size: 10
         # 连接池最小空闲连接数
-        minimum-idle: 10
+        minimum-idle: 5
         # 空闲连接的最大等待时间（单位：毫秒）
         idle-timeout: 30000
         # 获取连接的超时时间（单位：毫秒）
@@ -44,60 +39,71 @@ spring:
       database: 14
       # 连接超时（单位：毫秒）
       connect-timeout: 2000
-      # 响应超时（单位毫秒）
+      # 响应超时（单位：毫秒）
       timeout: 5000
       # redis连接池
       lettuce:
         pool:
           # 连接池中的最大连接数
-          max-active: 20
+          max-active: 10
           # 最大空闲连接数
-          max-idle: 16
+          max-idle: 8
           # 最小空闲连接数
-          min-idle: 4
+          min-idle: 2
           # 连接池获取连接的最大等待时间（单位：毫秒）
           max-wait: 5000
+  flyway:
+    # 启用flyway
+    enabled: true
+    # 自动生成flyway_schema_history表
+    baseline-on-migrate: true
+    locations: classpath:db/migration
   rabbitmq:
     host: ${RABBIT_MQ_HOST}
     port: ${RABBIT_MQ_PORT}
     username: ${RABBIT_MQ_USERNAME}
     password: ${RABBIT_MQ_PASSWORD}
     virtual-host: /
-# minio对象存储
-minio:
-  url: ${MINIO_URL}
-  accessKey: ${MINIO_ACCESS_KEY}
-  secretKey: ${MINIO_SECRET_KEY}
-  # 文件桶名
-  default-bucket: ${MINIO_DEFAULT_BUCKET}
-  # 用户头像桶名
-  avatar-bucket: ${MINIO_AVATAR_BUCKET}
-#启用api文档
+  jmx:
+    # 启动JMX监控，jconsole
+    enabled: true
+  quartz:
+    job-store-type: memory
+    properties:
+      org:
+        quartz:
+          threadPool:
+            threadCount: 5
+
+# 启用api文档
 springdoc:
   api-docs:
-    enabled: false
+    enabled: true
   swagger-ui:
-    enabled: false
-#日志
+    enabled: true
+# 日志
 logging:
   level:
+    org.springframework.boot: info
     com.baomidou.mybatisplus: info
     org.mybatis: info
-    com.soft.base.mapper: info
-    com.soft.cyx.mapper: info
-    root: warn
+    com.soft.base.mapper: debug
+    com.soft.module.mapper: info
+    org.springframework.boot.actuate: info
+    org.flowable.job.service.impl.asyncexecutor: info
+    root: info
   config: classpath:logback-spring.xml
 log:
-  #是否开启日志记录
+  # 是否开启日志记录
   enable: true
-  #是否记录请求及响应数据
+  # 是否记录请求及响应数据
   record-param: false
   file:
-    home: app/logs
-#临时文件存储路径
+    home: /opt/docker/project/logs
+# 临时文件存储路径
 tmp:
-  path: /app/tmp
-#不鉴权url
+  path: /opt/docker/project/tmp
+# 不鉴权url
 permit:
   urls:
     - /auth/**
@@ -109,18 +115,49 @@ permit:
     - /error
     - /favicon.ico
     - /user/validUserInfoForRegister
-#限流
+# 限流
 rate-limit:
-  #是否开启限流
+  # 是否开启限流
   enable: true
-  #最大请求数；单位：个
-  max-request: 100
-  #窗口大小；单位：秒
-  window-size: 10
-#大文件存储路径
+  # 最大请求数；单位：个
+  max-request: 60
+  # 窗口大小；单位：秒
+  window-size: 1
+# 大文件存储路径
 storage:
   big-file:
-    location: /app/bigFile
-#启用knife4j文档
+    location: /opt/docker/project/tmp
+# 启用knife4j文档
 knife4j:
-  enable: false
+  enable: true
+# 性能监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露的监控端点
+        include: health, metrics, info
+  endpoint:
+    health:
+      # 显示详细信息
+      show-details: always
+# flowable
+flowable:
+  database-schema-update: false
+  check-process-definitions: true
+  idm:
+    # 禁用身份认证
+    enabled: false
+  # 禁用事件触发
+  eventregistry:
+    enabled: false
+  # 保留基础的历史记录
+  history-level: activity
+  db-history-used: false
+  cmmn:
+    async:
+      executor:
+        # 将轮询间隔从默认的 100ms 调整为 1~5 秒（根据业务需求）
+        default-async-job-acquire-wait-time: 2s
+        # 每次拉取的最大作业数量（减少频繁查询）
+        max-timer-jobs-per-acquisition: 20

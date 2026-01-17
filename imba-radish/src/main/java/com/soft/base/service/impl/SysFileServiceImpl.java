@@ -254,8 +254,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 url = minioUtil.generateUrl(sysFile.getBucket(), sysFile.getObjectKey());
             }
 
-
-
             redisTemplate.opsForValue().set(redisKey, url);
             // 减5是为了防止minio签名过期，redis未过期，导致获取失败
             redisTemplate.expire(redisKey, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
