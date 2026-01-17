@@ -1,18 +1,9 @@
 #!/bin/bash
-JVM_OPTS="-Xms256m \
-          -Xmx256m \
-          -Xmn64m \
-          -XX:MetaspaceSize=64m \
-          -XX:MaxMetaspaceSize=128m \
-          -XX:SurvivorRatio=6 \
-          -XX:+UseParallelGC \
+JVM_OPTS="-Xms384m \
+          -Xmx384m \
           -XX:+HeapDumpOnOutOfMemoryError \
           -XX:HeapDumpPath=./heapdump.hprof \
-          -XX:+UseCompressedOops \
-          -XX:+UseContainerSupport \
-          -XX:+DisableExplicitGC \
-          -Djava.net.preferIPv4Stack=true \
-          -Dspring.context.refresh.timeout=60000"
+          --spring.profiles.active=prod"
 
 if [ $# -eq 0 ]; then
     echo "请传入 Jar 包文件名（示例：sh start.sh your-app.jar）"
