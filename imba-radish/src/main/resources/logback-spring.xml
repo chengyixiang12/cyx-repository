@@ -1,61 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
-    <!--禁用JNDI-->
-    <disableJNDI>true</disableJNDI>
-    <withJansi>true</withJansi>
-    <!--配置日志生成路径-->
-    <springProperty scope="context" name="LOG_HOME" source="log.file.home" defaultValue="logs"/>
-    <!-- 控制台输出 -->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <!-- 支持颜色的格式 -->
-            <pattern>%highlight(%-5level) %cyan(%d{HH:mm:ss.SSS}) [%thread] %blue(%logger{36}) - %msg%n</pattern>
-        </encoder>
-    </appender>
 
-    <!-- 文件输出：按天+大小滚动，自动压缩，保留30天 -->
+    <!-- 静默状态日志（生产环境推荐） -->
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+
+    <!-- 禁用 JNDI（安全 + 启动速度） -->
+    <disableJNDI>true</disableJNDI>
+
+    <!-- 日志目录：优先使用 Spring 配置 -->
+    <springProperty scope="context"
+                    name="LOG_HOME"
+                    source="log.file.home"
+                    defaultValue="logs"/>
+
+    <!-- ==================== 控制台：开发环境（彩色） ==================== -->
+    <springProfile name="dev">
+        <withJansi>true</withJansi>
+
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>
+                    %highlight(%-5level)
+                    %cyan(%d{HH:mm:ss.SSS})
+                    [%thread]
+                    %blue(%logger{36})
+                    - %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+    </springProfile>
+
+    <!-- ==================== 控制台：非开发环境（无颜色） ==================== -->
+    <springProfile name="!dev">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>
+                    %-5level %d{yyyy-MM-dd HH:mm:ss.SSS}
+                    [%thread] %logger{36} - %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+    </springProfile>
+
+    <!-- ==================== 普通日志：INFO / WARN ==================== -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/radish.log</file>
-        <prudent>false</prudent>
+
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/radish.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>
+                ${LOG_HOME}/radish.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>20GB</totalSizeCap>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
-            <rolloverOnStartup>true</rolloverOnStartup>
         </rollingPolicy>
+
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS}
+                %-5level %logger{36} [%thread] - %msg%n
+            </pattern>
         </encoder>
+
+        <!-- 接收 INFO 及以上 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+
+        <!-- 明确拒绝 ERROR（避免重复） -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
-            <onMatch>DENY</onMatch>         <!-- 匹配ERROR：拒绝写入 -->
-            <onMismatch>NEUTRAL</onMismatch> <!-- 不匹配：继续后续过滤 -->
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>             <!-- 最高接受级别为WARN -->
-            <onMatch>ACCEPT</onMatch>       <!-- 匹配：接受写入 -->
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
         </filter>
     </appender>
 
-    <!-- 错误日志文件输出：只包含ERROR及以上级别 -->
+    <!-- ==================== 错误日志：仅 ERROR ==================== -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_HOME}/error.log</file>
-        <prudent>false</prudent>
+
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_HOME}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>
+                ${LOG_HOME}/error.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>20GB</totalSizeCap>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
-            <rolloverOnStartup>true</rolloverOnStartup>
         </rollingPolicy>
+
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} [%thread] - %msg%n</pattern>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS}
+                %-5level %logger{36} [%thread] - %msg%n
+            </pattern>
         </encoder>
-        <!-- 只记录ERROR级别日志 -->
+
+        <!-- 只接收 ERROR -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>
@@ -63,10 +105,11 @@
         </filter>
     </appender>
 
-    <!-- 日志级别 -->
-    <root level="info">
-        <appender-ref ref="CONSOLE" /> <!-- 控制台输出 -->
-        <appender-ref ref="FILE" /> <!-- 文件输出INFO -->
-        <appender-ref ref="ERROR_FILE" /> <!-- 文件输出ERROR -->
+    <!-- ==================== 根日志级别 ==================== -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </root>
+
 </configuration>

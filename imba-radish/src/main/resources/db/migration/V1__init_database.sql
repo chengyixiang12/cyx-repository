@@ -1,1272 +1,491 @@
-CREATE TABLE act_evt_log
-(
-    LOG_NR_       BIGINT AUTO_INCREMENT    NOT NULL,
-    TYPE_         VARCHAR(64)              NULL,
-    PROC_DEF_ID_  VARCHAR(64)              NULL,
-    PROC_INST_ID_ VARCHAR(64)              NULL,
-    EXECUTION_ID_ VARCHAR(64)              NULL,
-    TASK_ID_      VARCHAR(64)              NULL,
-    TIME_STAMP_   timestamp DEFAULT NOW(3) NOT NULL,
-    USER_ID_      VARCHAR(255)             NULL,
-    DATA_         BLOB                     NULL,
-    LOCK_OWNER_   VARCHAR(255)             NULL,
-    LOCK_TIME_    timestamp                NULL,
-    IS_PROCESSED_ TINYINT   DEFAULT 0      NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (LOG_NR_)
-);
-
-CREATE TABLE act_ge_bytearray
-(
-    ID_            VARCHAR(64)  NOT NULL,
-    REV_           INT          NULL,
-    NAME_          VARCHAR(255) NULL,
-    DEPLOYMENT_ID_ VARCHAR(64)  NULL,
-    BYTES_         BLOB         NULL,
-    GENERATED_     TINYINT      NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ge_property
-(
-    NAME_  VARCHAR(64)  NOT NULL,
-    VALUE_ VARCHAR(300) NULL,
-    REV_   INT          NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (NAME_)
-);
-
-CREATE TABLE act_hi_entitylink
-(
-    ID_                      VARCHAR(64)  NOT NULL,
-    LINK_TYPE_               VARCHAR(255) NULL,
-    CREATE_TIME_             datetime     NULL,
-    SCOPE_ID_                VARCHAR(255) NULL,
-    SUB_SCOPE_ID_            VARCHAR(255) NULL,
-    SCOPE_TYPE_              VARCHAR(255) NULL,
-    SCOPE_DEFINITION_ID_     VARCHAR(255) NULL,
-    PARENT_ELEMENT_ID_       VARCHAR(255) NULL,
-    REF_SCOPE_ID_            VARCHAR(255) NULL,
-    REF_SCOPE_TYPE_          VARCHAR(255) NULL,
-    REF_SCOPE_DEFINITION_ID_ VARCHAR(255) NULL,
-    ROOT_SCOPE_ID_           VARCHAR(255) NULL,
-    ROOT_SCOPE_TYPE_         VARCHAR(255) NULL,
-    HIERARCHY_TYPE_          VARCHAR(255) NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_hi_identitylink
-(
-    ID_                  VARCHAR(64)  NOT NULL,
-    GROUP_ID_            VARCHAR(255) NULL,
-    TYPE_                VARCHAR(255) NULL,
-    USER_ID_             VARCHAR(255) NULL,
-    TASK_ID_             VARCHAR(64)  NULL,
-    CREATE_TIME_         datetime     NULL,
-    PROC_INST_ID_        VARCHAR(64)  NULL,
-    SCOPE_ID_            VARCHAR(255) NULL,
-    SUB_SCOPE_ID_        VARCHAR(255) NULL,
-    SCOPE_TYPE_          VARCHAR(255) NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255) NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_hi_taskinst
-(
-    ID_                       VARCHAR(64)             NOT NULL,
-    REV_                      INT          DEFAULT 1  NULL,
-    PROC_DEF_ID_              VARCHAR(64)             NULL,
-    TASK_DEF_ID_              VARCHAR(64)             NULL,
-    TASK_DEF_KEY_             VARCHAR(255)            NULL,
-    PROC_INST_ID_             VARCHAR(64)             NULL,
-    EXECUTION_ID_             VARCHAR(64)             NULL,
-    SCOPE_ID_                 VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_             VARCHAR(255)            NULL,
-    SCOPE_TYPE_               VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_      VARCHAR(255)            NULL,
-    PROPAGATED_STAGE_INST_ID_ VARCHAR(255)            NULL,
-    STATE_                    VARCHAR(255)            NULL,
-    NAME_                     VARCHAR(255)            NULL,
-    PARENT_TASK_ID_           VARCHAR(64)             NULL,
-    DESCRIPTION_              VARCHAR(4000)           NULL,
-    OWNER_                    VARCHAR(255)            NULL,
-    ASSIGNEE_                 VARCHAR(255)            NULL,
-    START_TIME_               datetime                NOT NULL,
-    IN_PROGRESS_TIME_         datetime                NULL,
-    IN_PROGRESS_STARTED_BY_   VARCHAR(255)            NULL,
-    CLAIM_TIME_               datetime                NULL,
-    CLAIMED_BY_               VARCHAR(255)            NULL,
-    SUSPENDED_TIME_           datetime                NULL,
-    SUSPENDED_BY_             VARCHAR(255)            NULL,
-    END_TIME_                 datetime                NULL,
-    COMPLETED_BY_             VARCHAR(255)            NULL,
-    DURATION_                 BIGINT                  NULL,
-    DELETE_REASON_            VARCHAR(4000)           NULL,
-    PRIORITY_                 INT                     NULL,
-    IN_PROGRESS_DUE_DATE_     datetime                NULL,
-    DUE_DATE_                 datetime                NULL,
-    FORM_KEY_                 VARCHAR(255)            NULL,
-    CATEGORY_                 VARCHAR(255)            NULL,
-    TENANT_ID_                VARCHAR(255) DEFAULT '' NULL,
-    LAST_UPDATED_TIME_        datetime                NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_hi_tsk_log
-(
-    ID_                  BIGINT AUTO_INCREMENT   NOT NULL,
-    TYPE_                VARCHAR(64)             NULL,
-    TASK_ID_             VARCHAR(64)             NOT NULL,
-    TIME_STAMP_          timestamp               NOT NULL,
-    USER_ID_             VARCHAR(255)            NULL,
-    DATA_                VARCHAR(4000)           NULL,
-    EXECUTION_ID_        VARCHAR(64)             NULL,
-    PROC_INST_ID_        VARCHAR(64)             NULL,
-    PROC_DEF_ID_         VARCHAR(64)             NULL,
-    SCOPE_ID_            VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_        VARCHAR(255)            NULL,
-    SCOPE_TYPE_          VARCHAR(255)            NULL,
-    TENANT_ID_           VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_hi_varinst
-(
-    ID_                VARCHAR(64)   NOT NULL,
-    REV_               INT DEFAULT 1 NULL,
-    PROC_INST_ID_      VARCHAR(64)   NULL,
-    EXECUTION_ID_      VARCHAR(64)   NULL,
-    TASK_ID_           VARCHAR(64)   NULL,
-    NAME_              VARCHAR(255)  NOT NULL,
-    VAR_TYPE_          VARCHAR(100)  NULL,
-    SCOPE_ID_          VARCHAR(255)  NULL,
-    SUB_SCOPE_ID_      VARCHAR(255)  NULL,
-    SCOPE_TYPE_        VARCHAR(255)  NULL,
-    BYTEARRAY_ID_      VARCHAR(64)   NULL,
-    DOUBLE_            DOUBLE        NULL,
-    LONG_              BIGINT        NULL,
-    TEXT_              VARCHAR(4000) NULL,
-    TEXT2_             VARCHAR(4000) NULL,
-    META_INFO_         VARCHAR(4000) NULL,
-    CREATE_TIME_       datetime      NULL,
-    LAST_UPDATED_TIME_ datetime      NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_procdef_info
-(
-    ID_           VARCHAR(64) NOT NULL,
-    PROC_DEF_ID_  VARCHAR(64) NOT NULL,
-    REV_          INT         NULL,
-    INFO_JSON_ID_ VARCHAR(64) NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_re_deployment
-(
-    ID_                   VARCHAR(64)             NOT NULL,
-    NAME_                 VARCHAR(255)            NULL,
-    CATEGORY_             VARCHAR(255)            NULL,
-    KEY_                  VARCHAR(255)            NULL,
-    TENANT_ID_            VARCHAR(255) DEFAULT '' NULL,
-    DEPLOY_TIME_          timestamp               NULL,
-    DERIVED_FROM_         VARCHAR(64)             NULL,
-    DERIVED_FROM_ROOT_    VARCHAR(64)             NULL,
-    PARENT_DEPLOYMENT_ID_ VARCHAR(255)            NULL,
-    ENGINE_VERSION_       VARCHAR(255)            NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_re_model
-(
-    ID_                           VARCHAR(64)             NOT NULL,
-    REV_                          INT                     NULL,
-    NAME_                         VARCHAR(255)            NULL,
-    KEY_                          VARCHAR(255)            NULL,
-    CATEGORY_                     VARCHAR(255)            NULL,
-    CREATE_TIME_                  timestamp               NULL,
-    LAST_UPDATE_TIME_             timestamp               NULL,
-    VERSION_                      INT                     NULL,
-    META_INFO_                    VARCHAR(4000)           NULL,
-    DEPLOYMENT_ID_                VARCHAR(64)             NULL,
-    EDITOR_SOURCE_VALUE_ID_       VARCHAR(64)             NULL,
-    EDITOR_SOURCE_EXTRA_VALUE_ID_ VARCHAR(64)             NULL,
-    TENANT_ID_                    VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_re_procdef
-(
-    ID_                     VARCHAR(64)             NOT NULL,
-    REV_                    INT                     NULL,
-    CATEGORY_               VARCHAR(255)            NULL,
-    NAME_                   VARCHAR(255)            NULL,
-    KEY_                    VARCHAR(255)            NOT NULL,
-    VERSION_                INT                     NOT NULL,
-    DEPLOYMENT_ID_          VARCHAR(64)             NULL,
-    RESOURCE_NAME_          VARCHAR(4000)           NULL,
-    DGRM_RESOURCE_NAME_     VARCHAR(4000)           NULL,
-    DESCRIPTION_            VARCHAR(4000)           NULL,
-    HAS_START_FORM_KEY_     TINYINT                 NULL,
-    HAS_GRAPHICAL_NOTATION_ TINYINT                 NULL,
-    SUSPENSION_STATE_       INT                     NULL,
-    TENANT_ID_              VARCHAR(255) DEFAULT '' NULL,
-    ENGINE_VERSION_         VARCHAR(255)            NULL,
-    DERIVED_FROM_           VARCHAR(64)             NULL,
-    DERIVED_FROM_ROOT_      VARCHAR(64)             NULL,
-    DERIVED_VERSION_        INT          DEFAULT 0  NOT NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_actinst
-(
-    ID_                VARCHAR(64)             NOT NULL,
-    REV_               INT          DEFAULT 1  NULL,
-    PROC_DEF_ID_       VARCHAR(64)             NOT NULL,
-    PROC_INST_ID_      VARCHAR(64)             NOT NULL,
-    EXECUTION_ID_      VARCHAR(64)             NOT NULL,
-    ACT_ID_            VARCHAR(255)            NOT NULL,
-    TASK_ID_           VARCHAR(64)             NULL,
-    CALL_PROC_INST_ID_ VARCHAR(64)             NULL,
-    ACT_NAME_          VARCHAR(255)            NULL,
-    ACT_TYPE_          VARCHAR(255)            NOT NULL,
-    ASSIGNEE_          VARCHAR(255)            NULL,
-    START_TIME_        datetime                NOT NULL,
-    END_TIME_          datetime                NULL,
-    DURATION_          BIGINT                  NULL,
-    TRANSACTION_ORDER_ INT                     NULL,
-    DELETE_REASON_     VARCHAR(4000)           NULL,
-    TENANT_ID_         VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_deadletter_job
-(
-    ID_                  VARCHAR(64)             NOT NULL,
-    REV_                 INT                     NULL,
-    CATEGORY_            VARCHAR(255)            NULL,
-    TYPE_                VARCHAR(255)            NOT NULL,
-    EXCLUSIVE_           TINYINT(1)              NULL,
-    EXECUTION_ID_        VARCHAR(64)             NULL,
-    PROCESS_INSTANCE_ID_ VARCHAR(64)             NULL,
-    PROC_DEF_ID_         VARCHAR(64)             NULL,
-    ELEMENT_ID_          VARCHAR(255)            NULL,
-    ELEMENT_NAME_        VARCHAR(255)            NULL,
-    SCOPE_ID_            VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_        VARCHAR(255)            NULL,
-    SCOPE_TYPE_          VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255)            NULL,
-    CORRELATION_ID_      VARCHAR(255)            NULL,
-    EXCEPTION_STACK_ID_  VARCHAR(64)             NULL,
-    EXCEPTION_MSG_       VARCHAR(4000)           NULL,
-    DUEDATE_             timestamp               NULL,
-    REPEAT_              VARCHAR(255)            NULL,
-    HANDLER_TYPE_        VARCHAR(255)            NULL,
-    HANDLER_CFG_         VARCHAR(4000)           NULL,
-    CUSTOM_VALUES_ID_    VARCHAR(64)             NULL,
-    CREATE_TIME_         timestamp               NULL,
-    TENANT_ID_           VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_entitylink
-(
-    ID_                      VARCHAR(64)  NOT NULL,
-    REV_                     INT          NULL,
-    CREATE_TIME_             datetime     NULL,
-    LINK_TYPE_               VARCHAR(255) NULL,
-    SCOPE_ID_                VARCHAR(255) NULL,
-    SUB_SCOPE_ID_            VARCHAR(255) NULL,
-    SCOPE_TYPE_              VARCHAR(255) NULL,
-    SCOPE_DEFINITION_ID_     VARCHAR(255) NULL,
-    PARENT_ELEMENT_ID_       VARCHAR(255) NULL,
-    REF_SCOPE_ID_            VARCHAR(255) NULL,
-    REF_SCOPE_TYPE_          VARCHAR(255) NULL,
-    REF_SCOPE_DEFINITION_ID_ VARCHAR(255) NULL,
-    ROOT_SCOPE_ID_           VARCHAR(255) NULL,
-    ROOT_SCOPE_TYPE_         VARCHAR(255) NULL,
-    HIERARCHY_TYPE_          VARCHAR(255) NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_event_subscr
-(
-    ID_                   VARCHAR(64)                 NOT NULL,
-    REV_                  INT                         NULL,
-    EVENT_TYPE_           VARCHAR(255)                NOT NULL,
-    EVENT_NAME_           VARCHAR(255)                NULL,
-    EXECUTION_ID_         VARCHAR(64)                 NULL,
-    PROC_INST_ID_         VARCHAR(64)                 NULL,
-    ACTIVITY_ID_          VARCHAR(64)                 NULL,
-    CONFIGURATION_        VARCHAR(255)                NULL,
-    CREATED_              timestamp    DEFAULT NOW(3) NOT NULL,
-    PROC_DEF_ID_          VARCHAR(64)                 NULL,
-    SUB_SCOPE_ID_         VARCHAR(64)                 NULL,
-    SCOPE_ID_             VARCHAR(64)                 NULL,
-    SCOPE_DEFINITION_ID_  VARCHAR(64)                 NULL,
-    SCOPE_DEFINITION_KEY_ VARCHAR(255)                NULL,
-    SCOPE_TYPE_           VARCHAR(64)                 NULL,
-    LOCK_TIME_            timestamp                   NULL,
-    LOCK_OWNER_           VARCHAR(255)                NULL,
-    TENANT_ID_            VARCHAR(255) DEFAULT ''     NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_execution
-(
-    ID_                        VARCHAR(64)             NOT NULL,
-    REV_                       INT                     NULL,
-    PROC_INST_ID_              VARCHAR(64)             NULL,
-    BUSINESS_KEY_              VARCHAR(255)            NULL,
-    PARENT_ID_                 VARCHAR(64)             NULL,
-    PROC_DEF_ID_               VARCHAR(64)             NULL,
-    SUPER_EXEC_                VARCHAR(64)             NULL,
-    ROOT_PROC_INST_ID_         VARCHAR(64)             NULL,
-    ACT_ID_                    VARCHAR(255)            NULL,
-    IS_ACTIVE_                 TINYINT                 NULL,
-    IS_CONCURRENT_             TINYINT                 NULL,
-    IS_SCOPE_                  TINYINT                 NULL,
-    IS_EVENT_SCOPE_            TINYINT                 NULL,
-    IS_MI_ROOT_                TINYINT                 NULL,
-    SUSPENSION_STATE_          INT                     NULL,
-    CACHED_ENT_STATE_          INT                     NULL,
-    TENANT_ID_                 VARCHAR(255) DEFAULT '' NULL,
-    NAME_                      VARCHAR(255)            NULL,
-    START_ACT_ID_              VARCHAR(255)            NULL,
-    START_TIME_                datetime                NULL,
-    START_USER_ID_             VARCHAR(255)            NULL,
-    LOCK_TIME_                 timestamp               NULL,
-    LOCK_OWNER_                VARCHAR(255)            NULL,
-    IS_COUNT_ENABLED_          TINYINT                 NULL,
-    EVT_SUBSCR_COUNT_          INT                     NULL,
-    TASK_COUNT_                INT                     NULL,
-    JOB_COUNT_                 INT                     NULL,
-    TIMER_JOB_COUNT_           INT                     NULL,
-    SUSP_JOB_COUNT_            INT                     NULL,
-    DEADLETTER_JOB_COUNT_      INT                     NULL,
-    EXTERNAL_WORKER_JOB_COUNT_ INT                     NULL,
-    VAR_COUNT_                 INT                     NULL,
-    ID_LINK_COUNT_             INT                     NULL,
-    CALLBACK_ID_               VARCHAR(255)            NULL,
-    CALLBACK_TYPE_             VARCHAR(255)            NULL,
-    REFERENCE_ID_              VARCHAR(255)            NULL,
-    REFERENCE_TYPE_            VARCHAR(255)            NULL,
-    PROPAGATED_STAGE_INST_ID_  VARCHAR(255)            NULL,
-    BUSINESS_STATUS_           VARCHAR(255)            NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_external_job
-(
-    ID_                  VARCHAR(64)             NOT NULL,
-    REV_                 INT                     NULL,
-    CATEGORY_            VARCHAR(255)            NULL,
-    TYPE_                VARCHAR(255)            NOT NULL,
-    LOCK_EXP_TIME_       timestamp               NULL,
-    LOCK_OWNER_          VARCHAR(255)            NULL,
-    EXCLUSIVE_           TINYINT(1)              NULL,
-    EXECUTION_ID_        VARCHAR(64)             NULL,
-    PROCESS_INSTANCE_ID_ VARCHAR(64)             NULL,
-    PROC_DEF_ID_         VARCHAR(64)             NULL,
-    ELEMENT_ID_          VARCHAR(255)            NULL,
-    ELEMENT_NAME_        VARCHAR(255)            NULL,
-    SCOPE_ID_            VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_        VARCHAR(255)            NULL,
-    SCOPE_TYPE_          VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255)            NULL,
-    CORRELATION_ID_      VARCHAR(255)            NULL,
-    RETRIES_             INT                     NULL,
-    EXCEPTION_STACK_ID_  VARCHAR(64)             NULL,
-    EXCEPTION_MSG_       VARCHAR(4000)           NULL,
-    DUEDATE_             timestamp               NULL,
-    REPEAT_              VARCHAR(255)            NULL,
-    HANDLER_TYPE_        VARCHAR(255)            NULL,
-    HANDLER_CFG_         VARCHAR(4000)           NULL,
-    CUSTOM_VALUES_ID_    VARCHAR(64)             NULL,
-    CREATE_TIME_         timestamp               NULL,
-    TENANT_ID_           VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_history_job
-(
-    ID_                 VARCHAR(64)             NOT NULL,
-    REV_                INT                     NULL,
-    LOCK_EXP_TIME_      timestamp               NULL,
-    LOCK_OWNER_         VARCHAR(255)            NULL,
-    RETRIES_            INT                     NULL,
-    EXCEPTION_STACK_ID_ VARCHAR(64)             NULL,
-    EXCEPTION_MSG_      VARCHAR(4000)           NULL,
-    HANDLER_TYPE_       VARCHAR(255)            NULL,
-    HANDLER_CFG_        VARCHAR(4000)           NULL,
-    CUSTOM_VALUES_ID_   VARCHAR(64)             NULL,
-    ADV_HANDLER_CFG_ID_ VARCHAR(64)             NULL,
-    CREATE_TIME_        timestamp               NULL,
-    SCOPE_TYPE_         VARCHAR(255)            NULL,
-    TENANT_ID_          VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_identitylink
-(
-    ID_                  VARCHAR(64)  NOT NULL,
-    REV_                 INT          NULL,
-    GROUP_ID_            VARCHAR(255) NULL,
-    TYPE_                VARCHAR(255) NULL,
-    USER_ID_             VARCHAR(255) NULL,
-    TASK_ID_             VARCHAR(64)  NULL,
-    PROC_INST_ID_        VARCHAR(64)  NULL,
-    PROC_DEF_ID_         VARCHAR(64)  NULL,
-    SCOPE_ID_            VARCHAR(255) NULL,
-    SUB_SCOPE_ID_        VARCHAR(255) NULL,
-    SCOPE_TYPE_          VARCHAR(255) NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255) NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_job
-(
-    ID_                  VARCHAR(64)             NOT NULL,
-    REV_                 INT                     NULL,
-    CATEGORY_            VARCHAR(255)            NULL,
-    TYPE_                VARCHAR(255)            NOT NULL,
-    LOCK_EXP_TIME_       timestamp               NULL,
-    LOCK_OWNER_          VARCHAR(255)            NULL,
-    EXCLUSIVE_           TINYINT(1)              NULL,
-    EXECUTION_ID_        VARCHAR(64)             NULL,
-    PROCESS_INSTANCE_ID_ VARCHAR(64)             NULL,
-    PROC_DEF_ID_         VARCHAR(64)             NULL,
-    ELEMENT_ID_          VARCHAR(255)            NULL,
-    ELEMENT_NAME_        VARCHAR(255)            NULL,
-    SCOPE_ID_            VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_        VARCHAR(255)            NULL,
-    SCOPE_TYPE_          VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255)            NULL,
-    CORRELATION_ID_      VARCHAR(255)            NULL,
-    RETRIES_             INT                     NULL,
-    EXCEPTION_STACK_ID_  VARCHAR(64)             NULL,
-    EXCEPTION_MSG_       VARCHAR(4000)           NULL,
-    DUEDATE_             timestamp               NULL,
-    REPEAT_              VARCHAR(255)            NULL,
-    HANDLER_TYPE_        VARCHAR(255)            NULL,
-    HANDLER_CFG_         VARCHAR(4000)           NULL,
-    CUSTOM_VALUES_ID_    VARCHAR(64)             NULL,
-    CREATE_TIME_         timestamp               NULL,
-    TENANT_ID_           VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_suspended_job
-(
-    ID_                  VARCHAR(64)             NOT NULL,
-    REV_                 INT                     NULL,
-    CATEGORY_            VARCHAR(255)            NULL,
-    TYPE_                VARCHAR(255)            NOT NULL,
-    EXCLUSIVE_           TINYINT(1)              NULL,
-    EXECUTION_ID_        VARCHAR(64)             NULL,
-    PROCESS_INSTANCE_ID_ VARCHAR(64)             NULL,
-    PROC_DEF_ID_         VARCHAR(64)             NULL,
-    ELEMENT_ID_          VARCHAR(255)            NULL,
-    ELEMENT_NAME_        VARCHAR(255)            NULL,
-    SCOPE_ID_            VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_        VARCHAR(255)            NULL,
-    SCOPE_TYPE_          VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255)            NULL,
-    CORRELATION_ID_      VARCHAR(255)            NULL,
-    RETRIES_             INT                     NULL,
-    EXCEPTION_STACK_ID_  VARCHAR(64)             NULL,
-    EXCEPTION_MSG_       VARCHAR(4000)           NULL,
-    DUEDATE_             timestamp               NULL,
-    REPEAT_              VARCHAR(255)            NULL,
-    HANDLER_TYPE_        VARCHAR(255)            NULL,
-    HANDLER_CFG_         VARCHAR(4000)           NULL,
-    CUSTOM_VALUES_ID_    VARCHAR(64)             NULL,
-    CREATE_TIME_         timestamp               NULL,
-    TENANT_ID_           VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_task
-(
-    ID_                       VARCHAR(64)             NOT NULL,
-    REV_                      INT                     NULL,
-    EXECUTION_ID_             VARCHAR(64)             NULL,
-    PROC_INST_ID_             VARCHAR(64)             NULL,
-    PROC_DEF_ID_              VARCHAR(64)             NULL,
-    TASK_DEF_ID_              VARCHAR(64)             NULL,
-    SCOPE_ID_                 VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_             VARCHAR(255)            NULL,
-    SCOPE_TYPE_               VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_      VARCHAR(255)            NULL,
-    PROPAGATED_STAGE_INST_ID_ VARCHAR(255)            NULL,
-    STATE_                    VARCHAR(255)            NULL,
-    NAME_                     VARCHAR(255)            NULL,
-    PARENT_TASK_ID_           VARCHAR(64)             NULL,
-    DESCRIPTION_              VARCHAR(4000)           NULL,
-    TASK_DEF_KEY_             VARCHAR(255)            NULL,
-    OWNER_                    VARCHAR(255)            NULL,
-    ASSIGNEE_                 VARCHAR(255)            NULL,
-    DELEGATION_               VARCHAR(64)             NULL,
-    PRIORITY_                 INT                     NULL,
-    CREATE_TIME_              timestamp               NULL,
-    IN_PROGRESS_TIME_         datetime                NULL,
-    IN_PROGRESS_STARTED_BY_   VARCHAR(255)            NULL,
-    CLAIM_TIME_               datetime                NULL,
-    CLAIMED_BY_               VARCHAR(255)            NULL,
-    SUSPENDED_TIME_           datetime                NULL,
-    SUSPENDED_BY_             VARCHAR(255)            NULL,
-    IN_PROGRESS_DUE_DATE_     datetime                NULL,
-    DUE_DATE_                 datetime                NULL,
-    CATEGORY_                 VARCHAR(255)            NULL,
-    SUSPENSION_STATE_         INT                     NULL,
-    TENANT_ID_                VARCHAR(255) DEFAULT '' NULL,
-    FORM_KEY_                 VARCHAR(255)            NULL,
-    IS_COUNT_ENABLED_         TINYINT                 NULL,
-    VAR_COUNT_                INT                     NULL,
-    ID_LINK_COUNT_            INT                     NULL,
-    SUB_TASK_COUNT_           INT                     NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_timer_job
-(
-    ID_                  VARCHAR(64)             NOT NULL,
-    REV_                 INT                     NULL,
-    CATEGORY_            VARCHAR(255)            NULL,
-    TYPE_                VARCHAR(255)            NOT NULL,
-    LOCK_EXP_TIME_       timestamp               NULL,
-    LOCK_OWNER_          VARCHAR(255)            NULL,
-    EXCLUSIVE_           TINYINT(1)              NULL,
-    EXECUTION_ID_        VARCHAR(64)             NULL,
-    PROCESS_INSTANCE_ID_ VARCHAR(64)             NULL,
-    PROC_DEF_ID_         VARCHAR(64)             NULL,
-    ELEMENT_ID_          VARCHAR(255)            NULL,
-    ELEMENT_NAME_        VARCHAR(255)            NULL,
-    SCOPE_ID_            VARCHAR(255)            NULL,
-    SUB_SCOPE_ID_        VARCHAR(255)            NULL,
-    SCOPE_TYPE_          VARCHAR(255)            NULL,
-    SCOPE_DEFINITION_ID_ VARCHAR(255)            NULL,
-    CORRELATION_ID_      VARCHAR(255)            NULL,
-    RETRIES_             INT                     NULL,
-    EXCEPTION_STACK_ID_  VARCHAR(64)             NULL,
-    EXCEPTION_MSG_       VARCHAR(4000)           NULL,
-    DUEDATE_             timestamp               NULL,
-    REPEAT_              VARCHAR(255)            NULL,
-    HANDLER_TYPE_        VARCHAR(255)            NULL,
-    HANDLER_CFG_         VARCHAR(4000)           NULL,
-    CUSTOM_VALUES_ID_    VARCHAR(64)             NULL,
-    CREATE_TIME_         timestamp               NULL,
-    TENANT_ID_           VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE act_ru_variable
-(
-    ID_           VARCHAR(64)   NOT NULL,
-    REV_          INT           NULL,
-    TYPE_         VARCHAR(255)  NOT NULL,
-    NAME_         VARCHAR(255)  NOT NULL,
-    EXECUTION_ID_ VARCHAR(64)   NULL,
-    PROC_INST_ID_ VARCHAR(64)   NULL,
-    TASK_ID_      VARCHAR(64)   NULL,
-    SCOPE_ID_     VARCHAR(255)  NULL,
-    SUB_SCOPE_ID_ VARCHAR(255)  NULL,
-    SCOPE_TYPE_   VARCHAR(255)  NULL,
-    BYTEARRAY_ID_ VARCHAR(64)   NULL,
-    DOUBLE_       DOUBLE        NULL,
-    LONG_         BIGINT        NULL,
-    TEXT_         VARCHAR(4000) NULL,
-    TEXT2_        VARCHAR(4000) NULL,
-    META_INFO_    VARCHAR(4000) NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE flw_ru_batch
-(
-    ID_            VARCHAR(64)             NOT NULL,
-    REV_           INT                     NULL,
-    TYPE_          VARCHAR(64)             NOT NULL,
-    SEARCH_KEY_    VARCHAR(255)            NULL,
-    SEARCH_KEY2_   VARCHAR(255)            NULL,
-    CREATE_TIME_   datetime                NOT NULL,
-    COMPLETE_TIME_ datetime                NULL,
-    STATUS_        VARCHAR(255)            NULL,
-    BATCH_DOC_ID_  VARCHAR(64)             NULL,
-    TENANT_ID_     VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE flw_ru_batch_part
-(
-    ID_            VARCHAR(64)             NOT NULL,
-    REV_           INT                     NULL,
-    BATCH_ID_      VARCHAR(64)             NULL,
-    TYPE_          VARCHAR(64)             NOT NULL,
-    SCOPE_ID_      VARCHAR(64)             NULL,
-    SUB_SCOPE_ID_  VARCHAR(64)             NULL,
-    SCOPE_TYPE_    VARCHAR(64)             NULL,
-    SEARCH_KEY_    VARCHAR(255)            NULL,
-    SEARCH_KEY2_   VARCHAR(255)            NULL,
-    CREATE_TIME_   datetime                NOT NULL,
-    COMPLETE_TIME_ datetime                NULL,
-    STATUS_        VARCHAR(255)            NULL,
-    RESULT_DOC_ID_ VARCHAR(64)             NULL,
-    TENANT_ID_     VARCHAR(255) DEFAULT '' NULL,
-    CONSTRAINT `PRIMARY` PRIMARY KEY (ID_)
-);
-
-CREATE TABLE sys_announcement
-(
-    id           BIGINT AUTO_INCREMENT NOT NULL COMMENT '主键',
-    sort_order   BIGINT                NULL COMMENT '排序',
-    create_by    BIGINT                NULL COMMENT '创建人',
-    create_time  datetime              NULL COMMENT '创建时间',
-    update_by    BIGINT                NULL COMMENT '修改人',
-    update_time  datetime              NULL COMMENT '修改时间',
-    del_flag     TINYINT               NULL COMMENT '逻辑删除',
-    title        VARCHAR(255)          NULL COMMENT '公告标题',
-    publish_time datetime              NULL COMMENT '公布时间',
-    context      VARCHAR(1000)         NULL COMMENT '公告内容',
-    status       TINYINT               NULL COMMENT '状态；1：发布；0：草稿',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='公告表';
-
-CREATE TABLE sys_dept
-(
-    id          BIGINT AUTO_INCREMENT NOT NULL COMMENT '主键',
-    sort_order  INT                   NULL COMMENT '排序字段',
-    create_by   BIGINT                NULL COMMENT '创建人',
-    create_time datetime              NULL COMMENT '创建时间',
-    update_by   BIGINT                NULL COMMENT '修改人',
-    update_time datetime              NULL COMMENT '修改时间',
-    del_flag    TINYINT               NULL COMMENT '逻辑删除',
-    code        VARCHAR(20)           NULL COMMENT '部门编码',
-    name        VARCHAR(20)           NULL COMMENT '部门名称',
-    parent_id   BIGINT                NULL COMMENT '父级id',
-    level       TINYINT               NULL COMMENT '层级',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='部门表';
-
-CREATE TABLE sys_dialogue
-(
-    id          BIGINT       NOT NULL COMMENT '主键',
-    sort_order  BIGINT       NULL COMMENT '排序',
-    create_by   BIGINT       NULL COMMENT '创建人',
-    create_time datetime     NULL COMMENT '创建时间',
-    update_by   BIGINT       NULL COMMENT '修改人',
-    update_time datetime     NULL COMMENT '修改时间',
-    del_flag    TINYINT      NULL COMMENT '逻辑删除',
-    title       VARCHAR(100) NULL COMMENT '标题',
-    top_flag    TINYINT      NULL COMMENT '置顶标识；1：置顶；0：不置顶',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='智能对话表';
-
-CREATE TABLE sys_dialogue_details
-(
-    id          BIGINT   NOT NULL COMMENT '主键',
-    parent_id   BIGINT   NULL COMMENT '表sys_dialogue_history的id',
-    create_by   BIGINT   NULL COMMENT '创建人',
-    create_time datetime NULL COMMENT '创建时间',
-    update_by   BIGINT   NULL COMMENT '修改人',
-    update_time datetime NULL COMMENT '修改时间',
-    del_flag    CHAR(1)  NULL COMMENT '逻辑删除；1：存在；0：删除',
-    tag         TINYINT  NULL COMMENT '标识；1：用户；0：AI',
-    content     LONGTEXT NULL COMMENT '对话内容',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='智能对话详情表';
-
-CREATE TABLE sys_dict_data
-(
-    id          BIGINT       NOT NULL COMMENT '主键',
-    parent_id   BIGINT       NULL COMMENT 'sys_dict_type的主键',
-    sort_order  INT          NULL COMMENT '排序',
-    create_by   BIGINT       NULL COMMENT '创建人',
-    create_time datetime     NULL COMMENT '创建时间',
-    update_by   BIGINT       NULL COMMENT '修改人',
-    update_time datetime     NULL COMMENT '修改时间',
-    del_flag    CHAR(1)      NULL COMMENT '逻辑删除；1：存在；0：删除',
-    label       VARCHAR(100) NULL COMMENT '标签',
-    value       VARCHAR(255) NULL COMMENT '键值',
-    dict_type   VARCHAR(100) NULL COMMENT '字典类型',
-    css_class   VARCHAR(255) NULL COMMENT '样式属性（其他样式扩展）',
-    list_class  VARCHAR(255) NULL COMMENT '表格回显样式',
-    is_default  TINYINT      NULL COMMENT '是否默认；1：是 0：否',
-    status      TINYINT      NULL COMMENT '状态；1：启用；0：停用',
-    remark      VARCHAR(500) NULL COMMENT '备注',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='字典数据表';
-
-CREATE TABLE sys_dict_type
-(
-    id          BIGINT       NOT NULL COMMENT '主键',
-    sort_order  INT          NULL COMMENT '排序',
-    create_by   BIGINT       NULL COMMENT '创建人',
-    create_time datetime     NULL COMMENT '创建时间',
-    update_by   BIGINT       NULL COMMENT '修改人',
-    update_time datetime     NULL COMMENT '修改时间',
-    del_flag    CHAR(1)      NULL COMMENT '逻辑删除；1：存在；0：删除',
-    dict_name   VARCHAR(100) NULL COMMENT '字典名称',
-    dict_type   VARCHAR(100) NULL COMMENT '字典类型',
-    status      TINYINT      NULL COMMENT '状态；1：启用；0：停用',
-    remark      VARCHAR(500) NULL COMMENT '备注',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='字典类型表';
-
-CREATE TABLE sys_file
-(
-    id            BIGINT       NOT NULL COMMENT '主键',
-    create_by     BIGINT       NULL COMMENT '创建人',
-    create_time   datetime     NULL COMMENT '创建时间',
-    update_by     BIGINT       NULL COMMENT '修改人',
-    update_time   datetime     NULL COMMENT '修改时间',
-    del_flag      CHAR(1)      NULL COMMENT '逻辑删除；1：存在；0：删除',
-    original_name VARCHAR(100) NULL COMMENT '源文件名',
-    file_key      VARCHAR(100) NULL COMMENT '存储文件名',
-    location      CHAR(1)      NULL COMMENT '存储地址；1：minio；2：磁盘',
-    bucket        VARCHAR(100) NULL COMMENT '桶名',
-    object_key    VARCHAR(500) NULL COMMENT '文件路径',
-    file_suffix   VARCHAR(10)  NULL COMMENT '文件后缀；示例：.txt、.jpg',
-    file_size     BIGINT       NULL COMMENT '文件大小；单位：B',
-    file_hash     VARCHAR(100) NULL COMMENT '文件hash',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='文件表';
-
-CREATE TABLE sys_log
-(
-    id              BIGINT       NOT NULL COMMENT '主键',
-    create_by       VARCHAR(20)  NULL COMMENT '创建人',
-    create_time     datetime     NULL COMMENT '创建时间',
-    del_flag        CHAR(1)      NULL COMMENT '逻辑删除',
-    log_level       VARCHAR(10)  NULL COMMENT '日志级别',
-    ip_address      VARCHAR(45)  NULL COMMENT '请求ip',
-    request_url     VARCHAR(255) NULL COMMENT '访问路径',
-    request_method  VARCHAR(10)  NULL COMMENT '请求方法',
-    request_params  LONGTEXT     NULL COMMENT '请求参数',
-    response_result LONGTEXT     NULL COMMENT '响应结果',
-    operation_desc  LONGTEXT     NULL COMMENT '操作描述',
-    source          VARCHAR(50)  NULL COMMENT '日志来源',
-    execution_time  BIGINT       NULL COMMENT '耗时',
-    module_name     VARCHAR(50)  NULL COMMENT '模块名称',
-    status_code     INT          NULL COMMENT '状态码',
-    exception_info  LONGTEXT     NULL COMMENT '异常信息',
-    os_browser_info VARCHAR(500) NULL COMMENT '操作系统/浏览器信息',
-    type            VARCHAR(2)   NULL COMMENT '日志类型',
-    update_by       BIGINT       NULL COMMENT '修改人',
-    update_time     datetime     NULL COMMENT '修改时间',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='日志表';
-
-CREATE TABLE sys_menu
-(
-    id          BIGINT                 NOT NULL COMMENT '菜单唯一标识符，主键',
-    parent_id   BIGINT                 NULL COMMENT '父菜单ID，顶级菜单的父ID通常为0',
-    create_by   BIGINT                 NULL COMMENT '创建人',
-    create_time datetime DEFAULT NOW() NULL COMMENT '创建时间',
-    update_by   BIGINT                 NULL COMMENT '修改人',
-    update_time datetime DEFAULT NOW() NULL COMMENT '更新时间',
-    del_flag    CHAR(1)                NULL COMMENT '逻辑删除；1：存在；0：删除',
-    name        VARCHAR(50)            NOT NULL COMMENT '菜单名称',
-    `path`      VARCHAR(255)           NULL COMMENT '前端路由路径',
-    `component` VARCHAR(255)           NULL COMMENT '前端组件路径',
-    icon        VARCHAR(50)            NULL COMMENT '菜单图标（如字体图标类名）',
-    type        CHAR(1)                NOT NULL COMMENT '菜单类型：0-目录，1-菜单，2-按钮',
-    order_num   INT                    NULL COMMENT '排序号，数字越小，排序越靠前',
-    status      TINYINT  DEFAULT 1     NULL COMMENT '菜单状态：0-禁用，1-启用',
-    `visible`   TINYINT  DEFAULT 1     NULL COMMENT '是否显示：0-隐藏，1-显示',
-    remark      VARCHAR(255)           NULL COMMENT '备注信息',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='菜单信息表';
-
-CREATE TABLE sys_permission
-(
-    id            BIGINT       NOT NULL COMMENT '主键',
-    create_by     BIGINT       NULL COMMENT '创建人',
-    create_time   datetime     NULL COMMENT '创建时间',
-    update_by     BIGINT       NULL COMMENT '修改人',
-    update_time   datetime     NULL COMMENT '修改时间',
-    del_flag      CHAR(1)      NULL COMMENT '逻辑删除',
-    name          VARCHAR(50)  NULL COMMENT '权限名称',
-    code          VARCHAR(50)  NOT NULL COMMENT '权限编码',
-    type          CHAR(1)      NULL COMMENT '权限类型；1：菜单；2：按钮',
-    status        CHAR(1)      NULL COMMENT '状态；1：启用；0：禁用',
-    `description` VARCHAR(255) NULL COMMENT '描述',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='权限表';
-
-CREATE TABLE sys_role
-(
-    id            BIGINT       NOT NULL COMMENT '主键',
-    sort_order    INT          NULL COMMENT '排序字段',
-    create_by     BIGINT       NULL COMMENT '创建人',
-    create_time   datetime     NULL COMMENT '创建时间',
-    update_by     BIGINT       NULL COMMENT '修改人',
-    update_time   datetime     NULL COMMENT '修改时间',
-    del_flag      CHAR(1)      NULL COMMENT '逻辑删除；1：存在；0：删除',
-    code          VARCHAR(20)  NULL COMMENT '角色编码',
-    name          VARCHAR(20)  NULL COMMENT '角色名称',
-    `description` VARCHAR(500) NULL COMMENT '描述',
-    status        TINYINT      NULL COMMENT '状态；1：启用；0：禁用',
-    is_default    TINYINT      NULL COMMENT '是否标记为系统默认角色；1：是；0：不是',
-    fix_role      TINYINT      NULL COMMENT '是否为固定角色（固定角色无法被删除）；1：是；0：不是',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='角色表';
-
-CREATE TABLE sys_role_menu
-(
-    role_id BIGINT NOT NULL COMMENT '角色id',
-    menu_id BIGINT NOT NULL COMMENT '菜单id'
-) COMMENT ='角色菜单表';
-
-CREATE TABLE sys_role_permission
-(
-    role_id       BIGINT NOT NULL COMMENT '角色主键',
-    permission_id BIGINT NOT NULL COMMENT '权限主键'
-) COMMENT ='角色权限表';
-
-CREATE TABLE sys_schedule_job
-(
-    id            BIGINT       NOT NULL COMMENT '主键',
-    create_by     BIGINT       NULL COMMENT '创建人',
-    create_time   datetime     NULL COMMENT '创建时间',
-    update_by     BIGINT       NULL COMMENT '修改人',
-    update_time   datetime     NULL COMMENT '修改时间',
-    del_flag      CHAR(1)      NULL COMMENT '逻辑删除；1：存在；0：删除',
-    job_name      VARCHAR(100) NULL COMMENT '任务名称',
-    job_group     VARCHAR(100) NULL COMMENT '任务组',
-    cron          VARCHAR(100) NULL COMMENT 'cron表达式',
-    job_type      VARCHAR(100) NULL COMMENT '任务类型',
-    status        INT          NULL COMMENT '任务状态；1：启用；0：暂停',
-    job_param     LONGTEXT     NULL COMMENT '任务所需参数',
-    start_time    datetime     NULL COMMENT '开始时间',
-    end_time      datetime     NULL COMMENT '结束时间',
-    job_interval  INT          NULL COMMENT '间隔',
-    interval_type CHAR(1)      NULL COMMENT '间隔类型；0：毫秒；1：秒；2：分钟；3：小时',
-    schedule_type CHAR(1)      NULL COMMENT '调度类型；0：简单调度；1：cron表达式调度',
-    remark        VARCHAR(500) NULL COMMENT '备注',
-    job_class     VARCHAR(200) NULL COMMENT '作业执行类',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='调度任务表';
-
-CREATE TABLE sys_secret_key
-(
-    id            BIGINT AUTO_INCREMENT NOT NULL COMMENT '主键',
-    create_by     BIGINT                NULL COMMENT '创建人',
-    create_time   datetime              NULL COMMENT '创建时间',
-    update_by     BIGINT                NULL COMMENT '修改人',
-    update_time   datetime              NULL COMMENT '修改时间',
-    del_flag      CHAR(1)               NULL COMMENT '逻辑删除；1：存在；0：删除',
-    public_key    VARCHAR(400)          NULL COMMENT '公钥',
-    private_key   VARCHAR(2000)         NULL COMMENT '私钥',
-    type          TINYINT               NOT NULL COMMENT '类型',
-    `description` VARCHAR(500)          NULL COMMENT '描述',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='密钥';
-
-CREATE TABLE sys_user
-(
-    id                      BIGINT               NOT NULL,
-    create_by               BIGINT               NULL COMMENT '创建人',
-    create_time             datetime             NULL COMMENT '创建时间',
-    update_by               BIGINT               NULL COMMENT '修改人',
-    update_time             datetime             NULL COMMENT '修改时间',
-    del_flag                CHAR(1)              NULL COMMENT '逻辑删除；1：存在；0：不存在',
-    username                VARCHAR(20)          NOT NULL COMMENT '用户名',
-    password                VARCHAR(100)         NOT NULL COMMENT '密码',
-    nickname                VARCHAR(20)          NULL COMMENT '昵称',
-    email                   VARCHAR(50)          NOT NULL COMMENT '邮箱',
-    phone                   VARCHAR(11)          NULL COMMENT '电话',
-    enabled                 TINYINT(1) DEFAULT 1 NULL COMMENT '用户是否被启用；1：启用；0：禁用',
-    account_non_locked      TINYINT(1) DEFAULT 1 NULL COMMENT '账户是否被锁定；1：正常；0：锁定',
-    credentials_non_expired TINYINT(1) DEFAULT 1 NULL COMMENT '凭证是否过期；1：正常；0：过期',
-    account_non_expired     TINYINT(1) DEFAULT 1 NULL COMMENT '账户是否过期；1：正常；0：过期',
-    dept_id                 BIGINT               NULL COMMENT '部门id',
-    avatar                  BIGINT               NULL COMMENT '用户头像',
-    CONSTRAINT `PRIMARY` PRIMARY KEY (id)
-) COMMENT ='用户表';
-
-CREATE TABLE sys_user_role
-(
-    role_id BIGINT NOT NULL COMMENT '角色主键',
-    user_id BIGINT NOT NULL COMMENT '用户主键'
-) COMMENT ='用户角色表';
-
-ALTER TABLE act_procdef_info
-    ADD CONSTRAINT ACT_UNIQ_INFO_PROCDEF UNIQUE (PROC_DEF_ID_);
-
-ALTER TABLE act_re_procdef
-    ADD CONSTRAINT ACT_UNIQ_PROCDEF UNIQUE (KEY_, VERSION_, DERIVED_VERSION_, TENANT_ID_);
-
-ALTER TABLE sys_user_role
-    ADD CONSTRAINT uk_role_user UNIQUE (role_id, user_id);
-
-ALTER TABLE sys_role_menu
-    ADD CONSTRAINT uk_sys_role_menu UNIQUE (role_id, menu_id);
-
-ALTER TABLE sys_role_permission
-    ADD CONSTRAINT uk_sys_role_permission UNIQUE (role_id, permission_id);
-
-CREATE INDEX ACT_IDC_EXEC_ROOT ON act_ru_execution (ROOT_PROC_INST_ID_);
-
-CREATE INDEX ACT_IDX_ACT_HI_TSK_LOG_TASK ON act_hi_tsk_log (TASK_ID_);
-
-CREATE INDEX ACT_IDX_DEADLETTER_JOB_CORRELATION_ID ON act_ru_deadletter_job (CORRELATION_ID_);
-
-CREATE INDEX ACT_IDX_DJOB_SCOPE ON act_ru_deadletter_job (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_DJOB_SCOPE_DEF ON act_ru_deadletter_job (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_DJOB_SUB_SCOPE ON act_ru_deadletter_job (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_EJOB_SCOPE ON act_ru_external_job (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_EJOB_SCOPE_DEF ON act_ru_external_job (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_EJOB_SUB_SCOPE ON act_ru_external_job (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_ENT_LNK_REF_SCOPE ON act_ru_entitylink (REF_SCOPE_ID_, REF_SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_ENT_LNK_ROOT_SCOPE ON act_ru_entitylink (ROOT_SCOPE_ID_, ROOT_SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_ENT_LNK_SCOPE ON act_ru_entitylink (SCOPE_ID_, SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_ENT_LNK_SCOPE_DEF ON act_ru_entitylink (SCOPE_DEFINITION_ID_, SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_EVENT_SUBSCR_CONFIG_ ON act_ru_event_subscr (CONFIGURATION_);
-
-CREATE INDEX ACT_IDX_EVENT_SUBSCR_PROC_ID ON act_ru_event_subscr (PROC_INST_ID_);
-
-CREATE INDEX ACT_IDX_EVENT_SUBSCR_SCOPEREF_ ON act_ru_event_subscr (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_EXEC_BUSKEY ON act_ru_execution (BUSINESS_KEY_);
-
-CREATE INDEX ACT_IDX_EXEC_REF_ID_ ON act_ru_execution (REFERENCE_ID_);
-
-CREATE INDEX ACT_IDX_EXTERNAL_JOB_CORRELATION_ID ON act_ru_external_job (CORRELATION_ID_);
-
-CREATE INDEX ACT_IDX_HI_ENT_LNK_REF_SCOPE ON act_hi_entitylink (REF_SCOPE_ID_, REF_SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_ENT_LNK_ROOT_SCOPE ON act_hi_entitylink (ROOT_SCOPE_ID_, ROOT_SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_ENT_LNK_SCOPE ON act_hi_entitylink (SCOPE_ID_, SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_ENT_LNK_SCOPE_DEF ON act_hi_entitylink (SCOPE_DEFINITION_ID_, SCOPE_TYPE_, LINK_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_IDENT_LNK_SCOPE ON act_hi_identitylink (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_IDENT_LNK_SCOPE_DEF ON act_hi_identitylink (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_IDENT_LNK_SUB_SCOPE ON act_hi_identitylink (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_IDENT_LNK_USER ON act_hi_identitylink (USER_ID_);
-
-CREATE INDEX ACT_IDX_HI_PROCVAR_NAME_TYPE ON act_hi_varinst (NAME_, VAR_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_TASK_SCOPE ON act_hi_taskinst (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_TASK_SCOPE_DEF ON act_hi_taskinst (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_TASK_SUB_SCOPE ON act_hi_taskinst (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_VAR_SCOPE_ID_TYPE ON act_hi_varinst (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_HI_VAR_SUB_ID_TYPE ON act_hi_varinst (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_IDENT_LNK_GROUP ON act_ru_identitylink (GROUP_ID_);
-
-CREATE INDEX ACT_IDX_IDENT_LNK_SCOPE ON act_ru_identitylink (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_IDENT_LNK_SCOPE_DEF ON act_ru_identitylink (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_IDENT_LNK_SUB_SCOPE ON act_ru_identitylink (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_IDENT_LNK_USER ON act_ru_identitylink (USER_ID_);
-
-CREATE INDEX ACT_IDX_JOB_CORRELATION_ID ON act_ru_job (CORRELATION_ID_);
-
-CREATE INDEX ACT_IDX_JOB_SCOPE ON act_ru_job (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_JOB_SCOPE_DEF ON act_ru_job (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_JOB_SUB_SCOPE ON act_ru_job (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_RU_ACTI_END ON act_ru_actinst (END_TIME_);
-
-CREATE INDEX ACT_IDX_RU_ACTI_EXEC ON act_ru_actinst (EXECUTION_ID_);
-
-CREATE INDEX ACT_IDX_RU_ACTI_EXEC_ACT ON act_ru_actinst (EXECUTION_ID_, ACT_ID_);
-
-CREATE INDEX ACT_IDX_RU_ACTI_PROC ON act_ru_actinst (PROC_INST_ID_);
-
-CREATE INDEX ACT_IDX_RU_ACTI_PROC_ACT ON act_ru_actinst (PROC_INST_ID_, ACT_ID_);
-
-CREATE INDEX ACT_IDX_RU_ACTI_START ON act_ru_actinst (START_TIME_);
-
-CREATE INDEX ACT_IDX_RU_ACTI_TASK ON act_ru_actinst (TASK_ID_);
-
-CREATE INDEX ACT_IDX_RU_VAR_SCOPE_ID_TYPE ON act_ru_variable (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_RU_VAR_SUB_ID_TYPE ON act_ru_variable (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_SJOB_SCOPE ON act_ru_suspended_job (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_SJOB_SCOPE_DEF ON act_ru_suspended_job (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_SJOB_SUB_SCOPE ON act_ru_suspended_job (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_SUSPENDED_JOB_CORRELATION_ID ON act_ru_suspended_job (CORRELATION_ID_);
-
-CREATE INDEX ACT_IDX_TASK_CREATE ON act_ru_task (CREATE_TIME_);
-
-CREATE INDEX ACT_IDX_TASK_SCOPE ON act_ru_task (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_TASK_SCOPE_DEF ON act_ru_task (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_TASK_SUB_SCOPE ON act_ru_task (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_TIMER_JOB_CORRELATION_ID ON act_ru_timer_job (CORRELATION_ID_);
-
-CREATE INDEX ACT_IDX_TIMER_JOB_DUEDATE ON act_ru_timer_job (DUEDATE_);
-
-CREATE INDEX ACT_IDX_TJOB_SCOPE ON act_ru_timer_job (SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_TJOB_SCOPE_DEF ON act_ru_timer_job (SCOPE_DEFINITION_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_TJOB_SUB_SCOPE ON act_ru_timer_job (SUB_SCOPE_ID_, SCOPE_TYPE_);
-
-CREATE INDEX ACT_IDX_VARIABLE_TASK_ID ON act_ru_variable (TASK_ID_);
-
-CREATE INDEX idx_code ON sys_role (code);
-
-CREATE INDEX idx_sys_dept_code ON sys_dept (code);
-
-CREATE INDEX idx_sys_dict_data_dict_type ON sys_dict_data (dict_type);
-
-CREATE INDEX idx_sys_dict_type ON sys_dict_type (dict_type);
-
-CREATE INDEX idx_sys_file_hash ON sys_file (file_hash);
-
-CREATE INDEX idx_sys_file_key ON sys_file (file_key);
-
-CREATE INDEX idx_sys_menu_parent_id ON sys_menu (parent_id);
-
-CREATE INDEX idx_sys_menu_type ON sys_menu (type);
-
-CREATE INDEX idx_sys_permission_code ON sys_permission (code);
-
-CREATE INDEX idx_sys_secret_key_type ON sys_secret_key (type);
-
-CREATE INDEX idx_sys_user_email ON sys_user (email);
-
-CREATE INDEX idx_sys_user_username ON sys_user (username);
-
-ALTER TABLE act_ru_identitylink
-    ADD CONSTRAINT ACT_FK_ATHRZ_PROCEDEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_ATHRZ_PROCEDEF ON act_ru_identitylink (PROC_DEF_ID_);
-
-ALTER TABLE act_ge_bytearray
-    ADD CONSTRAINT ACT_FK_BYTEARR_DEPL FOREIGN KEY (DEPLOYMENT_ID_) REFERENCES act_re_deployment (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_BYTEARR_DEPL ON act_ge_bytearray (DEPLOYMENT_ID_);
-
-ALTER TABLE act_ru_deadletter_job
-    ADD CONSTRAINT ACT_FK_DEADLETTER_JOB_CUSTOM_VALUES FOREIGN KEY (CUSTOM_VALUES_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_DEADLETTER_JOB_CUSTOM_VALUES_ID ON act_ru_deadletter_job (CUSTOM_VALUES_ID_);
-
-ALTER TABLE act_ru_deadletter_job
-    ADD CONSTRAINT ACT_FK_DEADLETTER_JOB_EXCEPTION FOREIGN KEY (EXCEPTION_STACK_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_DEADLETTER_JOB_EXCEPTION_STACK_ID ON act_ru_deadletter_job (EXCEPTION_STACK_ID_);
-
-ALTER TABLE act_ru_deadletter_job
-    ADD CONSTRAINT ACT_FK_DEADLETTER_JOB_EXECUTION FOREIGN KEY (EXECUTION_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_DEADLETTER_JOB_EXECUTION ON act_ru_deadletter_job (EXECUTION_ID_);
-
-ALTER TABLE act_ru_deadletter_job
-    ADD CONSTRAINT ACT_FK_DEADLETTER_JOB_PROCESS_INSTANCE FOREIGN KEY (PROCESS_INSTANCE_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_DEADLETTER_JOB_PROCESS_INSTANCE ON act_ru_deadletter_job (PROCESS_INSTANCE_ID_);
-
-ALTER TABLE act_ru_deadletter_job
-    ADD CONSTRAINT ACT_FK_DEADLETTER_JOB_PROC_DEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_DEADLETTER_JOB_PROC_DEF ON act_ru_deadletter_job (PROC_DEF_ID_);
-
-ALTER TABLE act_ru_event_subscr
-    ADD CONSTRAINT ACT_FK_EVENT_EXEC FOREIGN KEY (EXECUTION_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_EVENT_SUBSCR_EXEC_ID ON act_ru_event_subscr (EXECUTION_ID_);
-
-ALTER TABLE act_ru_execution
-    ADD CONSTRAINT ACT_FK_EXE_PARENT FOREIGN KEY (PARENT_ID_) REFERENCES act_ru_execution (ID_) ON DELETE CASCADE;
-
-CREATE INDEX ACT_FK_EXE_PARENT ON act_ru_execution (PARENT_ID_);
-
-ALTER TABLE act_ru_execution
-    ADD CONSTRAINT ACT_FK_EXE_PROCDEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_EXE_PROCDEF ON act_ru_execution (PROC_DEF_ID_);
-
-ALTER TABLE act_ru_execution
-    ADD CONSTRAINT ACT_FK_EXE_PROCINST FOREIGN KEY (PROC_INST_ID_) REFERENCES act_ru_execution (ID_) ON DELETE CASCADE;
-
-CREATE INDEX ACT_FK_EXE_PROCINST ON act_ru_execution (PROC_INST_ID_);
-
-ALTER TABLE act_ru_execution
-    ADD CONSTRAINT ACT_FK_EXE_SUPER FOREIGN KEY (SUPER_EXEC_) REFERENCES act_ru_execution (ID_) ON DELETE CASCADE;
-
-CREATE INDEX ACT_FK_EXE_SUPER ON act_ru_execution (SUPER_EXEC_);
-
-ALTER TABLE act_ru_external_job
-    ADD CONSTRAINT ACT_FK_EXTERNAL_JOB_CUSTOM_VALUES FOREIGN KEY (CUSTOM_VALUES_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_EXTERNAL_JOB_CUSTOM_VALUES_ID ON act_ru_external_job (CUSTOM_VALUES_ID_);
-
-ALTER TABLE act_ru_external_job
-    ADD CONSTRAINT ACT_FK_EXTERNAL_JOB_EXCEPTION FOREIGN KEY (EXCEPTION_STACK_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_EXTERNAL_JOB_EXCEPTION_STACK_ID ON act_ru_external_job (EXCEPTION_STACK_ID_);
-
-ALTER TABLE act_ru_identitylink
-    ADD CONSTRAINT ACT_FK_IDL_PROCINST FOREIGN KEY (PROC_INST_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_IDL_PROCINST ON act_ru_identitylink (PROC_INST_ID_);
-
-ALTER TABLE act_procdef_info
-    ADD CONSTRAINT ACT_FK_INFO_JSON_BA FOREIGN KEY (INFO_JSON_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_INFO_JSON_BA ON act_procdef_info (INFO_JSON_ID_);
-
-ALTER TABLE act_procdef_info
-    ADD CONSTRAINT ACT_FK_INFO_PROCDEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-ALTER TABLE act_ru_job
-    ADD CONSTRAINT ACT_FK_JOB_CUSTOM_VALUES FOREIGN KEY (CUSTOM_VALUES_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_JOB_CUSTOM_VALUES_ID ON act_ru_job (CUSTOM_VALUES_ID_);
-
-ALTER TABLE act_ru_job
-    ADD CONSTRAINT ACT_FK_JOB_EXCEPTION FOREIGN KEY (EXCEPTION_STACK_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_JOB_EXCEPTION_STACK_ID ON act_ru_job (EXCEPTION_STACK_ID_);
-
-ALTER TABLE act_ru_job
-    ADD CONSTRAINT ACT_FK_JOB_EXECUTION FOREIGN KEY (EXECUTION_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_JOB_EXECUTION ON act_ru_job (EXECUTION_ID_);
-
-ALTER TABLE act_ru_job
-    ADD CONSTRAINT ACT_FK_JOB_PROCESS_INSTANCE FOREIGN KEY (PROCESS_INSTANCE_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_JOB_PROCESS_INSTANCE ON act_ru_job (PROCESS_INSTANCE_ID_);
-
-ALTER TABLE act_ru_job
-    ADD CONSTRAINT ACT_FK_JOB_PROC_DEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_JOB_PROC_DEF ON act_ru_job (PROC_DEF_ID_);
-
-ALTER TABLE act_re_model
-    ADD CONSTRAINT ACT_FK_MODEL_DEPLOYMENT FOREIGN KEY (DEPLOYMENT_ID_) REFERENCES act_re_deployment (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_MODEL_DEPLOYMENT ON act_re_model (DEPLOYMENT_ID_);
-
-ALTER TABLE act_re_model
-    ADD CONSTRAINT ACT_FK_MODEL_SOURCE FOREIGN KEY (EDITOR_SOURCE_VALUE_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_MODEL_SOURCE ON act_re_model (EDITOR_SOURCE_VALUE_ID_);
-
-ALTER TABLE act_re_model
-    ADD CONSTRAINT ACT_FK_MODEL_SOURCE_EXTRA FOREIGN KEY (EDITOR_SOURCE_EXTRA_VALUE_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_MODEL_SOURCE_EXTRA ON act_re_model (EDITOR_SOURCE_EXTRA_VALUE_ID_);
-
-ALTER TABLE act_ru_suspended_job
-    ADD CONSTRAINT ACT_FK_SUSPENDED_JOB_CUSTOM_VALUES FOREIGN KEY (CUSTOM_VALUES_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_SUSPENDED_JOB_CUSTOM_VALUES_ID ON act_ru_suspended_job (CUSTOM_VALUES_ID_);
-
-ALTER TABLE act_ru_suspended_job
-    ADD CONSTRAINT ACT_FK_SUSPENDED_JOB_EXCEPTION FOREIGN KEY (EXCEPTION_STACK_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_SUSPENDED_JOB_EXCEPTION_STACK_ID ON act_ru_suspended_job (EXCEPTION_STACK_ID_);
-
-ALTER TABLE act_ru_suspended_job
-    ADD CONSTRAINT ACT_FK_SUSPENDED_JOB_EXECUTION FOREIGN KEY (EXECUTION_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_SUSPENDED_JOB_EXECUTION ON act_ru_suspended_job (EXECUTION_ID_);
-
-ALTER TABLE act_ru_suspended_job
-    ADD CONSTRAINT ACT_FK_SUSPENDED_JOB_PROCESS_INSTANCE FOREIGN KEY (PROCESS_INSTANCE_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_SUSPENDED_JOB_PROCESS_INSTANCE ON act_ru_suspended_job (PROCESS_INSTANCE_ID_);
-
-ALTER TABLE act_ru_suspended_job
-    ADD CONSTRAINT ACT_FK_SUSPENDED_JOB_PROC_DEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_SUSPENDED_JOB_PROC_DEF ON act_ru_suspended_job (PROC_DEF_ID_);
-
-ALTER TABLE act_ru_task
-    ADD CONSTRAINT ACT_FK_TASK_EXE FOREIGN KEY (EXECUTION_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_TASK_EXE ON act_ru_task (EXECUTION_ID_);
-
-ALTER TABLE act_ru_task
-    ADD CONSTRAINT ACT_FK_TASK_PROCDEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_TASK_PROCDEF ON act_ru_task (PROC_DEF_ID_);
-
-ALTER TABLE act_ru_task
-    ADD CONSTRAINT ACT_FK_TASK_PROCINST FOREIGN KEY (PROC_INST_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_TASK_PROCINST ON act_ru_task (PROC_INST_ID_);
-
-ALTER TABLE act_ru_timer_job
-    ADD CONSTRAINT ACT_FK_TIMER_JOB_CUSTOM_VALUES FOREIGN KEY (CUSTOM_VALUES_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_TIMER_JOB_CUSTOM_VALUES_ID ON act_ru_timer_job (CUSTOM_VALUES_ID_);
-
-ALTER TABLE act_ru_timer_job
-    ADD CONSTRAINT ACT_FK_TIMER_JOB_EXCEPTION FOREIGN KEY (EXCEPTION_STACK_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_IDX_TIMER_JOB_EXCEPTION_STACK_ID ON act_ru_timer_job (EXCEPTION_STACK_ID_);
-
-ALTER TABLE act_ru_timer_job
-    ADD CONSTRAINT ACT_FK_TIMER_JOB_EXECUTION FOREIGN KEY (EXECUTION_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_TIMER_JOB_EXECUTION ON act_ru_timer_job (EXECUTION_ID_);
-
-ALTER TABLE act_ru_timer_job
-    ADD CONSTRAINT ACT_FK_TIMER_JOB_PROCESS_INSTANCE FOREIGN KEY (PROCESS_INSTANCE_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_TIMER_JOB_PROCESS_INSTANCE ON act_ru_timer_job (PROCESS_INSTANCE_ID_);
-
-ALTER TABLE act_ru_timer_job
-    ADD CONSTRAINT ACT_FK_TIMER_JOB_PROC_DEF FOREIGN KEY (PROC_DEF_ID_) REFERENCES act_re_procdef (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_TIMER_JOB_PROC_DEF ON act_ru_timer_job (PROC_DEF_ID_);
-
-ALTER TABLE act_ru_identitylink
-    ADD CONSTRAINT ACT_FK_TSKASS_TASK FOREIGN KEY (TASK_ID_) REFERENCES act_ru_task (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_TSKASS_TASK ON act_ru_identitylink (TASK_ID_);
-
-ALTER TABLE act_ru_variable
-    ADD CONSTRAINT ACT_FK_VAR_BYTEARRAY FOREIGN KEY (BYTEARRAY_ID_) REFERENCES act_ge_bytearray (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_VAR_BYTEARRAY ON act_ru_variable (BYTEARRAY_ID_);
-
-ALTER TABLE act_ru_variable
-    ADD CONSTRAINT ACT_FK_VAR_EXE FOREIGN KEY (EXECUTION_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_VAR_EXE ON act_ru_variable (EXECUTION_ID_);
-
-ALTER TABLE act_ru_variable
-    ADD CONSTRAINT ACT_FK_VAR_PROCINST FOREIGN KEY (PROC_INST_ID_) REFERENCES act_ru_execution (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX ACT_FK_VAR_PROCINST ON act_ru_variable (PROC_INST_ID_);
-
-ALTER TABLE flw_ru_batch_part
-    ADD CONSTRAINT FLW_FK_BATCH_PART_PARENT FOREIGN KEY (BATCH_ID_) REFERENCES flw_ru_batch (ID_) ON DELETE NO ACTION;
-
-CREATE INDEX FLW_IDX_BATCH_PART ON flw_ru_batch_part (BATCH_ID_);
+-- radish_master.sys_announcement definition
+
+CREATE TABLE `sys_announcement` (
+                                    `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+                                    `sort_order` bigint DEFAULT NULL COMMENT '排序',
+                                    `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                    `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                    `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                    `del_flag` tinyint DEFAULT NULL COMMENT '逻辑删除',
+                                    `title` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '公告标题',
+                                    `publish_time` datetime DEFAULT NULL COMMENT '公布时间',
+                                    `context` varchar(1000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '公告内容',
+                                    `status` tinyint DEFAULT NULL COMMENT '状态；1：发布；0：草稿',
+                                    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='公告表';
+
+
+-- radish_master.sys_dept definition
+
+CREATE TABLE `sys_dept` (
+                            `id` bigint NOT NULL COMMENT '主键',
+                            `sort_order` int DEFAULT NULL COMMENT '排序字段',
+                            `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                            `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                            `del_flag` tinyint DEFAULT NULL COMMENT '逻辑删除',
+                            `code` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '部门编码',
+                            `name` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '部门名称',
+                            `parent_id` bigint DEFAULT NULL COMMENT '父级id',
+                            `level` tinyint DEFAULT NULL COMMENT '层级',
+                            PRIMARY KEY (`id`),
+                            KEY `idx_sys_dept_code` (`code`) COMMENT '部门编码普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='部门表';
+
+
+-- radish_master.sys_dialogue definition
+
+CREATE TABLE `sys_dialogue` (
+                                `id` bigint NOT NULL COMMENT '主键',
+                                `sort_order` bigint DEFAULT NULL COMMENT '排序',
+                                `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                `del_flag` tinyint DEFAULT NULL COMMENT '逻辑删除',
+                                `title` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '标题',
+                                `top_flag` tinyint DEFAULT NULL COMMENT '置顶标识；1：置顶；0：不置顶',
+                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='智能对话表';
+
+
+-- radish_master.sys_dialogue_details definition
+
+CREATE TABLE `sys_dialogue_details` (
+                                        `id` bigint NOT NULL COMMENT '主键',
+                                        `parent_id` bigint DEFAULT NULL COMMENT '表sys_dialogue_history的id',
+                                        `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                        `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                        `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                        `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                        `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                                        `tag` tinyint DEFAULT NULL COMMENT '标识；1：用户；0：AI',
+                                        `content` text COLLATE utf8mb4_general_ci COMMENT '对话内容',
+                                        PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='智能对话详情表';
+
+
+-- radish_master.sys_dict_data definition
+
+CREATE TABLE `sys_dict_data` (
+                                 `id` bigint NOT NULL COMMENT '主键',
+                                 `parent_id` bigint DEFAULT NULL COMMENT 'sys_dict_type的主键',
+                                 `sort_order` int DEFAULT NULL COMMENT '排序',
+                                 `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                 `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                 `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                 `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                 `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                                 `label` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '标签',
+                                 `value` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '键值',
+                                 `css_class` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '样式属性（其他样式扩展）',
+                                 `list_class` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '表格回显样式',
+                                 `is_default` tinyint DEFAULT NULL COMMENT '是否默认；1：是 0：否',
+                                 `status` tinyint DEFAULT NULL COMMENT '状态；1：启用；0：停用',
+                                 `remark` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+                                 PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='字典数据表';
+
+
+-- radish_master.sys_dict_type definition
+
+CREATE TABLE `sys_dict_type` (
+                                 `id` bigint NOT NULL COMMENT '主键',
+                                 `sort_order` int DEFAULT NULL COMMENT '排序',
+                                 `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                 `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                 `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                 `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                 `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                                 `dict_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '字典名称',
+                                 `status` tinyint DEFAULT NULL COMMENT '状态；1：启用；0：停用',
+                                 `remark` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+                                 PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='字典类型表';
+
+
+-- radish_master.sys_file definition
+
+CREATE TABLE `sys_file` (
+                            `id` bigint NOT NULL COMMENT '主键',
+                            `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                            `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                            `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                            `original_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源文件名',
+                            `file_key` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储文件名',
+                            `location` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储地址；1：minio；2：磁盘',
+                            `bucket` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '桶名',
+                            `object_key` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件路径',
+                            `file_suffix` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件后缀；示例：.txt、.jpg',
+                            `file_size` bigint DEFAULT NULL COMMENT '文件大小；单位：B',
+                            `file_hash` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件hash',
+                            PRIMARY KEY (`id`),
+                            KEY `idx_sys_file_hash` (`file_hash`) COMMENT '文件hash普通索引',
+                            KEY `idx_sys_file_key` (`file_key`) COMMENT '存储文件名普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
+
+
+-- radish_master.sys_log definition
+
+CREATE TABLE `sys_log` (
+                           `id` bigint NOT NULL COMMENT '主键',
+                           `create_by` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '创建人',
+                           `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                           `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除',
+                           `log_level` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '日志级别',
+                           `ip_address` varchar(45) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '请求ip',
+                           `request_url` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '访问路径',
+                           `request_method` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '请求方法',
+                           `request_params` text COLLATE utf8mb4_general_ci COMMENT '请求参数',
+                           `response_result` text COLLATE utf8mb4_general_ci COMMENT '响应结果',
+                           `operation_desc` text COLLATE utf8mb4_general_ci COMMENT '操作描述',
+                           `source` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '日志来源',
+                           `execution_time` bigint DEFAULT NULL COMMENT '耗时',
+                           `module_name` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '模块名称',
+                           `status_code` int DEFAULT NULL COMMENT '状态码',
+                           `exception_info` text COLLATE utf8mb4_general_ci COMMENT '异常信息',
+                           `os_browser_info` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '操作系统/浏览器信息',
+                           `type` varchar(2) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '日志类型',
+                           `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                           `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                           PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='日志表';
+
+
+-- radish_master.sys_menu definition
+
+CREATE TABLE `sys_menu` (
+                            `id` bigint NOT NULL COMMENT '菜单唯一标识符，主键',
+                            `parent_id` bigint DEFAULT NULL COMMENT '父菜单ID，顶级菜单的父ID通常为0',
+                            `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                            `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                            `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                            `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                            `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                            `name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单名称',
+                            `path` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '前端路由路径',
+                            `component` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '前端组件路径',
+                            `icon` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '菜单图标（如字体图标类名）',
+                            `type` char(1) COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单类型：0-目录，1-菜单，2-按钮',
+                            `order_num` int COMMENT '排序号，数字越小，排序越靠前',
+                            `status` tinyint DEFAULT '1' COMMENT '菜单状态：0-禁用，1-启用',
+                            `visible` tinyint DEFAULT '1' COMMENT '是否显示：0-隐藏，1-显示',
+                            `remark` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注信息',
+                            PRIMARY KEY (`id`),
+                            KEY `idx_sys_menu_parent_id` (`parent_id`) COMMENT '父级菜单普通索引',
+                            KEY `idx_sys_menu_type` (`type`) COMMENT '菜单类型普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='菜单信息表';
+
+
+-- radish_master.sys_permission definition
+
+CREATE TABLE `sys_permission` (
+                                  `id` bigint NOT NULL COMMENT '主键',
+                                  `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                  `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                  `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除',
+                                  `name` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '权限名称',
+                                  `code` varchar(50) COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限编码',
+                                  `type` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '类型；1：菜单；2：按钮',
+                                  `status` int DEFAULT NULL COMMENT '状态；1：启用；0：禁用',
+                                  `description` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '描述',
+                                  PRIMARY KEY (`id`),
+                                  KEY `idx_sys_permission_code` (`code`) COMMENT '权限编码普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='权限表';
+
+
+-- radish_master.sys_role definition
+
+CREATE TABLE `sys_role` (
+                            `id` bigint NOT NULL COMMENT '主键',
+                            `sort_order` int DEFAULT NULL COMMENT '排序字段',
+                            `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                            `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                            `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                            `code` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '角色编码',
+                            `name` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '角色名称',
+                            `description` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '描述',
+                            `status` tinyint DEFAULT NULL COMMENT '状态；1：启用；0：禁用',
+                            `is_default` tinyint DEFAULT NULL COMMENT '是否标记为系统默认角色；1：是；0：不是',
+                            `fix_role` tinyint DEFAULT NULL COMMENT '是否为固定角色（固定角色无法被删除）；1：是；0：不是',
+                            PRIMARY KEY (`id`),
+                            KEY `idx_code` (`code`) COMMENT '角色编码普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色表';
+
+
+-- radish_master.sys_role_menu definition
+
+CREATE TABLE `sys_role_menu` (
+                                 `role_id` bigint NOT NULL COMMENT '角色id',
+                                 `menu_id` bigint NOT NULL COMMENT '菜单id',
+                                 UNIQUE KEY `uk_sys_role_menu` (`role_id`,`menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色菜单表';
+
+
+-- radish_master.sys_role_permission definition
+
+CREATE TABLE `sys_role_permission` (
+                                       `role_id` bigint NOT NULL COMMENT '角色主键',
+                                       `permission_id` bigint NOT NULL COMMENT '权限主键',
+                                       UNIQUE KEY `uk_sys_role_permission` (`role_id`,`permission_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色权限表';
+
+
+-- radish_master.sys_schedule_job definition
+
+CREATE TABLE `sys_schedule_job` (
+                                    `id` bigint NOT NULL COMMENT '主键',
+                                    `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                    `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                    `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                    `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                    `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                                    `job_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '任务名称',
+                                    `job_group` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '任务组',
+                                    `cron` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'cron表达式',
+                                    `job_type` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '任务类型',
+                                    `status` int DEFAULT NULL COMMENT '任务状态；1：启用；0：暂停',
+                                    `job_param` text COLLATE utf8mb4_general_ci COMMENT '任务所需参数',
+                                    `start_time` datetime DEFAULT NULL COMMENT '开始时间',
+                                    `end_time` datetime DEFAULT NULL COMMENT '结束时间',
+                                    `job_interval` int DEFAULT NULL COMMENT '间隔',
+                                    `interval_type` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '间隔类型；0：毫秒；1：秒；2：分钟；3：小时',
+                                    `schedule_type` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '调度类型；0：简单调度；1：cron表达式调度',
+                                    `remark` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+                                    `job_class` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '作业执行类',
+                                    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='调度任务表';
+
+
+-- radish_master.sys_secret_key definition
+
+CREATE TABLE `sys_secret_key` (
+                                  `id` bigint NOT NULL COMMENT '主键',
+                                  `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                                  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                                  `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                                  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                                  `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
+                                  `public_key` varchar(400) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '公钥',
+                                  `private_key` varchar(2000) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '私钥',
+                                  `type` tinyint NOT NULL COMMENT '类型',
+                                  `description` varchar(500) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '描述',
+                                  PRIMARY KEY (`id`),
+                                  KEY `idx_sys_secret_key_type` (`type`) COMMENT '类型普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='密钥';
+
+
+-- radish_master.sys_user definition
+
+CREATE TABLE `sys_user` (
+                            `id` bigint NOT NULL,
+                            `create_by` bigint DEFAULT NULL COMMENT '创建人',
+                            `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+                            `update_by` bigint DEFAULT NULL COMMENT '修改人',
+                            `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+                            `del_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：不存在',
+                            `username` varchar(20) COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
+                            `password` varchar(100) COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
+                            `nickname` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '昵称',
+                            `email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL COMMENT '邮箱',
+                            `phone` varchar(11) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '电话',
+                            `enabled` tinyint(1) DEFAULT '1' COMMENT '用户是否被启用；1：启用；0：禁用',
+                            `account_non_locked` tinyint(1) DEFAULT '1' COMMENT '账户是否被锁定；1：正常；0：锁定',
+                            `credentials_non_expired` tinyint(1) DEFAULT '1' COMMENT '凭证是否过期；1：正常；0：过期',
+                            `account_non_expired` tinyint(1) DEFAULT '1' COMMENT '账户是否过期；1：正常；0：过期',
+                            `dept_id` bigint DEFAULT NULL COMMENT '部门id',
+                            `avatar` bigint DEFAULT NULL COMMENT '用户头像',
+                            PRIMARY KEY (`id`),
+                            KEY `idx_sys_user_email` (`email`) COMMENT '邮箱普通索引',
+                            KEY `idx_sys_user_username` (`username`) COMMENT '用户名普通索引'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
+
+
+-- radish_master.sys_user_role definition
+
+CREATE TABLE `sys_user_role` (
+                                 `role_id` bigint NOT NULL COMMENT '角色主键',
+                                 `user_id` bigint NOT NULL COMMENT '用户主键',
+                                 UNIQUE KEY `uk_role_user` (`role_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户角色表';
+
+INSERT INTO sys_dept (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, parent_id, `level`) VALUES(1984483212773847041, 1, 1984481955388682242, '2024-10-26 10:58:36', 1984481955388682242, '2025-05-16 23:49:42', 0, 'IT', '互联网公司', NULL, 1);
+INSERT INTO sys_dept (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, parent_id, `level`) VALUES(1984567407013588993, 2, 1984481955388682242, '2025-11-01 18:25:16', 1984481955388682242, '2025-11-01 19:14:24', 0, 'TD', '技术研发部', 1984483212773847041, 2);
+INSERT INTO sys_dept (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, parent_id, `level`) VALUES(1984583320156778498, 3, 1984481955388682242, '2025-11-01 19:28:30', 1984481955388682242, '2025-11-01 19:28:30', 0, 'BD', '后端研发部', 1984567407013588993, 3);
+INSERT INTO sys_dept (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, parent_id, `level`) VALUES(1984583475144699905, 4, 1984481955388682242, '2025-11-01 19:29:07', 1984481955388682242, '2025-11-01 19:29:07', 0, 'FD', '前端研发部', 1984567407013588993, 3);
+
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867211083778, 1984484774384603137, 1, 1984481955388682242, '2025-04-24 15:03:44', 1984481955388682242, '2025-04-24 17:25:01', '0', '男', '1', '', '', 1, 1, '1');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867253026818, 1984484774384603137, 2, 1984481955388682242, '2025-04-24 17:12:48', 1984481955388682242, '2025-04-24 17:12:48', '0', '女', '0', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867253026819, 1984484774405574658, 1, 1984481955388682242, '2025-04-25 22:48:59', 1984481955388682242, '2025-04-25 22:48:59', '0', '启用', '1', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867253026820, 1984484774405574658, 2, 1984481955388682242, '2025-04-25 22:49:14', 1984481955388682242, '2025-04-25 22:49:14', '0', '禁用', '0', '', '', 1, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867253026821, 1984484774405574659, 1, 1984481955388682242, '2025-07-14 20:03:57', 1984481955388682242, '2025-07-14 20:03:57', '0', '存储文件扫描', 'storage_scan', '', '', 1, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867282386946, 1984484774405574660, 1, 1984481955388682242, '2025-09-06 22:16:42', 1984481955388682242, '2025-11-01 19:41:54', '0', 'minio存储', '1', '', '', 1, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867282386947, 1984484774405574660, 2, 1984481955388682242, '2025-09-06 22:16:58', 1984481955388682242, '2025-09-06 22:16:58', '0', '本地磁盘', '2', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867282386948, 1984484774405574661, NULL, 1984481955388682242, '2025-10-26 18:24:58', 1984481955388682242, '2025-10-26 18:24:58', '0', '简单调度', '0', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867282386949, 1984484774405574661, NULL, 1984481955388682242, '2025-10-26 18:25:11', 1984481955388682242, '2025-10-26 18:25:11', '0', 'cron调度', '1', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867311747074, 1984484774405574662, NULL, 1984481955388682242, '2025-10-26 18:28:43', 1984481955388682242, '2025-10-26 18:28:43', '0', '存储文件扫描', 'storage_scan', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984483867311747075, 1984484774405574662, NULL, 1984481955388682242, '2025-11-01 11:24:35', 1984481955388682242, '2025-11-01 11:24:35', '0', '修改主键', 'update_primary_key', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1984610087038955521, 1984484774405574662, NULL, 1984481955388682242, '2025-11-01 21:14:52', 1984481955388682242, '2025-11-01 21:14:52', '0', '清理文件', 'clear_deleted_file', '', '', 0, 1, '清理已删除的文件');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1985710533040242689, 1985710409769648130, NULL, 1984481955388682242, '2025-11-04 22:07:38', 1984481955388682242, '2025-11-04 22:07:38', '0', '菜单', '1', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(1985710563537027073, 1985710409769648130, NULL, 1984481955388682242, '2025-11-04 22:07:46', 1984481955388682242, '2025-11-04 22:07:46', '0', '按钮', '2', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269551443804161, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:33:38', 1984481955388682242, '2025-12-17 20:33:38', '0', 'image/jpeg', 'jpg', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269596801007617, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:33:48', 1984481955388682242, '2025-12-17 20:33:48', '0', 'image/jpeg', 'jpeg', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269648034430977, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:34:01', 1984481955388682242, '2025-12-17 20:34:01', '0', 'image/png', 'png', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269696017268737, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:34:12', 1984481955388682242, '2025-12-17 20:34:12', '0', 'image/gif', 'gif', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269744687972353, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:34:24', 1984481955388682242, '2025-12-17 20:34:24', '0', 'image/webp', 'webp', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269795946561538, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:34:36', 1984481955388682242, '2025-12-17 20:34:36', '0', 'image/svg+xml', 'svg', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269863076397058, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:34:52', 1984481955388682242, '2025-12-17 20:34:52', '0', 'application/pdf', 'pdf', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269906969788417, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:35:02', 1984481955388682242, '2025-12-17 20:35:02', '0', 'text/plain', 'txt', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269956429021186, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:35:14', 1984481955388682242, '2025-12-17 20:35:14', '0', 'text/html', 'html', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001269998841823234, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:35:24', 1984481955388682242, '2025-12-17 20:35:24', '0', 'application/json', 'json', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001270170804092930, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:36:05', 1984481955388682242, '2025-12-17 20:36:05', '0', 'text/csv', 'csv', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001270219969724417, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:36:17', 1984481955388682242, '2025-12-17 20:36:17', '0', 'audio/mpeg', 'mp3', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001270257131257857, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:36:26', 1984481955388682242, '2025-12-17 20:36:26', '0', 'video/mp4', 'mp4', '', '', 0, 1, '');
+INSERT INTO sys_dict_data (id, parent_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark) VALUES(2001270296146673666, 2001266854774767618, NULL, 1984481955388682242, '2025-12-17 20:36:35', 1984481955388682242, '2025-12-17 20:36:35', '0', 'video/webm', 'webm', '', '', 0, 1, '');
+
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(1984484774384603137, 2, 1984481955388682242, '2025-04-23 22:52:19', 1984481955388682242, '2025-04-23 23:04:57', '0', '性别', 1, '表示男女的性别');
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(1984484774405574658, 2, 1984481955388682242, '2025-04-25 22:48:38', 1984481955388682242, '2025-04-25 22:50:17', '0', '状态', 1, '');
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(1984484774405574659, 3, 1984481955388682242, '2025-07-13 16:34:09', 1984481955388682242, '2025-10-26 18:25:35', '0', '调度类型', 1, '');
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(1984484774405574660, 4, 1984481955388682242, '2025-09-06 22:16:11', 1984481955388682242, '2025-10-21 13:47:08', '0', '文件存储位置', 1, 'org.apache.catalina.webresources.Cache.getResource Unable to add the resource at [/uploadPath/home/NewCarPhoto/2025/10/21/4564117022241344294_vinpicture_1_20251021092127_12538.jpg] to the cache for web application [] because there was insufficient free space available after evicting expired cache entries - consider increasing the maximum size of the cache');
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(1984484774405574661, 3, 1984481955388682242, '2025-10-26 18:24:18', 1984481955388682242, '2025-11-01 19:47:30', '0', '调度类型', 1, '');
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(1984484774405574662, 2, 1984481955388682242, '2025-10-26 18:26:42', 1984481955388682242, '2025-11-01 19:47:35', '0', '作业类型', 1, '');
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(1985710409769648130, 1, 1984481955388682242, '2025-11-04 22:07:09', 1984481955388682242, '2025-12-20 19:56:06', '0', '权限类型', 1, '');
+INSERT INTO sys_dict_type (id, sort_order, create_by, create_time, update_by, update_time, del_flag, dict_name, status, remark) VALUES(2001266854774767618, 2, 1984481955388682242, '2025-12-17 20:22:55', 1984481955388682242, '2025-12-20 19:56:02', '0', '在线预览文件类型', 1, '');
+
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400598355969, NULL, 1984481955388682242, '2024-11-16 03:25:27', 1984481955388682242, '2025-11-01 04:48:45', '0', '系统管理', '/system', NULL, 'setting', '0', 2, 1, 1, '系统管理顶级菜单');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400631910402, NULL, 1984481955388682242, '2024-11-16 03:25:27', 1984481955388682242, '2025-11-01 04:48:45', '0', '内容管理', '/content', NULL, 'folder', '0', 1, 0, 1, '内容管理顶级菜单');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400631910403, 1984485400598355969, 1984481955388682242, '2024-11-16 03:25:27', 1984481955388682242, '2025-11-01 05:00:56', '0', '用户管理', '/user', 'system/User', 'user', '1', 1, 1, 1, '管理用户信息');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400631910404, 1984485400598355969, 1984481955388682242, '2024-11-16 03:25:27', 1984481955388682242, '2025-11-01 05:00:56', '0', '角色管理', '/role', 'system/Role', 'avatar', '1', 2, 1, 1, '管理角色信息');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400657076226, 1984485400598355969, 1984481955388682242, '2024-11-16 03:25:27', 1984481955388682242, '2025-11-01 05:00:56', '0', '菜单管理', '/menu', 'system/Menu', 'menu', '1', 3, 1, 1, '管理菜单信息');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400657076227, 1984485400598355969, 1984481955388682242, '2025-04-22 16:48:24', 1984481955388682242, '2025-11-01 05:00:56', '0', '字典管理', '/dict', 'system/DictType', 'Collection', '1', 2, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400686436353, 1984485400598355969, 1984481955388682242, '2025-04-23 23:06:59', 1984481955388682242, '2025-11-01 05:00:56', '0', '字典数据', '/dictData', 'system/DictData', 'Document', '1', 2, 1, 0, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400686436354, 1984485400598355969, 1984481955388682242, '2025-04-25 22:41:19', 1984481955388682242, '2025-11-01 05:00:56', '0', '部门管理', '/dept', 'system/Dept', 'OfficeBuilding', '1', 4, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400686436355, 1984485400598355969, 1984481955388682242, '2025-04-25 22:42:14', 1984481955388682242, '2025-11-01 05:00:56', '0', '日志管理', '/log', 'system/Log', 'Memo', '1', 5, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400686436356, 1984485400598355969, 1984481955388682242, '2025-04-27 16:47:48', 1984481955388682242, '2025-11-01 15:29:03', '0', '日志详情', '/logDetail', 'system/LogDetail', 'Document', '1', 7, 1, 0, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400715796482, NULL, 1984481955388682242, '2025-05-28 16:10:09', 1984481955388682242, '2025-11-01 04:48:45', '0', '智能问答', '/ai', '', 'Tools', '0', 0, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400715796483, 1984485400715796482, 1984481955388682242, '2025-05-28 16:18:11', 1984481955388682242, '2025-11-01 05:00:56', '0', '新对话', '/dialog', 'chat/Chat', 'ChatDotSquare', '1', 0, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400715796484, 1984485400715796482, 1984481955388682242, '2025-05-29 15:35:28', 1984481955388682242, '2025-11-01 05:00:56', '0', '历史对话', '/answerHistory', 'chat/AnswerHistory', 'Comment', '1', 2, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400715796485, 1984485400598355969, 1984481955388682242, '2025-08-17 19:36:03', 1984481955388682242, '2025-11-01 05:00:56', '0', '定时任务', '/quartz', 'system/Quartz.vue', 'Clock', '1', 8, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400715796486, 1984485400598355969, 1984481955388682242, '2025-09-06 18:34:18', 1984481955388682242, '2025-11-01 05:00:56', '0', '文件管理', '/file', 'system/File', 'Files', '1', 3, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984485400715796487, 1984485400598355969, 1984481955388682242, '2025-10-22 13:58:44', 1984481955388682242, '2025-11-01 05:00:56', '0', 'cron表达式生成器', '/cron', 'system/component/CronGenerate', 'AlarmClock', '1', 20, 1, 0, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984595671614558209, NULL, 1984481955388682242, '2025-11-01 20:17:35', 1984481955388682242, '2025-11-01 20:30:23', '0', '网盘管理', '/onlineDisk', '', 'Platform', '0', 0, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984596219776536578, 1984595671614558209, 1984481955388682242, '2025-11-01 20:19:45', 1984481955388682242, '2025-11-01 20:28:43', '0', '我的文件', '/myFile', 'onlinedisk/File', 'Files', '1', 0, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1984999219198464002, 1984485400598355969, 1984481955388682242, '2025-11-02 23:01:08', 1984481955388682242, '2025-11-02 23:01:08', '0', '权限管理', '/permisson', 'system/Permission', 'Key', '1', 4, 1, 1, '');
+INSERT INTO sys_menu (id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, order_num, status, visible, remark) VALUES(1988216780108926978, 1984485400598355969, 1984481955388682242, '2025-11-11 20:06:34', 1984481955388682242, '2025-11-16 13:42:40', '0', '系统监控', '/actuator', 'system/Actuator', 'Odometer', '1', 6, 1, 1, '');
+
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415355244546, 1984481955388682242, '2024-11-20 20:06:35', 1984481955388682242, '2024-11-20 20:06:41', '0', '添加菜单', 'sys_menu_add', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415409770497, 1984481955388682242, '2024-11-20 20:51:39', 1984481955388682242, '2024-11-20 20:51:39', '0', '添加角色', 'sys_role_add', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415409770498, 1984481955388682242, '2024-11-20 20:53:17', 1984481955388682242, '2024-11-20 20:53:17', '0', '添加权限', 'sys_pms_add', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415409770499, 1984481955388682242, '2024-11-20 20:53:44', 1984481955388682242, '2024-11-20 20:53:44', '0', '编辑角色', 'sys_role_edit', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415409770500, 1984481955388682242, '2024-11-20 20:55:08', 1984481955388682242, '2024-11-20 20:55:08', '0', '编辑菜单', 'sys_menu_edit', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415409770501, 1984481955388682242, '2024-11-20 20:55:18', 1984481955388682242, '2024-11-20 20:55:18', '0', '删除菜单', 'sys_menu_del', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415409770502, 1984481955388682242, '2024-11-20 21:39:14', 1984481955388682242, '2024-11-20 21:39:14', '0', '添加部门', 'sys_dept_add', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415439130625, 1984481955388682242, '2024-11-20 21:39:26', 1984481955388682242, '2024-11-20 21:39:26', '0', '编辑部门', 'sys_dept_edit', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415439130626, 1984481955388682242, '2024-11-20 21:39:52', 1984481955388682242, '2024-11-20 21:39:52', '0', '删除部门', 'sys_dept_del', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415439130627, 1984481955388682242, '2024-11-20 21:42:27', 1984481955388682242, '2024-11-20 21:42:27', '0', '角色赋予菜单', 'sys_role_set_menu', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415439130628, 1984481955388682242, '2024-11-20 21:42:38', 1984481955388682242, '2024-11-20 21:42:38', '0', '角色赋予权限', 'sys_role_set_per', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415439130629, 1984481955388682242, '2024-11-20 21:47:29', 1984481955388682242, '2024-11-20 21:47:29', '0', '设置默认角色', 'sys_role_set_def', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415439130630, 1984481955388682242, '2024-11-20 21:48:11', 1984481955388682242, '2024-11-20 21:48:11', '0', '禁用角色', 'sys_role_fbn', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415439130631, 1984481955388682242, '2024-11-20 21:48:37', 1984481955388682242, '2024-11-20 21:48:37', '0', '启用角色', 'sys_role_enable', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490754, 1984481955388682242, '2024-11-20 21:51:21', 1984481955388682242, '2024-11-20 21:51:21', '0', '添加字典数据', 'sys_dict_data_add', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490755, 1984481955388682242, '2024-11-20 21:51:46', 1984481955388682242, '2024-11-20 21:51:46', '0', '编辑字典数据', 'sys_dict_data_edit', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490756, 1984481955388682242, '2024-11-20 21:52:10', 1984481955388682242, '2024-11-20 21:52:10', '0', '删除字典数据', 'sys_dict_data_del', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490757, 1984481955388682242, '2024-11-20 21:52:51', 1984481955388682242, '2024-11-20 21:52:51', '0', '添加字典类型', 'sys_dict_type_add', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490758, 1984481955388682242, '2024-11-20 21:53:21', 1984481955388682242, '2024-11-20 21:53:21', '0', '编辑字典类型', 'sys_dict_type_edit', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490759, 1984481955388682242, '2024-11-20 21:53:44', 1984481955388682242, '2024-11-20 21:53:44', '0', '删除字典类型', 'sys_dict_type_del', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490760, 1984481955388682242, '2024-11-20 21:54:18', 1984481955388682242, '2024-11-20 21:54:18', '0', '删除文件', 'sys_file_del', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490761, 1984481955388682242, '2024-11-20 21:57:41', 1984481955388682242, '2024-11-20 21:57:41', '0', '删除角色', 'sys_role_del', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415468490762, 1984481955388682242, '2024-11-20 21:58:58', 1984481955388682242, '2024-11-20 21:58:58', '0', '重置密码', 'sys_user_reset', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850881, 1984481955388682242, '2024-11-20 21:59:34', 1984481955388682242, '2024-11-20 21:59:34', '0', '添加用户', 'sys_user_add', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850882, 1984481955388682242, '2024-11-20 22:01:40', 1984481955388682242, '2024-11-20 22:01:40', '0', '编辑用户', 'sys_user_edit', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850883, 1984481955388682242, '2024-11-26 19:23:51', 1984481955388682242, '2024-11-26 19:23:51', '0', '生成密钥', 'sys_secret_key_generate', '2', 1, NULL);
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850884, 1984481955388682242, '2025-03-28 11:00:40', 1984481955388682242, '2025-03-28 11:00:40', '0', '删除用户', 'sys_user_delete', '2', 1, '');
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850885, 1984481955388682242, '2025-04-17 18:30:21', 1984481955388682242, '2025-04-17 18:30:21', '0', '锁定用户', 'sys_user_lock', '2', 1, '');
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850886, 1984481955388682242, '2025-04-17 18:31:31', 1984481955388682242, '2025-04-17 18:31:31', '0', '解锁用户', 'sys_user_unlock', '2', 1, '');
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850887, 1984481955388682242, '2025-07-13 20:52:28', 1984481955388682242, '2025-07-13 20:52:28', '0', '启用用户', 'sys_user_enable', '2', 1, '');
+INSERT INTO sys_permission (id, create_by, create_time, update_by, update_time, del_flag, name, code, `type`, status, description) VALUES(1984481415497850888, 1984481955388682242, '2025-07-13 20:54:00', 1984481955388682242, '2025-07-13 20:54:00', '0', '禁用用户', 'sys_user_forbidden', '2', 1, '');
+
+INSERT INTO sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES(1984489247068725249, 1, 1984481955388682242, '2024-10-25 15:07:55', 1984481955388682242, '2025-11-16 13:18:22', '0', 'ROLE_ADMIN', '管理员', '拥有所有权限', 1, 0, 1);
+INSERT INTO sys_role (id, sort_order, create_by, create_time, update_by, update_time, del_flag, code, name, description, status, is_default, fix_role) VALUES(1984489247123251201, 2, 1984481955388682242, '2024-10-25 15:08:15', 1984481955388682242, '2024-10-25 15:08:07', '0', 'ROLE_NORMAL', '普通用户', '没有任何权限', 1, 1, 1);
+
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400598355969);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400631910403);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400631910404);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400657076226);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400657076227);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400686436353);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400686436354);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400686436355);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400686436356);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400715796482);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400715796483);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400715796484);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400715796485);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400715796486);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984485400715796487);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984595671614558209);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984596219776536578);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1984999219198464002);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247068725249, 1988216780108926978);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247123251201, 1984485400715796482);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247123251201, 1984485400715796483);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247123251201, 1984485400715796484);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247123251201, 1984595671614558209);
+INSERT INTO sys_role_menu (role_id, menu_id) VALUES(1984489247123251201, 1984596219776536578);
+
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415355244546);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415409770497);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415409770498);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415409770499);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415409770500);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415409770501);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415409770502);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415439130625);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415439130626);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415439130627);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415439130628);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415439130629);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415439130630);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415439130631);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490754);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490755);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490756);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490757);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490758);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490759);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490760);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490761);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415468490762);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850881);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850882);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850883);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850884);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850885);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850886);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850887);
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES(1984489247068725249, 1984481415497850888);
+
+INSERT INTO sys_schedule_job (id, create_by, create_time, update_by, update_time, del_flag, job_name, job_group, cron, job_type, status, job_param, start_time, end_time, job_interval, interval_type, schedule_type, remark, job_class) VALUES(1984492295652417538, 1984481955388682242, '2025-07-15 19:06:19', 1984481955388682242, '2025-10-29 19:20:31', '0', 'nmap扫描', 'default', NULL, 'storage_scan', 0, NULL, '2025-10-26 09:38:46', '2025-10-30 16:00:00', 30, '2', '0', NULL, 'com.soft.base.quartz.job.NmapScanScheduler');
+INSERT INTO sys_schedule_job (id, create_by, create_time, update_by, update_time, del_flag, job_name, job_group, cron, job_type, status, job_param, start_time, end_time, job_interval, interval_type, schedule_type, remark, job_class) VALUES(1984492295711137793, 1984481955388682242, '2025-11-01 11:27:01', 1984481955388682242, '2025-11-01 11:27:01', '0', '修改主键', 'default', '', 'update_primary_key', 0, '', '2025-11-27 00:00:00', '2025-11-29 00:00:00', 1, '3', '0', '', 'com.soft.base.quartz.job.UpdatePrimaryKey');
+INSERT INTO sys_schedule_job (id, create_by, create_time, update_by, update_time, del_flag, job_name, job_group, cron, job_type, status, job_param, start_time, end_time, job_interval, interval_type, schedule_type, remark, job_class) VALUES(1984613110888849409, 1984481955388682242, '2025-11-01 21:26:53', 1984481955388682242, '2025-11-01 21:26:53', '0', '清理文件', 'default', '0 0 0 * * ?', 'clear_deleted_file', 1, '', NULL, NULL, NULL, '2', '1', '', 'com.soft.base.quartz.job.ClearDeletedFile');
+
+INSERT INTO sys_secret_key (id, create_by, create_time, update_by, update_time, del_flag, public_key, private_key, `type`, description) VALUES(1984491955066576897, 1984481955388682242, '2024-11-26 19:52:27', 1984481955388682242, '2024-11-26 11:53:23', '0', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5zuUH2yI4yOlaEUJ6PBk9mme52FmtSvchu+8MNqd3ALJXPauXTAdmzGMqCur8OscE5XQR+UEBtibDM6NtvBlxt89DHpgHZPQpZrC9HtSDIsFk/ck2Bs5oM/clPwYXKumRTkk/SgDx+7oq55fezV6XfAc7rMoKKXyF/g591cKmFlDdmMdHEh6Fbz9kvFQ0kfdpikXuaoPpC3O32I+xXx77uIAO2W+vhyYRsuy6TozFs3Ba/nveg27gVZcvlWAWPXZY/cG6ggeuuTBSd3kR9Tf0TfHu1xIr8aOOFu82gY5+B4h9eWhdjhmboBZvIBHwlMgiBvEkkr+qWunltxeicNe1wIDAQAB', 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDnO5QfbIjjI6VoRQno8GT2aZ7nYWa1K9yG77ww2p3cAslc9q5dMB2bMYyoK6vw6xwTldBH5QQG2JsMzo228GXG3z0MemAdk9ClmsL0e1IMiwWT9yTYGzmgz9yU/Bhcq6ZFOST9KAPH7uirnl97NXpd8BzusygopfIX+Dn3VwqYWUN2Yx0cSHoVvP2S8VDSR92mKRe5qg+kLc7fYj7FfHvu4gA7Zb6+HJhGy7LpOjMWzcFr+e96DbuBVly+VYBY9dlj9wbqCB665MFJ3eRH1N/RN8e7XEivxo44W7zaBjn4HiH15aF2OGZugFm8gEfCUyCIG8SSSv6pa6eW3F6Jw17XAgMBAAECggEAMFD0rHRDTiLepyD15ySEFDERsQtbKLQXimKBkju8DILQjIpG+NXa+diqqWEmtlqKLVV6hetGoh+UlmJ6niUxPxLacMcJWmTOjiv+XJOAG3rZGYfkvPtDWWTVlJPwizyaq5A7OGKqF5bGK0YWcWpFPWe0w/PPil7SbUvC4PnhDuACTiQmmW4jZBZ9X6IjXPx95nZ2TRCRHdQ9vFMBz5oY55+gV5efrgBibkg8MKzoOnmjcvfzutuy62RzUtYefKv6WQRVRni8ZOlcp3DjJ59t5zkP95unlLF8tQfri27cEq5d4tmrxgQZUWZnThWqsa79ejIdX/TKxznIsaOqYqHJQQKBgQD6hBPSPyLPnVu+z7E67MIjFVZmFZtdreUTQFxbB0yg5lBM3Y/ObQSKpvvHdTtp0z1jrAWJmta5d3M5tziYIcwrsRl0k/UAYLRlvwFey7OgGaNCQft98JCYLDT/26bHIgZ+IAEfLhwuA8bcj1loGdgVyWCT6+0tcV9vWOwY6fnX5wKBgQDsS2+LhEKzlr3d7H/G8rkosd4obvMGMPV5/lmjPHM4b315Wp70Iy30cwIWIkfTodK7gllyRRJ7wXCaH7mdkq52wZV7GlPSdb+2t+LKpPKFnyW3c0Dgk0vrYcwFzSluZUhYxhXjPHwY6FsINzD0O+jxX5Wyf9DPnGNpWBEGIfijkQKBgAPsAWtvNZpOels4YSvs/PUTpnCesfn7ePSeM1Pxf0+di3BIn7G5nzKUfqiWu0Fi3zkqPkPzOp1Ys2MZ7TbkgI/GjAF5N4K0AN7+6ISVZ9B/1kB5S/iixYC8YHAI/klrzPI4igv06tgFkx1s2Rd6IBnnNy3ZqbLmbXoOyFNzhkfNAoGAcM1aRKoxBXay0Ryzqw/4YHr46Sh+D7iTl1dbB1g2UPy4U5R1SWr55zZ4CoT28QrRhP4nISvkNPwVex4mCBkb/ElRyOC6nz/i86E5PTAdLrjY0ojMsejfV1DqiuJ0IuVq8iYuELqxK1rRCkz+q7ll7MSKvBnUXyfzNTj7d4gEIGECgYEAz8hNR5zW0915qJk/TMQFpjwAfvLi1g686eRnjwbp721ADFA6Wvw4w6ie7wBVrQTkMIcGYMLqNUZ3f9Y4iyle/6Z6CMJOwcErdhHxkAXOxG+jgCxbRpmzqicBpB0YPopOG6QhsUS0dcJHUkMPlEijb3WfikQcRTTYChg3G5o7nm0=', 0, NULL);
+
+INSERT INTO sys_user (id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar) VALUES(1984481955388682242, 1984481955388682242, '2024-10-24 07:25:34', 1984481955388682242, '2026-01-10 18:03:45', '0', 'admin', '$2a$10$IRLlmhCyCxgHp/Kmzsb9ceqijkfDdAwGRFAeRndKkwewXZ4bsv8yi', '程益祥', '1907452460@qq.com', '13235423290', 1, 1, 1, 1, 1984483212773847041, 11);
+INSERT INTO sys_user (id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar) VALUES(1984583825226477570, 1984481955388682242, '2025-11-01 19:30:30', 1984481955388682242, '2025-11-01 19:30:30', '0', 'radish', '$2a$10$wJ3aGId3/NhXiHtOJ6OBPuImLA1LByIO6t7p4vASyd9KBa5ejKeTO', '萝卜', '1@qq.com', '', 1, 1, 1, 1, 1984583320156778498, NULL);
+INSERT INTO sys_user (id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar) VALUES(2002379807972450306, 1984481955388682242, '2025-12-20 22:05:23', 1984481955388682242, '2025-12-20 22:10:36', '0', 'yys1999', '$2a$10$2Ok21kIYYbrkm4KJtGteuuKAoB1d0X2DW8tlrMYtK29jcgNWUEvx.', '杨永胜', '2210263330@qq.com', '', 1, 1, 1, 1, 1984483212773847041, NULL);
+INSERT INTO sys_user (id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar) VALUES(2004934672951070721, 1984481955388682242, '2025-12-27 23:17:31', 1984481955388682242, '2025-12-27 23:48:38', '1', '1', '$2a$10$zZdAiavPptGm5XD5270uZeXLsiIyjJHAYLJg/P4iZr8wvp6eFD3s2', '1', '132354232@qq.com', '', 1, 1, 1, 1, 1984483212773847041, NULL);
+
+INSERT INTO sys_user_role (role_id, user_id) VALUES(1984489247068725249, 1984481955388682242);
+INSERT INTO sys_user_role (role_id, user_id) VALUES(1984489247068725249, 2004934672951070721);
+INSERT INTO sys_user_role (role_id, user_id) VALUES(1984489247123251201, 1984583825226477570);
+INSERT INTO sys_user_role (role_id, user_id) VALUES(1984489247123251201, 2002379807972450306);
+INSERT INTO sys_user_role (role_id, user_id) VALUES(1984489247123251201, 2004934672951070721);

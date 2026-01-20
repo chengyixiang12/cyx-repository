@@ -3,7 +3,7 @@ JVM_OPTS="-Xms384m \
           -Xmx384m \
           -XX:+HeapDumpOnOutOfMemoryError \
           -XX:HeapDumpPath=./heapdump.hprof \
-          --spring.profiles.active=prod"
+          -Dspring.profiles.active=prod"
 
 if [ $# -eq 0 ]; then
     echo "请传入 Jar 包文件名（示例：sh start.sh your-app.jar）"
