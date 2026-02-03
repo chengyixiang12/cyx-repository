@@ -52,7 +52,7 @@
                       <el-button size="small" type="primary" :icon="Download" circle />
                     </template>
                   </el-popconfirm>
-                  <el-popconfirm title="确认删除该部门？" @confirm="handleDelete(scope.row.id)">
+                  <el-popconfirm title="确认删除该文件？" @confirm="handleDelete(scope.row.id)">
                     <template #reference>
                       <el-button type="danger" size="small" :icon="Delete" circle />
                     </template>

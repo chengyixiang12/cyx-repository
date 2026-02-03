@@ -235,7 +235,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     /**
-     * 备注：# 核心2：修改Host为MinIO自身地址（必须和生成签名时的Host一致，否则签名不匹配）
+     * nginx额外配置如下
+     * 备注：proxy_set_header # 核心2：修改Host为MinIO自身地址（必须和生成签名时的Host一致，否则签名不匹配）
      * @param id
      * @param isInline
      * @return
@@ -277,7 +278,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             long fileSize = fileTemp.length();
             String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
 
-            fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize);
+            minioUtil.upload(hashcodeIs, fileSize, objectKey);
 
             SysFile sysFile = new SysFile();
             sysFile.setFileKey(fileKey);
@@ -298,6 +299,11 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             return uploadFileVo;
         } catch (IOException e) {
             throw new GlobalException(e);
+        } finally {
+            // 删除临时文件
+            fileTemp.delete();
+            // 删除目录
+            fileTemp.getParentFile().delete();
         }
     }
 }
