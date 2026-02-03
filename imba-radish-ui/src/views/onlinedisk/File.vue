@@ -92,7 +92,7 @@
 import { ref, onMounted } from 'vue'
 import { Delete, Download } from '@element-plus/icons-vue'
 import { FilesRequest, FilesVo } from '@/types/file'
-import { deleteFileApi, downloadFileApi, uploadChunkApi, getMyFilesApi, mergeChunkApi, uploadFileApi } from '@/api/file'
+import { deleteFileApi, downloadFileApi, uploadChunkApi, getMyFilesApi, mergeChunkApi, uploadFileApi, getFileUrlApi } from '@/api/file'
 import { download } from '@/utils/download'
 import { showMessage } from '@/utils/message'
 import SparkMD5 from 'spark-md5';
@@ -161,9 +161,11 @@ const handleSizeChange = (val: number) => {
 
 // 下载文件
 const handleDownload = async (row: FilesVo) => {
-  showMessage('正在下载，请等待', 'success');
-  const blob = await downloadFileApi(row.id);
-  download(blob, row.originalName);
+  // showMessage('正在下载，请等待', 'success');
+  // const blob = await downloadFileApi(row.id);
+  // download(blob, row.originalName);
+  const url = await getFileUrlApi(row.id, '0');
+  window.location.href = url;
 }
 
 /**

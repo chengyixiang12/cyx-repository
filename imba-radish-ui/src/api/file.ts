@@ -90,3 +90,14 @@ export async function mergeChunkApi(fileMd5: string, fileName: string, total: nu
   const res = await get<UploadFileVo>('/file/mergeChunk', { flag: true, params: { fileMd5, fileName, total}});
   return res.data;
 }
+
+/**
+ * 获取文件url
+ * @param id 
+ * @param isInline 
+ * @returns 
+ */
+export async function getFileUrlApi(id: string, isInline: string): Promise<string> {
+  const res = await get<string>('/file/getFileUrl', { flag: true, params: { id, isInline}});
+  return res.data;
+}

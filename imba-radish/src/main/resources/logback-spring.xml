@@ -20,11 +20,7 @@
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>
-                    %highlight(%-5level)
-                    %cyan(%d{HH:mm:ss.SSS})
-                    [%thread]
-                    %blue(%logger{36})
-                    - %msg%n
+                    %highlight(%-5level) %cyan(%d{HH:mm:ss.SSS}) [%thread] %blue(%logger{36}) - %msg%n
                 </pattern>
             </encoder>
         </appender>
@@ -35,8 +31,7 @@
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>
-                    %-5level %d{yyyy-MM-dd HH:mm:ss.SSS}
-                    [%thread] %logger{36} - %msg%n
+                    %-5level%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n
                 </pattern>
             </encoder>
         </appender>
@@ -58,8 +53,7 @@
 
         <encoder>
             <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS}
-                %-5level %logger{36} [%thread] - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} [%thread] - %msg%n
             </pattern>
         </encoder>
 
@@ -92,8 +86,7 @@
 
         <encoder>
             <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS}
-                %-5level %logger{36} [%thread] - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} [%thread] - %msg%n
             </pattern>
         </encoder>
 

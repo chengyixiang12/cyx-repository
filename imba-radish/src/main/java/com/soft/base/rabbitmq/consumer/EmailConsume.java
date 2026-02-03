@@ -1,27 +1,17 @@
 package com.soft.base.rabbitmq.consumer;
 
-import com.rabbitmq.client.Channel;
-import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RabbitmqConstant;
-import com.soft.base.constants.RedisConstant;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.dto.rabbitmq.EmailDto;
-import com.soft.base.service.SysUsersService;
-import com.soft.base.utils.UniversalUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx

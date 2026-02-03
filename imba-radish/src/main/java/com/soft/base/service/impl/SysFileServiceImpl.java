@@ -234,6 +234,12 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         sysFileMapper.deleteRealByIds(list);
     }
 
+    /**
+     * 备注：# 核心2：修改Host为MinIO自身地址（必须和生成签名时的Host一致，否则签名不匹配）
+     * @param id
+     * @param isInline
+     * @return
+     */
     @Override
     public String getFileUrl(Long id, String isInline) {
         String redisKey = RedisConstant.FILE_SIGNATURE_URL + id;
@@ -258,7 +264,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             // 减5是为了防止minio签名过期，redis未过期，导致获取失败
             redisTemplate.expire(redisKey, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
         }
-        return url;
+        return url.replaceFirst(minioProperty.getUrl(), "/download");
     }
 
     @Override
