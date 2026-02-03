@@ -1,44 +1,18 @@
 package com.soft.base.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 /**
  * 日志表
  * @TableName sys_log
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_log")
 @Data
-public class SysLog implements Serializable {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    /**
-     * 逻辑删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+public class SysLog extends BaseEntity {
 
     /**
      * 日志级别
@@ -122,9 +96,5 @@ public class SysLog implements Serializable {
      * 日志类型
      */
     @TableField(value = "type")
-    private String type;
-
-    @Serial
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private Integer type;
 }

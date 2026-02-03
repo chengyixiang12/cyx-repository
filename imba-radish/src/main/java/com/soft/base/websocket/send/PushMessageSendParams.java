@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class PushMessageSendParams extends SendParams {
+public class PushMessageSendParams extends AbstractSendParams {
 
     /**
      * 消息体

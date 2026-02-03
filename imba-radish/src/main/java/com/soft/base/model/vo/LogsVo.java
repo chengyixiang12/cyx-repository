@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class LogsVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

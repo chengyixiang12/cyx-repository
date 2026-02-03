@@ -1,20 +1,20 @@
 export interface DeptTreeVo {
-    id: number,
+    id: string,
     code: string,
     name: string,
-    parentId: number,
+    parentId: string | null,
     children: DeptTreeVo[]
 }
 
 export interface GetDeptsRequest {
     keyword: string;
-    parent: string;
+    parent: string | null;
     pageNum: number;
     pageSize: number;
 }
 
 export interface GetDeptsVo {
-    id: number;
+    id: string;
     code: number;
     name: number;
     parentCode: number;
@@ -26,23 +26,23 @@ export interface SaveDeptRequest {
     name: string;
     code: string;
     sortOrder: number;
-    parentId: number;
+    parentId: string | null;
 }
 
 export interface EditDeptRequest {
-    id: number;
+    id: string | null;
     sortOrder: number;
     code: string;
     name: string;
-    parentId: number;
+    parentId: string | null;
 }
 
 export interface DeptVo {
-    id: number;
+    id: string | null;
     sortOrder: number | null;
     code: string;
     name: string;
-    parentId: number | null;
+    parentId: string | null;
 }
 
 export interface ExportDeptVo {

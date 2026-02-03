@@ -35,36 +35,77 @@
         FROM
         sys_file sf
         WHERE
-        sf.del_flag = '1'
+        sf.del_flag = '0'
         AND sf.id = #{id}
     </select>
     <select id="getFiles" parameterType="FilesRequest" resultType="FilesVo">
         SELECT
         sf.id,
         sf.location,
-        sf.file_size AS "fileSize",
-        sf.original_name AS "originalName",
-        sf.create_time AS "createTime",
-        sf.create_by AS "createBy"
+        sf.file_size AS fileSize,
+        sf.original_name AS originalName,
+        sf.create_time AS createTime,
+        su.nickname AS createBy
         FROM
         sys_file sf
+        LEFT JOIN sys_user su ON sf.create_by = su.id
         WHERE
-        sf.del_flag = '1'
+        sf.del_flag = '0'
+        <if test="request.keyword != null and request.keyword != ''">
+          <bind name="request.keyword" value="'%'+ request.keyword + '%'"/>
+            AND sf.original_name like #{request.keyword}
+        </if>
         ORDER BY sf.create_time DESC
     </select>
     <select id="getFileByHash" parameterType="java.lang.String" resultType="FileHashDto">
         SELECT
-            sf.id,
             sf.original_name,
             sf.file_key,
             sf.location,
             sf.object_key,
             sf.file_suffix,
-            sf.file_size
+            sf.file_size,
+            sf.file_hash
         FROM
             sys_file sf
         WHERE
-            sf.del_flag = '1'
+            sf.del_flag = '0'
           AND sf.file_hash = #{hashCode}
+    </select>
+    <select id="selectDeletedFiles" resultType="SelectDeletedFileDto">
+        select t1.bucket,
+               t1.object_key,
+               t1.id,
+               exists (select 1 from sys_file a where a.del_flag = '0' and a.file_hash = t1.file_hash) as retain
+        from sys_file t1
+        where t1.del_flag = '1'
+    </select>
+    <select id="getMyFiles" resultType="FilesVo">
+        SELECT
+        sf.id,
+        sf.location,
+        sf.file_size AS fileSize,
+        sf.original_name AS originalName,
+        sf.create_time AS createTime,
+        su.nickname AS createBy
+        FROM
+        sys_file sf
+        LEFT JOIN sys_user su ON sf.create_by = su.id
+        WHERE
+        sf.del_flag = '0'
+        AND sf.create_by = #{userId}
+        <if test="request.keyword != null and request.keyword != ''">
+            <bind name="request.keyword" value="'%'+ request.keyword + '%'"/>
+            AND sf.original_name like #{request.keyword}
+        </if>
+        ORDER BY sf.create_time DESC
+    </select>
+    <select id="deleteRealByIds" parameterType="java.util.List">
+        delete from sys_file
+               where del_flag = '1'
+                 and id in
+               <foreach collection="ids" item="item" open="(" separator="," close=")">
+                   #{item}
+               </foreach>
     </select>
 </mapper>

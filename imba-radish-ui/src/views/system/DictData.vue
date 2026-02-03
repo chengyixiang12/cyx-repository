@@ -39,7 +39,6 @@
                 </template>
               </el-table-column>
               <el-table-column prop="label" align="center" label="标签" />
-              <el-table-column prop="code" align="center" label="编码" />
               <el-table-column prop="value" align="center" label="值" />
               <el-table-column prop="isDefault" label="默认" min-width="80" align="center">
                 <template #default="scope">
@@ -88,7 +87,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
-import DictDataFormDialog from '@/components/system/DictDataFormDialog.vue'
+import DictDataFormDialog from './component/DictDataFormDialog.vue'
 import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi, setDefaultRoleApi } from '@/api/dictData'
 import { showMessage } from '@/utils/message'
 
@@ -96,10 +95,10 @@ const router = useRouter()
 const route = useRoute()
 const loading = ref(false)
 const total = ref<number>(0)
-const dictDataId = ref<number | null>(null)
+const dictDataId = ref<string>('')
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
-const dictType = ref<string>(route.query.dictType as string)
+const parentId = ref<string>(route.query.parentId as string)
 
 const dictDataList = ref<DictDatasVo[]>([])
 const searchForm = ref<DictDatasRequest>({
@@ -107,7 +106,7 @@ const searchForm = ref<DictDatasRequest>({
   status: null,
   pageNum: 1,
   pageSize: 10,
-  dictType: dictType.value
+  parentId: parentId.value
 })
 
 // 返回字典类型模块
@@ -128,41 +127,42 @@ const editData = async (row: DictDatasVo) => {
 
 // 新增数据提交
 const handleAddSubmit = async (formdata: SaveDictDataRequest) => {
-  formdata.dictType = dictType.value;
-  await saveDictDataApi(formdata)
-  await handleSearch()
+  formdata.parentId = parentId.value;
+  await saveDictDataApi(formdata);
+  await handleSearch();
 }
 
 // 编辑数据提交
 const handleEditSubmit = async (formdata: SaveDictDataRequest) => {
-  formdata.dictType = dictType.value;
+  formdata.parentId = parentId.value;
   await editDictDataApi({
     ...formdata,
     id: dictDataId.value
-  })
+  });
+  await handleSearch();
 }
 
 // 删除
-const deleteData = async (id: number) => {
-  await deleteDictDataApi(id)
-  await handleSearch()
+const deleteData = async (id: string) => {
+  await deleteDictDataApi(id);
+  await handleSearch();
 }
 
 // 修改状态
 const changeStatus = async (row: DictDatasVo) => {
   if (row.status === 1) {
-    await enableDictDataApi(row.id)
+    await enableDictDataApi(row.id);
   } else {
-    await forbiddenDictDataApi(row.id)
+    await forbiddenDictDataApi(row.id);
   }
   await handleSearch();
 }
 
 // 列表条件查询
 const handleSearch = async () => {
-  const res = await getDictDatasApi(searchForm.value)
-  dictDataList.value = res.records
-  total.value = res.total
+  const res = await getDictDatasApi(searchForm.value);
+  dictDataList.value = res.records;
+  total.value = res.total;
 }
 
 // 重置
@@ -174,19 +174,25 @@ const resetSearch = () => {
 // 设置默认
 const setDefault = async (row: DictDatasVo) => {
   if (row.isDefault === 1) {
-    await setDefaultRoleApi(row.id, dictType.value);
+    await setDefaultRoleApi(row.id, parentId.value);
   } else {
     showMessage('非法操作', 'warning');
-    row.isDefault = 1
+    row.isDefault = 1;
   }
   await handleSearch();
 }
 
-const handlePageChange = (val: number) => { searchForm.value.pageNum = val }
-const handleSizeChange = (val: number) => { searchForm.value.pageSize = val }
+const handlePageChange = (val: number) => {
+  searchForm.value.pageNum = val;
+  handleSearch()
+ }
+const handleSizeChange = (val: number) => {
+  searchForm.value.pageSize = val;
+  handleSearch()
+}
 
 onMounted(() => {
-  handleSearch()
+  handleSearch();
 })
 </script>
 <style scoped>
@@ -248,15 +254,6 @@ onMounted(() => {
   height: 52vh;
   overflow: auto;
   padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .list-pagination {

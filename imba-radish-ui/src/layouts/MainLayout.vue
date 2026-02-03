@@ -118,12 +118,14 @@ import { ElTooltip } from 'element-plus';
 import type { MenuItem } from '@/types/menu';
 import { getMessageNumApi } from '@/api/message';
 import { getLeftMenusApi } from '@/api/dashboard';
-import ModuleTabs from '@/components/layout/ModuleTabs.vue';
+import ModuleTabs from './component/ModuleTabs.vue';
 import { useRoute } from 'vue-router'
 import { CachedTabsType } from '@/types/layout';
 import { getWebSocketInstance } from '@/utils/websocket';
 import { showMessage } from '@/utils/message';
 import { avatar_url } from '@/common/global-config';
+import { WebsocketMessage } from '@/utils/websocketManager';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 const router = useRouter();
 const user = ref({
@@ -246,13 +248,23 @@ const existDashboard = () => {
 const initWebsocket = async () => {
     const token = sessionStorage.getItem('Authorization') || ''
     // 连接websocket
-    const ws = getWebSocketInstance()
-    ws.connect(token)
-    ws.onForceLogout = () => {
+    const ws = getWebSocketInstance();
+    ws.connect(token);
+    ws.onForceLogout = (data: WebsocketMessage) => {
         clearCache()
         router.push('/login')
-        showMessage('您已被强制下线', 'warning')
+        showMessage(data.msg, 'warning')
+    };
+    ws.heartbeat = (data: WebsocketMessage) => {
+        if (data.refreshFlag) {
+            const fingerprint = sessionStorage.getItem('fingerprint');
+            ws.send({ order: 'REFRESH_TOKEN', fingerprint })
+        }
     }
+    ws.refreshToken = (data: WebsocketMessage) => {
+        const token = data.token;
+        sessionStorage.setItem('Authorization', token);
+    };
 }
 
 // 获取用户头像
@@ -305,7 +317,9 @@ onMounted(() => {
     background: #b3b9bf;
     border-radius: 4px;
     margin-right: 10px;
+    max-height: 100vh;
     overflow: hidden;
+    overflow-y: auto;
     /* height: 90vh; */
 }
 
@@ -442,13 +456,4 @@ onMounted(() => {
 .collapse-icon:hover {
     color: #99c0e7;
 }
-
-/* .content-wrapper {
-    flex: 1;
-    overflow: hidden;
-    padding: 10px;
-    background: #f0f2f5;
-    border-radius: 4px;
-    min-height: 0;
-} */
 </style>

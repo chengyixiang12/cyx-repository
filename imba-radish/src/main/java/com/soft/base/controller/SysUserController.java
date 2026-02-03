@@ -1,10 +1,11 @@
 package com.soft.base.controller;
 
+import com.soft.base.constants.RegexConstant;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
-import com.soft.base.constants.RegexConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.SecretKeyEnum;
+import com.soft.base.model.dto.UserDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
@@ -22,9 +23,9 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +39,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Tag(name = "用户")
 @Validated
+@RequiredArgsConstructor
 public class SysUserController {
 
     private final SysUsersService sysUsersService;
@@ -51,21 +53,6 @@ public class SysUserController {
     private final SecretKeyService secretKeyService;
 
     private final SysPermissionService sysPermissionService;
-
-    @Autowired
-    public SysUserController(SysUsersService sysUsersService,
-                             RSAUtil rsaUtil,
-                             SecurityUtil securityUtil,
-                             PasswordEncoder passwordEncoder,
-                             SecretKeyService secretKeyService,
-                             SysPermissionService sysPermissionService) {
-        this.sysUsersService = sysUsersService;
-        this.rsaUtil = rsaUtil;
-        this.securityUtil = securityUtil;
-        this.passwordEncoder = passwordEncoder;
-        this.secretKeyService = secretKeyService;
-        this.sysPermissionService = sysPermissionService;
-    }
 
     @PostMapping(value = "/getUsers")
     @Operation(summary = "获取用户（复）")
@@ -91,11 +78,12 @@ public class SysUserController {
 
     @SysLog(value = "重置密码", module = LogModuleEnum.USER)
     @PreAuthorize(value = "@cps.hasPermission('sys_user_reset')")
-    @PutMapping(value = "/resetPassword")
+    @GetMapping(value = "/resetPassword")
     @Operation(summary = "重置密码")
-    public R<Object> resetPassword(@RequestBody ResetPasswordRequest request) {
-        sysUsersService.resetPassword(request);
-        return R.ok();
+    public R<Object> resetPassword(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+
+        sysUsersService.resetPassword(id);
+        return R.ok("密码重置成功", null);
     }
 
     @SysLock(name = "user")
@@ -111,7 +99,7 @@ public class SysUserController {
             return R.fail("邮箱已注册");
         }
         sysUsersService.saveUser(request);
-        return R.ok();
+        return R.ok("添加成功", null);
     }
 
     @SysLock(name = "user")
@@ -125,7 +113,7 @@ public class SysUserController {
         }
         String username = sysUsersService.getUsername(request.getId());
         sysUsersService.editUser(request, username);
-        return R.ok();
+        return R.ok("修改成功", null);
     }
 
     @GetMapping(value = "/getUserInfo")
@@ -133,7 +121,10 @@ public class SysUserController {
     public R<UserInfoVo> getUserInfo() {
         try {
             UserInfoVo userInfoVo = new UserInfoVo();
-            BeanUtils.copyProperties(securityUtil.getUserInfo(), userInfoVo);
+            UserDto userInfo = securityUtil.getUserInfo();
+            BeanUtils.copyProperties(userInfo, userInfoVo);
+            userInfoVo.setId(userInfoVo.getId());
+
             List<String> roleCodes = securityUtil.getRoleCodes();
             if (roleCodes != null && !roleCodes.isEmpty()) {
                 userInfoVo.setPermissions(sysPermissionService.getPermissionsByRoleCodes(roleCodes));
@@ -199,7 +190,7 @@ public class SysUserController {
     public R<Object> deleteUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.deleteUser(id, username);
-        return R.ok();
+        return R.ok("删除成功", null);
     }
 
     @SysLog(value = "启用用户", module = LogModuleEnum.USER)

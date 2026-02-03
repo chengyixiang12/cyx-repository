@@ -4,40 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.base.mapper.SysDictTypeMapper">
 
-    <resultMap id="BaseResultMap" type="com.soft.base.entity.SysDictType">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="sortOrder" column="sort_order" jdbcType="INTEGER"/>
-            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
-            <result property="dictName" column="dict_name" jdbcType="VARCHAR"/>
-            <result property="dictType" column="dict_type" jdbcType="VARCHAR"/>
-            <result property="status" column="status" jdbcType="TINYINT"/>
-            <result property="remark" column="remark" jdbcType="VARCHAR"/>
-    </resultMap>
-
-    <sql id="Base_Column_List">
-        id,sort_order,create_by,
-        create_time,update_by,update_time,
-        del_flag,dict_name,dict_type,
-        status,remark
-    </sql>
-
     <select id="getdictTypes" resultType="DictTypesVo">
         SELECT
         sdt.id,
         sdt.dict_name,
-        sdt.dict_type,
         sdt.`status`,
         sdt.sort_order
         FROM
         sys_dict_type sdt
         WHERE
-        sdt.del_flag = '1'
+        sdt.del_flag = '0'
         <if test="request.keyword != null and request.keyword != ''">
-            AND ( sdt.dict_name LIKE concat('%', #{request.keyword}, '%') OR sdt.dict_type LIKE concat('%', #{request.keyword}, '%') )
+            AND sdt.dict_name LIKE concat('%', #{request.keyword}, '%')
         </if>
         <if test="request.status != null">
             AND sdt.status = #{request.status}
@@ -47,21 +25,20 @@
         SELECT
         sdt.id,
         sdt.dict_name,
-        sdt.dict_type,
         sdt.sort_order,
         sdt.status,
         sdt.remark
         FROM
         sys_dict_type sdt
         WHERE
-        sdt.del_flag = '1'
+        sdt.del_flag = '0'
         AND sdt.id = #{id}
     </select>
     <update id="deleteDictTypeBatch" parameterType="java.util.List">
         UPDATE sys_dict_type
         SET del_flag = '0'
         WHERE
-        del_flag = '1'
+        del_flag = '0'
         AND id IN
         <foreach collection="ids" item="item" open="(" separator="," close=")">
             #{item}
@@ -70,13 +47,13 @@
     <update id="enableDictType" parameterType="java.lang.Long">
         UPDATE sys_dict_type
         SET status = 1
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
         AND id = #{id}
     </update>
     <update id="forbiddenDictType" parameterType="java.lang.Long">
         UPDATE sys_dict_type
         SET status = 0
-        WHERE del_flag = '1'
+        WHERE del_flag = '0'
           AND id = #{id}
     </update>
 </mapper>

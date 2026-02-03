@@ -6,7 +6,7 @@ export interface GetRolesRequest {
 }
 
 export interface SysRoleVo {
-    id: number;
+    id: string;
     sortOrder: number | null;
     code: string;
     name: string;
@@ -25,7 +25,7 @@ export interface SaveRoleRequest {
 }
 
 export interface EditRoleRequest {
-    id: number | null;
+    id: string | null;
     sortOrder: number;
     name: string;
     description: string;
@@ -33,7 +33,7 @@ export interface EditRoleRequest {
 }
 
 export interface SysRolesVo {
-    id: number;
+    id: string;
     sortOrder: number;
     code: string;
     name: string;
@@ -44,11 +44,11 @@ export interface SysRolesVo {
 }
 
 export interface SetMenusRequest {
-    roleId: number | null;
-    menuIds: number[];
+    roleId: string | null;
+    menuIds: string[];
 }
 
 export interface GetRoleSelectVo {
-    id: number;
+    id: string;
     name: string;
 }

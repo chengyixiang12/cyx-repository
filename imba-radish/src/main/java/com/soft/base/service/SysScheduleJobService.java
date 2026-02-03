@@ -3,13 +3,13 @@ package com.soft.base.service;
 import com.soft.base.entity.SysScheduleJob;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.model.request.CreateJobRequest;
+import com.soft.base.model.request.EditJobRequest;
 import com.soft.base.model.request.GetQuartzTasksRequest;
+import com.soft.base.model.vo.GetJobVo;
 import com.soft.base.model.vo.GetQuartzTasksVo;
 import com.soft.base.model.vo.PageVo;
 import jakarta.validation.Valid;
-import org.quartz.SchedulerException;
-
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
 
 /**
 * @author cyq
@@ -21,4 +21,16 @@ public interface SysScheduleJobService extends IService<SysScheduleJob> {
     void createJob(CreateJobRequest request);
 
     PageVo<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request);
+
+    void startJob(Long id);
+
+    void stopJob(Long id);
+
+    boolean existJobType(String jobType, String jobGroup);
+
+    GetJobVo getJob(Long id);
+
+    void editJob(EditJobRequest request);
+
+    void deleteJob(Long id);
 }

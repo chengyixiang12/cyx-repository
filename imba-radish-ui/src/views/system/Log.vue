@@ -129,11 +129,11 @@ const loadLogs = async () => {
 
 // 查看日志详情
 const handleView = (row: LogsVo) => {
-    router.push({ name: '/logdetail', query: { id: row.id } })
+    router.push({ name: 'logDetail', query: { id: row.id } })
 }
 
 // 删除菜单
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
     await deleteLogApi(id)
     loadLogs()
 }
@@ -141,17 +141,16 @@ const handleDelete = async (id: number) => {
 // 分页变化
 const handlePageChange = (page: number) => {
     searchForm.value.pageNum = page
-    loadLogs()
+    handleSearch()
 }
 
 const handleSizeChange = (size: number) => {
     searchForm.value.pageSize = size
-    loadLogs()
+    handleSearch()
 }
 
 // 搜索
 const handleSearch = () => {
-    searchForm.value.pageNum = 1
     loadLogs()
 }
 
@@ -182,15 +181,6 @@ onMounted(() => {
     height: 52vh;
     overflow: auto;
     padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .list-header {

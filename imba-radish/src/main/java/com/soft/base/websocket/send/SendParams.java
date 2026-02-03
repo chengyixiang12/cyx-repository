@@ -1,7 +1,7 @@
 package com.soft.base.websocket.send;
 
-import com.alibaba.fastjson2.JSON;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @Author: cyx
@@ -9,25 +9,9 @@ import lombok.Data;
  * @DateTime: 2024/11/23 21:36
  **/
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class SendParams {
+public class SendParams extends AbstractSendParams {
 
-    /**
-     * 状态
-     */
-    private Boolean status = true;
 
-    /**
-     * 返回信息
-     */
-    private String message;
-
-    /**
-     * 指令
-     */
-    private String order;
-
-    public String toJsonString() {
-        return JSON.toJSONString(this);
-    }
 }

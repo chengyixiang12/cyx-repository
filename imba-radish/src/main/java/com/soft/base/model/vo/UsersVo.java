@@ -16,7 +16,7 @@ import org.apache.ibatis.type.Alias;
 public class UsersVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "用户名")
     private String username;

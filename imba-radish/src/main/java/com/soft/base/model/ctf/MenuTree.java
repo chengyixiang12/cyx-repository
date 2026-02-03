@@ -8,9 +8,9 @@ import java.util.List;
  * @DateTime: 2025/4/22 10:34
  **/
 public interface MenuTree<T extends MenuTree<T>> {
-    Long getId();
+    String getId();
 
-    Long getParentId();
+    String getParentId();
 
     List<T> getChildren();
 }

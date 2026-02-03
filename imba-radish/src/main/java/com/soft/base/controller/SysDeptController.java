@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -62,9 +63,9 @@ public class SysDeptController {
 
     @GetMapping(value = "/getDeptTree")
     @Operation(summary = "获取组织架构")
-    public R<List<DeptTreeVo>> getDeptTree() {
+    public R<List<DeptTreeVo>> getDeptTree(@RequestParam(value = "id", required = false) Long id) {
         try {
-            List<DeptTreeVo> deptTreeVos = sysDeptService.getDeptTree();
+            List<DeptTreeVo> deptTreeVos = sysDeptService.getDeptTree(id);
             return R.ok(deptTreeVos);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -91,7 +92,7 @@ public class SysDeptController {
             return R.fail("编码：" + request.getCode() + "已存在");
         }
         sysDeptService.saveDept(request);
-        return R.ok();
+        return R.ok("添加成功", null);
     }
 
     @SysLock(name = "dept")
@@ -104,7 +105,7 @@ public class SysDeptController {
             return R.fail("部门编码已存在");
         }
         sysDeptService.editDept(request);
-        return R.ok();
+        return R.ok("修改成功", null);
     }
 
     @SysLog(value = "删除部门", module = LogModuleEnum.DEPT)
@@ -141,7 +142,7 @@ public class SysDeptController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         String fileName = request.getFileName();
         if (StringUtils.isBlank(fileName)) {
-            request.setFileName(BaseConstant.EXPORT_DEPT_EXCEL_NAME);
+            request.setFileName("部门.xlsx");
         }
         ClassPathResource resource = new ClassPathResource("template/exportDept.xlsx");
         try(InputStream is = resource.getInputStream();
@@ -165,7 +166,7 @@ public class SysDeptController {
 
             // 设置响应头
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // 设置文件类型
-            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileName.endsWith(BaseConstant.EXCEL_SUFFIX) ? fileName : fileName + BaseConstant.EXCEL_SUFFIX, StandardCharsets.UTF_8)).build()); // 设置文件名
+            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(request.getFileName(), StandardCharsets.UTF_8)).build()); // 设置文件名
             headers.setContentLength(byteArray.length);
 
             // 返回 ResponseEntity，带上文件内容和响应头

@@ -16,19 +16,23 @@ import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.model.dto.GetUsersDto;
-import com.soft.base.model.request.*;
+import com.soft.base.model.request.EditUserRequest;
+import com.soft.base.model.request.GetUsersRequest;
+import com.soft.base.model.request.ResetUsernameRequest;
+import com.soft.base.model.request.SaveUserRequest;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UsersVo;
+import com.soft.base.rabbitmq.producer.EmailProduce;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
+import com.soft.base.utils.UniversalUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
-import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,13 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +56,7 @@ import java.util.stream.Stream;
  */
 @Service
 @CacheConfig(cacheNames = "radish:users")
+@RequiredArgsConstructor
 public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> implements SysUsersService {
 
     private final SysUsersMapper sysUsersMapper;
@@ -76,24 +75,9 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    public SysUsersServiceImpl(SysUsersMapper sysUsersMapper,
-                               PasswordEncoder passwordEncoder,
-                               RSAUtil rsaUtil,
-                               SecretKeyService secretKeyService,
-                               SysDeptService sysDeptService,
-                               SysRoleService sysRoleService,
-                               SysUserRoleService sysUserRoleService,
-                               RedisTemplate<String, Object> redisTemplate) {
-        this.sysUsersMapper = sysUsersMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.rsaUtil = rsaUtil;
-        this.secretKeyService = secretKeyService;
-        this.sysDeptService = sysDeptService;
-        this.sysRoleService = sysRoleService;
-        this.sysUserRoleService = sysUserRoleService;
-        this.redisTemplate = redisTemplate;
-    }
+    private final UniversalUtil universalUtil;
+
+    private final EmailProduce emailProduce;
 
     @Override
     public PageVo<UsersVo> getUsers(GetUsersRequest request) {
@@ -113,7 +97,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         Page<UsersVo> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
         PageVo<UsersVo> pageVo = new PageVo<>();
         allUsers.getRecords().forEach(item -> {
-            item.setIsOnline(Boolean.TRUE.equals(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId())) ? 1 : 0);
+            item.setIsOnline(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId()) ? 1 : 0);
             if (StringUtils.isNotBlank(item.getPhone())) {
                 item.setPhone(item.getPhone().replaceAll(RegexConstant.PHONE_HIDDEN_REGEX, RegexConstant.PHONE_HIDDEN_EXP));
             }
@@ -144,21 +128,25 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void resetPassword(ResetPasswordRequest request) {
-        try {
-            sendWebsocket(request.getId());
+    public void resetPassword(Long id) {
+        String password = universalUtil.generatePassword();
 
-            String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
-            String encode = passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey));
+        String encode = passwordEncoder.encode(password);
 
-            SysUser sysUser = new SysUser();
-            sysUser.setId(request.getId());
-            sysUser.setPassword(encode);
+        SysUser sysUser = new SysUser();
+        sysUser.setId(id);
+        sysUser.setPassword(encode);
 
-            sysUsersMapper.updateById(sysUser);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        sysUsersMapper.updateById(sysUser);
+
+        sysUser = sysUsersMapper.selectById(id);
+
+        redisTemplate.delete(RedisConstant.USER_INFO + sysUser.getUsername());
+
+        String content = "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>重置密码邮件</title><style>body {background-color: #f9f9f9;margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;}.email-container {max-width: 600px;margin: 50px auto;background-color: #ffffff;padding: 20px;border-radius: 8px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);text-align: center;}.email-header {font-size: 18px;font-weight: bold;margin-bottom: 20px;}.email-content p {font-size: 16px;line-height: 1.6;margin: 10px 0;} .email-content strong{color: #d9534f; }.email-footer{font-size: 12px;color: #999;margin-top: 20px;}</style></head><body><div class=\"email-container\"><div class=\"email-header\">重置密码邮件</div><div class=\"email-content\"><p>尊敬的用户您好！</p><p>您的重置密码是：<strong>" +
+                password +
+                "</strong>，请您及时登录系统修改密码。</p><p>如果该密码重置操作不是您本人申请的，请尽快联系客服处理。</p><p>感谢您的使用！</p></div><div class=\"email-footer\">此邮件由系统自动发送，请勿回复。</div></div></body></html>";
+        emailProduce.sendEmail(sysUser.getEmail(), content);
     }
 
     @Override
@@ -183,7 +171,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
         // 保存角色
         List<Long> roleIds = request.getRoleIds();
-        Long defaultRoleId = sysRoleService.getDefaultRole(BaseConstant.DEFAULT_ROLE_FLAG);
+        Long defaultRoleId = sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG);
         if (roleIds == null) {
             roleIds = new ArrayList<>();
 

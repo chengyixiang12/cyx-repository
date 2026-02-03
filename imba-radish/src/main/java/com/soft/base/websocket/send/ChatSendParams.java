@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ChatSendParams extends SendParams {
+public class ChatSendParams extends AbstractSendParams {
 
     /**
      * 回答

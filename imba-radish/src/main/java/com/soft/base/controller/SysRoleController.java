@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -58,7 +59,7 @@ public class SysRoleController {
             return R.fail("角色编码已存在");
         }
         if (request.getStatus() == null) {
-            request.setStatus(BaseConstant.DEF_STATUS);
+            request.setStatus(BaseConstant.Status.STATUS_ENABLE);
         }
         Boolean existCode = sysRoleService.existCode(request.getCode());
         if (existCode) {
@@ -66,8 +67,8 @@ public class SysRoleController {
         }
         SysRole sysRole = new SysRole();
         BeanUtils.copyProperties(request, sysRole);
-        sysRole.setIsDefault(BaseConstant.UN_DEFAULT_ROLE_FLAG);
-        sysRole.setFixRole(BaseConstant.UN_FIX_ROLE_FLAG);
+        sysRole.setIsDefault(BaseConstant.Role.UN_DEFAULT_ROLE_FLAG);
+        sysRole.setFixRole(BaseConstant.Role.UN_FIX_ROLE_FLAG);
         sysRoleService.save(sysRole);
         return R.ok("新增成功", null);
     }
@@ -85,7 +86,7 @@ public class SysRoleController {
             return R.fail("角色编码已存在");
         }
         if (request.getStatus() == null) {
-            request.setStatus(BaseConstant.DEF_STATUS);
+            request.setStatus(BaseConstant.Status.STATUS_ENABLE);
         }
         sysRoleService.editRole(request);
         return R.ok("编辑成功", null);
@@ -113,19 +114,17 @@ public class SysRoleController {
         List<FixRolesDto> fixRolesFlag = sysRoleService.fixRolesFlag(request.getIds());
         if (!fixRolesFlag.isEmpty()) {
             StringBuilder message = new StringBuilder();
-            message.append(BaseConstant.LEFT_SQUARE_BRACKET);
             Iterator<FixRolesDto> iterator = fixRolesFlag.iterator();
             while (iterator.hasNext()) {
                 FixRolesDto next = iterator.next();
-                if (next.getFixRole().equals(BaseConstant.FIX_ROLE_FLAG)
-                        || next.getIsDefault().equals(BaseConstant.DEFAULT_ROLE_FLAG)) {
+                if (next.getFixRole().equals(BaseConstant.Role.FIX_ROLE_FLAG)
+                        || next.getIsDefault().equals(BaseConstant.Role.DEFAULT_ROLE_FLAG)) {
                     message.append(next.getName());
                 }
                 if (iterator.hasNext()) {
                     message.append(",");
                 }
             }
-            message.append(BaseConstant.RIGHT_SQUARE_BRACKET);
             message.append("不可被删除");
             return R.fail(message.toString());
         }

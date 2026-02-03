@@ -6,8 +6,8 @@ import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn' // 导入中文语言包
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import '@/assets/styles/message.css'
-// 引入 vue-js-cron 的 element-plus 封装
-import VueCron from '@vue-js-cron/element-plus'
+import '@/assets/styles/table.css'
+import '@/assets/styles/form.css'
 
 const app = createApp(App)
 // 注册所有Element Plus图标
@@ -18,5 +18,4 @@ app.use(router)
 .use(ElementPlus, {
     locale: zhCn, // 设置为中文
 })
-.use(VueCron)
 .mount('#app')

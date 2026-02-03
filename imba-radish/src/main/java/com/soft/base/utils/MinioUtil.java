@@ -4,12 +4,18 @@ import com.soft.base.constants.BaseConstant;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.properties.MinioProperty;
 import io.minio.*;
+import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * @Author: cyx
@@ -27,6 +33,16 @@ public class MinioUtil {
 
     private final MinioProperty minioProperty;
 
+    /**
+     * 分片大小
+     */
+    private static final long BURST_SIZE = 5L * 1024 * 1024;
+
+    /**
+     * 不分片
+     */
+    private static final Long BURST_FALSE = -1L;
+
     @Autowired
     public MinioUtil(MinioClient minioClient, DateUtil dateUtil, MinioProperty minioProperty) {
         this.minioClient = minioClient;
@@ -40,48 +56,43 @@ public class MinioUtil {
      * @param fileSuffix 文件后缀
      * @return
      */
-    private String getObjectKey(String fileKey, String fileSuffix) {
+    public String getObjectKey(String fileKey, String fileSuffix) {
         return dateUtil.date8Number() + BaseConstant.LEFT_SLASH + fileKey + fileSuffix;
     }
 
     /**
      * 上传
      * @param is 输入流
-     * @param fileKey 文件名
-     * @param fileSuffix 文件后缀
      * @param fileSize 文件大小 B
      * @return
      * @throws GlobalException
      */
-    public String upload(InputStream is, String fileKey, String fileSuffix, Long fileSize) throws GlobalException {
-        String objectKey = getObjectKey(fileKey, fileSuffix);
-        try {
-            if (!existBucket()) {
-                createBucket();
-            }
-            minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(minioProperty.getDefaultBucket())
-                    .object(objectKey)
-                    .stream(is, fileSize, fileSize < BaseConstant.BURST_SIZE ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE)
-                    .build());
-            return objectKey;
-        } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
-        }
+    public String upload(InputStream is, Long fileSize, String objectKey) {
+        putObject(is, minioProperty.getDefaultBucket(), fileSize, objectKey);
+        return objectKey;
     }
 
     /**
      * 上传
      * @param is 输入流
      * @param bucket 桶名
-     * @param fileKey 文件名
-     * @param fileSuffix 文件后缀
      * @param fileSize 文件大小 B
      * @return
      * @throws GlobalException
      */
-    public String upload(InputStream is, String bucket, String fileKey, String fileSuffix, Long fileSize) throws GlobalException {
-        String objectKey = getObjectKey(fileKey, fileSuffix);
+    public String upload(InputStream is, String bucket, Long fileSize, String objectKey) {
+        putObject(is, bucket, fileSize, objectKey);
+        return objectKey;
+    }
+
+    /**
+     * 调用minio的上传
+     * @param is
+     * @param bucket
+     * @param fileSize
+     * @param objectKey
+     */
+    public void putObject(InputStream is, String bucket, Long fileSize, String objectKey) {
         try {
             if (!existBucket(bucket)) {
                 createBucket(bucket);
@@ -89,11 +100,10 @@ public class MinioUtil {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
                     .object(objectKey)
-                    .stream(is, fileSize, fileSize < BaseConstant.BURST_SIZE ? BaseConstant.BURST_FALSE : BaseConstant.BURST_SIZE)
+                    .stream(is, fileSize, fileSize < BURST_SIZE ? BURST_FALSE : BURST_SIZE)
                     .build());
-            return objectKey;
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -102,11 +112,11 @@ public class MinioUtil {
      * @return
      * @throws GlobalException
      */
-    private Boolean existBucket() throws GlobalException {
+    private Boolean existBucket() {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioProperty.getDefaultBucket()).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -115,11 +125,11 @@ public class MinioUtil {
      * @return
      * @throws GlobalException
      */
-    private Boolean existBucket(String bucket) throws GlobalException {
+    private Boolean existBucket(String bucket) {
         try {
             return minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -127,23 +137,11 @@ public class MinioUtil {
      * 创建桶
      * @throws GlobalException
      */
-    private void createBucket() throws GlobalException {
-        try {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(minioProperty.getDefaultBucket()).build());
-        } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
-        }
-    }
-
-    /**
-     * 创建桶
-     * @throws GlobalException
-     */
-    private void createBucket(String bucket) throws GlobalException {
+    private void createBucket(String bucket) {
         try {
             minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -153,11 +151,11 @@ public class MinioUtil {
      * @return
      * @throws GlobalException
      */
-    public InputStream download(String objectKey) throws GlobalException {
+    public InputStream download(String objectKey) {
         try {
             return minioClient.getObject(GetObjectArgs.builder().bucket(minioProperty.getDefaultBucket()).object(objectKey).build());
         } catch (Exception e) {
-            throw new GlobalException(e.getMessage());
+            throw new GlobalException(e);
         }
     }
 
@@ -168,10 +166,83 @@ public class MinioUtil {
      * @return
      * @throws GlobalException
      */
-    public InputStream download(String bucket, String objectKey) throws GlobalException {
+    public InputStream download(String bucket, String objectKey) {
         try {
-            return minioClient.getObject(GetObjectArgs.builder().bucket(minioProperty.getDefaultBucket()).object(objectKey).build());
+            return minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(objectKey).build());
         } catch (Exception e) {
+            throw new GlobalException(e);
+        }
+    }
+
+    /**
+     * 删除文件
+     * @param objectKey
+     */
+    public void delete(String objectKey) {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(minioProperty.getDefaultBucket()).object(objectKey).build());
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 删除文件
+     * @param bucket
+     * @param objectKey
+     */
+    public void delete(String bucket, String objectKey) {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(objectKey).build());
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 生成文件url
+     * @param bucket
+     * @param objectKey
+     * @param headerMap
+     * @return
+     */
+    public String generateUrl(String bucket, String objectKey, Map<String, String> headerMap) {
+        try {
+            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .bucket(bucket)
+                    .object(objectKey)
+                    .method(Method.GET)
+                    .extraQueryParams(headerMap)
+                    .expiry(minioProperty.getExpire(), minioProperty.getTimeUnit())
+                    .build());
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    /**
+     * 生成文件url
+     * @param bucket
+     * @param objectKey
+     * @return
+     */
+    public String generateUrl(String bucket, String objectKey) {
+        try {
+            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .bucket(bucket)
+                    .object(objectKey)
+                    .method(Method.GET)
+                    .expiry(minioProperty.getExpire(), minioProperty.getTimeUnit())
+                    .build());
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
             throw new GlobalException(e.getMessage());
         }
     }

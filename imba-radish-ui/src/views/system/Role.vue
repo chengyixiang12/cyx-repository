@@ -114,12 +114,12 @@ import { ref, onMounted } from 'vue'
 import { Edit, Delete, Menu, Key } from '@element-plus/icons-vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
 import { updateRoleMenusApi, updateRolePermissionsApi } from '@/api/role'
-import RoleFormDialog from '@/components/system/RoleFormDialog.vue'
+import RoleFormDialog from './component/RoleFormDialog.vue'
 import { EditRoleRequest, GetRolesRequest, SaveRoleRequest, SysRolesVo, SysRoleVo } from '@/types/role'
 import { showMessage } from '@/utils/message'
-import RolePermissionDialog from '@/components/system/RolePermissionDialog.vue'
-import RoleMenuDialog from '@/components/system/RoleMenuDialog.vue'
-import { SetPermissionsRequest } from '@/types/permissionts'
+import RolePermissionDialog from './component/RolePermissionDialog.vue'
+import RoleMenuDialog from './component/RoleMenuDialog.vue'
+import { SetPermissionsRequest } from '@/types/permission'
 
 const loading = ref(false)
 const roleList = ref<SysRolesVo[]>([])
@@ -128,7 +128,7 @@ const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const assignPermissionVisible = ref(false)
 const assignMenuVisible = ref(false)
-const roleId = ref<number | null>(null)
+const roleId = ref<string>('')
 
 const searchForm = ref<GetRolesRequest>({
   keyword: '',
@@ -164,7 +164,7 @@ const handleAssignPermissionSubmit = async (request: SetPermissionsRequest) => {
 }
 
 // 保存被赋予的菜单
-const handleAssignMenuSubmit = async (data: { roleId: number, menuIds: number[] }) => {
+const handleAssignMenuSubmit = async (data: { roleId: string, menuIds: string[] }) => {
   await updateRoleMenusApi(data)
   assignMenuVisible.value = false
   await loadRoles()
@@ -176,7 +176,7 @@ const handleAdd = () => {
 }
 
 // 编辑角色
-const handleEdit = (id: number) => {
+const handleEdit = (id: string) => {
   roleId.value = id
   editDialogVisible.value = true
 }
@@ -194,7 +194,7 @@ const handleEditSubmit = async (formData: EditRoleRequest) => {
 }
 
 // 删除角色
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteRoleApi(id)
   await loadRoles()
 }
@@ -242,13 +242,13 @@ const handleFixRoleChange = async (row: SysRoleVo) => {
 }
 
 // 赋予权限
-const handleAssignPermission = (id: number) => {
+const handleAssignPermission = (id: string) => {
   roleId.value = id;
   assignPermissionVisible.value = true;
 }
 
 // 赋予菜单
-const handleAssignMenu = (id: number) => {
+const handleAssignMenu = (id: string) => {
   roleId.value = id;
   assignMenuVisible.value = true;
 }
@@ -282,15 +282,6 @@ onMounted(() => {
   height: 52vh;
   overflow: auto;
   padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .list-header {

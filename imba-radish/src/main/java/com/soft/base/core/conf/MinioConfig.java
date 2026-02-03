@@ -2,9 +2,12 @@ package com.soft.base.core.conf;
 
 import com.soft.base.properties.MinioProperty;
 import io.minio.MinioClient;
+import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class MinioConfig {
@@ -16,6 +19,7 @@ public class MinioConfig {
 
     @Bean
     public MinioClient minioClient() {
+
         return MinioClient
                 .builder()
                 .endpoint(minioProperty.getUrl())

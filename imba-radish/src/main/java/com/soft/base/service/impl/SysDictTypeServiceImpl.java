@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysDictType;
 import com.soft.base.mapper.SysDictTypeMapper;
 import com.soft.base.model.request.EditDictTypeRequest;
@@ -15,6 +15,8 @@ import com.soft.base.model.vo.DictTypesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysDictTypeService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,13 +27,17 @@ import java.util.List;
 * @createDate 2024-11-04 15:51:07
 */
 @Service
+@CacheConfig(cacheNames = "radish:dict")
 public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType>
     implements SysDictTypeService{
 
     private final SysDictTypeMapper sysDictTypeMapper;
 
-    public SysDictTypeServiceImpl(SysDictTypeMapper sysDictTypeMapper) {
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public SysDictTypeServiceImpl(SysDictTypeMapper sysDictTypeMapper, RedisTemplate<String, Object> redisTemplate) {
         this.sysDictTypeMapper = sysDictTypeMapper;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -65,22 +71,14 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
     @Override
     public void deleteDictType(Long id) {
+        SysDictType sysDictType = sysDictTypeMapper.selectById(id);
         sysDictTypeMapper.deleteById(id);
+//        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictType.getDictType());
     }
 
     @Override
     public void deleteDictTypeBatch(List<Long> ids) {
         sysDictTypeMapper.deleteByIds(ids);
-    }
-
-    @Override
-    public boolean existDictType(String dictType) {
-        return sysDictTypeMapper.exists(Wrappers.lambdaQuery(SysDictType.class).eq(SysDictType::getDictType, dictType));
-    }
-
-    @Override
-    public boolean existDictType(String dictType, Long id) {
-        return sysDictTypeMapper.exists(Wrappers.lambdaQuery(SysDictType.class).eq(SysDictType::getDictType, dictType).ne(SysDictType::getId, id));
     }
 
     @Override

@@ -34,7 +34,7 @@ import { getLogDetailApi } from '@/api/log'
 
 const route = useRoute()
 const router = useRouter()
-const logId = route.query.id as unknown as number
+const logId = route.query.id as string
 const displayData = ref<{ label: string, value: string, isLong?: boolean }[]>([])
 
 const fields = [

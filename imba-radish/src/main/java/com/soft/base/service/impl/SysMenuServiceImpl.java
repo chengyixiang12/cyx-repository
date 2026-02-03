@@ -15,6 +15,7 @@ import com.soft.base.model.request.SaveMenuRequest;
 import com.soft.base.model.vo.*;
 import com.soft.base.service.SysMenuService;
 import com.soft.base.utils.SecurityUtil;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -121,20 +122,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
             return new ArrayList<>();
         }
         List<MenusVo> menus = sysMenuMapper.getMenuRoute(userId);
-        if (CollectionUtil.isNotEmpty(menus)) {
-            menus = buildTree(menus);
-            // 如果1级菜单的子集为null，则移除
-            for (int i = 0; i < menus.size();) {
-                MenusVo menusVo = menus.get(i);
-                if (CollectionUtil.isEmpty(menusVo.getChildren())) {
-                    menus.remove(i);
-                } else {
-                    i++;
-                }
-            }
-        }
-
-        return menus;
+        return getMenusVos(menus);
     }
 
     @Override
@@ -168,9 +156,20 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
             return new ArrayList<>();
         }
         List<MenusVo> menus = sysMenuMapper.getLeftMenus(userId);
+        return getMenusVos(menus);
+    }
+
+    /**
+     * 获取菜单树结构数据
+     *
+     * @param menus 菜单列表数据
+     * @return 处理后的菜单树结构，如果输入为空则返回原列表，否则返回构建好的树形结构
+     */
+    @Nullable
+    private List<MenusVo> getMenusVos(List<MenusVo> menus) {
         if (CollectionUtil.isNotEmpty(menus)) {
             menus = buildTree(menus);
-            // 如果1级菜单的子集为null，则移除
+            // 移除没有子菜单的一级菜单项
             for (int i = 0; i < menus.size();) {
                 MenusVo menusVo = menus.get(i);
                 if (CollectionUtil.isEmpty(menusVo.getChildren())) {
@@ -191,7 +190,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
      */
     private <T extends MenuTree<T>> List<T> buildTree(List<T> menusVos) {
 
-        Map<Long, T> map = new HashMap<>();
+        Map<String, T> map = new HashMap<>();
         List<T> tree = new ArrayList<>();
 
         // 将菜单存入映射

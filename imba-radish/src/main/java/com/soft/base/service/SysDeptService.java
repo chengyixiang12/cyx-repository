@@ -18,7 +18,7 @@ import java.util.List;
 */
 public interface SysDeptService extends IService<SysDept> {
 
-    List<DeptTreeVo> getDeptTree();
+    List<DeptTreeVo> getDeptTree(Long id);
 
     Boolean existCode(String code);
 

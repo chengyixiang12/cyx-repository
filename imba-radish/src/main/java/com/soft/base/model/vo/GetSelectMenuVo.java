@@ -16,7 +16,7 @@ import org.apache.ibatis.type.Alias;
 public class GetSelectMenuVo {
 
     @Schema(description = "菜单主键")
-    private Integer id;
+    private String id;
 
     @Schema(description = "菜单名称")
     private String name;

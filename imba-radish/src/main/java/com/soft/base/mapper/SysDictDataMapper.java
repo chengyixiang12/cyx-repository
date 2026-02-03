@@ -3,11 +3,14 @@ package com.soft.base.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysDictData;
+import com.soft.base.model.dto.DictDataDto;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.vo.DictDataVo;
 import com.soft.base.model.vo.DictDatasVo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author cyq
@@ -27,9 +30,15 @@ public interface SysDictDataMapper extends BaseMapper<SysDictData> {
 
     void forbiddenDictData(@Param("id") Long id);
 
-    void setNotDefault(@Param("dictType") String dictType);
+    void setNotDefault(@Param("parentId") Long parentId);
 
     void setDefaultData(@Param("id") Long id);
+
+    List<DictDataDto> getByDictType(@Param("parentId") Long parentId,
+                                    @Param("statusEnable") Integer statusEnable);
+
+    String getDictDataByValue(@Param("value") String value,
+                              @Param("parentId") Long parentId);
 }
 
 

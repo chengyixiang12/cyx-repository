@@ -13,4 +13,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @Schema(description = "获取文件（复）请求参数")
 public class FilesRequest extends PageRequest {
+
+    @Schema(description = "关键字")
+    private String keyword;
 }

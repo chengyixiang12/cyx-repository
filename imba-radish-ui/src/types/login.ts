@@ -7,6 +7,7 @@ export interface LoginRequest {
     uuid?: string;
     email?: string;
     emailCaptcha?: string;
+    fingerprint?: string | null;
   }
   
   // 登录成功响应
@@ -22,7 +23,7 @@ export interface LoginRequest {
   }
 
   export interface UserInfoVo {
-    id: number;
+    id: string;
     username: string;
     deptId: number;
     nickname: string;

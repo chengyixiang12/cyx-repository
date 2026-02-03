@@ -1,6 +1,5 @@
 package com.soft.base.core.filter;
 
-import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.HttpConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.enums.ResultEnum;
@@ -41,38 +40,41 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-        log.info("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
-        if (rateLimitProperty.getEnable()) {
-            String key = getIp(request);
-            // 获取当前时间戳
-            long currentTimestamp = System.currentTimeMillis();
-
-            // 使用 Redis 存储请求的时间戳
-            Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * BaseConstant.WINDOW_SIZE_EXPAND_MULTIPLE, currentTimestamp);
-
-            // 如果超过最大请求次数，拒绝请求
-            if (requestCount >= rateLimitProperty.getMaxRequest()) {
-                ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
-                return;
-            }
-
-            // 记录请求时间戳
-            redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
-
-            // 设置请求过期时间为窗口大小，确保缓存不会无限增大
-            redisTemplate.expire(key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
+        if (!rateLimitProperty.getEnable()) {
+            return;
         }
+
+        String key = getIp(request);
+        // 获取当前时间戳
+        long currentTimestamp = System.currentTimeMillis();
+
+        // 使用 Redis 存储请求的时间戳
+        Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * 1000L, currentTimestamp);
+
+        // 如果超过最大请求次数，拒绝请求
+        if (requestCount >= rateLimitProperty.getMaxRequest()) {
+            ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
+            return;
+        }
+
+        log.debug("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
+
+        // 记录请求时间戳
+        redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
+
+        // 设置请求过期时间为窗口大小，确保缓存不会无限增大
+        redisTemplate.expire(key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
 
         filterChain.doFilter(request, response);
     }
 
     @NotNull
     private static String getIp(HttpServletRequest request) {
-        String clientIp = request.getRemoteAddr().replaceAll(BaseConstant.ESCAPE_CHARACTER + BaseConstant.ENG_COLON, BaseConstant.BLANK_CHARACTER); // 获取客户端 IP 地址
+        String clientIp = request.getRemoteAddr().replaceAll(":", ""); // 获取客户端 IP 地址
         //        String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
 //            log.info("用户ip：{}", clientIp);
 //            log.info("用户请求接口路径：{}", request.getRequestURI());
-        String escapedRegex = Pattern.quote(BaseConstant.FILE_POINT_SUFFIX);
-        return RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(escapedRegex, BaseConstant.BLANK_CHARACTER);
+        String escapedRegex = Pattern.quote(".");
+        return RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(escapedRegex, "");
     }
 }

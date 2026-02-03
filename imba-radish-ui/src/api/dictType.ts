@@ -16,7 +16,7 @@ export async function getDictTypesApi(data: GetDictTypesRequest): Promise<Pagina
  * 获取字典类型（单）
  * @param id 
  */
-export async function getDictTypeApi(id: number): Promise<DictTypeVo> {
+export async function getDictTypeApi(id: string): Promise<DictTypeVo> {
     const res = await get('/dictType', { flag: true, params: { id } });
     return res.data;
 }
@@ -25,15 +25,15 @@ export async function getDictTypeApi(id: number): Promise<DictTypeVo> {
  * 删除字典类型
  * @param id 
  */
-export async function deleteDictTypeApi(id: number) {
-    await del(`/dictType/${id}`, { flag: true })
+export async function deleteDictTypeApi(id: string) {
+    await del(`/dictType`, null, { flag: true, params: { id } })
 }
 
 /**
  * 启用字典类型
  * @param id 
  */
-export async function enableDictTypeApi(id: number) {
+export async function enableDictTypeApi(id: string) {
     await get('/dictType/enableDictType', { flag: true, params: { id } })
 }
 
@@ -41,7 +41,7 @@ export async function enableDictTypeApi(id: number) {
  * 禁用字典类型
  * @param id 
  */
-export async function forbiddenDictTypeApi(id: number) {
+export async function forbiddenDictTypeApi(id: string) {
     await get('/dictType/forbiddenDictType', { flag: true, params: { id } })
 }
 

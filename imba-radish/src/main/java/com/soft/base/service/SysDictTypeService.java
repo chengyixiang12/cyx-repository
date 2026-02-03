@@ -30,10 +30,6 @@ public interface SysDictTypeService extends IService<SysDictType> {
 
     void deleteDictTypeBatch(List<Long> ids);
 
-    boolean existDictType(String dictType);
-
-    boolean existDictType(String dictType, Long id);
-
     void enableDictType(Long id);
 
     void forbiddenDictType(Long id);

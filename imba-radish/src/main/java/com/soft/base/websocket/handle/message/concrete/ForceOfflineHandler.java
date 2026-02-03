@@ -7,7 +7,7 @@ import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.ForceOfflineRecParams;
+import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import com.soft.base.websocket.send.ForceOfflineSendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +38,16 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        ForceOfflineRecParams forceOfflineRecParams = JSON.parseObject(message.getPayload(), ForceOfflineRecParams.class);
-        WebSocketSession receiveSession = WebSocketSessionManager.getSession(forceOfflineRecParams.getReceiver());
+        ForceOfflineRecParam forceOfflineRecParam = JSON.parseObject(message.getPayload(), ForceOfflineRecParam.class);
+        WebSocketSession receiveSession = WebSocketSessionManager.getSession(forceOfflineRecParam.getReceiver());
         if (receiveSession == null) {
             log.info("接收方未连接websocket...");
             return;
         }
 
         ForceOfflineSendParams forceOfflineSendParams = new ForceOfflineSendParams();
-        forceOfflineSendParams.setOrder(forceOfflineRecParams.getOrder());
+        forceOfflineSendParams.setOrder(forceOfflineRecParam.getOrder());
+        forceOfflineSendParams.setMsg(forceOfflineRecParam.getMsg());
         receiveSession.sendMessage(new TextMessage(forceOfflineSendParams.toJsonString()));
 
         UserDto userDto = (UserDto) receiveSession.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
@@ -60,7 +61,9 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
         redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + token);
         log.info("token clear...");
         redisTemplate.delete(RedisConstant.USER_INFO + username);
-        log.info("{} userinfo already remove in redis", username);
+        log.info("{} userinfo remove", username);
+        redisTemplate.delete(RedisConstant.FINGERPRINT + username);
+        log.info("{} fingerprint remove", username);
     }
 
     @Override

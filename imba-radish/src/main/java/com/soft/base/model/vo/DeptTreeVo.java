@@ -19,7 +19,7 @@ import java.util.List;
 public class DeptTreeVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "部门编码")
     private String code;
@@ -28,7 +28,7 @@ public class DeptTreeVo {
     private String name;
 
     @Schema(description = "父级id", hidden = true)
-    private Long parentId;
+    private String parentId;
 
     @Schema(description = "子节点")
     private List<DeptTreeVo> children = new ArrayList<>();

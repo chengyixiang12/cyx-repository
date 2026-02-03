@@ -71,19 +71,20 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { FormInstance, FormRules } from 'element-plus';
-import { getGraphicCaptcha, login, getUserInfo, sendCaptchaApi } from '@/api/login';
+import { getGraphicCaptcha, login, sendCaptchaApi } from '@/api/login';
 import { getPublicKey } from '@/api/auth';
 import { RSAUtil } from '@/utils/rsa';
 import { showMessage } from '@/utils/message';
 import router from '@/router/routers';
 import { LoginRequest } from '@/types/login';
+import { getUserInfoApi } from '@/api/user';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 const currentLoginType = ref<'password' | 'email'>('password');
 const loginFormRef = ref<FormInstance>();
 const loading = ref(false);
 const captchaUrl = ref('');
 const countdown = ref(0);
-let timer: number;
 
 const loginForm = ref({
   username: '',
@@ -92,7 +93,7 @@ const loginForm = ref({
   email: '',
   emailCaptcha: '',
   loginMethod: 'password',
-  uuid: ''
+  uuid: '',
 });
 
 const loginRules = computed<FormRules>(() => {
@@ -127,10 +128,9 @@ const sendEmailCaptcha = async () => {
     return;
   }
   try {
-    const msg = await sendCaptchaApi(loginForm.value.email);
-    // showMessage(msg, 'success');
+    await sendCaptchaApi(loginForm.value.email);
     countdown.value = 60;
-    timer = setInterval(() => {
+    const timer = setInterval(() => {
       countdown.value--;
       if (countdown.value <= 0) clearInterval(timer);
     }, 1000);
@@ -165,13 +165,20 @@ const handleLogin = async () => {
       loginParam.emailCaptcha = loginForm.value.emailCaptcha;
     }
 
+    // 获取设备指纹
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    loginParam.fingerprint = result.visitorId;
+    sessionStorage.setItem('fingerprint', loginParam.fingerprint);
+
     const data = await login(loginParam);
     sessionStorage.setItem('Authorization', data.token);
-    const userInfo = await getUserInfo();
+    const userInfo = await getUserInfoApi();
     sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
     await router.push('/dashboard');
     showMessage('登录成功', 'success');
   } catch (error) {
+    console.error('登录失败:', error);
     if (currentLoginType.value === 'password') refreshCaptcha();
   } finally {
     loading.value = false;

@@ -16,5 +16,5 @@ import org.apache.ibatis.type.Alias;
 public class GetAssignedMenuVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 }

@@ -41,5 +41,5 @@ public class EditUserRequest {
     private List<Long> roleIds;
 
     @Schema(description = "用户头像")
-    private Long avatar;
+    private String avatar;
 }

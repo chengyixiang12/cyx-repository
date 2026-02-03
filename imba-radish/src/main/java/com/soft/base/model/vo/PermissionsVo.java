@@ -11,4 +11,19 @@ import lombok.Data;
 @Data
 @Schema(description = "获取权限（复）响应参数")
 public class PermissionsVo {
+
+    @Schema(description = "主键")
+    private String id;
+
+    @Schema(description = "权限编码")
+    private String code;
+
+    @Schema(description = "权限名称")
+    private String name;
+
+    @Schema(description = "状态；1：启用；0：禁用")
+    private Integer status;
+
+    @Schema(description = "描述")
+    private String description;
 }

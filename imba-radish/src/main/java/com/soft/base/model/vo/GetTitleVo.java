@@ -10,7 +10,7 @@ import org.apache.ibatis.type.Alias;
 public class GetTitleVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "标题")
     private String title;

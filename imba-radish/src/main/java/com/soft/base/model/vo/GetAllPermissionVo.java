@@ -16,7 +16,7 @@ import org.apache.ibatis.type.Alias;
 public class GetAllPermissionVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "权限名称")
     private String name;

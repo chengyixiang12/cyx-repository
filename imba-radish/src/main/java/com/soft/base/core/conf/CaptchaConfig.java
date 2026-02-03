@@ -20,25 +20,37 @@ public class CaptchaConfig {
     public DefaultKaptcha captchaProducer() {
         DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
         Properties properties = new Properties();
-        // 设置验证码图片的宽度
+        // 基础配置
         properties.setProperty("kaptcha.image.width", "150");
-        // 设置验证码图片的高度
         properties.setProperty("kaptcha.image.height", "50");
-        // 设置验证码字符集
-        properties.setProperty("kaptcha.textproducer.char.string", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        // 设置验证码长度
         properties.setProperty("kaptcha.textproducer.char.length", "4");
-        // 设置验证码字体
+
+        // 字符集配置
+        properties.setProperty("kaptcha.textproducer.char.string",
+                "23456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+        // 字体配置
         properties.setProperty("kaptcha.textproducer.font.names", "Arial,Courier");
-        // 设置验证码字体颜色
-        properties.setProperty("kaptcha.textproducer.font.color", "black");
-        // 设置验证码背景颜色
-        properties.setProperty("kaptcha.background.clear.from", "white");
-        properties.setProperty("kaptcha.background.clear.to", "white");
-        // 设置验证码干扰线
-        properties.setProperty("kaptcha.noise.impl", "com.google.code.kaptcha.impl.NoNoise");
-        // 设置验证码边框
-        properties.setProperty("kaptcha.border", "no");
+        properties.setProperty("kaptcha.textproducer.font.size", "35");
+
+        // 正确的颜色配置格式：RGB 数值
+        properties.setProperty("kaptcha.textproducer.font.color", "0,0,0"); // 黑色
+
+        // 背景配置
+        properties.setProperty("kaptcha.background.clear.from", "255,255,255"); // 白色
+        properties.setProperty("kaptcha.background.clear.to", "240,240,240");   // 浅灰色
+
+        // 边框配置
+        properties.setProperty("kaptcha.border", "yes");
+        properties.setProperty("kaptcha.border.color", "105,179,90"); // RGB 数值
+
+        properties.setProperty("kaptcha.noise.impl",
+                "com.google.code.kaptcha.impl.DefaultNoise");
+        properties.setProperty("kaptcha.noise.color", "100,100,100"); // 单个灰色
+
+        // 扭曲效果
+        properties.setProperty("kaptcha.obscurificator.impl",
+                "com.google.code.kaptcha.impl.WaterRipple");
 
         Config config = new Config(properties);
         defaultKaptcha.setConfig(config);

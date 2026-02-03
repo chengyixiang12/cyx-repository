@@ -15,15 +15,15 @@ export async function getDictDatasApi(data: DictDatasRequest): Promise<Paginated
  * 删除字典数据
  * @param id 
  */
-export async function deleteDictDataApi(id: number) {
-    await del('/dictData', { flag: true, params: { id } })
+export async function deleteDictDataApi(id: string) {
+    await del('/dictData', null, { flag: true, params: { id } })
 }
 
 /**
  * 启用字典数据
  * @param id 
  */
-export async function enableDictDataApi(id: number) {
+export async function enableDictDataApi(id: string) {
     await get('/dictData/enableDictData', { flag: true, params: { id } });
 }
 
@@ -31,7 +31,7 @@ export async function enableDictDataApi(id: number) {
  * 禁用字典数据
  * @param id 
  */
-export async function forbiddenDictDataApi(id: number) {
+export async function forbiddenDictDataApi(id: string) {
     await get('/dictData/forbiddenDictData', { flag: true, params: { id } });
 }
 
@@ -55,7 +55,7 @@ export async function editDictDataApi(data: EditDictDataRequest) {
  * 获取字典数据（单）
  * @param id 
  */
-export async function getDictDataApi(id: number): Promise<DictDataVo> {
+export async function getDictDataApi(id: string): Promise<DictDataVo> {
     const res = await get('/dictData', { flag: true, params: { id } });
     return res.data;
 }
@@ -65,6 +65,6 @@ export async function getDictDataApi(id: number): Promise<DictDataVo> {
  * @param id 
  * @param dictType 
  */
-export async function setDefaultRoleApi(id: number, dictType: string) {
-    await get('/dictData/setDefaultData', { flag: true, params: { id, dictType } })
+export async function setDefaultRoleApi(id: string, parentId: string) {
+    await get('/dictData/setDefaultData', { flag: true, params: { id, parentId } })
 }

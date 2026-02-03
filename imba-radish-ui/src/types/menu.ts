@@ -1,17 +1,17 @@
 export interface MenuItem {
-  id: number
-  path: string
-  component?: string  // 对应views目录下的组件路径
-  name: string
-  icon?: string
-  noAuth?: boolean   // 是否不需要认证
-  parentId?: number
-  visible: number
-  children?: MenuItem[]
+  id: string;
+  path: string;
+  component?: string;  // 对应views目录下的组件路径
+  name: string;
+  icon?: string;
+  noAuth?: boolean;  // 是否不需要认证
+  parentId?: string;
+  visible: number;
+  children?: MenuItem[];
 }
 
 export interface GetMenuListVo {
-  id: number;
+  id: string;
   name: string;
   type: string;
   status: number;
@@ -36,8 +36,8 @@ export enum MenuType {
 }
 
 export interface GetMenuVo {
-  id: number;
-  parentId: number | null;
+  id: string;
+  parentId: string;
   name: string;
   path: string;
   component: string | null;
@@ -50,7 +50,7 @@ export interface GetMenuVo {
 }
 
 export interface SaveMenuRequest {
-  parentId?: number;
+  parentId?: string | null;
   name: string;
   path: string;
   component: string;
@@ -62,8 +62,8 @@ export interface SaveMenuRequest {
 }
 
 export interface EditMenuRequest {
-  id: number;
-  parentId?: number;
+  id: string | null;
+  parentId?: string | null;
   name: string;
   path: string;
   component: string;
@@ -75,17 +75,17 @@ export interface EditMenuRequest {
 }
 
 export interface GetSelectMenuVo {
-  id: number;
+  id: string;
   name: string;
 }
 
 export interface GetMenuTreeVo {
-  id: number;
+  id: string;
   name: string;
-  parentId: number;
+  parentId: string;
   children: GetMenuTreeVo[];
 }
 
 export interface GetAssignedMenuVo {
-  id: number
+  id: string;
 }

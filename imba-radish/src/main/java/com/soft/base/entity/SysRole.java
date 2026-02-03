@@ -1,66 +1,25 @@
 package com.soft.base.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 /**
  * 角色表
  * @TableName sys_role
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_role")
 @Data
-public class SysRole implements Serializable {
-    /**
-     * 主键
-     */
-    @TableId(value = "id")
-    private Long id;
+public class SysRole extends BaseEntity {
+
 
     /**
      * 排序字段
      */
     @TableField(value = "sort_order")
-    private Integer sortOrder;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 修改时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
-
-    /**
-     * 逻辑删除；1：存在；0：删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+    private Long sortOrder;
 
     /**
      * 角色编码
@@ -97,8 +56,4 @@ public class SysRole implements Serializable {
      */
     @TableField(value = "fix_role")
     private Integer fixRole;
-
-    @Serial
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }

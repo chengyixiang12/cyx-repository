@@ -20,10 +20,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
 * @author cyq
@@ -46,9 +44,9 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
-    public List<DeptTreeVo> getDeptTree() {
+    public List<DeptTreeVo> getDeptTree(Long id) {
         List<DeptTreeVo> deptTreeVos = sysDeptMapper.getAllDept();
-        deptTreeVos = buildTree(deptTreeVos);
+        deptTreeVos = buildTree(deptTreeVos, id);
         return deptTreeVos;
     }
 
@@ -125,12 +123,17 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
      * @param departments
      * @return
      */
-    private List<DeptTreeVo> buildTree(List<DeptTreeVo> departments) {
+    private List<DeptTreeVo> buildTree(List<DeptTreeVo> departments, Long id) {
         if (departments == null || departments.isEmpty()) {
             throw new GlobalException("组织架构为空");
         }
 
-        Map<Long, DeptTreeVo> map = new HashMap<>();
+        // 去掉当前部门的结构
+        if (id != null) {
+            departments = departments.stream().filter(item -> id != Long.parseLong(item.getId())).toList();
+        }
+
+        Map<String, DeptTreeVo> map = new HashMap<>();
         List<DeptTreeVo> tree = new ArrayList<>();
 
         // 将部门存入映射

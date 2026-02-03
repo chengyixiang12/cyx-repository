@@ -1,8 +1,9 @@
 package com.soft.base.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.apache.ibatis.type.Alias;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
@@ -10,44 +11,10 @@ import java.time.LocalDateTime;
  * 调度任务表
  * @TableName sys_schedule_job
  */
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_schedule_job")
 @Data
-public class SysScheduleJob {
-    /**
-     * 主键
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 创建人
-     */
-    @TableField(value = "create_by", fill = FieldFill.INSERT)
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    /**
-     * 修改人
-     */
-    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
-    private Long updateBy;
-
-    /**
-     * 修改时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
-
-    /**
-     * 逻辑删除；1：存在；0：删除
-     */
-    @TableField(value = "del_flag", fill = FieldFill.INSERT)
-    private String delFlag;
+public class SysScheduleJob extends BaseEntity {
 
     /**
      * 任务名称
@@ -77,7 +44,7 @@ public class SysScheduleJob {
      * 任务状态；1：启用；0：暂停
      */
     @TableField(value = "status")
-    private String status;
+    private Integer status;
 
     /**
      * 任务所需参数
@@ -114,4 +81,16 @@ public class SysScheduleJob {
      */
     @TableField(value = "schedule_type")
     private String scheduleType;
+
+    /**
+     * 备注
+     */
+    @TableField(value = "remark")
+    private String remark;
+
+    /**
+     * 作业执行类
+     */
+    @TableField(value = "job_class")
+    private String jobClass;
 }

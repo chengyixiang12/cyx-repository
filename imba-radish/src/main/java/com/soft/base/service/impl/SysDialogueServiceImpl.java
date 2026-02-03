@@ -38,7 +38,11 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     @Override
     public PageVo<GetDialoguesVo> getDialogues(GetDialoguesRequest request) {
         IPage<GetDialoguesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
-        page = sysDialogueMapper.getDialogues(page, request.getKeyword(), securityUtil.getUserInfo().getId());
+        Long userId = securityUtil.getUserInfo().getId();
+        if (securityUtil.isAdmin()) {
+            userId = null;
+        }
+        page = sysDialogueMapper.getDialogues(page, request.getKeyword(), userId);
         PageVo<GetDialoguesVo> pageVo = new PageVo<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
@@ -70,7 +74,7 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     public GetTitleVo getTitle(Long id) {
         GetTitleVo getTitleVo = new GetTitleVo();
         SysDialogue sysDialogue = sysDialogueMapper.selectById(id);
-        getTitleVo.setId(id);
+        getTitleVo.setId(String.valueOf(id));
         getTitleVo.setTitle(sysDialogue.getTitle());
         return getTitleVo;
     }

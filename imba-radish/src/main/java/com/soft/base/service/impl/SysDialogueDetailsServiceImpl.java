@@ -2,6 +2,7 @@ package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysDialogueDetails;
+import com.soft.base.model.dto.GetRecentContentDto;
 import com.soft.base.service.SysDialogueDetailsService;
 import com.soft.base.mapper.SysDialogueDetailsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class SysDialogueDetailsServiceImpl extends ServiceImpl<SysDialogueDetail
     }
 
     @Override
-    public List<String> getRecentContext(Long dialogueId, Long maxContextNum) {
+    public List<GetRecentContentDto> getRecentContext(Long dialogueId, Long maxContextNum) {
         return sysDialogueDetailsMapper.getRecentContext(dialogueId, maxContextNum);
     }
 }

@@ -6,8 +6,8 @@ import { PaginatedData } from '@/types/api';
  * 
  * @returns 获取部门树
  */
-export async function getDeptTree(): Promise<DeptTreeVo[]> {
-  const res = await get('/dept/getDeptTree', { flag: true });
+export async function getDeptTreeApi(id: string | null): Promise<DeptTreeVo[]> {
+  const res = await get('/dept/getDeptTree', { flag: true, params: { id }});
   return res.data;
 }
 
@@ -26,7 +26,7 @@ export async function getDeptsApi(data: GetDeptsRequest): Promise<PaginatedData<
  * @param id 
  */
 export async function deleteDeptApi(id: number) {
-  await del('/dept', { flag: true, params: { id } })
+  await del('/dept', null, { flag: true, params: { id } })
 }
 
 /**
@@ -49,7 +49,7 @@ export async function updateDeptApi(data: EditDeptRequest) {
  * 获取部门（单）
  * @param id 
  */
-export async function getDeptApi(id: number): Promise<DeptVo> {
+export async function getDeptApi(id: string): Promise<DeptVo> {
   const res = await get('/dept', { params: { id }, flag: true })
   return res.data;
 }
@@ -58,7 +58,7 @@ export async function getDeptApi(id: number): Promise<DeptVo> {
  * 导出部门
  * @param ids 
  */
-export async function exportDept(ids: number[], fileName: string): Promise<ExportDeptVo> {
-  const { blob, filename } = await postBlob('/dept/exportDept', { ids, fileName }, { flag: true })
+export async function exportDept(ids: string[], fileName: string): Promise<ExportDeptVo> {
+  const { blob, filename } = await postBlob<Blob>('/dept/exportDept', { ids, fileName }, { flag: true })
   return { blob, filename };
 }

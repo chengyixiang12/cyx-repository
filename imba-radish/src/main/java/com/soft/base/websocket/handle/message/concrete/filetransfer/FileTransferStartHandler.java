@@ -8,7 +8,7 @@ import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.utils.UniversalUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.FileTransferStartRecParams;
+import com.soft.base.websocket.receive.FileTransferStartRecParam;
 import com.soft.base.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
-        FileTransferStartRecParams fileTransferStartRecParams = JSON.parseObject(message.getPayload(), FileTransferStartRecParams.class);
+        FileTransferStartRecParam fileTransferStartRecParam = JSON.parseObject(message.getPayload(), FileTransferStartRecParam.class);
         String fileKey = universalUtil.fileKeyGen();
         log.info("fileKey: {}", fileKey);
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey;
@@ -60,7 +60,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         if (!isCreate) {
 
             sendParams.setStatus(false);
-            sendParams.setMessage("文件夹创建失败");
+            sendParams.setMsg("文件夹创建失败");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             log.info("文件夹创建失败，{}", filePath);
             return;
@@ -71,11 +71,11 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         log.info("分片文件key缓存成功");
         redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INDEX_KEY + username, BaseConstant.INTEGER_INIT_VAL);
         log.info("分片文件索引缓存成功");
-        redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INFO + username, fileTransferStartRecParams.getFileHash());
+        redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INFO + username, fileTransferStartRecParam.getFileHash());
         log.info("分片文件hash缓存成功");
 
         sendParams.setStatus(true);
-        sendParams.setMessage("文件夹创建成功");
+        sendParams.setMsg("文件夹创建成功");
         session.sendMessage(new TextMessage(sendParams.toJsonString()));
     }
 

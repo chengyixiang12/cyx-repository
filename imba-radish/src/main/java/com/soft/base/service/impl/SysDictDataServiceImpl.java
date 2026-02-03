@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysDictData;
 import com.soft.base.mapper.SysDictDataMapper;
+import com.soft.base.model.dto.DictDataDto;
 import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.request.EditDictDataRequest;
@@ -17,8 +19,16 @@ import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysDictDataService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author cyq
@@ -26,14 +36,19 @@ import org.springframework.transaction.annotation.Transactional;
 * @createDate 2024-11-05 17:23:13
 */
 @Service
+@CacheConfig(cacheNames="radish:dict")
 public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDictData>
     implements SysDictDataService{
 
     private final SysDictDataMapper sysDictDataMapper;
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper) {
+    public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper,
+                                  RedisTemplate<String, Object> redisTemplate) {
         this.sysDictDataMapper = sysDictDataMapper;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -53,8 +68,8 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     public void saveDictData(SaveDictDataRequest request) {
-        if (BaseConstant.DEF_STATUS.equals(request.getIsDefault())) {
-            sysDictDataMapper.setNotDefault(request.getDictType());
+        if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
+            sysDictDataMapper.setNotDefault(request.getParentId());
         }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
@@ -62,9 +77,10 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
+    @CacheEvict(key = "#request.parentId")
     public void editDictData(EditDictDataRequest request) {
-        if (BaseConstant.DEF_STATUS.equals(request.getIsDefault())) {
-            sysDictDataMapper.setNotDefault(request.getDictType());
+        if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
+            sysDictDataMapper.setNotDefault(request.getParentId());
         }
         SysDictData sysDictData = new SysDictData();
         BeanUtils.copyProperties(request, sysDictData);
@@ -74,38 +90,68 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     @Override
     public void deleteDictData(Long id) {
         sysDictDataMapper.deleteById(id);
+        removeCache(id);
     }
 
     @Override
     public void deleteDictDataBatch(DeleteRequest request) {
         sysDictDataMapper.deleteByIds(request.getIds());
+        request.getIds().forEach(this::removeCache);
     }
 
     @Override
-    public boolean existCode(String code) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getCode, code));
+    public boolean existValue(Long parentId, String value) {
+        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getParentId, parentId).eq(SysDictData::getValue, value));
     }
 
     @Override
-    public boolean existCode(String code, Long id) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getCode, code).ne(SysDictData::getId, id));
+    public boolean existCode(Long parentId, String value, Long id) {
+        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getParentId, parentId).eq(SysDictData::getValue, value).ne(SysDictData::getId, id));
     }
 
     @Override
     public void enableDictData(Long id) {
         sysDictDataMapper.enableDictData(id);
+        removeCache(id);
     }
 
     @Override
     public void forbiddenDictData(Long id) {
         sysDictDataMapper.forbiddenDictData(id);
+        removeCache(id);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setDefaultData(Long id, String dictType) {
-        sysDictDataMapper.setNotDefault(dictType);
+    public void setDefaultData(Long id, Long parentId) {
+        sysDictDataMapper.setNotDefault(parentId);
         sysDictDataMapper.setDefaultData(id);
+    }
+
+    @Override
+    public List<DictDataDto> getByDictType(Long parentId) {
+        return sysDictDataMapper.getByDictType(parentId, BaseConstant.Status.STATUS_ENABLE);
+    }
+
+    @Override
+    @Cacheable(key = "#parentId", unless = "#result.size() == 0")
+    public Map<String, String> getDictDataMap(Long parentId) {
+        List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(parentId, BaseConstant.Status.STATUS_ENABLE);
+        return sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel, (a, b) -> a));
+    }
+
+    @Override
+    public String getDictDataByValue(String value, Long parentId) {
+        return sysDictDataMapper.getDictDataByValue(value, parentId);
+    }
+
+    /**
+     * 移除缓存
+     * @param id
+     */
+    private void removeCache(Long id) {
+        SysDictData sysDictData = sysDictDataMapper.selectById(id);
+        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictData.getParentId());
     }
 }
 

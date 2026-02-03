@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
-import com.soft.base.enums.JobEnum;
+import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.service.SysScheduleJobService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,29 +44,33 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("开始加载定时任务");
+        log.info("加载定时任务");
         Date startTime = new Date();
         Date endTime = null;
         LambdaQueryWrapper<SysScheduleJob> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysScheduleJob::getStatus, BaseConstant.QUARTZ_START);
+        wrapper.eq(SysScheduleJob::getStatus, BaseConstant.Status.STATUS_ENABLE);
         List<SysScheduleJob> sysScheduleJobs = sysScheduleJobService.list(wrapper);
 
-        if (CollectionUtil.isNotEmpty(sysScheduleJobs)) {
+        if (CollectionUtil.isEmpty(sysScheduleJobs)) {
             return;
         }
 
         for (SysScheduleJob sysScheduleJob : sysScheduleJobs) {
+
+            @SuppressWarnings("unchecked")
+            Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(sysScheduleJob.getJobClass());
+
             if (sysScheduleJob.getStartTime() != null) {
                 startTime = Date.from(sysScheduleJob.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
             }
             if (sysScheduleJob.getEndTime() != null) {
                 endTime = Date.from(sysScheduleJob.getEndTime().atZone(ZoneId.systemDefault()).toInstant());
             }
-            JobKey jobKey = JobKey.jobKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
-            TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+            JobKey jobKey = JobKey.jobKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
+            TriggerKey triggerKey = TriggerKey.triggerKey(sysScheduleJob.getJobType(), sysScheduleJob.getJobGroup());
 
             JobDetail jobDetail = JobBuilder
-                    .newJob(JobEnum.getJobClass(sysScheduleJob.getJobType()))
+                    .newJob(jobClass)
                     .withIdentity(jobKey)
                     .build();
 
@@ -83,48 +87,10 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
             }
 
             Trigger trigger;
-            if (BaseConstant.QUARTZ_SIMPLE_SCHEDULE.equals(sysScheduleJob.getScheduleType())) {
+            if (BaseConstant.QuartzType.QUARTZ_SIMPLE_SCHEDULE.equals(sysScheduleJob.getScheduleType())) {
 
                 // 根据不同的间隔类型选择不同的定时逻辑
-                switch (sysScheduleJob.getIntervalType()) {
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_MILLISECONDS -> trigger = TriggerBuilder.newTrigger()
-                            .withIdentity(triggerKey)
-                            .withSchedule(SimpleScheduleBuilder
-                                    .simpleSchedule()
-                                    .withIntervalInMilliseconds(sysScheduleJob.getJobInterval())
-                                    .repeatForever())
-                            .startAt(startTime)
-                            .endAt(endTime)
-                            .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_SECONDS -> trigger = TriggerBuilder.newTrigger()
-                            .withIdentity(triggerKey)
-                            .withSchedule(SimpleScheduleBuilder
-                                    .simpleSchedule()
-                                    .withIntervalInSeconds(sysScheduleJob.getJobInterval())
-                                    .repeatForever())
-                            .startAt(startTime)
-                            .endAt(endTime)
-                            .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_MINUTES -> trigger = TriggerBuilder.newTrigger()
-                            .withIdentity(triggerKey)
-                            .withSchedule(SimpleScheduleBuilder
-                                    .simpleSchedule()
-                                    .withIntervalInMinutes(sysScheduleJob.getJobInterval())
-                                    .repeatForever())
-                            .startAt(startTime)
-                            .endAt(endTime)
-                            .build();
-                    case BaseConstant.QUARTZ_SIMPLE_INTERVAL_TYPE_HOURS -> trigger = TriggerBuilder.newTrigger()
-                            .withIdentity(triggerKey)
-                            .withSchedule(SimpleScheduleBuilder
-                                    .simpleSchedule()
-                                    .withIntervalInHours(sysScheduleJob.getJobInterval())
-                                    .repeatForever())
-                            .startAt(startTime)
-                            .endAt(endTime)
-                            .build();
-                    default -> throw new GlobalException("未知的间隔类型");
-                }
+                trigger = getTrigger(startTime, endTime, sysScheduleJob, triggerKey);
 
             } else {
                 // 使用Cron触发器
@@ -137,8 +103,51 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
             }
 
             scheduler.scheduleJob(jobDetail, trigger);
-            log.info("{}-{}定时任务加载成功", sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
+            log.debug("{}-{}定时任务加载", sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());
         }
-        log.info("定时任务加载完成");
+    }
+
+    public Trigger getTrigger(Date startTime, Date endTime, SysScheduleJob sysScheduleJob, TriggerKey triggerKey) {
+        Trigger trigger;
+        switch (QuartzIntervalEnum.map.get(sysScheduleJob.getIntervalType())) {
+            case MILLISECONDS -> trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(triggerKey)
+                    .withSchedule(SimpleScheduleBuilder
+                            .simpleSchedule()
+                            .withIntervalInMilliseconds(sysScheduleJob.getJobInterval())
+                            .repeatForever())
+                    .startAt(startTime)
+                    .endAt(endTime)
+                    .build();
+            case SECONDS -> trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(triggerKey)
+                    .withSchedule(SimpleScheduleBuilder
+                            .simpleSchedule()
+                            .withIntervalInSeconds(sysScheduleJob.getJobInterval())
+                            .repeatForever())
+                    .startAt(startTime)
+                    .endAt(endTime)
+                    .build();
+            case MINUTES -> trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(triggerKey)
+                    .withSchedule(SimpleScheduleBuilder
+                            .simpleSchedule()
+                            .withIntervalInMinutes(sysScheduleJob.getJobInterval())
+                            .repeatForever())
+                    .startAt(startTime)
+                    .endAt(endTime)
+                    .build();
+            case HOURS -> trigger = TriggerBuilder.newTrigger()
+                    .withIdentity(triggerKey)
+                    .withSchedule(SimpleScheduleBuilder
+                            .simpleSchedule()
+                            .withIntervalInHours(sysScheduleJob.getJobInterval())
+                            .repeatForever())
+                    .startAt(startTime)
+                    .endAt(endTime)
+                    .build();
+            default -> throw new GlobalException("未知的间隔类型");
+        }
+        return trigger;
     }
 }

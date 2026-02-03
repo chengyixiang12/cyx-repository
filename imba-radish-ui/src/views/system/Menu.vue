@@ -131,7 +131,7 @@ import {
   menuShowApi,
   menuHideApi
 } from '@/api/menu'
-import MenuFormDialog from '@/components/system/MenuFormDialog.vue'
+import MenuFormDialog from './component/MenuFormDialog.vue'
 import type { EditMenuRequest, GetMenuListRequest, GetMenuListVo, SaveMenuRequest } from '@/types/menu'
 
 const loading = ref(false)
@@ -140,7 +140,7 @@ const menuList = ref<GetMenuListVo[]>([])
 // 弹窗相关状态
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
-const menuId = ref<number | null>(null)
+const menuId = ref<string>('')
 const type = ref<string>('')
 const total = ref(0)
 
@@ -244,7 +244,7 @@ const handleVisibleChange = async (row: GetMenuListVo) => {
 }
 
 // 删除菜单
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteMenuApi(id)
   loadMenus()
 }
@@ -302,15 +302,6 @@ const resetSearch = () => {
   height: 52vh;
   overflow: auto;
   padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .el-card {

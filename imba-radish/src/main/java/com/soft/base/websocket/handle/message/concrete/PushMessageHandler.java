@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
-import com.soft.base.websocket.receive.PushMessageRecParams;
+import com.soft.base.websocket.receive.PushMessageRecParam;
 import com.soft.base.websocket.send.PushMessageSendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,11 +26,11 @@ import java.io.IOException;
 public class PushMessageHandler implements WebSocketConcreteHandler<String> {
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        PushMessageRecParams pushMessageRecParams = JSON.parseObject(message.getPayload(), PushMessageRecParams.class);
-        JSONArray receivers = pushMessageRecParams.getReceivers();
+        PushMessageRecParam pushMessageRecParam = JSON.parseObject(message.getPayload(), PushMessageRecParam.class);
+        JSONArray receivers = pushMessageRecParam.getReceivers();
         PushMessageSendParams pushMessageSendParams = new PushMessageSendParams();
-        pushMessageSendParams.setMessage(pushMessageRecParams.getMessage());
-        pushMessageSendParams.setMessage(pushMessageRecParams.getOrder());
+        pushMessageSendParams.setMsg(pushMessageRecParam.getMessage());
+        pushMessageSendParams.setMsg(pushMessageRecParam.getOrder());
         for (int i = 0; i < receivers.size(); i++) {
             WebSocketSession sendSession = WebSocketSessionManager.getSession(receivers.getLong(i));
             if (sendSession == null) {

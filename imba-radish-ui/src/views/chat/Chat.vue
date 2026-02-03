@@ -27,6 +27,7 @@ import { getWebSocketInstance } from '@/utils/websocket'
 import VueMarkdownIt from 'vue3-markdown-it'
 import { saveDialogueApi } from '@/api/dialogueHistory'
 import { SaveDialogueRequest } from '@/types/dialogueHistory'
+import { WebsocketMessage } from '@/utils/websocketManager'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -43,7 +44,7 @@ const dialogue = ref<SaveDialogueRequest>({
 const dialogueId = ref<number | null>(null)
 const isLoading = ref(false)
 
-wsInstance.aiAnwser = (message) => {
+wsInstance.aiAnwser = (message: WebsocketMessage) => {
   const last = messages.value[messages.value.length - 1]
 
   if (isLoading.value && last && last.role === 'assistant' && last.content === 'AI 正在输入中...') {

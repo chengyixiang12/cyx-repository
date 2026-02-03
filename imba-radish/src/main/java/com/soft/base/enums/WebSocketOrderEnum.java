@@ -53,6 +53,11 @@ public enum WebSocketOrderEnum {
      */
     AI,
 
+    /**
+     * 刷新token
+     */
+    REFRESH_TOKEN
+
     ;
 
     /**

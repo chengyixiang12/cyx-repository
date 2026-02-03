@@ -17,7 +17,7 @@ export async function getMenuList(params: GetMenuListRequest): Promise<Paginated
  * @param id 
  * @returns 
  */
-export async function getMenuApi(id: number): Promise<GetMenuVo> {
+export async function getMenuApi(id: string): Promise<GetMenuVo> {
     const res = await get<GetMenuVo>('menu/getMenu', { params: { id }, flag: true });
     return res.data;
 }
@@ -33,10 +33,10 @@ export async function getSelectMenu(type?: string): Promise<GetSelectMenuVo[]> {
 
 /**
  * 删除菜单
- * @param param 
+ * @param id 
  */
-export async function deleteMenuApi(param: number) {
-    await del('/menu', { params: { param }, flag: true });
+export async function deleteMenuApi(id: string) {
+    await del('/menu', null, { params: { id }, flag: true });
 }
 
 /**
@@ -59,7 +59,7 @@ export async function addMenuStatusApi(data: SaveMenuRequest) {
  * 启用菜单
  * @param id 
  */
-export async function enableMenuApi(id:number) {
+export async function enableMenuApi(id: string) {
     await get('/menu/enableMenu', { params: { id }, flag: true })
 }
 
@@ -67,7 +67,7 @@ export async function enableMenuApi(id:number) {
  * 禁用菜单
  * @param id 
  */
-export async function disableMenuApi(id:number) {
+export async function disableMenuApi(id: string) {
     await get('/menu/disableMenu', { params: { id }, flag: true })
 }
 
@@ -83,7 +83,7 @@ export async function getAllMenuTreeApi(): Promise<GetMenuTreeVo[]> {
  * 获取已赋予的菜单
  * @param roleId 
  */
-export async function getAssignedMenuApi(roleId: number): Promise<GetAssignedMenuVo[]> {
+export async function getAssignedMenuApi(roleId: string): Promise<GetAssignedMenuVo[]> {
     const res = await get<GetAssignedMenuVo[]>('/menu/getAssignedMenu', { flag: true, params: { roleId } });
     return res.data;
 }
@@ -92,7 +92,7 @@ export async function getAssignedMenuApi(roleId: number): Promise<GetAssignedMen
  * 显示菜单
  * @param id 
  */
-export async function menuShowApi(id: number) {
+export async function menuShowApi(id: string) {
     await get('/menu/menuShow', { flag: true, params: { id } })
 }
 
@@ -100,7 +100,7 @@ export async function menuShowApi(id: number) {
  * 隐藏菜单
  * @param id 
  */
-export async function menuHideApi(id: number) {
+export async function menuHideApi(id: string) {
     await get('/menu/menuHide', { flag: true, params: { id } })
 }
 

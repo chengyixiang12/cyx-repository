@@ -3,79 +3,61 @@ package com.soft.base.constants;
 public class BaseConstant {
 
     /**
-     * 默认启用
+     * 状态
      */
-    public final static Integer DEF_STATUS = 1;
+    public static class Status {
+        /**
+         * 启用
+         */
+        public static final Integer STATUS_ENABLE = 1;
+
+        /**
+         * 禁用
+         */
+        public static final Integer STATUS_BAN = 0;
+    }
 
     /**
-     * 逻辑删除——存在
+     * 逻辑删除
      */
-    public final static String DEL_FLAG_EXIST = "1";
+    public static class LogicDelete {
+        /**
+         * 存在
+         */
+        public static final Integer EXIST = 0;
+
+        /**
+         * 删除
+         */
+        public static final Integer DELETE = 1;
+    }
 
     /**
-     * 邮箱文本路径
+     * minio
      */
-    public final static String EMAIL_CONTENT_PATH = "template/emailcontent.txt";
+    public static class Minio {
+        /**
+         * 默认存储位置；minio
+         */
+        public final static Integer MINIO = 1;
+
+        /**
+         * 存储位置；磁盘
+         */
+        public final static Integer DISK = 2;
+    }
+
+    public static class Permission {
+        /**
+         * 权限-启用
+         */
+        public final static Integer ENABLE = 1;
+    }
 
     /**
      * 左下划线
      */
     public final static String LEFT_SLASH = "/";
-
-    /**
-     * 请求头信息
-     */
-    public final static String HEADER_USER_AGENT = "User-Agent";
-
-    /**
-     * 全通配符
-     */
-    public final static String ALL_WILDCARD_CHARACTER = "**";
-
-    /**
-     * 转义符
-     */
-    public final static String ESCAPE_CHARACTER = "\\";
-
-    /**
-     * 英文冒号
-     */
-    public final static String ENG_COLON = ":";
-
-    /**
-     * 英文破折号
-     */
-    public final static String ENG_DASH = "-";
-
-    /**
-     * 空白符
-     */
-    public final static String BLANK_CHARACTER = "";
-
-    /**
-     * 分片大小
-     */
-    public final static Long BURST_SIZE = 5L * 1024 * 1024;
-
-    /**
-     * 不分片
-     */
-    public final static Long BURST_FALSE = -1L;
-
-    /**
-     * 文件后缀的点
-     */
-    public final static String FILE_POINT_SUFFIX = ".";
-
-    /**
-     * 默认存储位置；minio
-     */
-    public final static String DEFAULT_STORAGE_LOCATION = "1";
-
-    /**
-     * 存储位置；磁盘
-     */
-    public final static String DISK_STORAGE_LOCATION = "2";
 
     /**
      * aes偏移量
@@ -87,11 +69,6 @@ public class BaseConstant {
      * 默认管理员角色
      */
     public final static String MANAGER_ROLE_CODE = "ROLE_ADMIN";
-
-    /**
-     * 字典类型；启用
-     */
-    public final static String DICT_TYPE_STATUS_ENABLE = "1";
 
     /**
      * 登录方式：密码
@@ -108,85 +85,32 @@ public class BaseConstant {
      */
     public final static Integer LOGIN_CAPTCHA_LENGTH = 6;
 
-    /**
-     * 固定角色标识
-     */
-    public final static Integer FIX_ROLE_FLAG = 1;
+    public static class Role {
+        /**
+         * 固定角色标识
+         */
+        public final static Integer FIX_ROLE_FLAG = 1;
 
-    /**
-     * 非固定角色标识
-     */
-    public final static Integer UN_FIX_ROLE_FLAG = 0;
+        /**
+         * 非固定角色标识
+         */
+        public final static Integer UN_FIX_ROLE_FLAG = 0;
 
-    /**
-     * 默认角色标识
-     */
-    public final static Integer DEFAULT_ROLE_FLAG = 1;
+        /**
+         * 默认角色标识
+         */
+        public final static Integer DEFAULT_ROLE_FLAG = 1;
 
-    /**
-     * 非默认角色标识
-     */
-    public final static Integer UN_DEFAULT_ROLE_FLAG = 0;
-
-    /**
-     * 左方括弧
-     */
-    public final static String LEFT_SQUARE_BRACKET = "[";
-
-    /**
-     * 右方括弧
-     */
-    public final static String RIGHT_SQUARE_BRACKET = "]";
-
-    /**
-     * 权限-启用
-     */
-    public final static String PERMISSION_ENABLE = "1";
-
-    /**
-     * 限流窗口扩大1000倍
-     */
-    public final static Long WINDOW_SIZE_EXPAND_MULTIPLE = 1000L;
-
-    /**
-     * 本地缓存过期时间转换秒
-     */
-    public final static Long LOCAL_CACHE_EXPIRE_SECOND = 1000L;
-
-    /**
-     * 本地缓存过期时间转换天
-     */
-    public final static Long LOCAL_CACHE_EXPIRE_DAY = 24 * 60 * 60 * 1000L;
-
-    /**
-     * 本地缓存过期时间转换时
-     */
-    public final static Long LOCAL_CACHE_EXPIRE_HOURS = 60 * 60 * 1000L;
-
-    /**
-     * 本地缓存过期时间转换分
-     */
-    public final static Long LOCAL_CACHE_EXPIRE_MINUTES = 60 * 1000L;
+        /**
+         * 非默认角色标识
+         */
+        public final static Integer UN_DEFAULT_ROLE_FLAG = 0;
+    }
 
     /**
      * 本地缓存永不过期
      */
     public final static Long LOCAL_CACHE_EXPIRE_NEVER = -1L;
-
-    /**
-     * 导出部门excel名称
-     */
-    public final static String EXPORT_DEPT_EXCEL_NAME = "部门.xlsx";
-
-    /**
-     * excel文件后缀
-     */
-    public final static String EXCEL_SUFFIX = ".xlsx";
-
-    /**
-     * txt文件后缀
-     */
-    public final static String TXT_SUFFIX = ".txt";
 
     /**
      * tmp文件后缀
@@ -273,43 +197,15 @@ public class BaseConstant {
      */
     public static final String QUARTZ_DEFAULT_GROUP = "default";
 
-    /**
-     * 定时任务-暂停
-     */
-    public static final String QUARTZ_PAUSE = "0";
+    public static class QuartzType {
+        /**
+         * 定时任务-简单调度
+         */
+        public static final String QUARTZ_SIMPLE_SCHEDULE = "0";
 
-    /**
-     * 定时任务-启用
-     */
-    public static final String QUARTZ_START = "1";
-
-    /**
-     * 定时任务-简单调度
-     */
-    public static final String QUARTZ_SIMPLE_SCHEDULE = "0";
-
-    /**
-     * 定时任务-cron调度
-     */
-    public static final String QUARTZ_CRON_SCHEDULE = "1";
-
-    /**
-     * 定时任务-间隔类型-毫秒
-     */
-    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_MILLISECONDS = "0";
-
-    /**
-     * 定时任务-间隔类型-秒
-     */
-    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_SECONDS = "1";
-
-    /**
-     * 定时任务-间隔类型-分钟
-     */
-    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_MINUTES = "2";
-
-    /**
-     * 定时任务-间隔类型-小时
-     */
-    public static final String QUARTZ_SIMPLE_INTERVAL_TYPE_HOURS = "3";
+        /**
+         * 定时任务-cron调度
+         */
+        public static final String QUARTZ_CRON_SCHEDULE = "1";
+    }
 }

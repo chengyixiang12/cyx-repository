@@ -28,7 +28,6 @@ public class NmapScanScheduler implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        FileDetailDto fileDetailById = sysFileService.getFileDetailById(1L);
-        log.info("第一个文件的详情：{}", fileDetailById.toString());
+        log.info("扫描。。。");
     }
 }

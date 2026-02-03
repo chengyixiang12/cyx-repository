@@ -2,6 +2,8 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import MainLayout from '../layouts/MainLayout.vue'
 import { MenuItem } from '../types/menu'
 import { getMenuRouteApi } from '@/api/menu'
+import { showMessage } from '@/utils/message';
+import { clearCache } from '@/utils/clearCache';
 
 const viewModules = import.meta.glob('../views/**/*.vue', { eager: false });
 
@@ -32,7 +34,17 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'register',
     component: () => import('../views/register/Register.vue'),
     meta: { title: '注册', requiresAuth: false, isClose: false, visible: 1 }
-  }
+  },
+  // {
+  //   path: '/profile',
+  //   name: 'Profile',
+  //   component: () => import('../views/system/PersonalCenter.vue'),
+  //   meta: {
+  //     title: '个人中心',
+  //     visible: 1,
+  //     isClose: true
+  //   }
+  // }
 ]
 
 // 3. 创建路由实例
@@ -76,8 +88,8 @@ function generateRoutes(menus: MenuItem[], parentPath: string = ''): RouteRecord
 function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteRecordRaw {
   if (!menu.component) {
     console.error(`菜单 ${menu.name} 缺少 component 配置`);
-    return { 
-      path: menu.path, 
+    return {
+      path: menu.path,
       component: () => import('../views/error/404.vue')
     };
   }
@@ -89,21 +101,16 @@ function createRouteFromMenu(menu: MenuItem, parentPath: string = ''): RouteReco
     .replace(/\.vue$/g, ''); // 移除 .vue 后缀
   componentKey = `../views/${componentKey}.vue`; // 生成与 import.meta.glob 匹配的路径
 
-  console.log(componentKey, 'aaa');
-  
 
   // 从预加载的组件映射表中获取导入函数
   const componentImport = viewModules[componentKey];
   if (!componentImport) {
     console.error(`组件未找到：${componentKey}，请检查文件是否存在`);
-    return { 
-      path: menu.path, 
+    return {
+      path: menu.path,
       component: () => import('../views/error/404.vue')
     };
   }
-
-  console.log(menu.path.replaceAll('/', ''), 'bbb');
-  
 
   return {
     path: menu.path.startsWith('/') ? menu.path : `/${menu.path}`,
@@ -170,8 +177,9 @@ export async function addDynamicRoutes(menuList: MenuItem[]) {
 
 // 7. 改进路由守卫
 router.beforeEach(async (to, from, next) => {
+
   const token = sessionStorage.getItem('Authorization')
-  
+
   // 登录页特殊处理
   if (to.path === '/login') {
     token ? next('/') : next()
@@ -186,6 +194,7 @@ router.beforeEach(async (to, from, next) => {
 
   // 处理动态路由
   if (token && (!dynamicRoutesAdded || to.name === '404')) {
+
     try {
       const menus = await getMenuRouteApi();
       if (menus.length > 0) {
@@ -202,8 +211,10 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 处理未匹配路由
-  if (to.matched.length === 0) {
-    next('/404')
+  if (to.matched.length === 0 || !to.matched.some(record => record.name)) {
+    next('/login?error=route_not_found');
+    // clearCache();
+    showMessage('未找到该页面', 'warning');
   } else {
     next()
   }

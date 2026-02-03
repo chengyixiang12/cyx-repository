@@ -40,23 +40,30 @@
               </el-table-column>
               <el-table-column prop="jobName" align="center" label="任务名称" show-overflow-tooltip />
               <el-table-column prop="jobGroup" align="center" label="任务组" show-overflow-tooltip />
-              <el-table-column prop="cron" align="center" label="Cron表达式" show-overflow-tooltip />
               <el-table-column prop="jobType" align="center" label="任务类型" show-overflow-tooltip />
-              <el-table-column prop="status" label="状态" align="center" min-width="80">
+              <el-table-column prop="scheduleType" align="center" label="调度类型" show-overflow-tooltip />
+              <el-table-column prop="status" label="状态" align="center" min-width="70">
                 <template #default="scope">
-                  <el-tag v-if="scope.row.status === '1'" type="success">启用</el-tag>
-                  <el-tag v-else type="info">暂停</el-tag>
+                  <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
+                    inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="180" align="center">
+              <el-table-column prop="remark" align="center" label="备注" show-overflow-tooltip />
+              <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
-                  <el-button size="small" type="primary" @click="startJob(scope.row.id)">启动</el-button>
-                  <el-button size="small" type="warning" @click="stopJob(scope.row.id)">停止</el-button>
-                  <el-button size="small" type="primary" @click="handleEdit(scope.row.id)">编辑</el-button>
+                  <el-popconfirm title="确认执行？" confirm-button-text="确认" cancel-button-text="取消"
+                    @confirm="handleExecute(scope.row.id)">
+                    <template #reference>
+                      <el-button size="small" type="primary" :disabled="scope.row.status == 0" :icon="VideoPlay"
+                        circle />
+                    </template>
+                  </el-popconfirm>
+                  <el-button size="small" type="primary" @click="handleEdit(scope.row.id)"
+                    :disabled="scope.row.status == 1" :icon="Edit" circle />
                   <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
-                      <el-button size="small" type="danger">删除</el-button>
+                      <el-button size="small" type="danger" :icon="Delete" circle />
                     </template>
                   </el-popconfirm>
                 </template>
@@ -83,11 +90,13 @@
   <job-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :job-id="jobId"
     @submit="handleEditSubmit" />
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import JobFormDialog from '@/components/system/JobFormDialog.vue'
-import { getQuartzTasksApi } from '@/api/quartz'
-import { GetQuartzTasksRequest, GetQuartzTasksVo } from '@/types/quartz'
+import { Edit, Delete, VideoPlay } from '@element-plus/icons-vue'
+import JobFormDialog from './component/JobFormDialog.vue'
+import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi, deleteJobApi, execImmediately } from '@/api/quartz'
+import { EditJobRequest, GetQuartzTasksRequest, GetQuartzTasksVo, SaveJobRequest } from '@/types/quartz'
 
 const loading = ref(false)
 const jobList = ref<GetQuartzTasksVo[]>([])
@@ -123,32 +132,30 @@ const handleEdit = (id: number) => {
 }
 
 // 提交新增任务
-const handleAddSubmit = async (formData: any) => {
-  // 调用接口，你自己实现
-  await loadJobs()
+const handleAddSubmit = async (formData: SaveJobRequest) => {
+  await createJobApi(formData);
+  await loadJobs();
 }
 
 // 提交编辑任务
-const handleEditSubmit = async (formData: any) => {
-  // 调用接口，你自己实现
+const handleEditSubmit = async (formData: EditJobRequest) => {
+  await editJobApi(formData)
   await loadJobs()
 }
 
 // 删除任务
-const handleDelete = async (id: number) => {
-  // 调用接口，你自己实现
+const handleDelete = async (id: string) => {
+  await deleteJobApi(id)
   await loadJobs()
 }
 
-// 启动任务
-const startJob = async (id: number) => {
-  // 调用接口，你自己实现
-  await loadJobs()
-}
-
-// 停止任务
-const stopJob = async (id: number) => {
-  // 调用接口，你自己实现
+// 状态变更处理
+const handleStatusChange = async (row: GetQuartzTasksVo) => {
+  if (row.status === 1) {
+    await startJobApi(row.id)
+  } else {
+    await stopJobApi(row.id)
+  }
   await loadJobs()
 }
 
@@ -175,10 +182,16 @@ const resetSearch = () => {
   loadJobs()
 }
 
+// 立即执行
+const handleExecute = async (id: string) => {
+  await execImmediately(id)
+}
+
 onMounted(() => {
   loadJobs()
 })
 </script>
+
 <style scoped>
 .schedule-container {
   height: 100%;
@@ -191,15 +204,6 @@ onMounted(() => {
   height: 52vh;
   overflow: auto;
   padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .list-header {

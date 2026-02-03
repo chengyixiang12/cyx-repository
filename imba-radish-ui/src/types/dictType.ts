@@ -6,7 +6,7 @@ export interface GetDictTypesRequest {
 }
 
 export interface DictTypesVo {
-    id: number;
+    id: string;
     dictName: string;
     dictType: string;
     status: number;
@@ -14,7 +14,7 @@ export interface DictTypesVo {
 }
 
 export interface DictTypeVo {
-    id: number;
+    id: string;
     dictName: string;
     dictType: string;
     status: number;
@@ -31,7 +31,7 @@ export interface SaveDictTypeRequest {
 }
 
 export interface EditDictTypeRequest {
-    id: number | null;
+    id: string | null;
     sortOrder: number | null;
     dictName: string;
     dictType: string;

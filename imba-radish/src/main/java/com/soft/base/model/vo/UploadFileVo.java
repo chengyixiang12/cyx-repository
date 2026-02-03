@@ -14,7 +14,7 @@ import lombok.Data;
 public class UploadFileVo {
 
     @Schema(description = "文件id")
-    private Long fileId;
+    private String fileId;
 
     @Schema(description = "文件名")
     private String fileName;

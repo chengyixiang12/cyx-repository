@@ -25,5 +25,5 @@ public class FileDetailDto {
     private Long fileSize;
 
     @Schema(description = "存储位置")
-    private String location;
+    private Integer location;
 }

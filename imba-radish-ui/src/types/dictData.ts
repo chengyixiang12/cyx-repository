@@ -1,14 +1,13 @@
 export interface DictDatasRequest {
     pageNum: number;
     pageSize: number;
-    dictType: string;
+    parentId: string | null;
     keyword: string;
     status: number | null;
 }
 
 export interface DictDatasVo {
-    id: number;
-    code: string;
+    id: string;
     label: string;
     value: number;
     isDefault: number;
@@ -18,10 +17,9 @@ export interface DictDatasVo {
 
 export interface SaveDictDataRequest {
     sortOrder: number | null;
-    code: string;
     label: string;
     value: string;
-    dictType: string;
+    parentId: string | null;
     cssClass: string;
     listClass: string;
     isDefault: number;
@@ -30,12 +28,11 @@ export interface SaveDictDataRequest {
 }
 
 export interface EditDictDataRequest {
-    id: number | null;
+    id: string | null;
     sortOrder: number | null;
-    code: string;
     label: string;
     value: string;
-    dictType: string;
+    parentId: string | null;
     cssClass: string;
     listClass: string;
     isDefault: number;
@@ -44,15 +41,14 @@ export interface EditDictDataRequest {
 }
 
 export interface DictDataVo {
-    id: number;
-    code: string;
+    id: string;
     label: string;
     value: string;
     isDefault: number;
     status: number;
     cssClass: string;
-    dictType: string;
+    parentId: string;
     listClass: string;
     remark: string;
-    sortOrder: number;
+    sortOrder: number | null;
 }

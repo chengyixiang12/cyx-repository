@@ -22,10 +22,6 @@ public class EditDictDataRequest {
     @Schema(description = "排序")
     private Integer sortOrder;
 
-    @Schema(description = "编码")
-    @NotBlank(message = "字典编码不能为空")
-    private String code;
-
     @Schema(description = "标签")
     private String label;
 
@@ -33,9 +29,9 @@ public class EditDictDataRequest {
     @NotBlank(message = "字典值不能为空")
     private String value;
 
-    @Schema(description = "字典类型")
-    @NotBlank(message = "字典类型不能为空")
-    private String dictType;
+    @Schema(description = "字典类型id")
+    @NotNull(message = "字典类型id不能为空")
+    private Long parentId;
 
     @Schema(description = "样式属性（其他样式扩展）")
     private String cssClass;

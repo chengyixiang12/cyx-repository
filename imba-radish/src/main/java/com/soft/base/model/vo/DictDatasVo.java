@@ -13,7 +13,7 @@ import lombok.Data;
 public class DictDatasVo {
 
     @Schema(description = "主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "编码")
     private String code;

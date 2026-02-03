@@ -1,6 +1,6 @@
 package com.soft.base.utils;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.soft.base.resultapi.R;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class ResponseUtil {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         try (PrintWriter writer = response.getWriter()) {
-            writer.print(JSONUtil.toJsonStr(result));
+            writer.print(JSON.toJSONString(result));
             writer.flush(); // 确保将响应内容写入到输出流
         } catch (IOException e) {
             log.error("响应异常处理失败", e);

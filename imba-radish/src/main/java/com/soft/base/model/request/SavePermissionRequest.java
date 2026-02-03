@@ -18,8 +18,8 @@ public class SavePermissionRequest {
     @Schema(description = "权限编码")
     private String code;
 
-    @Schema(description = "权限类型；1：菜单；2：按钮")
-    private String type;
+    @Schema(description = "状态")
+    private Integer status;
 
     @Schema(description = "描述")
     private String description;

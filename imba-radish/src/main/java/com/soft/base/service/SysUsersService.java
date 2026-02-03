@@ -19,7 +19,7 @@ public interface SysUsersService extends IService<SysUser> {
 
     void editPassword(String targetPass, Long id);
 
-    void resetPassword(ResetPasswordRequest request);
+    void resetPassword(Long id);
 
     String getEmail(String username);
 

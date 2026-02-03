@@ -24,10 +24,10 @@ export async function saveDialogueApi(data: SaveDialogueRequest): Promise<number
 
 /**
  * 删除对话
- * @param param 
+ * @param id 
  */
-export async function deleteDialogueApi(param: number) {
-    del('/dialogue/deleteDialogue', { flag: true, params: { id: param } });
+export async function deleteDialogueApi(id: string) {
+    del('/dialogue/deleteDialogue', null, { flag: true, params: { id } });
 }
 
 /**
@@ -38,7 +38,7 @@ export async function renameApi(data: RenameRequest) {
     put('/dialogue/rename', data, { flag: true })
 }
 
-export async function getTitleApi(id: number | null): Promise<GetTitleVo> {
+export async function getTitleApi(id: string | null): Promise<GetTitleVo> {
     const res = await get<GetTitleVo>('/dialogue/getTitle', { flag: true, params: { id } });
     return res.data;
 }

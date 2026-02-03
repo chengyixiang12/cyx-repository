@@ -51,7 +51,7 @@
         FROM
         sys_role sr
         WHERE
-        sr.del_flag = '1'
+        sr.del_flag = '0'
         AND sr.id = #{id}
     </select>
     <select id="getRoles" parameterType="GetRolesRequest" resultType="SysRolesVo">
@@ -67,7 +67,7 @@
         FROM
         sys_role sr
         WHERE
-        sr.del_flag = '1'
+        sr.del_flag = '0'
         <if test="request.keyword != null and request.keyword != ''">
             AND sr.`name` = #{request.keyword}
         </if>
@@ -118,7 +118,7 @@
         sys_role sr
         JOIN sys_user_role sur ON sr.id = sur.role_id
         WHERE
-        sr.del_flag = '1'
+        sr.del_flag = '0'
         AND sur.user_id = #{userId}
     </select>
     <select id="fixRolesFlag" parameterType="java.util.List" resultType="FixRolesDto">
@@ -129,7 +129,7 @@
         FROM
         sys_role sr
         WHERE
-        sr.del_flag = '1'
+        sr.del_flag = '0'
         AND sr.id IN
         <foreach collection="ids" item="item" open="(" separator="," close=")">
             #{item}
@@ -141,7 +141,7 @@
             (#{request.roleId},#{item})
         </foreach>
     </insert>
-    <delete id="deleteRoleMenus" parameterType="SetMenusRequest">
+    <delete id="deleteRoleMenus" parameterType="java.lang.Long">
         DELETE
         FROM
         sys_role_menu
@@ -167,14 +167,14 @@
             (#{request.roleId},#{item})
         </foreach>
     </insert>
-    <select id="getUserRole" parameterType="java.lang.Long" resultType="Long">
+    <select id="getUserRole" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT
         sr.id
         FROM
         sys_role sr
         JOIN sys_user_role sur ON sr.id = sur.role_id
         WHERE
-        sr.del_flag = '1'
+        sr.del_flag = '0'
         AND sur.user_id = #{userId}
     </select>
     <select id="getRoleCodesByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
@@ -184,7 +184,7 @@
         `sys_role` sr
         JOIN `sys_user_role` sur ON sr.`id` = sur.role_id
         WHERE
-        sr.del_flag = '1'
+        sr.del_flag = '0'
         AND sur.user_id = #{userId}
     </select>
     <select id="getDefaultRole" parameterType="java.lang.Integer" resultType="java.lang.Long">
@@ -201,7 +201,7 @@
         SET
             fix_role = 1
         WHERE
-            del_flag = '1'
+            del_flag = '0'
           AND id = #{id}
     </update>
     <update id="cancelFixRole" parameterType="java.lang.Long">
@@ -210,7 +210,7 @@
         SET
             fix_role = 0
         WHERE
-            del_flag = '1'
+            del_flag = '0'
           AND id = #{id}
     </update>
     <select id="getRoleSelect" resultType="GetRoleSelectVo">
@@ -220,7 +220,7 @@
         FROM
             sys_role sr
         WHERE
-            sr.del_flag = '1'
+            sr.del_flag = '0'
           AND sr.status = 1
     </select>
 </mapper>

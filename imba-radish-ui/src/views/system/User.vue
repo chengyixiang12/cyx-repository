@@ -101,6 +101,9 @@
               <el-table-column label="操作" min-width="120" align="center">
                 <template #default="scope">
                   <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
+                  <el-tooltip class="item" effect="dark" content="重置密码" placement="top">
+                    <el-button size="small" type="primary" @click="handleResetPassword(scope.row.id)" :icon="RefreshLeft" circle />
+                  </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="强制下线" placement="top">
                     <el-button v-show="scope.row.isOnline === 1" size="small" type="primary"
                       @click="forceOffline(scope.row)" :icon="RemoveFilled" circle />
@@ -137,21 +140,22 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
-import { getDeptTree } from '@/api/dept'
-import { Edit, Delete, RemoveFilled } from '@element-plus/icons-vue'
+import { getDeptTreeApi } from '@/api/dept'
+import { Edit, Delete, RemoveFilled, RefreshLeft } from '@element-plus/icons-vue'
 import {
   getUserList,
   addUser,
-  updateUser,
+  updateUserApi,
   deleteUserById,
   lockUserApi,
   unlockUserApi,
   enableUserApi,
-  forbiddenUser
+  forbiddenUser,
+  resetPasswordApi
 } from '@/api/user'
 import type { AllUserVo, SaveUserRequest } from '@/types/user'
 import type { DeptTreeVo } from '@/types/dept'
-import UserFormDialog from '@/components/system/UserFormDialog.vue'
+import UserFormDialog from './component/UserFormDialog.vue'
 import { ElTooltip } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa'
 import { getPublicKey } from '@/api/auth'
@@ -160,12 +164,12 @@ import { getWebSocketInstance } from '@/utils/websocket'
 const loading = ref(false)
 const userList = ref<AllUserVo[]>([])
 const deptTree = ref<DeptTreeVo[]>([])
-const selectedDept = ref<string | number>('')
+const selectedDept = ref<string | null>(null)
 
 // 弹窗相关状态
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
-const userId = ref<number | null>(null)
+const userId = ref<string>('')
 
 // 搜索表单
 const searchForm = ref({
@@ -200,7 +204,7 @@ const handleAddSubmit = async (formData: SaveUserRequest) => {
 
 // 提交编辑用户
 const handleEditSubmit = async (formData: SaveUserRequest) => {
-  await updateUser({
+  await updateUserApi({
     id: userId.value,
     nickname: formData.nickname,
     deptId: formData.deptId,
@@ -225,7 +229,7 @@ const pagination = ref({
 // 加载部门树
 const loadDeptTree = async () => {
   try {
-    const res = await getDeptTree()
+    const res = await getDeptTreeApi(null)
     deptTree.value = res || []
     if (deptTree.value.length > 0) {
       await nextTick();
@@ -276,7 +280,7 @@ const handleExpandChange = (node: DeptTreeVo, expanded: boolean) => {
   }
 }
 
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   await deleteUserById(id);
   await loadUsers();
 }
@@ -330,7 +334,12 @@ const handleStatusChange = async (row: AllUserVo) => {
 
 const forceOffline = async (row: AllUserVo) => {
   const wsInstance = getWebSocketInstance();
-  wsInstance.send({ order: 'FORCE_OFFLINE', receiver: row.id })
+  wsInstance.send({ order: 'FORCE_OFFLINE', receiver: row.id, msg: '您已被强制下线' })
+}
+
+// 重置密码
+const handleResetPassword = async (id: number) => {
+  resetPasswordApi(id)
 }
 
 // 初始化加载
@@ -352,16 +361,6 @@ onMounted(() => {
   height: 52vh;
   overflow: auto;
   padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 /* 优化左侧树样式 */

@@ -43,7 +43,6 @@
                   <el-link @click="goToData(scope.row)" type="primary">{{ scope.row.dictName }}</el-link>
                 </template>
               </el-table-column>
-              <el-table-column prop="dictType" label="字典类型" align="center" show-overflow-tooltip />
               <el-table-column prop="sortOrder" label="排序" align="center" min-width="80" sortable />
               <el-table-column prop="status" label="状态" min-width="80" align="center">
                 <template #default="scope">
@@ -85,13 +84,13 @@ import { Edit, Delete } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { getDictTypesApi, deleteDictTypeApi, enableDictTypeApi, forbiddenDictTypeApi, saveDictTypeApi, editDictTypeApi } from '@/api/dictType'
 import type { DictTypesVo, GetDictTypesRequest, SaveDictTypeRequest } from '@/types/dictType'
-import DictTypeFormDialog from '@/components/system/DictTypeFormDialog.vue'
+import DictTypeFormDialog from './component/DictTypeFormDialog.vue'
 
 const router = useRouter()
 const loading = ref(false)
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
-const dictTypeId = ref<number | null>(null);
+const dictTypeId = ref<string>('');
 
 const dictTypeList = ref<DictTypesVo[]>([])
 const searchForm = ref<GetDictTypesRequest>({
@@ -104,7 +103,7 @@ const total = ref<number>(0)
 
 // 跳转字典数据模块
 const goToData = (row: DictTypesVo) => {
-  router.push({ name: 'dictData', query: { dictType: row.dictType, dictName: row.dictName } })
+  router.push({ name: 'dictData', query: { parentId: row.id, dictName: row.dictName } })
 }
 
 // 打开新增字典类型弹窗
@@ -117,8 +116,9 @@ const handleEditType = (row: DictTypesVo) => {
   dictTypeId.value = row.id;
 }
 // 删除
-const deleteType = async (id: number) => {
+const deleteType = async (id: string) => {
   await deleteDictTypeApi(id);
+  await handleSearch();
 }
 // 状态切换接口
 const changeStatus = async (row: DictTypesVo) => {
@@ -152,8 +152,14 @@ const resetSearch = () => {
   }
   handleSearch();
 }
-const handlePageChange = (val: number) => { searchForm.value.pageNum = val }
-const handleSizeChange = (val: number) => { searchForm.value.pageNum = val }
+const handlePageChange = (val: number) => {
+  searchForm.value.pageNum = val;
+  handleSearch()
+ }
+const handleSizeChange = (val: number) => {
+  searchForm.value.pageSize = val;
+  handleSearch()
+}
 
 const handleSearch = async () => {
   try {
@@ -227,15 +233,6 @@ onMounted(() => {
   height: 52vh;
   overflow: auto;
   padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .list-pagination {

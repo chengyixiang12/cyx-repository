@@ -2,18 +2,17 @@ package com.soft.base.controller;
 
 import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
+import com.soft.base.model.request.EditPermissionRequest;
 import com.soft.base.model.request.PermissionsRequest;
 import com.soft.base.model.request.SavePermissionRequest;
-import com.soft.base.model.vo.GetAllPermissionVo;
-import com.soft.base.model.vo.GetAssignPerVo;
-import com.soft.base.model.vo.PageVo;
-import com.soft.base.model.vo.PermissionsVo;
+import com.soft.base.model.vo.*;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysPermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +61,16 @@ public class SysPermissionController {
         return R.ok("权限添加成功", null);
     }
 
+    @PutMapping(value = "/editPermission")
+    @Operation(summary = "编辑权限")
+    public R<Object> editPermission(@RequestBody EditPermissionRequest request) {
+        if (sysPermissionService.existCode(request.getCode())) {
+            R.fail("权限编码已存在");
+        }
+        sysPermissionService.editPermission(request);
+        return R.ok("权限编辑成功", null);
+    }
+
     @GetMapping(value = "/getAllPermission")
     @Operation(summary = "获取所有权限")
     public R<List<GetAllPermissionVo>> getAllPermission() {
@@ -77,5 +86,34 @@ public class SysPermissionController {
         return R.ok(notAssignPerVos);
     }
 
+    @DeleteMapping
+    @Operation(summary = "删除权限")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> deletePermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysPermissionService.deletePermission(id);
+        return R.ok("删除成功", null);
+    }
 
+    @GetMapping(value = "/enablePermission")
+    @Operation(summary = "启用权限")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> enablePermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysPermissionService.enablePermission(id);
+        return R.ok("启用成功", null);
+    }
+
+    @GetMapping(value = "/forbiddenPermission")
+    @Operation(summary = "禁用权限")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
+    public R<Object> forbiddenPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        sysPermissionService.forbiddenPermission(id);
+        return R.ok("禁用成功", null);
+    }
+
+    @GetMapping(value = "/getPermission")
+    @Operation(summary = "获取权限")
+    public R<GetPermissionVo> getPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        GetPermissionVo getPermissionVo =  sysPermissionService.getPermission(id);
+        return R.ok(getPermissionVo);
+    }
 }
