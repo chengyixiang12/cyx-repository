@@ -6,9 +6,9 @@ import com.soft.base.properties.MinioProperty;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -25,6 +25,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class MinioUtil {
 
     private final MinioClient minioClient;
@@ -43,13 +44,6 @@ public class MinioUtil {
      */
     private static final Long BURST_FALSE = -1L;
 
-    @Autowired
-    public MinioUtil(MinioClient minioClient, DateUtil dateUtil, MinioProperty minioProperty) {
-        this.minioClient = minioClient;
-        this.dateUtil = dateUtil;
-        this.minioProperty = minioProperty;
-    }
-
     /**
      * 生成桶路径
      * @param fileKey 文件名
@@ -62,27 +56,25 @@ public class MinioUtil {
 
     /**
      * 上传
-     * @param is 输入流
+     *
+     * @param is       输入流
      * @param fileSize 文件大小 B
-     * @return
      * @throws GlobalException
      */
-    public String upload(InputStream is, Long fileSize, String objectKey) {
+    public void upload(InputStream is, Long fileSize, String objectKey) {
         putObject(is, minioProperty.getDefaultBucket(), fileSize, objectKey);
-        return objectKey;
     }
 
     /**
      * 上传
-     * @param is 输入流
-     * @param bucket 桶名
+     *
+     * @param is       输入流
+     * @param bucket   桶名
      * @param fileSize 文件大小 B
-     * @return
      * @throws GlobalException
      */
-    public String upload(InputStream is, String bucket, Long fileSize, String objectKey) {
+    public void upload(InputStream is, String bucket, Long fileSize, String objectKey) {
         putObject(is, bucket, fileSize, objectKey);
-        return objectKey;
     }
 
     /**
@@ -92,7 +84,7 @@ public class MinioUtil {
      * @param fileSize
      * @param objectKey
      */
-    public void putObject(InputStream is, String bucket, Long fileSize, String objectKey) {
+    private void putObject(InputStream is, String bucket, Long fileSize, String objectKey) {
         try {
             if (!existBucket(bucket)) {
                 createBucket(bucket);
@@ -102,19 +94,6 @@ public class MinioUtil {
                     .object(objectKey)
                     .stream(is, fileSize, fileSize < BURST_SIZE ? BURST_FALSE : BURST_SIZE)
                     .build());
-        } catch (Exception e) {
-            throw new GlobalException(e);
-        }
-    }
-
-    /**
-     * 判断桶是否存在
-     * @return
-     * @throws GlobalException
-     */
-    private Boolean existBucket() {
-        try {
-            return minioClient.bucketExists(BucketExistsArgs.builder().bucket(minioProperty.getDefaultBucket()).build());
         } catch (Exception e) {
             throw new GlobalException(e);
         }
@@ -181,9 +160,7 @@ public class MinioUtil {
     public void delete(String objectKey) {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder().bucket(minioProperty.getDefaultBucket()).object(objectKey).build());
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -196,9 +173,7 @@ public class MinioUtil {
     public void delete(String bucket, String objectKey) {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(objectKey).build());
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

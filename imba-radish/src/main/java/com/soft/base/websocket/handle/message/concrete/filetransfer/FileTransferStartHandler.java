@@ -1,5 +1,6 @@
 package com.soft.base.websocket.handle.message.concrete.filetransfer;
 
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
@@ -51,7 +52,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
         FileTransferStartRecParam fileTransferStartRecParam = JSON.parseObject(message.getPayload(), FileTransferStartRecParam.class);
-        String fileKey = universalUtil.fileKeyGen();
+        String fileKey = IdUtil.fastSimpleUUID();
         log.info("fileKey: {}", fileKey);
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey;
         File file = new File(filePath);

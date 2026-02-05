@@ -107,7 +107,7 @@ public class SecurityConfig {
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 忽略不鉴权的路由
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
+                        .requestMatchers(authorizationIgnoreProperty.getUrls().toArray(new String[0])).permitAll()
                         .anyRequest().authenticated())
                 .logout(item -> item.logoutUrl("/logout")
                         .logoutSuccessHandler(logoutAfterSuccessHandler))

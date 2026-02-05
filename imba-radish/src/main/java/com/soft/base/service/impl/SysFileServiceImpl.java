@@ -1,5 +1,6 @@
 package com.soft.base.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -103,7 +104,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String fileKey = universalUtil.fileKeyGen();
+                String fileKey = IdUtil.fastSimpleUUID();
                 String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
 
                 minioUtil.upload(multipartFile.getInputStream(), fileSize, objectKey);
@@ -186,7 +187,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String fileKey = universalUtil.fileKeyGen();
+                String fileKey = IdUtil.fastSimpleUUID();
                 String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
                 minioUtil.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileSize, objectKey);
 
@@ -272,7 +273,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     public UploadFileVo mergeChunk(File fileTemp) {
         String fileName = fileTemp.getName();
         try (InputStream hashcodeIs = Files.newInputStream(fileTemp.toPath())) {
-            String fileKey = universalUtil.fileKeyGen();
+            String fileKey = IdUtil.fastSimpleUUID();
             String hashcode = universalUtil.generateFileHash(hashcodeIs);
             String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
             long fileSize = fileTemp.length();

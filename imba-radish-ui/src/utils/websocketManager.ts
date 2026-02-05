@@ -62,6 +62,7 @@ export class WebsocketManager {
         }
         case 'AI': {
           this.aiAnwser?.(data)
+          break
         }
         case 'REFRESH_TOKEN': {
           this.refreshToken?.(data)

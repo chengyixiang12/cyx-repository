@@ -9,6 +9,7 @@ import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import com.soft.base.websocket.send.ForceOfflineSendParams;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,14 +28,10 @@ import java.io.IOException;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    public ForceOfflineHandler(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {

@@ -57,41 +57,6 @@ public class UniversalUtil {
     }
 
     /**
-     * list转数组
-     *
-     * @param list
-     * @param valueType
-     * @param <T>
-     * @return
-     */
-    public <T> T[] toArray(@NotEmpty List<T> list, @NotNull Class<T[]> valueType) {
-        if (valueType == null || !valueType.isArray()) {
-            throw new GlobalException("valueType必须是数组类型");
-        }
-        Class<?> componentType = valueType.getComponentType();
-        if (componentType == null) {
-            throw new GlobalException("valueType必须是数组类型");
-        }
-        if (list == null) {
-            throw new GlobalException("list不能为空");
-        }
-        @SuppressWarnings("unchecked")
-        T[] array = (T[]) Array.newInstance(componentType, list.size());
-        for (int i = 0; i < list.size(); i++) {
-            Array.set(array, i, list.get(i));
-        }
-        return array;
-    }
-
-    /**
-     * 生成唯一key
-     * @return
-     */
-    public String fileKeyGen() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
-
-    /**
      * 生成12位随机密码
      * @return 符合要求的12位随机密码
      */
