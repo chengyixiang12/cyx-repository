@@ -1,5 +1,6 @@
 package com.soft.base.websocket.handle.message.concrete.filetransfer;
 
+import cn.hutool.core.date.DatePattern;
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
@@ -8,10 +9,10 @@ import com.soft.base.entity.SysFile;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.service.SysFileService;
-import com.soft.base.utils.DateUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.FileTransferOverRecParam;
 import com.soft.base.websocket.send.SendParams;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import cn.hutool.core.date.DateUtil;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -34,6 +36,7 @@ import java.time.LocalDateTime;
  **/
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class FileTransferOverHandler implements WebSocketConcreteHandler<String> {
 
     @Value(value = "${tmp.path}")
@@ -44,18 +47,8 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final DateUtil dateUtil;
-
     private final SysFileService sysFileService;
 
-    @Autowired
-    public FileTransferOverHandler(RedisTemplate<String, Object> redisTemplate,
-                                   DateUtil dateUtil,
-                                   SysFileService sysFileService) {
-        this.redisTemplate = redisTemplate;
-        this.dateUtil = dateUtil;
-        this.sysFileService = sysFileService;
-    }
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         FileTransferOverRecParam fileTransferOverRecParam = JSON.parseObject(message.getPayload(), FileTransferOverRecParam.class);
@@ -67,7 +60,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         String originalName = fileTransferOverRecParam.getOriginalName();
         // 文件后缀
         String suffix = originalName.substring(originalName.lastIndexOf("."));
-        String objectKey = BaseConstant.LEFT_SLASH + dateUtil.date8Number() + BaseConstant.LEFT_SLASH + fileKey + suffix;
+        String objectKey = BaseConstant.LEFT_SLASH + DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + BaseConstant.LEFT_SLASH + fileKey + suffix;
 
         byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
         int length = BaseConstant.BUFFER_SIZE;

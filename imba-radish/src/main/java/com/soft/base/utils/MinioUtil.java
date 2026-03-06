@@ -1,5 +1,6 @@
 package com.soft.base.utils;
 
+import cn.hutool.core.date.DatePattern;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.properties.MinioProperty;
@@ -8,8 +9,8 @@ import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import cn.hutool.core.date.DateUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,8 +31,6 @@ public class MinioUtil {
 
     private final MinioClient minioClient;
 
-    private final DateUtil dateUtil;
-
     private final MinioProperty minioProperty;
 
     /**
@@ -51,7 +50,7 @@ public class MinioUtil {
      * @return
      */
     public String getObjectKey(String fileKey, String fileSuffix) {
-        return dateUtil.date8Number() + BaseConstant.LEFT_SLASH + fileKey + fileSuffix;
+        return DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + BaseConstant.LEFT_SLASH + fileKey + fileSuffix;
     }
 
     /**

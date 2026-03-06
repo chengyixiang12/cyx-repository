@@ -1,11 +1,10 @@
 package com.soft.base.core.aspect;
 
 import cn.hutool.core.util.IdUtil;
-import com.soft.base.core.annotation.SysLock;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
+import com.soft.base.core.annotation.SysLock;
 import com.soft.base.exception.GlobalException;
-import com.soft.base.utils.UniversalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -41,12 +40,9 @@ public class SysLockAspect {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final UniversalUtil universalUtil;
-
     @Autowired
-    public SysLockAspect(RedisTemplate<String, Object> redisTemplate, UniversalUtil universalUtil) {
+    public SysLockAspect(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.universalUtil = universalUtil;
     }
 
     @Around("@annotation(sysLock)")

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description:
  * @DateTime: 2024/11/16 20:06
  **/
 
@@ -26,7 +26,7 @@ public class EmailProduce {
      * 发送登录验证码
      * @param email
      */
-    public void sendEmail(String email, String content) {
+    public void send(String email, String content) {
         rabbitTemplate.convertAndSend(RabbitmqConstant.TOPIC_EXCHANGE, RabbitmqConstant.TOPIC_ROUTE_KEY_EMAIL, EmailDto.builder().email(email).content(content).build());
     }
 }

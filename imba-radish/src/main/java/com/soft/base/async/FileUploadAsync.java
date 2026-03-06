@@ -25,15 +25,16 @@ public class FileUploadAsync {
     private final MinioUtil minioUtil;
 
     @Async
-    public void fileUpload(File fileTemp, String objectKey, long fileSize) {
+    public void fileUpload(File fileTemp, String objectKey, long fileSize, Long sysFileId) {
         try (InputStream uploadIs = Files.newInputStream(fileTemp.toPath())) {
             minioUtil.upload(uploadIs, fileSize, objectKey);
+
+//            String hashcode = universalUtil.generateFileHash(uploadIs);
+
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         } finally {
-            // 删除临时文件
             fileTemp.delete();
-            // 删除目录
             fileTemp.getParentFile().delete();
         }
     }

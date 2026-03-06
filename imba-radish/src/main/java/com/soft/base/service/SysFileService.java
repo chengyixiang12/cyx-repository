@@ -9,7 +9,6 @@ import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

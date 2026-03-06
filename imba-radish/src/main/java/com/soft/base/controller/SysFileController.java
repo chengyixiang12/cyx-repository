@@ -1,8 +1,11 @@
 package com.soft.base.controller;
 
+import cn.hutool.core.util.IdUtil;
+import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
+import com.soft.base.entity.SysFile;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.dto.FileDetailDto;
@@ -11,6 +14,7 @@ import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
+import com.soft.base.properties.MinioProperty;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
@@ -36,6 +40,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -68,6 +73,10 @@ public class SysFileController {
     private final SysFileService sysFileService;
 
     private final MinioUtil minioUtil;
+
+    private final FileUploadAsync fileUploadAsync;
+
+    private final MinioProperty minioProperty;
 
 
     @PostMapping(value = "/upload")
@@ -211,30 +220,30 @@ public class SysFileController {
             return R.fail("分片未找到");
         }
 
-        if (!Objects.equals(total, chunks.length)) {
+        if (total == null || !total.equals(chunks.length)) {
             return R.fail("分片数量错误");
         }
 
-        OutputStream os;
-        try {
-            File fileTemp = new File(chunkDir, fileName);
+        ;
+        File fileTemp = new File(chunkDir, fileName);
+        try (FileChannel out = new FileOutputStream(fileTemp).getChannel()) {
             if (!fileTemp.exists()) {
                 boolean flag = fileTemp.createNewFile();
                 if (!flag) {
                     return R.fail("文件缓存创建失败");
                 }
             }
-
-            os = new FileOutputStream(fileTemp);
             Map<String, File> chunkMap = Arrays.stream(chunks).collect(Collectors.toMap(File::getName, Function.identity()));
             for (int i = 0; i < total; i++) {
                 File chunk = chunkMap.get(String.valueOf(i));
-                byte[] bytes = Files.readAllBytes(chunk.toPath());
-                os.write(bytes);
+                try (FileChannel in = new FileInputStream(chunk).getChannel()) {
+                    // 零拷贝传输
+                    in.transferTo(0, in.size(), out);
+                } catch (IOException e) {
+                    throw new GlobalException(e.getMessage());
+                }
                 chunk.delete();
             }
-            os.flush();
-            os.close();
 
             UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp);
 
