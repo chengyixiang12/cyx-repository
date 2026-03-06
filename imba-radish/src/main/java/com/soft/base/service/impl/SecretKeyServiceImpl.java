@@ -7,6 +7,7 @@ import com.soft.base.mapper.SysSecretKeyMapper;
 import com.soft.base.service.SecretKeyService;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.utils.SecurityUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Set;
 * @createDate 2024-11-26 16:19:51
 */
 @Service
+@RequiredArgsConstructor
 public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSecretKey>
     implements SecretKeyService{
 
@@ -32,16 +34,6 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
     private final RSAUtil rsaUtil;
 
     private final SecurityUtil securityUtil;
-
-    public SecretKeyServiceImpl(SysSecretKeyMapper sysSecretKeyMapper,
-                                RedisTemplate<String, Object> redisTemplate,
-                                RSAUtil rsaUtil,
-                                SecurityUtil securityUtil) {
-        this.sysSecretKeyMapper = sysSecretKeyMapper;
-        this.redisTemplate = redisTemplate;
-        this.rsaUtil = rsaUtil;
-        this.securityUtil = securityUtil;
-    }
 
     @Cacheable(cacheNames = "cyx:rsa:public", key = "#type")
     @Override

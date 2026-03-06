@@ -1,6 +1,10 @@
 package com.soft.base.async;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.soft.base.entity.SysFile;
+import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.utils.MinioUtil;
+import com.soft.base.utils.UniversalUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -24,13 +28,25 @@ public class FileUploadAsync {
 
     private final MinioUtil minioUtil;
 
+    private final UniversalUtil universalUtil;
+
+    private final SysFileMapper sysFileMapper;
+
     @Async
     public void fileUpload(File fileTemp, String objectKey, long fileSize, Long sysFileId) {
-        try (InputStream uploadIs = Files.newInputStream(fileTemp.toPath())) {
-            minioUtil.upload(uploadIs, fileSize, objectKey);
-
-//            String hashcode = universalUtil.generateFileHash(uploadIs);
-
+        try (InputStream fileHashIs = Files.newInputStream(fileTemp.toPath())) {
+            String fileHash = universalUtil.generateFileHash(fileHashIs);
+            SysFile sysFile = sysFileMapper.selectOne(Wrappers.<SysFile>lambdaQuery()
+                    .eq(SysFile::getFileHash, fileHash)
+                    .select(SysFile::getFileKey, SysFile::getBucket, SysFile::getObjectKey));
+            if (sysFile != null) {
+                sysFile.setId(sysFileId);
+                sysFileMapper.updateById(sysFile);
+            } else {
+                try (InputStream uploadIs = Files.newInputStream(fileTemp.toPath())) {
+                    minioUtil.upload(uploadIs, fileSize, objectKey);
+                }
+            }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         } finally {

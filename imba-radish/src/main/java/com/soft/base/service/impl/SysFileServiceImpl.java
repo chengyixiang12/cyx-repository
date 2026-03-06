@@ -69,8 +69,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final FileUploadAsync fileUploadAsync;
 
-    private final FileHashProduce fileHashProduce;
-
     @Override
     public UploadFileVo uploadFile(MultipartFile multipartFile) {
         UploadFileVo uploadFileVo = new UploadFileVo();
@@ -117,8 +115,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFile.setFileSize(fileSize);
                 sysFile.setFileHash(hashCode);
                 sysFileMapper.insert(sysFile);
-
-                fileHashProduce.send(sysFile.getId());
             }
             uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
             uploadFileVo.setFileName(sysFile.getOriginalName());

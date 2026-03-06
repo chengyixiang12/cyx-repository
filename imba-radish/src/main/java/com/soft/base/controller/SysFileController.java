@@ -1,11 +1,8 @@
 package com.soft.base.controller;
 
-import cn.hutool.core.util.IdUtil;
-import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
-import com.soft.base.entity.SysFile;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.dto.FileDetailDto;
@@ -14,7 +11,6 @@ import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
-import com.soft.base.properties.MinioProperty;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
@@ -46,7 +42,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -73,10 +68,6 @@ public class SysFileController {
     private final SysFileService sysFileService;
 
     private final MinioUtil minioUtil;
-
-    private final FileUploadAsync fileUploadAsync;
-
-    private final MinioProperty minioProperty;
 
 
     @PostMapping(value = "/upload")
@@ -226,7 +217,8 @@ public class SysFileController {
 
         ;
         File fileTemp = new File(chunkDir, fileName);
-        try (FileChannel out = new FileOutputStream(fileTemp).getChannel()) {
+        try (FileOutputStream os = new FileOutputStream(fileTemp);
+                FileChannel out = os.getChannel()) {
             if (!fileTemp.exists()) {
                 boolean flag = fileTemp.createNewFile();
                 if (!flag) {
@@ -236,7 +228,8 @@ public class SysFileController {
             Map<String, File> chunkMap = Arrays.stream(chunks).collect(Collectors.toMap(File::getName, Function.identity()));
             for (int i = 0; i < total; i++) {
                 File chunk = chunkMap.get(String.valueOf(i));
-                try (FileChannel in = new FileInputStream(chunk).getChannel()) {
+                try (FileInputStream is = new FileInputStream(chunk);
+                     FileChannel in = is.getChannel()) {
                     // 零拷贝传输
                     in.transferTo(0, in.size(), out);
                 } catch (IOException e) {
