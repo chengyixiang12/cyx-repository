@@ -10,6 +10,7 @@ import com.soft.base.resultapi.R;
 import com.soft.base.utils.SecurityUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -38,6 +39,7 @@ import static com.soft.base.constants.BaseConstant.LEFT_SLASH;
 @Aspect
 @Component
 @Order(9)
+@RequiredArgsConstructor
 public class SysLogAspect {
 
     @Value(value = "${log.enable}")
@@ -51,13 +53,6 @@ public class SysLogAspect {
     private final HttpServletRequest servletRequest;
 
     private final SecurityUtil securityUtil;
-
-    @Autowired
-    public SysLogAspect(SysLogProduce sysLogProduce, HttpServletRequest servletRequest, SecurityUtil securityUtil) {
-        this.sysLogProduce = sysLogProduce;
-        this.servletRequest = servletRequest;
-        this.securityUtil = securityUtil;
-    }
 
     @Around("@annotation(sysLog)")
     public Object around(ProceedingJoinPoint joinPoint, SysLog sysLog) throws Throwable {
@@ -107,7 +102,7 @@ public class SysLogAspect {
                 throw new Exception(e);
             } finally {
                 logDto.setExecutionTime(System.currentTimeMillis() - start);
-                sysLogProduce.sendSysLog(logDto);
+                sysLogProduce.send(logDto);
             }
         }
 

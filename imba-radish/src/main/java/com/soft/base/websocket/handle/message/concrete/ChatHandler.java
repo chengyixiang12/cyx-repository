@@ -12,6 +12,7 @@ import com.soft.base.service.SysDialogueDetailsService;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.ChatRecParam;
 import com.soft.base.websocket.send.ChatSendParams;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
@@ -38,6 +39,7 @@ import java.util.List;
  **/
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ChatHandler implements WebSocketConcreteHandler<String> {
 
     @Value(value = "${spring.ai.max-context-num}")
@@ -46,13 +48,6 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
     private final DeepSeekChatModel chatModel;
 
     private final SysDialogueDetailsService sysDialogueDetailsService;
-
-    @Autowired
-    public ChatHandler(DeepSeekChatModel chatModel,
-                       SysDialogueDetailsService sysDialogueDetailsService) {
-        this.chatModel = chatModel;
-        this.sysDialogueDetailsService = sysDialogueDetailsService;
-    }
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {

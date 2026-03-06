@@ -1,10 +1,10 @@
 package com.soft.base.core.aspect;
 
-import com.soft.base.core.annotation.SysLock;
+import cn.hutool.core.util.IdUtil;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
+import com.soft.base.core.annotation.SysLock;
 import com.soft.base.exception.GlobalException;
-import com.soft.base.utils.UniversalUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -40,19 +40,16 @@ public class SysLockAspect {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final UniversalUtil universalUtil;
-
     @Autowired
-    public SysLockAspect(RedisTemplate<String, Object> redisTemplate, UniversalUtil universalUtil) {
+    public SysLockAspect(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.universalUtil = universalUtil;
     }
 
     @Around("@annotation(sysLock)")
     public Object around(ProceedingJoinPoint joinPoint, SysLock sysLock) throws Throwable {
         String key = sysLock.name();
         int retryCount = BaseConstant.INTEGER_INIT_VAL;
-        String lockFlag = universalUtil.fileKeyGen();
+        String lockFlag = IdUtil.fastSimpleUUID();
         boolean locked = false;
         try {
             while (retryCount < maxRetry) {

@@ -17,7 +17,7 @@ public class RateLimitProperty {
 
     private Boolean enable;
 
-    private Integer maxRequest;
+    private Long maxRequest;
 
     private Long windowSize;
 }

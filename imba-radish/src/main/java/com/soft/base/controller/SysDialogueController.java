@@ -49,9 +49,9 @@ public class SysDialogueController {
 
     @PostMapping(value = "/saveDialogue")
     @Operation(summary = "新增对话")
-    public R<Long> saveDialogue(@RequestBody SaveDialogueRequest request) {
+    public R<String> saveDialogue(@RequestBody SaveDialogueRequest request) {
         Long id = sysDialogueService.saveDialogue(request);
-        return R.ok(id);
+        return R.ok(String.valueOf(id));
     }
 
     @DeleteMapping(value = "/deleteDialogue")

@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 
+ *
  * @TableName sys_file
  */
 @EqualsAndHashCode(callSuper = true)
-@TableName(value ="sys_file")
+@TableName(value = "sys_file")
 @Data
-public class SysFile extends BaseEntity{
+public class SysFile extends BaseEntity {
 
     /**
      * 源文件名

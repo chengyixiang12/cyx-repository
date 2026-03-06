@@ -29,6 +29,7 @@ public class RabbitmqConstant {
      */
     public static final String TOPIC_QUEUE_SEND_DEAD = "radish-topic-queue-dead";
     public static final String TOPIC_QUEUE_SEND_EMAIL = "radish-topic-email";
+    public static final String TOPIC_QUEUE_SEND_FILEHASH = "radish-topic-filehash";
 
     /**
      * 主题交换机
@@ -40,6 +41,7 @@ public class RabbitmqConstant {
      */
     public static final String TOPIC_ROUTE_KEY_DEAD = "radish.topic.dead";
     public static final String TOPIC_ROUTE_KEY_EMAIL = "radish.topic.email";
+    public static final String TOPIC_ROUTE_KEY_FILEHASH = "radish.topic.filehash";
 
 
 }

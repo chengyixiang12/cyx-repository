@@ -92,14 +92,14 @@
 import { ref, onMounted } from 'vue'
 import { Delete, Download } from '@element-plus/icons-vue'
 import { FilesRequest, FilesVo } from '@/types/file'
-import { deleteFileApi, downloadFileApi, uploadChunkApi, getMyFilesApi, mergeChunkApi, uploadFileApi, getFileUrlApi } from '@/api/file'
-import { download } from '@/utils/download'
+import { deleteFileApi, uploadChunkApi, getMyFilesApi, mergeChunkApi, uploadFileApi, getFileUrlApi } from '@/api/file'
 import { showMessage } from '@/utils/message'
 import SparkMD5 from 'spark-md5';
 
 const loading = ref(false);
 const total = ref(0);
 const fileList = ref<FilesVo[]>([]);
+const uploadRef = ref();
 
 const uploadProgress = ref<number>(0);
 const chunkSize = 5 * 1024 * 1024;
@@ -263,16 +263,18 @@ const customChunkUpload = async (options: any) => {
 
       // 5. 所有分片上传完成，请求合并
       await mergeChunks(fileMd5, fileName, totalChunks);
-
-      // 6. 上传完成
-      uploadProgress.value = 100;
-      uploadDialogVisible.value = false;
     } catch (error) {
       uploadProgress.value = 0;
       uploadDialogVisible.value = false;
+    } finally {
+      uploadProgress.value = 0;
+      uploadDialogVisible.value = false;
+      if (uploadRef.value) {
+        uploadRef.value.clearFiles();
+      }
+      loadFiles();
     }
   }
-  loadFiles();
 };
 
 onMounted(() => {

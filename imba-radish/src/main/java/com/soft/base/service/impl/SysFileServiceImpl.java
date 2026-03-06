@@ -1,10 +1,12 @@
 package com.soft.base.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.RabbitmqConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
@@ -12,31 +14,29 @@ import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.dto.FileHashDto;
 import com.soft.base.model.dto.SelectDeletedFileDto;
+import com.soft.base.model.dto.rabbitmq.GenerateFileHashDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import com.soft.base.properties.MinioProperty;
+import com.soft.base.rabbitmq.producer.FileHashProduce;
 import com.soft.base.service.SysDictDataService;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
 import com.soft.base.utils.SecurityUtil;
-import com.soft.base.utils.UniversalUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -58,8 +58,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     private final SysFileMapper sysFileMapper;
 
     private final MinioUtil minioUtil;
-
-    private final UniversalUtil universalUtil;
 
     private final MinioProperty minioProperty;
 
@@ -103,7 +101,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String fileKey = universalUtil.fileKeyGen();
+                String fileKey = IdUtil.fastSimpleUUID();
                 String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
 
                 minioUtil.upload(multipartFile.getInputStream(), fileSize, objectKey);
@@ -117,7 +115,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFile.setFileSize(fileSize);
                 sysFile.setFileHash(hashCode);
                 sysFileMapper.insert(sysFile);
-
             }
             uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
             uploadFileVo.setFileName(sysFile.getOriginalName());
@@ -186,7 +183,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String fileKey = universalUtil.fileKeyGen();
+                String fileKey = IdUtil.fastSimpleUUID();
                 String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
                 minioUtil.upload(multipartFile.getInputStream(), minioProperty.getAvatarBucket(), fileSize, objectKey);
 
@@ -271,40 +268,29 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     @Override
     public UploadFileVo mergeChunk(File fileTemp) {
         String fileName = fileTemp.getName();
-        try (InputStream hashcodeIs = Files.newInputStream(fileTemp.toPath())) {
-            String fileKey = universalUtil.fileKeyGen();
-            String hashcode = universalUtil.generateFileHash(hashcodeIs);
-            String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
-            long fileSize = fileTemp.length();
-            String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
+        String fileKey = IdUtil.fastSimpleUUID();
+        String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
+        long fileSize = fileTemp.length();
+        String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
 
-            minioUtil.upload(hashcodeIs, fileSize, objectKey);
+        SysFile sysFile = new SysFile();
+        sysFile.setFileKey(fileKey);
+        sysFile.setFileSuffix(fileSuffix);
+        sysFile.setLocation(BaseConstant.Minio.MINIO);
+        sysFile.setBucket(minioProperty.getDefaultBucket());
+        sysFile.setObjectKey(objectKey);
+        sysFile.setOriginalName(fileName);
+        sysFile.setFileSize(fileSize);
+        sysFile.setFileSize(fileSize);
+        sysFileMapper.insert(sysFile);
 
-            SysFile sysFile = new SysFile();
-            sysFile.setFileKey(fileKey);
-            sysFile.setFileSuffix(fileSuffix);
-            sysFile.setLocation(BaseConstant.Minio.MINIO);
-            sysFile.setBucket(minioProperty.getDefaultBucket());
-            sysFile.setObjectKey(objectKey);
-            sysFile.setOriginalName(fileName);
-            sysFile.setFileSize(fileSize);
-            sysFile.setFileHash(hashcode);
-            sysFile.setFileSize(fileSize);
-            sysFileMapper.insert(sysFile);
+        fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize, sysFile.getId());
 
-            UploadFileVo uploadFileVo = new UploadFileVo();
-            uploadFileVo.setFileName(fileName);
-            uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
+        UploadFileVo uploadFileVo = new UploadFileVo();
+        uploadFileVo.setFileName(fileName);
+        uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
 
-            return uploadFileVo;
-        } catch (IOException e) {
-            throw new GlobalException(e);
-        } finally {
-            // 删除临时文件
-            fileTemp.delete();
-            // 删除目录
-            fileTemp.getParentFile().delete();
-        }
+        return uploadFileVo;
     }
 }
 

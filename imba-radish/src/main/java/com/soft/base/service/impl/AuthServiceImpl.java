@@ -17,6 +17,7 @@ import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
 import com.soft.base.websocket.receive.ForceOfflineRecParam;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     @Value(value = "${radish.token.expire-time}")
@@ -55,24 +57,6 @@ public class AuthServiceImpl implements AuthService {
     private final StringRedisTemplate stringRedisTemplate;
 
     private final SysDeptService sysDeptService;
-
-    public AuthServiceImpl(PasswordEncoder passwordEncoder,
-                           RSAUtil rsaUtil,
-                           SysUsersService sysUsersService,
-                           AuthenticationManager authenticationManager,
-                           RedisTemplate<String,Object> redisTemplate,
-                           SecretKeyService secretKeyService,
-                           StringRedisTemplate stringRedisTemplate,
-                           SysDeptService sysDeptService) {
-        this.passwordEncoder = passwordEncoder;
-        this.rsaUtil = rsaUtil;
-        this.sysUsersService = sysUsersService;
-        this.authenticationManager = authenticationManager;
-        this.redisTemplate = redisTemplate;
-        this.secretKeyService = secretKeyService;
-        this.stringRedisTemplate = stringRedisTemplate;
-        this.sysDeptService = sysDeptService;
-    }
 
     @Override
     public void register(SysUser sysUser) {

@@ -52,7 +52,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * 1000L, currentTimestamp);
 
         // 如果超过最大请求次数，拒绝请求
-        if (requestCount >= rateLimitProperty.getMaxRequest()) {
+        if (requestCount != null && requestCount >= rateLimitProperty.getMaxRequest()) {
             ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.RATE_LIMIT.getCode(), ResultEnum.RATE_LIMIT.getMessage()));
             return;
         }

@@ -8,6 +8,7 @@ import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.send.HeartBeatSendParams;
 import com.soft.base.websocket.send.SendParams;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,13 +30,10 @@ import java.util.concurrent.TimeUnit;
  **/
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    public HeartbeatHandler(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {

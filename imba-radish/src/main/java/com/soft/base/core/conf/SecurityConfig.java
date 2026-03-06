@@ -7,7 +7,6 @@ import com.soft.base.core.handle.CustomAccessDeniedHandler;
 import com.soft.base.core.handle.LogoutAfterSuccessHandler;
 import com.soft.base.properties.AuthorizationIgnoreProperty;
 import com.soft.base.properties.RateLimitProperty;
-import com.soft.base.utils.UniversalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +44,6 @@ public class SecurityConfig {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final UniversalUtil universalUtil;
-
     private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
 
     private final RateLimitProperty rateLimitProperty;
@@ -56,7 +53,6 @@ public class SecurityConfig {
                           LogoutAfterSuccessHandler logoutAfterSuccessHandler,
                           UserDetailsService userDetailsService,
                           RedisTemplate<String, Object> redisTemplate,
-                          UniversalUtil universalUtil,
                           CustomAccessDeniedHandler customAccessDeniedHandler,
                           AuthorizationIgnoreProperty authorizationIgnoreProperty,
                           RateLimitProperty rateLimitProperty) {
@@ -64,7 +60,6 @@ public class SecurityConfig {
         this.logoutAfterSuccessHandler = logoutAfterSuccessHandler;
         this.userDetailsService = userDetailsService;
         this.redisTemplate = redisTemplate;
-        this.universalUtil = universalUtil;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.authorizationIgnoreProperty = authorizationIgnoreProperty;
         this.rateLimitProperty = rateLimitProperty;
@@ -107,7 +102,7 @@ public class SecurityConfig {
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 忽略不鉴权的路由
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(universalUtil.toArray(authorizationIgnoreProperty.getUrls(), String[].class)).permitAll()
+                        .requestMatchers(authorizationIgnoreProperty.getUrls().toArray(new String[0])).permitAll()
                         .anyRequest().authenticated())
                 .logout(item -> item.logoutUrl("/logout")
                         .logoutSuccessHandler(logoutAfterSuccessHandler))

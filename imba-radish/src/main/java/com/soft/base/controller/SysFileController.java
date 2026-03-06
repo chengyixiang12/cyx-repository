@@ -36,12 +36,12 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -211,30 +211,32 @@ public class SysFileController {
             return R.fail("分片未找到");
         }
 
-        if (!Objects.equals(total, chunks.length)) {
+        if (total == null || !total.equals(chunks.length)) {
             return R.fail("分片数量错误");
         }
 
-        OutputStream os;
-        try {
-            File fileTemp = new File(chunkDir, fileName);
+        ;
+        File fileTemp = new File(chunkDir, fileName);
+        try (FileOutputStream os = new FileOutputStream(fileTemp);
+                FileChannel out = os.getChannel()) {
             if (!fileTemp.exists()) {
                 boolean flag = fileTemp.createNewFile();
                 if (!flag) {
                     return R.fail("文件缓存创建失败");
                 }
             }
-
-            os = new FileOutputStream(fileTemp);
             Map<String, File> chunkMap = Arrays.stream(chunks).collect(Collectors.toMap(File::getName, Function.identity()));
             for (int i = 0; i < total; i++) {
                 File chunk = chunkMap.get(String.valueOf(i));
-                byte[] bytes = Files.readAllBytes(chunk.toPath());
-                os.write(bytes);
+                try (FileInputStream is = new FileInputStream(chunk);
+                     FileChannel in = is.getChannel()) {
+                    // 零拷贝传输
+                    in.transferTo(0, in.size(), out);
+                } catch (IOException e) {
+                    throw new GlobalException(e.getMessage());
+                }
                 chunk.delete();
             }
-            os.flush();
-            os.close();
 
             UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp);
 

@@ -3,6 +3,7 @@ package com.soft.base.core.conf;
 import com.soft.base.websocket.WebSocketInterceptor;
 import com.soft.base.websocket.handle.CustomWebSocketHandlerDecorator;
 import com.soft.base.websocket.handle.WebSocketHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -20,17 +21,12 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 @EnableWebSocket
 @Slf4j
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final UserDetailsService userDetailsService;
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    public WebSocketConfig(UserDetailsService userDetailsService, RedisTemplate<String, Object> redisTemplate) {
-        this.userDetailsService = userDetailsService;
-        this.redisTemplate = redisTemplate;
-    }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

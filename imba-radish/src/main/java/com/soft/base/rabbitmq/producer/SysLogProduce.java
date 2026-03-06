@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description:
  * @DateTime: 2024/11/21 13:59
  **/
 
@@ -17,11 +17,12 @@ import org.springframework.stereotype.Component;
 public class SysLogProduce {
 
     private final RabbitTemplate rabbitTemplate;
+
     /**
      * 推送日志
      * @param logDto
      */
-    public void sendSysLog(LogDto logDto) {
+    public void send(LogDto logDto) {
         rabbitTemplate.convertAndSend(RabbitmqConstant.DIRECT_EXCHANGE, RabbitmqConstant.DIRECT_ROUTEKEY_ONE, logDto);
     }
 }

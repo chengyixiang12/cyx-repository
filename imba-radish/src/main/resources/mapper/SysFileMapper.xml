@@ -4,28 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.base.mapper.SysFileMapper">
 
-    <resultMap id="BaseResultMap" type="com.soft.base.entity.SysFile">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
-            <result property="originalName" column="original_name" jdbcType="VARCHAR"/>
-            <result property="fileKey" column="file_key" jdbcType="VARCHAR"/>
-            <result property="bucket" column="bucket" jdbcType="VARCHAR"/>
-            <result property="location" column="location" jdbcType="CHAR"/>
-            <result property="objectKey" column="object_key" jdbcType="VARCHAR"/>
-            <result property="fileSuffix" column="file_suffix" jdbcType="VARCHAR"/>
-            <result property="fileSize" column="file_size" jdbcType="BIGINT"/>
-    </resultMap>
-
-    <sql id="Base_Column_List">
-        id,create_by,create_time,
-        update_by,update_time,del_flag,
-        original_name,file_key,bucket,localtion,
-        object_key,file_suffix
-    </sql>
     <select id="getFileDetailById" parameterType="java.lang.Long" resultType="FileDetailDto">
         SELECT
         sf.object_key AS "objectKey",

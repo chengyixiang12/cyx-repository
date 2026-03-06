@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,16 +47,22 @@ public class RabbitMQConfig {
     }
 
     @Bean(name = "directBindingOne")
-    public Binding directBindingOne() {
+    public Binding directBindingOne(@Qualifier(value = "directQueueOne") Queue directQueueOne,
+                                    @Qualifier(value = "directExchange") DirectExchange directExchange) {
         return BindingBuilder
-                .bind(directQueueOne())
-                .to(directExchange())
+                .bind(directQueueOne)
+                .to(directExchange)
                 .with(RabbitmqConstant.DIRECT_ROUTEKEY_ONE);
     }
 
     @Bean(name = "topicQueueEmail")
     public Queue topicQueueEmail() {
         return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_EMAIL, false, false, false);
+    }
+
+    @Bean(name = "topicQueueFileHash")
+    public Queue topicQueueFileHash() {
+        return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_FILEHASH, false, false, false);
     }
 
     @Bean(name = "topicQueueDead")
@@ -69,18 +76,29 @@ public class RabbitMQConfig {
     }
 
     @Bean(name = "topicBindingDead")
-    public Binding topicBindingDead() {
+    public Binding topicBindingDead(@Qualifier(value = "topicQueueDead") Queue topicQueueDead,
+                                    @Qualifier(value = "topicExchange") TopicExchange topicExchange) {
         return BindingBuilder
-                .bind(topicQueueDead())
-                .to(topicExchange())
+                .bind(topicQueueDead)
+                .to(topicExchange)
                 .with(RabbitmqConstant.TOPIC_ROUTE_KEY_DEAD);
     }
 
     @Bean(name = "topicBindingRestPassword")
-    public Binding topicBindingRestPassword() {
+    public Binding topicBindingRestPassword(@Qualifier(value = "topicQueueEmail") Queue topicQueueEmail,
+                                            @Qualifier(value = "topicExchange") TopicExchange topicExchange) {
         return BindingBuilder
-                .bind(topicQueueEmail())
-                .to(topicExchange())
+                .bind(topicQueueEmail)
+                .to(topicExchange)
                 .with(RabbitmqConstant.TOPIC_ROUTE_KEY_EMAIL);
+    }
+
+    @Bean(name = "topicBindingFileHash")
+    public Binding topicBindingFileHash(@Qualifier(value = "topicQueueFileHash") Queue topicQueueFileHash,
+                                        @Qualifier(value = "topicExchange") TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(topicQueueFileHash)
+                .to(topicExchange)
+                .with(RabbitmqConstant.TOPIC_ROUTE_KEY_FILEHASH);
     }
 }

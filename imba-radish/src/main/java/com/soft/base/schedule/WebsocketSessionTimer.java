@@ -2,6 +2,7 @@ package com.soft.base.schedule;
 
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.websocket.WebSocketSessionManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,14 +19,10 @@ import java.util.Set;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class WebsocketSessionTimer {
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    public WebsocketSessionTimer(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     /**
      * 每天零点清理一次用户会话

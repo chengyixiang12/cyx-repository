@@ -205,6 +205,7 @@ const logout = () => {
     logouted().then(() => {
         clearCache();
         router.push('/login');
+        ws.close()
     });
 }
 
