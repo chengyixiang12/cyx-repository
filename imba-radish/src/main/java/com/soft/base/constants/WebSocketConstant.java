@@ -2,7 +2,7 @@ package com.soft.base.constants;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/11/21 23:03
  **/
 public class WebSocketConstant {

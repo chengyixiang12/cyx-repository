@@ -2,7 +2,7 @@ package com.soft.base.constants;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/11/15 21:40
  **/
 public class RabbitmqConstant {

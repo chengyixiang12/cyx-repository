@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/4/22 10:34
  **/
 public interface MenuTree<T extends MenuTree<T>> {

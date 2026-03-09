@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/5/28 16:34
  **/
 @Configuration
