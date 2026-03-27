@@ -37,6 +37,7 @@ export async function getFilesApi(data: FilesRequest): Promise<PaginatedData<Fil
  * @returns 
  */
 export async function getMyFilesApi(data: FilesRequest): Promise<PaginatedData<FilesVo>> {
+  console.log('获取我的文件')
   const res = await post<PaginatedData<FilesVo>>('/file/getMyFiles', data, { flag: true });
   return res.data;
 }
@@ -46,6 +47,7 @@ export async function getMyFilesApi(data: FilesRequest): Promise<PaginatedData<F
  * @param id 
  */
 export async function deleteFileApi(id: string) {
+  console.log('执行删除')
   del('/file', null, { params: { id }, flag: true })
 }
 

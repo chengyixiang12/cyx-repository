@@ -13,7 +13,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 @Component
-@Deprecated
 public class AESUtil {
 
     // AES 加密

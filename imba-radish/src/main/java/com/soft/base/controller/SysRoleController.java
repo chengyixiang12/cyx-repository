@@ -110,8 +110,8 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_del')")
     @DeleteMapping(value = "/deleteRoleBatch")
     @Operation(summary = "批量删除角色")
-    public R<Object> deleteRoleBatch(@RequestBody @Valid DeleteRequest request) {
-        List<FixRolesDto> fixRolesFlag = sysRoleService.fixRolesFlag(request.getIds());
+    public R<Object> deleteRoleBatch(@RequestParam(value = "ids") @Valid List<Long> ids) {
+        List<FixRolesDto> fixRolesFlag = sysRoleService.fixRolesFlag(ids);
         if (!fixRolesFlag.isEmpty()) {
             StringBuilder message = new StringBuilder();
             Iterator<FixRolesDto> iterator = fixRolesFlag.iterator();
@@ -129,7 +129,7 @@ public class SysRoleController {
             return R.fail(message.toString());
         }
 
-        sysRoleService.deleteRoleBatch(request);
+        sysRoleService.deleteRoleBatch(ids);
         return R.ok("删除成功", null);
     }
 

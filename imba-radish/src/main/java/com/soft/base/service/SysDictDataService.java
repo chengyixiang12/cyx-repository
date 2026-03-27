@@ -31,7 +31,7 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void deleteDictData(Long id);
 
-    void deleteDictDataBatch(DeleteRequest request);
+    void deleteDictDataBatch(List<Long> ids);
 
     boolean existValue(Long parentId, String value);
 

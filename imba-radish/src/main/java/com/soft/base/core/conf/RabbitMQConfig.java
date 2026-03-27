@@ -60,11 +60,6 @@ public class RabbitMQConfig {
         return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_EMAIL, false, false, false);
     }
 
-    @Bean(name = "topicQueueFileHash")
-    public Queue topicQueueFileHash() {
-        return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_FILEHASH, false, false, false);
-    }
-
     @Bean(name = "topicQueueDead")
     public Queue topicQueueDead() {
         return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_DEAD, false, false, false);
@@ -91,14 +86,5 @@ public class RabbitMQConfig {
                 .bind(topicQueueEmail)
                 .to(topicExchange)
                 .with(RabbitmqConstant.TOPIC_ROUTE_KEY_EMAIL);
-    }
-
-    @Bean(name = "topicBindingFileHash")
-    public Binding topicBindingFileHash(@Qualifier(value = "topicQueueFileHash") Queue topicQueueFileHash,
-                                        @Qualifier(value = "topicExchange") TopicExchange topicExchange) {
-        return BindingBuilder
-                .bind(topicQueueFileHash)
-                .to(topicExchange)
-                .with(RabbitmqConstant.TOPIC_ROUTE_KEY_FILEHASH);
     }
 }

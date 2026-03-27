@@ -46,15 +46,6 @@
         sd.del_flag = '0'
         ORDER BY sd.create_time DESC
     </select>
-    <update id="deleteDeptBatch" parameterType="DeleteRequest">
-        UPDATE sys_dept
-        SET del_flag = '0'
-        WHERE
-        id IN
-        <foreach collection="request.ids" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </update>
     <select id="getDept" parameterType="java.lang.Long" resultType="DeptVo">
         SELECT sd.id,
                sd.sort_order AS "sortOrder",

@@ -24,8 +24,6 @@ import java.util.List;
 */
 public interface SysRoleMapper extends BaseMapper<SysRole> {
 
-    void deleteRoleBatch(@Param("request") DeleteRequest request);
-
     SysRoleVo getRole(@Param("id") Long id);
 
     Page<SysRolesVo> getRoles(IPage<SysRolesVo> page,

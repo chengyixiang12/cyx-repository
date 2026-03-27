@@ -49,8 +49,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public void deleteRoleBatch(DeleteRequest request) {
-        sysRoleMapper.deleteRoleBatch(request);
+    public void deleteRoleBatch(List<Long> ids) {
+        sysRoleMapper.deleteByIds(ids);
     }
 
     @Override

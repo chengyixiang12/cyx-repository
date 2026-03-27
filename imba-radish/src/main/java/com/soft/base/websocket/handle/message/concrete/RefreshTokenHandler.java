@@ -56,14 +56,14 @@ public class RefreshTokenHandler implements WebSocketConcreteHandler<String> {
             return;
         }
 
+        // 删掉之前的token
+        redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + session.getAttributes().get(WebSocketConstant.AUTHORIZATION));
         String token = UUID.randomUUID().toString();
         // 更新attributes的token
         session.getAttributes().put(WebSocketConstant.AUTHORIZATION, token);
-        // 删掉之前的token
-        redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + token);
         // 存储token
         redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, userDto.getUsername(), authorizationExpire, TimeUnit.SECONDS);
-        log.info("{} token refresh...", userDto.getUsername());
+        log.info("{} token refreshed...", userDto.getUsername());
         refreshTokenSendParam.setToken(token);
         session.sendMessage(new TextMessage(refreshTokenSendParam.toJsonString()));
     }

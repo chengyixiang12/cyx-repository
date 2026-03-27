@@ -62,7 +62,6 @@ public class BaseConstant {
     /**
      * aes偏移量
      */
-    @Deprecated
     public final static String AES_OFFSET = "0000000001000001";
 
     /**

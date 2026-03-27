@@ -1,3 +1,4 @@
+
 export interface WebsocketMessage {
   status: boolean
   order: string
@@ -12,7 +13,7 @@ export class WebsocketManager {
 
   private readonly HEARTBEAT_INTERVAL = 30000
   private readonly HEARTBEAT_TIMEOUT_LIMIT = 3
-  private readonly RECONNECT_INTERVAL = 5000
+  private readonly RECONNECT_INTERVAL = 30000
   private readonly MAX_RECONNECT_ATTEMPTS = 5
 
   private missedHeartbeats = 0
@@ -69,7 +70,7 @@ export class WebsocketManager {
           this.missedHeartbeats = 0
           break
         }
-        default : {
+        default: {
           this.onMessage?.(data)
           break
         }
@@ -89,7 +90,7 @@ export class WebsocketManager {
   }
 
   private startHeartbeat() {
-    this.stopHeartbeat()
+    this.stopHeartbeat();
     this.heartbeatTimer = window.setInterval(() => {
       if (this.socket?.readyState !== WebSocket.OPEN) return
 
@@ -97,7 +98,7 @@ export class WebsocketManager {
         this.socket.send(JSON.stringify({ order: 'HEART_BEAT' }))
         this.missedHeartbeats++
         if (this.missedHeartbeats >= this.HEARTBEAT_TIMEOUT_LIMIT) {
-          console.error('[WebSocket] 心跳失败过多，关闭连接')
+          console.error('[WebSocket] 心跳失败过多，关闭连接');
           this.socket?.close()
         }
       } catch (e) {

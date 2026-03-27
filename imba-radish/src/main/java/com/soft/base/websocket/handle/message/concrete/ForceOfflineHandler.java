@@ -11,7 +11,6 @@ import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import com.soft.base.websocket.send.ForceOfflineSendParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
@@ -19,6 +18,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @Author: cyx
@@ -52,15 +53,12 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
 
         String token = (String) receiveSession.getAttributes().get(WebSocketConstant.AUTHORIZATION);
         WebSocketSessionManager.removeSession(userDto.getId());
-        log.info("remove {} session...", username);
-        redisTemplate.delete(RedisConstant.WS_USER_SESSION + userDto.getId());
-        log.info("{} offline...", username);
-        redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + token);
-        log.info("token clear...");
-        redisTemplate.delete(RedisConstant.USER_INFO + username);
-        log.info("{} userinfo remove", username);
-        redisTemplate.delete(RedisConstant.FINGERPRINT + username);
-        log.info("{} fingerprint remove", username);
+        Set<String> keySet = new HashSet<>(4);
+        keySet.add(RedisConstant.WS_USER_SESSION + userDto.getId());
+        keySet.add(RedisConstant.AUTHORIZATION_USERNAME + token);
+        keySet.add(RedisConstant.USER_INFO + username);
+        keySet.add(RedisConstant.FINGERPRINT + username);
+        redisTemplate.delete(keySet);
     }
 
     @Override

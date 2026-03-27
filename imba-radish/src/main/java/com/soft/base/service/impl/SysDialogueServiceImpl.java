@@ -12,7 +12,6 @@ import com.soft.base.model.vo.GetTitleVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.service.SysDialogueService;
 import com.soft.base.mapper.SysDialogueMapper;
-import com.soft.base.utils.BeanUtil;
 import com.soft.base.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;

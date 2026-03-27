@@ -26,6 +26,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @Author: cyx
  * @Description: 
@@ -90,8 +92,8 @@ public class SysDictTypeController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_del')")
     @DeleteMapping(value = "/deleteDictTypeBatch")
     @Operation(summary = "批量删除字典类型")
-    public R<Object> deleteDictTypeBatch(@RequestBody DeleteRequest request) {
-        sysDictTypeService.deleteDictTypeBatch(request.getIds());
+    public R<Object> deleteDictTypeBatch(@RequestParam(value = "ids") @Valid List<Long> ids) {
+        sysDictTypeService.deleteDictTypeBatch(ids);
         return R.ok("删除成功", null);
     }
 

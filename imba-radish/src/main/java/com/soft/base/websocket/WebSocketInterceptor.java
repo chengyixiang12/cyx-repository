@@ -27,12 +27,12 @@ public record WebSocketInterceptor(UserDetailsService userDetailsService,
                                    RedisTemplate<String, Object> redisTemplate) implements HandshakeInterceptor {
 
     @Override
-    public boolean beforeHandshake(@NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response, @NotNull WebSocketHandler wsHandler, @NotNull Map<String, Object> attributes) {
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             String token = servletRequest.getServletRequest().getParameter(WebSocketConstant.AUTHORIZATION);
             String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
             if (StringUtils.isEmpty(username)) {
-                log.info("token is expire...");
+                log.info("token is expired...");
                 return false;
             }
             UserDto user = (UserDto) userDetailsService.loadUserByUsername(username);
@@ -46,7 +46,7 @@ public record WebSocketInterceptor(UserDetailsService userDetailsService,
     }
 
     @Override
-    public void afterHandshake(@NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response, @NotNull WebSocketHandler wsHandler, Exception exception) {
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
 
     }
 }

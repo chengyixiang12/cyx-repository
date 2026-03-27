@@ -94,9 +94,9 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public void deleteDictDataBatch(DeleteRequest request) {
-        sysDictDataMapper.deleteByIds(request.getIds());
-        request.getIds().forEach(this::removeCache);
+    public void deleteDictDataBatch(List<Long> ids) {
+        sysDictDataMapper.deleteByIds(ids);
+        ids.forEach(this::removeCache);
     }
 
     @Override

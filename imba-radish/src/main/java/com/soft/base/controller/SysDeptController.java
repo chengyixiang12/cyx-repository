@@ -118,15 +118,6 @@ public class SysDeptController {
         return R.ok();
     }
 
-    @SysLog(value = "批量删除部门", module = LogModuleEnum.DEPT)
-    @PreAuthorize(value = "@cps.hasPermission('sys_dept_del')")
-    @DeleteMapping(value = "/deleteRoleBatch")
-    @Operation(summary = "批量删除部门")
-    public R<Object> deleteRoleBatch(@RequestBody @Valid DeleteRequest request) {
-        sysDeptService.deleteDeptBatch(request);
-        return R.ok();
-    }
-
     @GetMapping
     @Operation(summary = "获取部门（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)

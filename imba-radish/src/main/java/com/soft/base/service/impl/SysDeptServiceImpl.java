@@ -84,11 +84,6 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
-    public void deleteDeptBatch(DeleteRequest request) {
-        sysDeptMapper.deleteDeptBatch(request);
-    }
-
-    @Override
     public DeptVo getDept(Long id) {
         return sysDeptMapper.getDept(id);
     }

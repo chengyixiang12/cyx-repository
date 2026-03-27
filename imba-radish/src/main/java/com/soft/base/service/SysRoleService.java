@@ -22,7 +22,7 @@ public interface SysRoleService extends IService<SysRole> {
 
     Boolean existCode(String code, Long id);
 
-    void deleteRoleBatch(DeleteRequest request);
+    void deleteRoleBatch(List<Long> ids);
 
     Boolean fixRoleFlag(Long id);
 

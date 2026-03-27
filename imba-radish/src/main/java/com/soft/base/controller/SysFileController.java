@@ -215,7 +215,6 @@ public class SysFileController {
             return R.fail("分片数量错误");
         }
 
-        ;
         File fileTemp = new File(chunkDir, fileName);
         try (FileOutputStream os = new FileOutputStream(fileTemp);
                 FileChannel out = os.getChannel()) {

@@ -144,9 +144,9 @@ const resetSearch = () => {
 }
 
 // 删除文件
-const handleDelete = async (id: string) => {
-  await deleteFileApi(id)
-  await loadFiles()
+const handleDelete = (id: string) => {
+  deleteFileApi(id)
+  loadFiles()
 }
 
 const handlePageChange = (val: number) => {
@@ -269,11 +269,11 @@ const customChunkUpload = async (options: any) => {
     } finally {
       uploadProgress.value = 0;
       uploadDialogVisible.value = false;
-      if (uploadRef.value) {
-        uploadRef.value.clearFiles();
-      }
-      loadFiles();
     }
+  }
+  loadFiles();
+  if (uploadRef.value) {
+    uploadRef.value.clearFiles();
   }
 };
 

@@ -30,8 +30,6 @@ public interface SysDeptService extends IService<SysDept> {
 
     void editDept(EditDeptRequest request);
 
-    void deleteDeptBatch(DeleteRequest request);
-
     DeptVo getDept(Long id);
 
     List<ExportDeptDto> exportDept(ExportDeptRequest request);
