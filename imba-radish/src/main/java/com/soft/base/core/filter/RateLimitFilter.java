@@ -1,10 +1,10 @@
 package com.soft.base.core.filter;
 
 import com.soft.base.constants.HttpConstant;
-import com.soft.base.constants.RedisConstant;
 import com.soft.base.enums.ResultEnum;
 import com.soft.base.properties.RateLimitProperty;
 import com.soft.base.resultapi.R;
+import com.soft.base.utils.CommonUtil;
 import com.soft.base.utils.ResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 /**
  * @Author: cyx
@@ -44,7 +43,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        String key = getIp(request);
+        String key = CommonUtil.getIp(request);
         // 获取当前时间戳
         long currentTimestamp = System.currentTimeMillis();
 
@@ -66,15 +65,5 @@ public class RateLimitFilter extends OncePerRequestFilter {
         redisTemplate.expire(key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
 
         filterChain.doFilter(request, response);
-    }
-
-    @NotNull
-    private static String getIp(HttpServletRequest request) {
-        String clientIp = request.getRemoteAddr().replaceAll(":", ""); // 获取客户端 IP 地址
-        //        String requestURI = request.getRequestURI().replaceAll(BaseConstant.LEFT_SLASH, BaseConstant.BLANK_CHARACTER);
-//            log.info("用户ip：{}", clientIp);
-//            log.info("用户请求接口路径：{}", request.getRequestURI());
-        String escapedRegex = Pattern.quote(".");
-        return RedisConstant.RATE_LIMIT_KEY + clientIp.replaceAll(escapedRegex, "");
     }
 }

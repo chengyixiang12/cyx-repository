@@ -15,15 +15,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static com.soft.base.constants.BaseConstant.LEFT_SLASH;
 
@@ -50,14 +52,13 @@ public class SysLogAspect {
 
     private final SysLogProduce sysLogProduce;
 
-    private final HttpServletRequest servletRequest;
-
     private final SecurityUtil securityUtil;
 
     @Around("@annotation(sysLog)")
     public Object around(ProceedingJoinPoint joinPoint, SysLog sysLog) throws Throwable {
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
+        HttpServletRequest servletRequest = ((ServletRequestAttributes)(Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))).getRequest();
         if (logEnable) {
             LogDto logDto = new LogDto();
             try {

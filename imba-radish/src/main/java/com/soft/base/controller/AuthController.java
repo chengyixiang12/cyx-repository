@@ -100,7 +100,7 @@ public class AuthController {
                 return R.fail("图形验证码错误");
             }
         } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
-            Boolean existEmailCaptcha = redisTemplate.hasKey(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail().hashCode());
+            Boolean existEmailCaptcha = redisTemplate.hasKey(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(request.getEmail().hashCode()));
             if (!existEmailCaptcha) {
                 return R.fail("邮箱验证码已过期");
             }

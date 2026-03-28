@@ -26,7 +26,7 @@ import com.soft.base.model.vo.UsersVo;
 import com.soft.base.rabbitmq.producer.EmailProduce;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
-import com.soft.base.utils.UniversalUtil;
+import com.soft.base.utils.CommonUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
@@ -74,8 +74,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     private final SysUserRoleService sysUserRoleService;
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    private final UniversalUtil universalUtil;
 
     private final EmailProduce emailProduce;
 
@@ -129,7 +127,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resetPassword(Long id) {
-        String password = universalUtil.generatePassword();
+        String password = CommonUtil.generatePassword();
 
         String encode = passwordEncoder.encode(password);
 

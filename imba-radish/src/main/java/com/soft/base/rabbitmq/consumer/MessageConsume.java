@@ -51,7 +51,7 @@ public class MessageConsume {
             helper.setText(emailDto.getContent(), true);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            throw new GlobalException(e);
+            log.error("{}邮箱异常，{}", emailDto.getEmail(), e.getMessage(), e);
         }
     }
 

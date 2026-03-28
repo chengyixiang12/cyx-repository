@@ -7,7 +7,6 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.UserDto;
-import com.soft.base.utils.UniversalUtil;
 import com.soft.base.websocket.handle.message.WebSocketConcreteHandler;
 import com.soft.base.websocket.receive.FileTransferStartRecParam;
 import com.soft.base.websocket.send.SendParams;
@@ -33,17 +32,13 @@ import java.io.IOException;
 @Slf4j
 public class FileTransferStartHandler implements WebSocketConcreteHandler<String> {
 
-    private final UniversalUtil universalUtil;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Value(value = "${tmp.path}")
     private String tmpPath;
 
     @Autowired
-    public FileTransferStartHandler(UniversalUtil universalUtil,
-                                    RedisTemplate<String, Object> redisTemplate) {
-        this.universalUtil = universalUtil;
+    public FileTransferStartHandler(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

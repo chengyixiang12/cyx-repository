@@ -1,16 +1,14 @@
 package com.soft.base.utils;
 
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.exception.GlobalException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
@@ -19,7 +17,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Author: cyx
@@ -27,9 +24,8 @@ import java.util.UUID;
  * @DateTime: 2024/11/7 17:49
  **/
 
-@Component
 @Valid
-public class UniversalUtil {
+public class CommonUtil {
 
     // 定义各类字符池
     private static final String UPPER_CASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -48,7 +44,7 @@ public class UniversalUtil {
      * @param length
      * @return
      */
-    public String generate(Integer length) {
+    public static String generate(Integer length) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
             double random = Math.random() * 10;
@@ -61,7 +57,7 @@ public class UniversalUtil {
      * 生成12位随机密码
      * @return 符合要求的12位随机密码
      */
-    public String generatePassword() {
+    public static String generatePassword() {
         int passwordLength = 12;
         List<Character> passwordChars = new ArrayList<>(passwordLength);
 
@@ -93,7 +89,7 @@ public class UniversalUtil {
      * @param charPool 字符池
      * @return 随机字符
      */
-    private char getRandomChar(String charPool) {
+    private static char getRandomChar(String charPool) {
         int randomIndex = SECURE_RANDOM.nextInt(charPool.length());
         return charPool.charAt(randomIndex);
     }
@@ -103,7 +99,7 @@ public class UniversalUtil {
      * @param is
      * @return
      */
-    public String generateFileHash(InputStream is) {
+    public static String generateFileHash(InputStream is) {
         try {
             MessageDigest digest = MessageDigest.getInstance(BaseConstant.TYPE_ALGORITHM);
             try (DigestInputStream dis = new DigestInputStream(is, digest)) {
@@ -118,5 +114,38 @@ public class UniversalUtil {
         } catch (NoSuchAlgorithmException | IOException e) {
             throw new GlobalException(e);
         }
+    }
+
+    /**
+     * 获取客户端ip
+     * @param request
+     * @return
+     */
+    public static String getIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+
+        // 多级代理的情况，取第一个IP
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+
+        // 移除 IPv6 地址中的冒号，替换点号
+        String cleanIp = ip.replaceAll(":", "").replaceAll("\\.", "");
+        return RedisConstant.RATE_LIMIT_KEY + cleanIp;
     }
 }

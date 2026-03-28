@@ -64,6 +64,13 @@ spring:
     username: ${RABBIT_MQ_USERNAME}
     password: ${RABBIT_MQ_PASSWORD}
     virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: auto
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 1
   jmx:
     # 启动JMX监控，jconsole
     enabled: true

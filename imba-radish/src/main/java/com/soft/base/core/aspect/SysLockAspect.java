@@ -40,7 +40,6 @@ public class SysLockAspect {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
     public SysLockAspect(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }

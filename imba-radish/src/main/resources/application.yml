@@ -165,3 +165,4 @@ minio:
   avatar-bucket: ${MINIO_AVATAR_BUCKET}
   expire: 3600
   time-unit: seconds
+  connect-timeout: 10000

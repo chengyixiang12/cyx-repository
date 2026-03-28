@@ -109,7 +109,7 @@ public class RedisConstant {
     public static final String FILE_SIGNATURE_URL = "radish:file-signature-url:";
 
     /**
-     * webClient实例
+     * 接口访问控制
      */
-    public static final String HTTP_CLIENT_BUILDER = "radish:http-client-builder:";
+    public static final String ACCESS_CONTROL = "radish:access-control:";
 }
