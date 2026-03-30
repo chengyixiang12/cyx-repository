@@ -58,7 +58,7 @@ public class MessageController {
         this.sysUsersService = sysUsersService;
     }
 
-    @AccessControl(times = 3, interval = 10, unit = TimeUnit.MINUTES)
+    @AccessControl(interval = 10, unit = TimeUnit.MINUTES)
     @GetMapping(value = "/sendRegistCaptcha")
     @Operation(summary = "发送注册验证码")
     @Parameter(name = "email", description = "邮箱地址", required = true, in = ParameterIn.QUERY)
@@ -73,7 +73,7 @@ public class MessageController {
         return R.ok("验证码已发送，请留意您的邮箱", null);
     }
 
-    @AccessControl(times = 2, interval = 10, unit = TimeUnit.MINUTES)
+    @AccessControl(interval = 10, unit = TimeUnit.MINUTES)
     @GetMapping(value = "/sendLoginCaptcha")
     @Operation(summary = "发送登录验证码")
     @Parameter(name = "email", description = "邮箱", required = true, in = ParameterIn.QUERY)

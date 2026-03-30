@@ -56,8 +56,11 @@ public class LogDto implements Serializable {
     @Schema(description = "操作系统/浏览器信息")
     private String osBrowserInfo;
 
-    @Schema(description = "创建者")
+    @Schema(description = "创建人")
     private Long createBy;
+
+    @Schema(description = "修改人")
+    private Long updateBy;
 
     @Schema(description = "日志类型")
     private String type;

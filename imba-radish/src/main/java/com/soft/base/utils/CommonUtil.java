@@ -5,7 +5,6 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.exception.GlobalException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -144,8 +143,6 @@ public class CommonUtil {
             ip = ip.split(",")[0].trim();
         }
 
-        // 移除 IPv6 地址中的冒号，替换点号
-        String cleanIp = ip.replaceAll(":", "").replaceAll("\\.", "");
-        return RedisConstant.RATE_LIMIT_KEY + cleanIp;
+        return ip;
     }
 }

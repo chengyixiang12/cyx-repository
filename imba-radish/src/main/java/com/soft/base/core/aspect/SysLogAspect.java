@@ -93,6 +93,7 @@ public class SysLogAspect {
                 logDto.setOsBrowserInfo(osName + LEFT_SLASH + browserName);
 
                 logDto.setCreateBy(securityUtil.getUserInfo().getId());
+                logDto.setUpdateBy(securityUtil.getUserInfo().getId());
             } catch (GlobalException e) {
                 logDto.setLogLevel(LogLevelEnum.ERROR.getCode());
                 logDto.setExceptionInfo(e.getLocalizedMessage());

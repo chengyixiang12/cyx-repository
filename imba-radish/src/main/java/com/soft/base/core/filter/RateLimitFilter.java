@@ -1,6 +1,7 @@
 package com.soft.base.core.filter;
 
 import com.soft.base.constants.HttpConstant;
+import com.soft.base.constants.RedisConstant;
 import com.soft.base.enums.ResultEnum;
 import com.soft.base.properties.RateLimitProperty;
 import com.soft.base.resultapi.R;
@@ -48,7 +49,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         long currentTimestamp = System.currentTimeMillis();
 
         // 使用 Redis 存储请求的时间戳
-        Long requestCount = redisTemplate.opsForZSet().count(key, currentTimestamp - rateLimitProperty.getWindowSize() * 1000L, currentTimestamp);
+        Long requestCount = redisTemplate.opsForZSet().count(RedisConstant.RATE_LIMIT_KEY + key, currentTimestamp - rateLimitProperty.getWindowSize() * 1000L, currentTimestamp);
 
         // 如果超过最大请求次数，拒绝请求
         if (requestCount != null && requestCount >= rateLimitProperty.getMaxRequest()) {
@@ -56,13 +57,13 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        log.debug("ip: {}, uri: {}", request.getRemoteAddr(), request.getRequestURI());
+        log.info("ip: {}, uri: {}", key, request.getRequestURI());
 
         // 记录请求时间戳
-        redisTemplate.opsForZSet().add(key, String.valueOf(currentTimestamp), currentTimestamp);
+        redisTemplate.opsForZSet().add(RedisConstant.RATE_LIMIT_KEY + key, String.valueOf(currentTimestamp), currentTimestamp);
 
         // 设置请求过期时间为窗口大小，确保缓存不会无限增大
-        redisTemplate.expire(key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
+        redisTemplate.expire(RedisConstant.RATE_LIMIT_KEY + key, rateLimitProperty.getWindowSize(), TimeUnit.SECONDS);
 
         filterChain.doFilter(request, response);
     }
