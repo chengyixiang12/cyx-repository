@@ -3,15 +3,13 @@ package com.soft.base.service.impl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysUser;
+import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.vo.LoginVo;
-import com.soft.base.service.AuthService;
-import com.soft.base.service.SecretKeyService;
-import com.soft.base.service.SysDeptService;
-import com.soft.base.service.SysUsersService;
+import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
@@ -58,10 +56,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final SysDeptService sysDeptService;
 
+    private final SysUserRoleService sysUserRoleService;
+
+    private final SysRoleService sysRoleService;
+
     @Override
     public void register(SysUser sysUser) {
         try {
-            Long userId = sysUsersService.getManager(BaseConstant.MANAGER_ROLE_CODE);
+            Long userId = sysUsersService.getManager(BaseConstant.Role.MANAGER_ROLE_CODE);
             sysUser.setCreateBy(userId);
             sysUser.setUpdateBy(userId);
             // 解密密码
@@ -75,6 +77,12 @@ public class AuthServiceImpl implements AuthService {
             Long deptId = sysDeptService.getRootDept();
             sysUser.setDeptId(deptId);
             sysUsersService.save(sysUser);
+
+            // 赋予注册用户角色
+            SysUserRole sysUserRole = new SysUserRole();
+            sysUserRole.setUserId(sysUser.getId());
+            sysUserRole.setRoleId(sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG));
+            sysUserRoleService.save(sysUserRole);
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }

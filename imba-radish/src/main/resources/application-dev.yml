@@ -71,8 +71,8 @@ spring:
     virtual-host: /
     listener:
       simple:
-        acknowledge-mode: auto
-        default-requeue-rejected: false
+        acknowledge-mode: manual
+        prefetch: 1
         retry:
           enabled: false
   jmx:

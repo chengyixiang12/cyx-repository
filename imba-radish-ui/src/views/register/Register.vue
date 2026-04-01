@@ -13,7 +13,7 @@
                     @done="handleDone" />
             </div>
 
-            <div class="bottom-text" v-if="activeStep === 3">
+            <div class="bottom-actions" v-if="activeStep === 3">
                 <el-button type="primary" @click="goToLogin">前往登录</el-button>
             </div>
         </el-card>
@@ -67,20 +67,27 @@ const goToLogin = () => {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
     padding: 150px;
+    background-color: #f5f7fa;
 }
 
 .register-card {
     width: 700px;
     padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .form-body {
-    margin-top: 20px;
+    margin-top: 30px;
+    min-height: 300px;
 }
 
-.bottom-text {
+.bottom-actions {
     margin-top: 30px;
     text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e4e7ed;
 }
 </style>

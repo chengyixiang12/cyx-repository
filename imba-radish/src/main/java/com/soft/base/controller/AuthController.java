@@ -126,7 +126,7 @@ public class AuthController {
             return R.fail("邮箱已注册");
         }
 
-        String captchaCache = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail().hashCode());
+        String captchaCache = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(request.getEmail().hashCode()));
         if (!request.getVerificationCode().equals(captchaCache)) {
             return R.fail("验证码错误，请检查您的邮箱是否更改或者验证码是否过期");
         }

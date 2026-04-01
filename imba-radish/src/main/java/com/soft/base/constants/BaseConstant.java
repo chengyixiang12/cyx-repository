@@ -65,11 +65,6 @@ public class BaseConstant {
     public final static String AES_OFFSET = "0000000001000001";
 
     /**
-     * 默认管理员角色
-     */
-    public final static String MANAGER_ROLE_CODE = "ROLE_ADMIN";
-
-    /**
      * 登录方式：密码
      */
     public final static String LOGIN_METHOD_PASSWORD = "password";
@@ -104,12 +99,12 @@ public class BaseConstant {
          * 非默认角色标识
          */
         public final static Integer UN_DEFAULT_ROLE_FLAG = 0;
-    }
 
-    /**
-     * 本地缓存永不过期
-     */
-    public final static Long LOCAL_CACHE_EXPIRE_NEVER = -1L;
+        /**
+         * 默认管理员角色
+         */
+        public final static String MANAGER_ROLE_CODE = "ROLE_ADMIN";
+    }
 
     /**
      * tmp文件后缀

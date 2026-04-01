@@ -23,6 +23,6 @@ public class SysLogProduce {
      * @param logDto
      */
     public void send(LogDto logDto) {
-        rabbitTemplate.convertAndSend(RabbitmqConstant.DIRECT_EXCHANGE, RabbitmqConstant.DIRECT_ROUTEKEY_ONE, logDto);
+        rabbitTemplate.convertAndSend(RabbitmqConstant.Direct.EXCHANGE, RabbitmqConstant.Direct.ROUTE_KEY_ONE, logDto);
     }
 }

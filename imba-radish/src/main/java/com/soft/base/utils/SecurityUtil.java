@@ -44,6 +44,6 @@ public class SecurityUtil {
      * @return
      */
     public boolean isAdmin() {
-        return getRoleCodes().contains(BaseConstant.MANAGER_ROLE_CODE);
+        return getRoleCodes().contains(BaseConstant.Role.MANAGER_ROLE_CODE);
     }
 }
