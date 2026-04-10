@@ -19,6 +19,7 @@ import java.util.Properties;
  **/
 @Slf4j
 public class EnvLoaderHandler implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
     @Override
     public void initialize(ConfigurableApplicationContext context) {
         try (InputStream is = new FileInputStream(".env")) {

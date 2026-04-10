@@ -15,10 +15,10 @@ spring:
           url: ${DATASOURCE_URL_MYSQL_MASTER}
           driver-class-name: com.mysql.cj.jdbc.Driver
         slave:
-          username: ${DATASOURCE_USERNAME_POSTGRESQL_SLAVE}
-          password: ${DATASOURCE_PASSWORD_POSTGRESQL_SLAVE}
-          url: ${DATASOURCE_URL_POSTGRESQL_SLAVE}
-          driver-class-name: org.postgresql.Driver
+          username: ${DATASOURCE_USERNAME_MYSQL_MASTER}
+          password: ${DATASOURCE_PASSWORD_MYSQL_MASTER}
+          url: ${DATASOURCE_URL_MYSQL_MASTER}
+          driver-class-name: com.mysql.cj.jdbc.Driver
       hikari:
         # 连接池最大连接数
         maximum-pool-size: 10
@@ -131,7 +131,7 @@ rate-limit:
   # 是否开启限流
   enable: true
   # 最大请求数；单位：个
-  max-request: 60
+  max-request: 20
   # 窗口大小；单位：秒
   window-size: 1
 # 大文件存储路径

@@ -65,8 +65,11 @@
 
         <!-- 源码地址 -->
         <div class="source-link">
-          <el-link href="https://github.com/chengyixiang12/cyx-repository/tree/for-update" target="_blank" :underline="false">
-            <el-icon><Star /></el-icon>
+          <el-link href="https://github.com/chengyixiang12/cyx-repository/tree/for-update" target="_blank"
+            :underline="false">
+            <el-icon>
+              <Star />
+            </el-icon>
             <span>源码地址</span>
           </el-link>
         </div>

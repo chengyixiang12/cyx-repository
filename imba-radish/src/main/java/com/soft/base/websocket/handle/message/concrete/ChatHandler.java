@@ -65,7 +65,11 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         List<Message> messages = new ArrayList<>();
 
         // 添加系统提示词
-        messages.add(SystemMessage.builder().text("你是一名程序员助手，专注于解决java方面的问题，请使用中文回答。").build());
+        messages.add(SystemMessage
+                .builder()
+                .text("你是一名程序员助手，专注于解决java方面的问题，请使用中文回答。")
+                .text("如果询问的问题与java编程无关，则拒绝回答")
+                .build());
 
         if (CollectionUtil.isNotEmpty(recentContext)) {
             for (GetRecentContentDto getRecentContentDto : recentContext) {

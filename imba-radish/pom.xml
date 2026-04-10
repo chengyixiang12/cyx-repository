@@ -37,6 +37,7 @@
         <spring.ai.version>1.1.0</spring.ai.version>
         <flowable.version>7.1.0</flowable.version>
         <postgresql.version>42.3.8</postgresql.version>
+        <modulith.version>1.4.9</modulith.version>
     </properties>
 
     <dependencyManagement>
@@ -231,6 +232,11 @@
                     <artifactId>tomcat-jdbc</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-core</artifactId>
+            <version>${modulith.version}</version>
         </dependency>
         <dependency>
             <groupId>io.minio</groupId>
