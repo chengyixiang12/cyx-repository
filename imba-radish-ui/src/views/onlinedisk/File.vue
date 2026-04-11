@@ -103,6 +103,7 @@ const uploadRef = ref();
 
 const uploadProgress = ref<number>(0);
 const chunkSize = 5 * 1024 * 1024;
+const maxChunkSize = 5 * 100 * 1024 * 1024;
 const uploadDialogVisible = ref(false);
 
 const searchForm = ref<FilesRequest>({
@@ -239,7 +240,7 @@ const customChunkUpload = async (options: any) => {
     const formData = new FormData();
     formData.append('multipartFile', file);
     await uploadFileApi(formData);
-  } else {
+  } else if (file.size <= maxChunkSize) {
     uploadDialogVisible.value = true;
     try {
       // 1. 重置进度
@@ -257,6 +258,8 @@ const customChunkUpload = async (options: any) => {
         const start = i * chunkSize;
         const end = Math.min(start + chunkSize, file.size);
         const chunk = file.slice(start, end);
+        console.log('start', start);
+        console.log('end', end);
         await uploadSingleChunk(chunk, i, fileMd5);
         uploadProgress.value = Math.round((i + 1) / totalChunks * 100);
       }
@@ -270,6 +273,8 @@ const customChunkUpload = async (options: any) => {
       uploadProgress.value = 0;
       uploadDialogVisible.value = false;
     }
+  } else {
+    showMessage("文件限制500MB", 'warning')
   }
   loadFiles();
   if (uploadRef.value) {

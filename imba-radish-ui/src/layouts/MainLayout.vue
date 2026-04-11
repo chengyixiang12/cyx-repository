@@ -264,7 +264,9 @@ const initWebsocket = async () => {
     }
     ws.refreshToken = (data: WebsocketMessage) => {
         const token = data.token;
-        sessionStorage.setItem('Authorization', token);
+        if (token) {
+            sessionStorage.setItem('Authorization', token);
+        }
     };
 }
 

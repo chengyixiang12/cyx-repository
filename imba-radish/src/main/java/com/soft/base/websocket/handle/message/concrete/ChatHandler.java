@@ -68,7 +68,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         messages.add(SystemMessage
                 .builder()
                 .text("你是一名程序员助手，专注于解决java方面的问题，请使用中文回答。")
-                .text("如果询问的问题与java编程无关，则拒绝回答")
+                .text("如果询问的问题与java编程无关，则回答：请询问java相关的问题！")
                 .build());
 
         if (CollectionUtil.isNotEmpty(recentContext)) {

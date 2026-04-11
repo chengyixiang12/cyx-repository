@@ -187,11 +187,8 @@ public class SysFileController {
                                  @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") MultipartFile chunk) throws IOException {
 
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
-        if (!chunkDir.exists()) {
-            boolean flag = chunkDir.mkdirs();
-            if (!flag) {
-                return R.fail("分片目录创建失败");
-            }
+        if (!chunkDir.exists() && !chunkDir.mkdirs()) {
+            return R.fail("分片目录创建失败");
         }
 
         File chunkFile = new File(chunkDir, chunkIndex.toString());
@@ -237,7 +234,7 @@ public class SysFileController {
                 chunk.delete();
             }
 
-            UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp);
+            UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp, fileMd5);
 
             return R.ok("上传成功", uploadFileVo);
         } catch (IOException e) {

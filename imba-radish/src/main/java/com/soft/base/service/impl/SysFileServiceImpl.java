@@ -263,7 +263,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public UploadFileVo mergeChunk(File fileTemp) {
+    public UploadFileVo mergeChunk(File fileTemp, String fileMd5) {
         String fileName = fileTemp.getName();
         String fileKey = IdUtil.fastSimpleUUID();
         String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
@@ -279,9 +279,10 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         sysFile.setOriginalName(fileName);
         sysFile.setFileSize(fileSize);
         sysFile.setFileSize(fileSize);
+        sysFile.setFileHash(fileMd5);
         sysFileMapper.insert(sysFile);
 
-        fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize, sysFile.getId());
+        fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize);
 
         UploadFileVo uploadFileVo = new UploadFileVo();
         uploadFileVo.setFileName(fileName);

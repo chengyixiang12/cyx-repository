@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @Author: cyx
  * @Description: 
@@ -20,4 +22,12 @@ public class RateLimitProperty {
     private Long maxRequest;
 
     private Long windowSize;
+
+    private Permit permit = new Permit();
+
+    @Data
+    public static class Permit {
+
+        private List<String> urls;
+    }
 }

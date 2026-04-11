@@ -44,6 +44,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
+        String requestURI = request.getRequestURI();
+
+        // 放行的接口不限流
+        if (rateLimitProperty.getPermit().getUrls().contains(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String key = CommonUtil.getIp(request);
         // 获取当前时间戳
         long currentTimestamp = System.currentTimeMillis();
@@ -57,7 +65,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        log.info("ip: {}, uri: {}", key, request.getRequestURI());
+        log.info("ip: {}, uri: {}", key, requestURI);
 
         // 记录请求时间戳
         redisTemplate.opsForZSet().add(RedisConstant.RATE_LIMIT_KEY + key, String.valueOf(currentTimestamp), currentTimestamp);
