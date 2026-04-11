@@ -1,10 +1,6 @@
 package com.soft.base.async;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.soft.base.entity.SysFile;
-import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.utils.MinioUtil;
-import com.soft.base.utils.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
