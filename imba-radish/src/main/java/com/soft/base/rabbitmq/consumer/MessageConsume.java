@@ -5,7 +5,6 @@ import com.soft.base.constants.RabbitmqConstant;
 import com.soft.base.model.dto.LogDto;
 import com.soft.base.model.dto.rabbitmq.EmailDto;
 import com.soft.base.service.SysLogService;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +44,8 @@ public class MessageConsume {
      * @param emailDto
      */
     @RabbitListener(queues = RabbitmqConstant.Topic.QUEUE_SEND_EMAIL)
-    public void sendCaptcha(EmailDto emailDto, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) {
+    public void sendCaptcha(EmailDto emailDto, Channel channel,
+                            @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -54,18 +54,12 @@ public class MessageConsume {
             helper.setSubject(topic);
             helper.setText(emailDto.getContent(), true);
             javaMailSender.send(mimeMessage);
-
             channel.basicAck(deliveryTag, false);
+            log.info("邮件发送成功");
         } catch (Exception e) {
-            log.error("{}验证码发送异常，{}", emailDto.getEmail(), e.getMessage(), e);
-            try {
-                // 参数1: deliveryTag
-                // 参数2: false表示不重新入队，true表示重新入队
-                // 参数3: true表示重新入队，false表示丢弃或进入死信队列
-                channel.basicNack(deliveryTag, false, false);
-            } catch (IOException ex) {
-                log.error(ex.getMessage(), ex);
-            }
+            log.warn("邮件发送失败");
+            log.error(e.getMessage(), e);
+            channel.basicNack(deliveryTag, false, false);
         }
     }
 
@@ -74,7 +68,14 @@ public class MessageConsume {
      * @param logDto
      */
     @RabbitListener(queues = RabbitmqConstant.Direct.QUEUE_ONE)
-    public void saveSysLog(LogDto logDto) {
-        sysLogService.saveLog(logDto);
+    public void saveSysLog(LogDto logDto, Channel channel,
+                           @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
+        try {
+            sysLogService.saveLog(logDto);
+            channel.basicAck(deliveryTag, false);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            channel.basicNack(deliveryTag, false, false);
+        }
     }
 }

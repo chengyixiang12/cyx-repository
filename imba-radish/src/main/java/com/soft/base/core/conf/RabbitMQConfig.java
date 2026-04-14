@@ -33,6 +33,12 @@ public class RabbitMQConfig {
         factory.setConnectionFactory(connectionFactory);
         // 消费端也设置Jackson2JsonMessageConverter，用于反序列化
         factory.setMessageConverter(new Jackson2JsonMessageConverter());
+        // 消息手动确认
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        // 每次从队列取出一条消息消费
+        factory.setPrefetchCount(1);
+        // 拒绝重试
+        factory.setDefaultRequeueRejected(false);
         return factory;
     }
 

@@ -30,4 +30,10 @@ public @interface AccessControl {
      * @return
      */
     TimeUnit unit() default TimeUnit.SECONDS;
+
+    /**
+     * 唯一标识
+     * @return
+     */
+    String key() default "";
 }

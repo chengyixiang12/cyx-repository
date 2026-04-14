@@ -64,12 +64,6 @@ spring:
     username: ${RABBIT_MQ_USERNAME}
     password: ${RABBIT_MQ_PASSWORD}
     virtual-host: /
-    listener:
-      simple:
-        acknowledge-mode: manual
-        prefetch: 1
-        retry:
-          enabled: false
   jmx:
     # 启动JMX监控，jconsole
     enabled: true
@@ -129,6 +123,9 @@ rate-limit:
   max-request: 20
   # 窗口大小；单位：秒
   window-size: 1
+  permit:
+    urls:
+      - /file/uploadChunk
 # 大文件存储路径
 storage:
   big-file:
