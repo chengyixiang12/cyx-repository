@@ -32,6 +32,9 @@ public class GetUserVo {
     @Schema(description = "部门id")
     private String deptId;
 
+    @Schema(description = "用户头像")
+    private String avatar;
+
     @Schema(description = "角色id")
     private List<String> roleIds;
 }

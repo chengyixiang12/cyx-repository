@@ -33,6 +33,8 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
                                @Param("userId") Long userId);
 
     void deleteRealByIds(@Param("ids") List<Long> ids);
+
+    SysFile getFileByMd5(@Param("fileMd5") String fileMd5);
 }
 
 

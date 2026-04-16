@@ -1,27 +1,13 @@
 package com.soft.base.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.apache.ibatis.type.Alias;
 
 import java.util.List;
 
-/**
- * @Author: cyx
- * @Description: 
- * @DateTime: 2024/11/18 17:51
- **/
-
 @Data
-@Schema(description = "编辑用户请求参数")
-@Alias(value = "EditUserRequest")
-public class EditUserRequest {
-
-    @Schema(description = "主键")
-    @NotNull(message = "id不能为空")
-    private Long id;
+@Schema(description = "修改个人信息请求参数")
+public class EditSelfRequest {
 
     @Schema(description = "昵称")
     private String nickname;

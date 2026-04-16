@@ -9,6 +9,7 @@ import com.soft.base.model.vo.FilesVo;
 import com.soft.base.model.vo.PageVo;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -21,7 +22,7 @@ import java.util.List;
 */
 public interface SysFileService extends IService<SysFile> {
 
-    UploadFileVo uploadFile(MultipartFile multipartFile);
+    UploadFileVo uploadFile(MultipartFile multipartFile, String fileMd5);
 
     FileDetailDto getFileDetailById(Long id);
 
@@ -40,4 +41,7 @@ public interface SysFileService extends IService<SysFile> {
     String getFileUrl(Long id, String isInline);
 
     UploadFileVo mergeChunk(File fileTemp, String fileMd5);
+
+    String getFileByMd5(String fileMd5, String fileName);
+
 }

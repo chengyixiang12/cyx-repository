@@ -27,8 +27,8 @@
                 </el-tooltip>
                 <el-dropdown>
                     <span class="user-info">
-                        <el-avatar :size="36" :src="user.avatar" />
-                        <span class="user-name">{{ user.name }}</span>
+                        <el-avatar :size="36" :src="avatarUrl" />
+                        <span class="user-name">{{ userInfo.nickname }}</span>
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>
@@ -109,29 +109,24 @@ import {
     Fold,
     HomeFilled,
     Bell
-} from '@element-plus/icons-vue';
-import { clearCache } from '../utils/clearCache';
-import { UserInfoVo } from '@/types/login';
-import { logouted } from '@/api/login';
-import { getAvatarApi } from '@/api/user';
-import { ElTooltip } from 'element-plus';
-import type { MenuItem } from '@/types/menu';
-import { getMessageNumApi } from '@/api/message';
-import { getLeftMenusApi } from '@/api/dashboard';
-import ModuleTabs from './component/ModuleTabs.vue';
+} from '@element-plus/icons-vue'
+import { clearCache } from '../utils/clearCache'
+import { UserInfoVo } from '@/types/login'
+import { logouted } from '@/api/login'
+import { ElTooltip } from 'element-plus'
+import type { MenuItem } from '@/types/menu'
+import { getMessageNumApi } from '@/api/message'
+import { getLeftMenusApi } from '@/api/dashboard'
+import ModuleTabs from './component/ModuleTabs.vue'
 import { useRoute } from 'vue-router'
-import { CachedTabsType } from '@/types/layout';
-import { getWebSocketInstance } from '@/utils/websocket';
-import { showMessage } from '@/utils/message';
-import { avatar_url } from '@/common/global-config';
-import { WebsocketMessage } from '@/utils/websocketManager';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { CachedTabsType } from '@/types/layout'
+import { getWebSocketInstance } from '@/utils/websocket'
+import { showMessage } from '@/utils/message'
+import { WebsocketMessage } from '@/utils/websocketManager'
+import { downloadFileApi } from '@/api/file';
 
-const router = useRouter();
-const user = ref({
-    name: '',
-    avatar: ''
-});
+const router = useRouter()
+const avatarUrl = ref('')
 const route = useRoute()
 const isCollapsed = ref(false)
 // 未读消息数
@@ -219,11 +214,6 @@ const loadMenu = async () => {
     menuList.value = await getLeftMenusApi();
 }
 
-// 组件挂载时获取用户昵称
-const getNickname = async () => {
-    user.value.name = userInfo.nickname;
-}
-
 const handleMessageClick = async () => {
     // 跳转到消息界面
 }
@@ -272,15 +262,17 @@ const initWebsocket = async () => {
 
 // 获取用户头像
 const getAvatar = async () => {
-    const userId = userInfo.id
-    getAvatarApi(userId).then((uri) => {
-        user.value.avatar = avatar_url + '/' + uri
-    })
+    const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
+    if (!userInfo.avatar) {
+        avatarUrl.value = ''
+        return
+    }
+    const res = await downloadFileApi(userInfo.avatar)
+    avatarUrl.value = URL.createObjectURL(res)
 }
 
 onMounted(() => {
     loadMenu();
-    getNickname();
     getMessageNum();
     existDashboard();
     initWebsocket();

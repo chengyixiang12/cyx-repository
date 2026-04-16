@@ -103,3 +103,25 @@ export async function getFileUrlApi(id: string, isInline: string): Promise<strin
   const res = await get<string>('/file/getFileUrl', { flag: true, params: { id, isInline}});
   return res.data;
 }
+
+/**
+ * 根据md5获取文件
+ * @param fileMd5 
+ * @param fileName 
+ * @returns 
+ */
+export async function getFileByMd5Api(fileMd5: string, fileName: string): Promise<string> {
+  const res = await get<string>('/file/getFileByMd5', { flag: true, params: { fileMd5, fileName }});
+  return res.data;
+}
+
+/**
+ * 校据md5判断文件是否存在
+ * @param fileMd5 
+ * @param fileName 
+ * @returns 
+ */
+export async function existFileApi(fileMd5: string, fileName: string): Promise<boolean> {
+  const res = await get<boolean>('/file/existFile', { flag: true, params: { fileMd5, fileName }});
+  return res.data;
+}

@@ -112,7 +112,7 @@ const currentTodo = ref({
 // 方法
 const getNickname = () => {
   const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
-  nickname.value = userInfo.nickname;
+  nickname.value = userInfo.nickname ?? '';
 }
 
 const formatTime = (time: string) => {

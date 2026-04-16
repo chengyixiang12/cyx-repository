@@ -30,6 +30,7 @@ import com.soft.base.utils.CommonUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
+import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -335,10 +336,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     private void sendWebsocket(Long id) throws IOException {
         // 重置用户名后需强制用户离线
         ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        JSONObject forceOfflineParam = new JSONObject();
-        forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        forceOfflineParam.put("receiver", id);
-        TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
+        ForceOfflineRecParam forceOfflineParam = new ForceOfflineRecParam();
+        forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+        forceOfflineParam.setReceiver(id);
+        forceOfflineParam.setMsg("密码已修改，请重新登录");
+        TextMessage textMessage = new TextMessage(forceOfflineParam.toString());
         concreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
     }
 

@@ -22,7 +22,7 @@ public class FileHashDto {
     private String fileKey;
 
     @Schema(description = "存储地址；1：minio；2：磁盘")
-    private String location;
+    private Integer location;
 
     @Schema(description = "文件路径")
     private String objectKey;
@@ -31,8 +31,11 @@ public class FileHashDto {
     private String fileSuffix;
 
     @Schema(description = "文件大小；单位：B")
-    private String fileSize;
+    private Long fileSize;
 
     @Schema(description = "文件hash")
     private String fileHash;
+
+    @Schema(description = "桶名")
+    private String bucket;
 }

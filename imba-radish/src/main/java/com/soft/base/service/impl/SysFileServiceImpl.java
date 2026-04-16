@@ -2,6 +2,7 @@ package com.soft.base.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.async.FileUploadAsync;
@@ -37,6 +38,7 @@ import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Wrapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     private final FileUploadAsync fileUploadAsync;
 
     @Override
-    public UploadFileVo uploadFile(MultipartFile multipartFile) {
+    public UploadFileVo uploadFile(MultipartFile multipartFile, String fileMd5) {
         UploadFileVo uploadFileVo = new UploadFileVo();
         SysFile sysFile = new SysFile();
         String originalFilename = multipartFile.getOriginalFilename();
@@ -76,25 +78,9 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         }
 
         try {
-            MessageDigest digest = MessageDigest.getInstance(BaseConstant.TYPE_ALGORITHM);
-            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
-                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
-                int length = BaseConstant.BUFFER_SIZE;
-                while (length != BaseConstant.FILE_OVER_SIGN) {
-                    length = dis.read(buffer);
-                }
-            }
-            byte[] hashBytes = digest.digest();
-            String hashCode = new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
-
-            FileHashDto fileHashDto = sysFileMapper.getFileByHash(hashCode);
-
+            FileHashDto fileHashDto = sysFileMapper.getFileByHash(fileMd5);
             if (fileHashDto != null) {
                 BeanUtils.copyProperties(fileHashDto, sysFile);
-                if (!originalFilename.equals(sysFile.getOriginalName())) {
-                    sysFile.setOriginalName(originalFilename);
-                }
-                sysFileMapper.insert(sysFile);
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
@@ -110,14 +96,14 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFile.setObjectKey(objectKey);
                 sysFile.setOriginalName(originalFilename);
                 sysFile.setFileSize(fileSize);
-                sysFile.setFileHash(hashCode);
-                sysFileMapper.insert(sysFile);
+                sysFile.setFileHash(fileMd5);
             }
+            sysFileMapper.insert(sysFile);
             uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
             uploadFileVo.setFileName(sysFile.getOriginalName());
 
             return uploadFileVo;
-        } catch (NoSuchAlgorithmException | IOException e) {
+        } catch (IOException e) {
             throw new GlobalException(e.getLocalizedMessage());
         }
     }
@@ -289,6 +275,17 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
 
         return uploadFileVo;
+    }
+
+    @Override
+    public String getFileByMd5(String fileMd5, String fileName) {
+        SysFile sysFile = sysFileMapper.getFileByMd5(fileMd5);
+        if (sysFile == null) {
+            return null;
+        }
+        sysFile.setOriginalName(fileName);
+        sysFileMapper.insert(sysFile);
+        return String.valueOf(sysFile.getId());
     }
 }
 

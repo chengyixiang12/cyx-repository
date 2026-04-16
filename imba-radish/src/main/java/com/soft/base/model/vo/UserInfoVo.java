@@ -21,7 +21,7 @@ public class UserInfoVo {
     private String username;
 
     @Schema(description = "部门id")
-    private Long deptId;
+    private String deptId;
 
     @Schema(description = "昵称")
     private String nickname;
@@ -31,6 +31,9 @@ public class UserInfoVo {
 
     @Schema(description = "邮箱")
     private String email;
+
+    @Schema(description = "用户头像")
+    private String avatar;
 
     @Schema(description = "权限")
     private List<String> permissions;

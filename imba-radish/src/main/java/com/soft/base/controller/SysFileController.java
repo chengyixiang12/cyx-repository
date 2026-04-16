@@ -72,8 +72,9 @@ public class SysFileController {
 
     @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
-    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
-        UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
+    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile,
+                                      @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "fileMd5不能为空") String fileMd5) {
+        UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile, fileMd5);
         return R.ok("上传成功", uploadFileVo);
     }
 
@@ -240,5 +241,13 @@ public class SysFileController {
         } catch (IOException e) {
             throw new GlobalException(e);
         }
+    }
+
+    @GetMapping(value = "/getFileByMd5")
+    @Operation(summary = "根据md5获取文件")
+    public R<String> getFileByMd5(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "md5不能为空") String fileMd5,
+                                  @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName) {
+        String id = sysFileService.getFileByMd5(fileMd5, fileName);
+        return R.ok(id);
     }
 }

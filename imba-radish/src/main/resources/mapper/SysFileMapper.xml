@@ -39,6 +39,7 @@
         SELECT
             sf.original_name,
             sf.file_key,
+            sf.bucket,
             sf.location,
             sf.object_key,
             sf.file_suffix,
@@ -49,6 +50,8 @@
         WHERE
             sf.del_flag = '0'
           AND sf.file_hash = #{hashCode}
+          ORDER BY sf.create_time DESC
+        LIMIT 1
     </select>
     <select id="selectDeletedFiles" resultType="SelectDeletedFileDto">
         select t1.bucket,
@@ -85,5 +88,23 @@
                <foreach collection="ids" item="item" open="(" separator="," close=")">
                    #{item}
                </foreach>
+    </select>
+    <select id="getFileByMd5" parameterType="java.lang.String" resultType="SysFile">
+        select
+            t1.bucket,
+            t1.object_key,
+            t1.file_hash,
+            t1.file_key,
+            t1.file_size,
+            t1.file_size,
+            t1.location
+        from
+            sys_file t1
+        where
+            t1.del_flag = '0'
+          and t1.file_hash = #{fileMd5}
+        order by
+            create_time desc
+            limit 1
     </select>
 </mapper>

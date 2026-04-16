@@ -20,6 +20,17 @@ const constantRoutes: RouteRecordRaw[] = [
         name: 'dashboard',
         component: () => import('../views/Dashboard.vue'),
         meta: { title: '首页', requiresAuth: true, isClose: false, visible: 1 }
+      },
+      {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('../views/system/PersonalCenter.vue'),
+        meta: {
+          title: '个人中心',
+          requiresAuth: true,
+          visible: 1,
+          isClose: true
+        }
       }
     ]
   },
@@ -34,17 +45,7 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'register',
     component: () => import('../views/register/Register.vue'),
     meta: { title: '注册', requiresAuth: false, isClose: false, visible: 1 }
-  },
-  // {
-  //   path: '/profile',
-  //   name: 'Profile',
-  //   component: () => import('../views/system/PersonalCenter.vue'),
-  //   meta: {
-  //     title: '个人中心',
-  //     visible: 1,
-  //     isClose: true
-  //   }
-  // }
+  }
 ]
 
 // 3. 创建路由实例
