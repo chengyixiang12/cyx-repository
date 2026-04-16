@@ -1,11 +1,15 @@
 package com.soft.base.controller;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
-import com.soft.base.constants.BaseConstant;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.dto.ExportDeptDto;
-import com.soft.base.model.request.*;
+import com.soft.base.model.request.EditDeptRequest;
+import com.soft.base.model.request.ExportDeptRequest;
+import com.soft.base.model.request.GetDeptsRequest;
+import com.soft.base.model.request.SaveDeptRequest;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
 import com.soft.base.model.vo.GetDeptsVo;
@@ -17,15 +21,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,8 +34,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -135,38 +132,28 @@ public class SysDeptController {
         if (StringUtils.isBlank(fileName)) {
             request.setFileName("部门.xlsx");
         }
-        ClassPathResource resource = new ClassPathResource("template/exportDept.xlsx");
-        try(InputStream is = resource.getInputStream();
-            XSSFWorkbook workbook = new XSSFWorkbook(is)) {
-            List<ExportDeptDto> exportDeptDtos = sysDeptService.exportDept(request);
+        List<ExportDeptDto> exportDeptDtos = sysDeptService.exportDept(request);
 
-            XSSFSheet sheet = workbook.getSheetAt(0);
-            for (int i = 0; i < exportDeptDtos.size(); i++) {
-                ExportDeptDto exportDeptDto = exportDeptDtos.get(i);
-                XSSFRow row = sheet.createRow(i + 1);
-                row.createCell(0).setCellValue(exportDeptDto.getId());
-                row.createCell(1).setCellValue(exportDeptDto.getCode());
-                row.createCell(2).setCellValue(exportDeptDto.getName());
-                row.createCell(3).setCellValue(exportDeptDto.getParentName());
-            }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-            ByteArrayOutputStream bis = new ByteArrayOutputStream();
-            workbook.write(bis);
+        // 使用 EasyExcel 写入数据
+        EasyExcel.write(outputStream, ExportDeptDto.class)
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) // 自动列宽
+                .sheet("部门信息") // sheet名称
+                .doWrite(exportDeptDtos);
 
-            byte[] byteArray = bis.toByteArray();
+        byte[] byteArray = outputStream.toByteArray();
 
-            // 设置响应头
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // 设置文件类型
-            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(request.getFileName(), StandardCharsets.UTF_8)).build()); // 设置文件名
-            headers.setContentLength(byteArray.length);
+        // 设置响应头
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename(URLEncoder.encode(request.getFileName(), StandardCharsets.UTF_8))
+                .build());
+        headers.setContentLength(byteArray.length);
 
-            // 返回 ResponseEntity，带上文件内容和响应头
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(byteArray);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(byteArray);
     }
 
     @PostMapping(value = "/getDepts")

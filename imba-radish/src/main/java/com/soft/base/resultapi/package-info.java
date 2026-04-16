@@ -1,4 +1,4 @@
 @NamedInterface
-package com.soft.base.service;
+package com.soft.base.resultapi;
 
 import org.springframework.modulith.NamedInterface;

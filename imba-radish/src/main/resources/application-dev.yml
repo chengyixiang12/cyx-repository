@@ -151,7 +151,7 @@ management:
       show-details: always
 # flowable
 flowable:
-  database-schema-update: false
+  database-schema-update: true
   check-process-definitions: true
   idm:
     # 禁用身份认证

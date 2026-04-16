@@ -146,7 +146,7 @@ management:
       show-details: always
 # flowable
 flowable:
-  database-schema-update: false
+  database-schema-update: validate
   check-process-definitions: true
   idm:
     # 禁用身份认证
@@ -156,7 +156,6 @@ flowable:
     enabled: false
   # 保留基础的历史记录
   history-level: activity
-  db-history-used: false
   cmmn:
     async:
       executor:
