@@ -80,6 +80,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
 import DeptFormDialog from './component/DeptFormDialog.vue'
 import {
   getDeptsApi,
@@ -174,8 +175,22 @@ const handleExport = async () => {
     showMessage('请至少选择一项', 'warning')
     return
   }
-  const { blob, filename } = await exportDept(selectedIds.value, '部门.xlsx')
-  download(blob, filename)
+  try {
+    await ElMessageBox.confirm(
+      `确定要导出选中的 ${selectedIds.value.length} 个部门吗？`,
+      '导出确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info',
+        title: '导出确认'
+      }
+    )
+    const { blob, filename } = await exportDept(selectedIds.value, '部门.xlsx')
+    download(blob, filename)
+  } catch {
+    // 用户取消导出
+  }
 }
 
 onMounted(() => {
