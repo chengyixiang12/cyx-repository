@@ -1,13 +1,24 @@
 <template>
-  <div class="dictData-container">
+  <div class="dictData-container container">
     <el-row :gutter="20">
       <el-col :span="24">
-        <el-card>
+        <el-card class="dictData-card">
           <template #header>
             <div class="list-header">
-              <el-button link icon="ArrowLeft" @click="goBack" class="go-back">返回</el-button>
-              <span class="header-title">{{ route.query.dictName }}</span>
-              <el-button type="primary" @click="handleAddData">新增</el-button>
+              <div class="header-title">
+                <el-icon class="title-icon"><Document /></el-icon>
+                <span>{{ route.query.dictName }}</span>
+              </div>
+              <div class="right-header">
+                <el-button link icon="ArrowLeft" @click="goBack" class="go-back">
+                  <el-icon><ArrowLeft /></el-icon>
+                  返回
+                </el-button>
+                <el-button type="primary" @click="handleAddData" class="add-button">
+                  <el-icon><Plus /></el-icon>
+                  新增数据
+                </el-button>
+              </div>
             </div>
           </template>
 
@@ -32,7 +43,7 @@
 
           <!-- 数据表格 -->
           <div class="list-table">
-            <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading">
+            <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -52,14 +63,36 @@
                 </template>
               </el-table-column>
               <el-table-column prop="sortOrder" label="排序" min-width="80" align="center" sortable />
-              <el-table-column label="操作" min-width="120" align="center">
+              <el-table-column label="操作" min-width="200" align="center">
                 <template #default="scope">
-                  <el-button size="small" type="primary" :icon="Edit" circle @click="editData(scope.row)" />
-                  <el-popconfirm title="确认删除该数据？" @confirm="deleteData(scope.row.id)">
-                    <template #reference>
-                      <el-button size="small" type="danger" :icon="Delete" circle />
-                    </template>
-                  </el-popconfirm>
+                  <div class="action-buttons-container">
+                    <el-button 
+                      size="small" 
+                      type="primary" 
+                      @click="editData(scope.row)"
+                      class="action-button edit-button"
+                    >
+                      <el-icon><Edit /></el-icon>
+                      编辑
+                    </el-button>
+                    <el-popconfirm 
+                      title="确认删除该数据吗？" 
+                      confirm-button-text="确认" 
+                      cancel-button-text="取消"
+                      @confirm="deleteData(scope.row.id)"
+                    >
+                      <template #reference>
+                        <el-button 
+                          size="small" 
+                          type="danger" 
+                          class="action-button delete-button"
+                        >
+                          <el-icon><Delete /></el-icon>
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -85,7 +118,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Edit, Delete } from '@element-plus/icons-vue'
+import { Edit, Delete, Document, Plus, ArrowLeft } from '@element-plus/icons-vue'
 import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
 import DictDataFormDialog from './component/DictDataFormDialog.vue'
 import { deleteDictDataApi, editDictDataApi, enableDictDataApi, forbiddenDictDataApi, getDictDatasApi, saveDictDataApi, setDefaultRoleApi } from '@/api/dictData'
@@ -191,94 +224,86 @@ const handleSizeChange = (val: number) => {
   handleSearch()
 }
 
+const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 onMounted(() => {
   handleSearch();
 })
 </script>
 <style scoped>
-.dictData-container {
-  height: 100%;
-  padding: 10px;
-  background-color: #f5f7fa;
+/* DictData页面特有样式 */
+
+/* 字典数据卡片样式 */
+.dictData-card {
+  border-radius: 6px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  height: 95%;
 }
 
+/* 列表头部样式 */
 .list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 36px;
+  height: 40px;
   padding: 0 12px;
+  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 12px;
 }
 
-.header-title {
-  font-size: 15px;
-  font-weight: 500;
-  color: #303133;
-}
-
-.header-button {
-  padding: 4px 12px;
-  font-size: 13px;
-  height: 28px;
-}
-
+/* 搜索区域样式 */
 .search-container {
   padding: 12px;
   background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
+  border-radius: 4px;
+  margin-bottom: 12px;
 }
 
-.search-form {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
+/* 关键字输入框样式 */
 .keyword-input {
-  width: 200px !important;
+  width: 180px !important;
 }
 
-:deep(.el-form-item) {
-  margin-bottom: 0;
+/* 表格样式 */
+.list-table {
+  height: calc(100vh - 350px);
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.el-table {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.el-table th {
+  background-color: #f5f7fa;
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 表格行样式 */
+.even-row {
+  background-color: #ffffff;
+}
+
+.odd-row {
+  background-color: #f9f9f9;
+}
+
+/* 分页样式 */
+.list-pagination {
+  padding: 0 16px 16px;
+}
+
+/* 返回按钮样式 */
+.go-back {
+  font-size: 14px;
+  color: #606266;
   margin-right: 16px;
 }
 
-:deep(.el-form-item__label) {
-  padding-right: 8px;
-  color: #606266;
-}
-
-.list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
-}
-
-.list-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-    padding: 14px !important;
-}
-
-.go-back {
-  font-size: small;
+.go-back:hover {
+  color: #409EFF;
 }
 </style>

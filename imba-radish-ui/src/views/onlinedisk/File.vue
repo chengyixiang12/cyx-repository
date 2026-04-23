@@ -1,10 +1,14 @@
 <template>
-  <div class="file-container">
+  <div class="file-container container">
     <el-row :gutter="20">
       <el-col :span="24">
         <el-card>
           <template #header>
             <div class="list-header">
+              <div class="header-title">
+                <el-icon class="title-icon"><Folder /></el-icon>
+                <span>文件管理</span>
+              </div>
               <div class="right-header">
                 <FileUpload @upload-success="handleUploadSuccess" />
               </div>
@@ -25,7 +29,7 @@
           </div>
 
           <div class="list-table">
-            <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading">
+            <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
               <el-table-column type="selection" min-width="20" align="center" />
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
@@ -41,18 +45,44 @@
                   {{ formatFileSize(scope.row.fileSize) }}
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="160" align="center">
+              <el-table-column label="操作" min-width="200" align="center">
                 <template #default="scope">
-                  <el-popconfirm title="确认下载？" @confirm="handleDownload(scope.row)">
-                    <template #reference>
-                      <el-button size="small" type="primary" :icon="Download" circle />
-                    </template>
-                  </el-popconfirm>
-                  <el-popconfirm title="确认删除该文件？" @confirm="handleDelete(scope.row.id)">
-                    <template #reference>
-                      <el-button type="danger" size="small" :icon="Delete" circle />
-                    </template>
-                  </el-popconfirm>
+                  <div class="action-buttons-container">
+                    <el-popconfirm 
+                      title="确认下载该文件吗？" 
+                      confirm-button-text="确认" 
+                      cancel-button-text="取消"
+                      @confirm="handleDownload(scope.row)"
+                    >
+                      <template #reference>
+                        <el-button 
+                          size="small" 
+                          type="primary" 
+                          class="action-button edit-button"
+                        >
+                          <el-icon><Download /></el-icon>
+                          下载
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                    <el-popconfirm 
+                      title="确认删除该文件吗？" 
+                      confirm-button-text="确认" 
+                      cancel-button-text="取消"
+                      @confirm="handleDelete(scope.row.id)"
+                    >
+                      <template #reference>
+                        <el-button 
+                          size="small" 
+                          type="danger" 
+                          class="action-button delete-button"
+                        >
+                          <el-icon><Delete /></el-icon>
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -72,7 +102,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { Delete, Download } from '@element-plus/icons-vue'
+import { Delete, Download, Folder, Upload } from '@element-plus/icons-vue'
 import { FilesRequest, FilesVo } from '@/types/file'
 import { deleteFileApi, getMyFilesApi, getFileUrlApi } from '@/api/file'
 import FileUpload from '@/components/FileUpload.vue';
@@ -135,6 +165,10 @@ const handleSizeChange = (val: number) => {
   loadFiles()
 }
 
+const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 // 处理上传成功
 const handleUploadSuccess = () => {
   loadFiles()
@@ -155,103 +189,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.file-container {
-  height: 100%;
-  padding: 10px;
-  background-color: #f5f7fa;
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 36px;
-  padding: 0 12px;
-}
-
-.right-header {
-  margin-left: auto;
-}
-
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-.list-header {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  height: 36px;
-  padding: 0 12px;
-}
-
-.right-header {
-  margin-left: auto;
-  display: flex;
-  justify-content: flex-end;
-}
-
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-  padding: 14px !important;
-}
-
-.search-container {
-  padding: 12px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.search-form {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.keyword-input {
-  width: 200px !important;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 0;
-  margin-right: 16px;
-}
-
-:deep(.el-form-item__label) {
-  padding-right: 8px;
-  color: #606266;
-}
-
-.list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
-}
-
-.list-table::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-
-.list-table::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.list-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-
+/* File页面特有样式 */
 </style>

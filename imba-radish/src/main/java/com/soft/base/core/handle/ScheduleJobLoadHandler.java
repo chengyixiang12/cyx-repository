@@ -7,10 +7,14 @@ import com.soft.base.constants.BaseConstant;
 import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
+import com.soft.base.quartz.listener.LoggingJobListener;
 import com.soft.base.service.SysScheduleJobService;
+import com.soft.base.service.SysScheduleRecordService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
+import org.quartz.impl.matchers.KeyMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -29,18 +33,14 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ScheduleJobLoadHandler implements CommandLineRunner {
 
     private final SysScheduleJobService sysScheduleJobService;
 
-    private final Scheduler scheduler;
+    private final SysScheduleRecordService sysScheduleRecordService;
 
-    @Autowired
-    public ScheduleJobLoadHandler(SysScheduleJobService sysScheduleJobService,
-                                  Scheduler scheduler) {
-        this.sysScheduleJobService = sysScheduleJobService;
-        this.scheduler = scheduler;
-    }
+    private final Scheduler scheduler;
 
     @Override
     public void run(String... args) throws Exception {
@@ -101,6 +101,15 @@ public class ScheduleJobLoadHandler implements CommandLineRunner {
                         .endAt(endTime)
                         .build();
             }
+
+            // 注入job全局监听器
+            scheduler.getListenerManager().addJobListener(new LoggingJobListener(sysScheduleRecordService, sysScheduleJobService));
+
+            // 监听特定的job
+//            scheduler.getListenerManager().addJobListener(
+//                    new LoggingJobListener(),
+//                    KeyMatcher.keyEquals(jobKey)
+//            );
 
             scheduler.scheduleJob(jobDetail, trigger);
             log.debug("{}-{}定时任务加载", sysScheduleJob.getJobName(), sysScheduleJob.getJobGroup());

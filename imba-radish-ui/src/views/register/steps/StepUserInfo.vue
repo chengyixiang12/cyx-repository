@@ -65,4 +65,8 @@ const goToLogin = () => {
   font-size: 14px;
   color: #666;
 }
+
+.el-form-item {
+  margin-bottom: 20px;
+}
 </style>

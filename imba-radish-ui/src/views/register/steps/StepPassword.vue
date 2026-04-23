@@ -19,7 +19,6 @@
 import type { RegisterRequest } from '@/types/register'
 import type { FormInstance, FormRules } from 'element-plus'
 import { computed, ref } from 'vue'
-import { showMessage } from '@/utils/message'
 
 const props = defineProps<{ modelValue: RegisterRequest }>()
 const emit = defineEmits<{
@@ -67,3 +66,16 @@ const handleNext = async () => {
   }
 }
 </script>
+
+<style scoped>
+.register-link {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.el-form-item {
+  margin-bottom: 20px;
+}
+</style>

@@ -1,0 +1,41 @@
+/* 表单对话框样式 */
+
+.dialog-body-wrapper {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.scrollable-form {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* 表单行间距 */
+.scrollable-form .el-form-item {
+  margin-bottom: 16px;
+}
+
+/* 按钮样式 */
+.btn-cancel {
+  margin-right: 8px;
+}
+
+.btn-submit {
+  margin-left: 8px;
+}
+
+/* 滚动条样式 */
+.scrollable-form::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollable-form::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.scrollable-form::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 3px;
+}

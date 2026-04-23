@@ -231,6 +231,10 @@ onMounted(() => {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+.login-card .el-form-item {
+  margin-bottom: 20px;
+}
+
 .login-tabs {
   margin-bottom: 20px;
 }

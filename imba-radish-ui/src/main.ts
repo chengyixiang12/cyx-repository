@@ -8,6 +8,8 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import '@/assets/styles/message.css'
 import '@/assets/styles/table.css'
 import '@/assets/styles/form.css'
+import '@/assets/styles/common.css'
+import '@/assets/styles/form-dialog.css'
 
 const app = createApp(App)
 // 注册所有Element Plus图标

@@ -1,12 +1,19 @@
 <template>
-  <div class="role-container">
+  <div class="role-container container">
     <el-row :gutter="20">
       <el-col :span="24">
         <el-card>
           <template #header>
             <div class="list-header">
+              <div class="header-title">
+                <el-icon class="title-icon"><User /></el-icon>
+                <span>角色管理</span>
+              </div>
               <div class="right-header">
-                <el-button type="primary" @click="handleAdd">新增</el-button>
+                <el-button type="primary" @click="handleAdd" class="add-button">
+                  <el-icon><Plus /></el-icon>
+                  新增角色
+                </el-button>
               </div>
             </div>
           </template>
@@ -32,7 +39,7 @@
 
           <!-- 角色表格 -->
           <div class="list-table">
-            <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading">
+            <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -59,23 +66,35 @@
                     inactive-color="#ff4949" @change="handleFixRoleChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="120" align="center">
+              <el-table-column label="操作" min-width="240" align="center">
                 <template #default="scope">
-                  <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" :icon="Edit" circle />
-                  <el-tooltip class="item" effect="dark" content="赋予权限" placement="top">
-                    <el-button size="small" type="primary" @click="handleAssignPermission(scope.row.id)" :icon="Key"
-                      circle />
-                  </el-tooltip>
-                  <el-tooltip class="item" effect="dark" content="赋予菜单" placement="top">
-                    <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" :icon="Menu"
-                      circle />
-                  </el-tooltip>
-                  <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
-                    @confirm="handleDelete(scope.row.id)">
-                    <template #reference>
-                      <el-button size="small" type="danger" :icon="Delete" circle />
-                    </template>
-                  </el-popconfirm>
+                  <div class="action-buttons-container">
+                    <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" class="action-button edit-button">
+                      <el-icon><Edit /></el-icon>
+                      编辑
+                    </el-button>
+                    <el-tooltip class="item" effect="dark" content="赋予权限" placement="top">
+                      <el-button size="small" type="primary" @click="handleAssignPermission(scope.row.id)" class="action-button edit-button">
+                        <el-icon><Key /></el-icon>
+                        权限
+                      </el-button>
+                    </el-tooltip>
+                    <el-tooltip class="item" effect="dark" content="赋予菜单" placement="top">
+                      <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" class="action-button edit-button">
+                        <el-icon><Menu /></el-icon>
+                        菜单
+                      </el-button>
+                    </el-tooltip>
+                    <el-popconfirm title="确认删除该角色吗？" confirm-button-text="确认" cancel-button-text="取消"
+                      @confirm="handleDelete(scope.row.id)">
+                      <template #reference>
+                        <el-button size="small" type="danger" class="action-button delete-button">
+                          <el-icon><Delete /></el-icon>
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -111,7 +130,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { Edit, Delete, Menu, Key } from '@element-plus/icons-vue'
+import { Edit, Delete, Menu, Key, User, Plus } from '@element-plus/icons-vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
 import { updateRoleMenusApi, updateRolePermissionsApi } from '@/api/role'
 import RoleFormDialog from './component/RoleFormDialog.vue'
@@ -265,83 +284,16 @@ const resetSearch = () => {
   loadRoles()
 }
 
+// 表格行样式
+const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 onMounted(() => {
   loadRoles()
 })
 </script>
 
 <style scoped>
-.role-container {
-  height: 100%;
-  padding: 10px;
-  background-color: #f5f7fa;
-}
-
-.list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 36px;
-  padding: 0 12px;
-}
-
-.right-header {
-  margin-left: auto;
-}
-
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-    padding: 14px !important;
-}
-
-.search-container {
-  padding: 12px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.search-form {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.keyword-input {
-  width: 200px !important;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 0;
-  margin-right: 16px;
-}
-
-:deep(.el-form-item__label) {
-  padding-right: 8px;
-  color: #606266;
-}
-
-.list-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
+/* 角色页面特有样式 */
 </style>

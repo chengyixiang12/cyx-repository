@@ -1,12 +1,19 @@
 <template>
-  <div class="dictType-container">
+  <div class="dictType-container container">
     <el-row :gutter="20">
       <el-col :span="24">
-        <el-card>
+        <el-card class="dictType-card">
           <template #header>
             <div class="list-header">
+              <div class="header-title">
+                <el-icon class="title-icon"><Document /></el-icon>
+                <span>字典类型管理</span>
+              </div>
               <div class="right-header">
-                <el-button type="primary" @click="handleAddType">新增</el-button>
+                <el-button type="primary" @click="handleAddType" class="add-button">
+                  <el-icon><Plus /></el-icon>
+                  新增类型
+                </el-button>
               </div>
             </div>
           </template>
@@ -32,7 +39,7 @@
 
           <!-- 类型表格 -->
           <div class="list-table">
-            <el-table :data="dictTypeList" border size="small" style="width: 100%" v-loading="loading">
+            <el-table :data="dictTypeList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -50,14 +57,36 @@
                     @change="changeStatus(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="120" align="center">
+              <el-table-column label="操作" min-width="200" align="center">
                 <template #default="scope">
-                  <el-button size="small" type="primary" :icon="Edit" circle @click="handleEditType(scope.row)" />
-                  <el-popconfirm title="确认删除？" @confirm="deleteType(scope.row.id)">
-                    <template #reference>
-                      <el-button size="small" type="danger" :icon="Delete" circle />
-                    </template>
-                  </el-popconfirm>
+                  <div class="action-buttons-container">
+                    <el-button 
+                      size="small" 
+                      type="primary" 
+                      @click="handleEditType(scope.row)"
+                      class="action-button edit-button"
+                    >
+                      <el-icon><Edit /></el-icon>
+                      编辑
+                    </el-button>
+                    <el-popconfirm 
+                      title="确认删除该类型吗？" 
+                      confirm-button-text="确认" 
+                      cancel-button-text="取消"
+                      @confirm="deleteType(scope.row.id)"
+                    >
+                      <template #reference>
+                        <el-button 
+                          size="small" 
+                          type="danger" 
+                          class="action-button delete-button"
+                        >
+                          <el-icon><Delete /></el-icon>
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -80,7 +109,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { Edit, Delete } from '@element-plus/icons-vue'
+import { Edit, Delete, Document, Plus } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { getDictTypesApi, deleteDictTypeApi, enableDictTypeApi, forbiddenDictTypeApi, saveDictTypeApi, editDictTypeApi } from '@/api/dictType'
 import type { DictTypesVo, GetDictTypesRequest, SaveDictTypeRequest } from '@/types/dictType'
@@ -161,6 +190,10 @@ const handleSizeChange = (val: number) => {
   handleSearch()
 }
 
+const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 const handleSearch = async () => {
   try {
     loading.value = true;
@@ -177,83 +210,66 @@ onMounted(() => {
 })
 </script>
 <style scoped>
-.dictType-container {
-  height: 100%;
-  padding: 10px;
-  background-color: #f5f7fa;
+/* DictType页面特有样式 */
+
+/* 字典类型卡片样式 */
+.dictType-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 98%;
 }
 
+/* 列表头部样式 */
 .list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 36px;
-  padding: 0 12px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 16px;
 }
 
-.right-header {
-  margin-left: auto;
-}
-
-.header-button {
-  padding: 4px 12px;
-  font-size: 13px;
-  height: 28px;
-}
-
+/* 搜索区域样式 */
 .search-container {
-  padding: 12px;
+  padding: 16px;
   background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
+  border-radius: 4px;
+  margin-bottom: 16px;
 }
 
-.search-form {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
+/* 关键字输入框样式 */
 .keyword-input {
-  width: 200px !important;
+  width: 240px !important;
 }
 
-:deep(.el-form-item) {
-  margin-bottom: 0;
-  margin-right: 16px;
-}
-
-:deep(.el-form-item__label) {
-  padding-right: 8px;
-  color: #606266;
-}
-
+/* 表格样式 */
 .list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
+  height: calc(100vh - 400px);
+  overflow-y: auto;
+  margin-bottom: 16px;
 }
 
+.el-table {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.el-table th {
+  background-color: #f5f7fa;
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 表格行样式 */
+.even-row {
+  background-color: #ffffff;
+}
+
+.odd-row {
+  background-color: #f9f9f9;
+}
+
+/* 分页样式 */
 .list-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-    padding: 14px !important;
+  padding: 0 12px 12px;
 }
 </style>

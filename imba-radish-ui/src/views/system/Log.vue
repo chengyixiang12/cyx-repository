@@ -1,11 +1,16 @@
 <template>
-    <div class="menu-container">
+    <div class="menu-container container">
         <el-row :gutter="20">
             <!-- 日志表格 -->
             <el-col :span="24">
-                <el-card>
+                <el-card class="log-card">
                     <template #header>
-                        <div class="list-header"></div>
+                        <div class="list-header">
+                            <div class="header-title">
+                                <el-icon class="title-icon"><Document /></el-icon>
+                                <span>日志管理</span>
+                            </div>
+                        </div>
                     </template>
 
                     <!-- 搜索条件 -->
@@ -33,7 +38,7 @@
 
                     <!-- 菜单表格 -->
                     <div class="list-table">
-                        <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading">
+                        <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
                             <el-table-column label="序号" min-width="50" align="center">
                                 <template #default="scope">
                                     {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -48,16 +53,36 @@
                             <el-table-column prop="requestMethod" align="center" label="请求方法" />
                             <el-table-column prop="statusCode" align="center" label="状态码" />
                             <el-table-column prop="operationDesc" align="center" label="操作描述" show-overflow-tooltip />
-                            <el-table-column label="操作" min-width="120" align="center">
+                            <el-table-column label="操作" min-width="200" align="center">
                                 <template #default="scope">
-                                    <el-button size="small" type="primary" @click="handleView(scope.row)" :icon="View"
-                                        circle />
-                                    <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
-                                        @confirm="handleDelete(scope.row.id)">
-                                        <template #reference>
-                                            <el-button size="small" type="danger" :icon="Delete" circle />
-                                        </template>
-                                    </el-popconfirm>
+                                    <div class="action-buttons-container">
+                                        <el-button 
+                                            size="small" 
+                                            type="primary" 
+                                            @click="handleView(scope.row)"
+                                            class="action-button edit-button"
+                                        >
+                                            <el-icon><View /></el-icon>
+                                            查看
+                                        </el-button>
+                                        <el-popconfirm 
+                                            title="确认删除该日志吗？" 
+                                            confirm-button-text="确认" 
+                                            cancel-button-text="取消"
+                                            @confirm="handleDelete(scope.row.id)"
+                                        >
+                                            <template #reference>
+                                                <el-button 
+                                                    size="small" 
+                                                    type="danger" 
+                                                    class="action-button delete-button"
+                                                >
+                                                    <el-icon><Delete /></el-icon>
+                                                    删除
+                                                </el-button>
+                                            </template>
+                                        </el-popconfirm>
+                                    </div>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -78,7 +103,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { View, Delete } from '@element-plus/icons-vue'
+import { View, Delete, Document } from '@element-plus/icons-vue'
 import { getLogsApi, deleteLogApi } from '@/api/log'
 import type { LogsRequest, LogsVo } from '@/types/log'
 import { useRouter } from 'vue-router'
@@ -149,6 +174,10 @@ const handleSizeChange = (size: number) => {
     handleSearch()
 }
 
+const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 // 搜索
 const handleSearch = () => {
     loadLogs()
@@ -170,83 +199,66 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.menu-container {
-    height: 100%;
-    padding: 10px;
-    background-color: #f5f7fa;
+/* Log页面特有样式 */
+
+/* 日志卡片样式 */
+.log-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 98%;
 }
 
-.list-table {
-    width: 100%;
-    height: 52vh;
-    overflow: auto;
-    padding-top: 12px;
-}
-
+/* 列表头部样式 */
 .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 36px;
-    padding: 0 12px;
+  height: 40px;
+  padding: 0 12px;
+  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 12px;
 }
 
-.right-header {
-    margin-left: auto;
-}
-
-.el-card {
-    height: 100%;
-    border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-    padding: 8px 12px !important;
-    min-height: 36px !important;
-    border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-    padding: 14px !important;
-}
-
+/* 搜索区域样式 */
 .search-container {
-    padding: 12px;
-    background-color: #fafafa;
-    border-bottom: 1px solid #ebeef5;
+  padding: 12px;
+  background-color: #fafafa;
+  border-radius: 4px;
+  margin-bottom: 12px;
 }
 
-.search-form {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
+/* 关键字输入框样式 */
 .keyword-input {
-    width: 200px !important;
+  width: 180px !important;
 }
 
-:deep(.el-form-item) {
-    margin-bottom: 0;
-    margin-right: 16px;
+/* 表格样式 */
+.list-table {
+  height: calc(100vh - 350px);
+  overflow-y: auto;
+  margin-bottom: 12px;
 }
 
-:deep(.el-form-item__label) {
-    padding-right: 8px;
-    color: #606266;
+.el-table {
+  border-radius: 4px;
+  overflow: hidden;
 }
 
+.el-table th {
+  background-color: #f5f7fa;
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 表格行样式 */
+.even-row {
+  background-color: #ffffff;
+}
+
+.odd-row {
+  background-color: #f9f9f9;
+}
+
+/* 分页样式 */
 .list-pagination {
-    margin-top: 16px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.header-button {
-    padding: 4px 12px;
-    font-size: 13px;
-    height: 28px;
+  padding: 0 16px 16px;
 }
 </style>

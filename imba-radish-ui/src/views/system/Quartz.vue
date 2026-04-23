@@ -1,5 +1,5 @@
 <template>
-  <div class="schedule-container">
+  <div class="schedule-container container">
     <el-row :gutter="20">
       <el-col :span="24">
         <el-card>
@@ -193,77 +193,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.schedule-container {
-  height: 100%;
-  padding: 10px;
-  background-color: #f5f7fa;
-}
-
-.list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 36px;
-  padding: 0 12px;
-}
-
-.right-header {
-  margin-left: auto;
-}
-
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-  padding: 14px !important;
-}
-
-.search-container {
-  padding: 12px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.search-form {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.keyword-input {
-  width: 200px !important;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 0;
-  margin-right: 16px;
-}
-
-:deep(.el-form-item__label) {
-  padding-right: 8px;
-  color: #606266;
-}
-
-.list-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
+/* Quartz页面特有样式 */
 </style>

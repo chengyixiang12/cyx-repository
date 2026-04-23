@@ -79,6 +79,10 @@ const goToLogin = () => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.register-card .el-form-item {
+    margin-bottom: 20px;
+}
+
 .form-body {
     margin-top: 30px;
     min-height: 300px;

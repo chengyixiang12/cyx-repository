@@ -83,17 +83,15 @@
             <!-- 右侧内容区 -->
             <el-main class="main-content">
                 <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab" />
-
-                <!-- <div class="content-wrapper">
-                    
-                </div> -->
-                <router-view v-slot="{ Component }">
-                    <transition name="fade" mode="out-in">
-                        <div v-if="Component">
-                            <component :is="Component" />
-                        </div>
-                    </transition>
-                </router-view>
+                <div class="content-wrapper">
+                    <router-view v-slot="{ Component }">
+                        <transition name="fade" mode="out-in">
+                            <div v-if="Component">
+                                <component :is="Component" />
+                            </div>
+                        </transition>
+                    </router-view>
+                </div>
             </el-main>
         </div>
     </div>
@@ -325,6 +323,13 @@ onMounted(() => {
     overflow: hidden;
     padding: 0;
     margin-right: 5px;
+    min-height: 0;
+}
+
+.content-wrapper {
+    flex: 1;
+    overflow: auto;
+    padding: 20px;
     min-height: 0;
 }
 

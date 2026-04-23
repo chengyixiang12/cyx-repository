@@ -1,35 +1,53 @@
 <template>
-  <div class="user-container">
+  <div class="user-container container">
     <el-row :gutter="20">
       <!-- 左侧组织架构树 -->
       <el-col :span="4">
         <el-card shadow="hover" class="tree-card">
           <template #header>
             <div class="dept-card-header">
+              <el-icon class="header-icon"><Folder /></el-icon>
               <span>组织架构</span>
             </div>
           </template>
-          <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current
-              @node-click="handleDeptClick" @expand-change="handleExpandChange" :default-expanded-keys="[firstNodeKey]"
-              class="custom-tree" :expand-on-click-node="false">
-              <template #default="{ node }">
-                <el-tooltip effect="dark" :content="node.label" placement="right-start"
-                  v-if="shouldShowTooltip(node.label)">
-                  <span class="tree-node-label">{{ node.label }}</span>
-                </el-tooltip>
-                <span v-else class="tree-node-label">{{ node.label }}</span>
-              </template>
-            </el-tree>
+          <el-tree 
+            v-if="deptTree.length > 0" 
+            :data="deptTree" 
+            :props="treeProps" 
+            node-key="id" 
+            highlight-current
+            @node-click="handleDeptClick" 
+            @expand-change="handleExpandChange" 
+            :default-expanded-keys="[firstNodeKey]"
+            class="custom-tree" 
+            :expand-on-click-node="false"
+            :indent="16"
+          >
+            <template #default="{ node }">
+              <el-tooltip effect="dark" :content="node.label" placement="right-start"
+                v-if="shouldShowTooltip(node.label)">
+                <span class="tree-node-label">{{ node.label }}</span>
+              </el-tooltip>
+              <span v-else class="tree-node-label">{{ node.label }}</span>
+            </template>
+          </el-tree>
         </el-card>
       </el-col>
 
       <!-- 右侧用户表格 -->
       <el-col :span="20">
-        <el-card>
+        <el-card class="user-card">
           <template #header>
             <div class="list-header">
+              <div class="header-title">
+                <el-icon class="title-icon"><User /></el-icon>
+                <span>用户管理</span>
+              </div>
               <div class="right-header">
-                <el-button type="primary" @click="handleAdd">新增</el-button>
+                <el-button type="primary" @click="handleAdd" class="add-button">
+                  <el-icon><Plus /></el-icon>
+                  新增用户
+                </el-button>
               </div>
             </div>
           </template>
@@ -38,82 +56,150 @@
           <div class="search-container">
             <el-form :inline="true" :model="searchForm" class="search-form">
               <el-form-item label="关键字:">
-                <el-input v-model="searchForm.nameLikeQry" placeholder="用户名/昵称" clearable class="keyword-input" />
+                <el-input 
+                  v-model="searchForm.nameLikeQry" 
+                  placeholder="用户名/昵称" 
+                  clearable 
+                  class="keyword-input"
+                  size="default"
+                />
               </el-form-item>
               <el-form-item label="状态:">
-                <el-select v-model="searchForm.enabled" placeholder="请选择" clearable style="width: 100px">
+                <el-select 
+                  v-model="searchForm.enabled" 
+                  placeholder="请选择" 
+                  clearable 
+                  style="width: 120px"
+                  size="default"
+                >
                   <el-option label="启用" :value="1" />
                   <el-option label="禁用" :value="0" />
                 </el-select>
               </el-form-item>
               <el-form-item label="账户状态:">
-                <el-select v-model="searchForm.accountNonLocked" placeholder="请选择" clearable style="width: 100px">
+                <el-select 
+                  v-model="searchForm.accountNonLocked" 
+                  placeholder="请选择" 
+                  clearable 
+                  style="width: 120px"
+                  size="default"
+                >
                   <el-option label="正常" :value="1" />
                   <el-option label="锁定" :value="0" />
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-                <el-button type="primary" @click="resetSearch">重置</el-button>
+                <el-button type="primary" @click="handleSearch" size="default">
+                  <el-icon><Search /></el-icon>
+                  查询
+                </el-button>
+                <el-button @click="resetSearch" size="default">
+                  <el-icon><Refresh /></el-icon>
+                  重置
+                </el-button>
               </el-form-item>
             </el-form>
           </div>
 
           <!-- 用户表格 -->
           <div class="list-table">
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading">
-              <el-table-column label="序号" min-width="50" align="center">
+            <el-table 
+              :data="userList" 
+              border 
+              style="width: 100%" 
+              v-loading="loading"
+              :row-class-name="rowClassName"
+              highlight-current-row
+            >
+              <el-table-column label="序号" min-width="60" align="center" type="index" />
+              <el-table-column prop="username" label="用户名" show-overflow-tooltip min-width="120" align="center">
                 <template #default="scope">
-                  {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="username" label="用户名" show-overflow-tooltip min-width="80" align="center">
-                <template #default="scope">
-                  <div style="display: flex; align-items: center; gap: 9px;">
-                    <span :style="{
-                      display: 'inline-block',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: scope.row.isOnline === 1 ? '#13ce66' : '#c0c4cc'
-                    }" />
-                    <span>{{ scope.row.username }}</span>
+                  <div class="user-info">
+                    <span 
+                      class="online-status" 
+                      :class="{ 'online': scope.row.isOnline === 1, 'offline': scope.row.isOnline === 0 }"
+                    ></span>
+                    <span class="username">{{ scope.row.username }}</span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="phone" label="手机号码" align="center" show-overflow-tooltip />
-              <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip />
-              <el-table-column prop="nickname" label="昵称" align="center" show-overflow-tooltip />
-              <el-table-column prop="deptName" label="部门" align="center" show-overflow-tooltip />
-              <el-table-column prop="enabled" label="状态" align="center" min-width="80">
+              <el-table-column prop="nickname" label="昵称" align="center" show-overflow-tooltip min-width="100" />
+              <el-table-column prop="phone" label="手机号码" align="center" show-overflow-tooltip min-width="120" />
+              <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip min-width="150" />
+              <el-table-column prop="deptName" label="部门" align="center" show-overflow-tooltip min-width="100" />
+              <el-table-column prop="enabled" label="状态" align="center" min-width="100">
                 <template #default="scope">
-                  <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                    inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
+                  <el-switch 
+                    v-model="scope.row.enabled" 
+                    :active-value="1" 
+                    :inactive-value="0" 
+                    active-color="#409EFF" 
+                    inactive-color="#C0C4CC" 
+                    @change="handleStatusChange(scope.row)" 
+                  />
                 </template>
               </el-table-column>
-
-              <el-table-column prop="accountNonLocked" label="账户" align="center" min-width="100">
+              <el-table-column prop="accountNonLocked" label="账户状态" align="center" min-width="120">
                 <template #default="scope">
-                  <el-switch v-model="scope.row.accountNonLocked" :active-value="1" :inactive-value="0"
-                    active-color="#13ce66" inactive-color="#ff4949" @change="handleLockChange(scope.row)" />
+                  <el-switch 
+                    v-model="scope.row.accountNonLocked" 
+                    :active-value="1" 
+                    :inactive-value="0" 
+                    active-color="#67C23A" 
+                    inactive-color="#F56C6C" 
+                    @change="handleLockChange(scope.row)" 
+                  />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="120" align="center">
+              <el-table-column label="操作" min-width="300" align="center">
                 <template #default="scope">
-                  <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
-                  <el-tooltip class="item" effect="dark" content="重置密码" placement="top">
-                    <el-button size="small" type="primary" @click="handleResetPassword(scope.row.id)" :icon="RefreshLeft" circle />
-                  </el-tooltip>
-                  <el-tooltip class="item" effect="dark" content="强制下线" placement="top">
-                    <el-button v-show="scope.row.isOnline === 1" size="small" type="primary"
-                      @click="forceOffline(scope.row)" :icon="RemoveFilled" circle />
-                  </el-tooltip>
-                  <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
-                    @confirm="handleDelete(scope.row.id)">
-                    <template #reference>
-                      <el-button size="small" type="danger" :icon="Delete" circle />
-                    </template>
-                  </el-popconfirm>
+                  <div class="action-buttons-container">
+                    <el-button 
+                      size="small" 
+                      type="primary" 
+                      @click="handleEdit(scope.row)"
+                      class="action-button edit-button"
+                    >
+                      <el-icon><Edit /></el-icon>
+                      编辑
+                    </el-button>
+                    <el-button 
+                      size="small" 
+                      type="warning" 
+                      @click="handleResetPassword(scope.row.id)"
+                      class="action-button reset-button"
+                    >
+                      <el-icon><RefreshLeft /></el-icon>
+                      重置密码
+                    </el-button>
+                    <el-button 
+                      v-show="scope.row.isOnline === 1" 
+                      size="small" 
+                      type="info" 
+                      @click="forceOffline(scope.row)"
+                      class="action-button offline-button"
+                    >
+                      <el-icon><RemoveFilled /></el-icon>
+                      强制下线
+                    </el-button>
+                    <el-popconfirm 
+                      title="确认删除该用户吗？" 
+                      confirm-button-text="确认" 
+                      cancel-button-text="取消"
+                      @confirm="handleDelete(scope.row.id)"
+                    >
+                      <template #reference>
+                        <el-button 
+                          size="small" 
+                          type="danger" 
+                          class="action-button delete-button"
+                        >
+                          <el-icon><Delete /></el-icon>
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -121,27 +207,45 @@
 
           <!-- 分页 -->
           <div class="list-pagination">
-            <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
-              :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
+            <el-pagination 
+              :current-page="pagination.current" 
+              :page-size="pagination.size" 
+              :total="pagination.total"
+              :page-sizes="[10, 20, 50, 100]" 
+              layout="total, sizes, prev, pager, next, jumper"
+              @current-change="handlePageChange" 
+              @size-change="handleSizeChange" 
+              size="default" 
+            />
           </div>
         </el-card>
       </el-col>
     </el-row>
   </div>
 
-  <user-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" :deptTree="deptTree"
-    @submit="handleAddSubmit" />
+  <user-form-dialog 
+    v-model:visible="addDialogVisible" 
+    :is-add="true" 
+    v-if="addDialogVisible" 
+    :deptTree="deptTree"
+    @submit="handleAddSubmit" 
+  />
 
   <!-- 编辑用户弹窗 -->
-  <user-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :userId="userId"
-    :deptTree="deptTree" @submit="handleEditSubmit" />
+  <user-form-dialog 
+    v-model:visible="editDialogVisible" 
+    :is-add="false" 
+    v-if="editDialogVisible" 
+    :userId="userId"
+    :deptTree="deptTree" 
+    @submit="handleEditSubmit" 
+  />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTreeApi } from '@/api/dept'
-import { Edit, Delete, RemoveFilled, RefreshLeft } from '@element-plus/icons-vue'
+import { Edit, Delete, RemoveFilled, RefreshLeft, User, Folder, Plus, Search, Refresh } from '@element-plus/icons-vue'
 import {
   getUserList,
   addUser,
@@ -342,6 +446,11 @@ const handleResetPassword = async (id: number) => {
   resetPasswordApi(id)
 }
 
+// 表格行样式
+const rowClassName = ({ row, rowIndex }: { row: any; rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 // 初始化加载
 onMounted(() => {
   loadDeptTree()
@@ -350,126 +459,66 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.user-container {
-  height: 100%;
-  padding: 12px;
-  background-color: #f5f7fa;
-}
+/* 用户页面特有样式 */
 
-.list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
-}
-
-/* 优化左侧树样式 */
-.tree-card {
-  height: calc(100vh - 130px);
-  overflow-y: auto;
-  padding: 4px;
-  box-sizing: border-box;
-}
-
+/* 列表头部样式 */
 .list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 35px;
-  padding: 0 12px;
-}
-
-.right-header {
-  margin-left: auto;
-}
-
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
+  height: 48px;
+  padding: 0 16px;
   border-bottom: 1px solid #ebeef5;
+  margin-bottom: 16px;
 }
 
-:deep(.el-card__body) {
-  padding: 14px !important;
+/* 用户卡片样式 */
+.user-card {
+  border-radius: 6px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  height: 95%;
 }
 
+/* 搜索区域样式 */
 .search-container {
   padding: 12px;
   background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
+  border-radius: 4px;
+  margin-bottom: 12px;
 }
 
-.search-form {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
+/* 关键字输入框样式 */
 .keyword-input {
-  width: 200px !important;
+  width: 180px !important;
 }
 
-:deep(.el-form-item) {
-  margin-bottom: 0;
-  margin-right: 16px;
-}
-
-:deep(.el-form-item__label) {
-  padding-right: 8px;
-  color: #606266;
-}
-
-.custom-tree {
-  height: 67vh;
+/* 表格样式 */
+.list-table {
+  height: calc(100vh - 350px);
   overflow-y: auto;
+  margin-bottom: 12px;
 }
 
-:deep(.custom-tree)::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
-}
-
-:deep(.custom-tree)::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.tree-node-label {
-  display: inline-block;
-  max-width: 130px;
+.el-table {
+  border-radius: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  font-size: 13px;
+}
+
+.el-table th {
+  background-color: #f5f7fa;
+  font-weight: 600;
   color: #303133;
 }
 
+/* 表格行样式 */
+.even-row {
+  background-color: #ffffff;
+}
+
+.odd-row {
+  background-color: #f9f9f9;
+}
+
+/* 分页样式 */
 .list-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.dept-card-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 32px;
-  font-weight: 500;
-  color: #303133;
-}
-
-.header-button {
-  padding: 4px 12px;
-  font-size: 13px;
-  height: 28px;
+  padding: 0 12px 12px;
 }
 </style>
