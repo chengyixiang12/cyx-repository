@@ -66,6 +66,7 @@
                       <el-button size="small" type="danger" :icon="Delete" circle />
                     </template>
                   </el-popconfirm>
+                  <el-button size="small" type="info" :icon="Document" circle @click="handleViewRecords(scope.row)" />
                 </template>
               </el-table-column>
             </el-table>
@@ -93,10 +94,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Edit, Delete, VideoPlay } from '@element-plus/icons-vue'
+import { Edit, Delete, VideoPlay, Document } from '@element-plus/icons-vue'
 import JobFormDialog from './component/JobFormDialog.vue'
 import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi, deleteJobApi, execImmediately } from '@/api/quartz'
 import { EditJobRequest, GetQuartzTasksRequest, GetQuartzTasksVo, SaveJobRequest } from '@/types/quartz'
+import router from '@/router/routers'
 
 const loading = ref(false)
 const jobList = ref<GetQuartzTasksVo[]>([])
@@ -157,6 +159,11 @@ const handleStatusChange = async (row: GetQuartzTasksVo) => {
     await stopJobApi(row.id)
   }
   await loadJobs()
+}
+
+// 查看执行记录
+const handleViewRecords = (row: GetQuartzTasksVo) => {
+  router.push({ name: 'quartzRecord', query: { id: row.id } })
 }
 
 // 分页变化

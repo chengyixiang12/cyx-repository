@@ -69,4 +69,10 @@ public class SysScheduleRecord extends BaseEntity {
      */
     @TableField(value = "job_param")
     private String jobParam;
+
+    /**
+     * 执行状态；0：未执行；1：执行中；2：执行完成；3：执行失败
+     */
+    @TableField(value = "status")
+    private String status;
 }

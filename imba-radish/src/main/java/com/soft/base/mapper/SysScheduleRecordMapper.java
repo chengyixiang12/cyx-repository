@@ -1,7 +1,13 @@
 package com.soft.base.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysScheduleRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.soft.base.model.vo.GetQuartzRecordListVo;
+import jakarta.validation.constraints.NotBlank;
+import org.apache.ibatis.annotations.Param;
+
+import java.time.LocalDateTime;
 
 /**
 * @author 程益祥
@@ -11,6 +17,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface SysScheduleRecordMapper extends BaseMapper<SysScheduleRecord> {
 
+    IPage<GetQuartzRecordListVo> getQuartzRecordList(IPage<GetQuartzRecordListVo> page,
+                                                     @Param("keyword") String keyword,
+                                                     @Param("jobId") String jobId,
+                                                     @Param("startTime") LocalDateTime startTime,
+                                                     @Param("endTime") LocalDateTime endTime);
+
+    String getLogDetail(@Param("id") Long id);
 }
 
 

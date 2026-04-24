@@ -202,4 +202,25 @@ public class BaseConstant {
          */
         public static final String QUARTZ_CRON_SCHEDULE = "1";
     }
+
+    /**
+     * 定时任务记录
+     */
+    public static class QuartzRecord {
+
+        /**
+         * 执行中
+         */
+        public static final String STATUS_EXECUTING = "1";
+
+        /**
+         * 执行完成
+         */
+        public static final String STATUS_COMPLETED = "2";
+
+        /**
+         * 执行失败
+         */
+        public static final String STATUS_FAIL = "3";
+    }
 }

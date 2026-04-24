@@ -1,0 +1,1 @@
+ALTER TABLE radish_master.sys_schedule_record ADD status char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '执行状态；0：未执行；1：执行中；2：执行完成；3：执行失败';

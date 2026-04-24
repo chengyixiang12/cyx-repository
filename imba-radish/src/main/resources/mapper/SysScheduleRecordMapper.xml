@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.base.mapper.SysScheduleRecordMapper">
+    <select id="getQuartzRecordList" resultType="GetQuartzRecordListVo">
+        select t1.id,
+               t1.job_name,
+               t1.job_type,
+               t1.job_group,
+               t1.execution_time,
+               t1.start_time,
+               t1.end_time,
+               t1.status
+        from sys_schedule_record t1
+        where t1.del_flag = '0'
+          and t1.job_id = #{jobId}
+        <if test="keyword != null and keyword != ''">
+          <bind name="keywordPattern" value="'%' + keyword + '%'"/>
+            and (t1.job_name like #{keyword} or t1.job_group like #{keywordPattern})
+        </if>
+        <if test="startTime != null and endTime != null">
+            and t1.start_time between #{startTime} and #{endTime}
+        </if>
+        order by t1.create_time desc
+    </select>
+    <select id="getLogDetail" parameterType="java.lang.Long" resultType="java.lang.String">
+        select t1.log_info
+        from sys_schedule_record t1
+        where t1.del_flag = '0'
+          and t1.id = #{id}
+    </select>
+</mapper>
