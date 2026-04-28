@@ -6,7 +6,6 @@
         <el-card shadow="hover" class="tree-card">
           <template #header>
             <div class="dept-card-header">
-              <el-icon class="header-icon"><Folder /></el-icon>
               <span>组织架构</span>
             </div>
           </template>
@@ -37,21 +36,6 @@
       <!-- 右侧用户表格 -->
       <el-col :span="20">
         <el-card class="user-card">
-          <template #header>
-            <div class="list-header">
-              <div class="header-title">
-                <el-icon class="title-icon"><User /></el-icon>
-                <span>用户管理</span>
-              </div>
-              <div class="right-header">
-                <el-button type="primary" @click="handleAdd" class="add-button">
-                  <el-icon><Plus /></el-icon>
-                  新增用户
-                </el-button>
-              </div>
-            </div>
-          </template>
-
           <!-- 搜索条件 -->
           <div class="search-container">
             <el-form :inline="true" :model="searchForm" class="search-form">
@@ -90,12 +74,13 @@
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="handleSearch" size="default">
-                  <el-icon><Search /></el-icon>
                   查询
                 </el-button>
                 <el-button @click="resetSearch" size="default">
-                  <el-icon><Refresh /></el-icon>
                   重置
+                </el-button>
+                <el-button type="primary" @click="handleAdd" class="add-button">
+                  新增
                 </el-button>
               </el-form-item>
             </el-form>
@@ -160,7 +145,6 @@
                       @click="handleEdit(scope.row)"
                       class="action-button edit-button"
                     >
-                      <el-icon><Edit /></el-icon>
                       编辑
                     </el-button>
                     <el-button 
@@ -169,7 +153,6 @@
                       @click="handleResetPassword(scope.row.id)"
                       class="action-button reset-button"
                     >
-                      <el-icon><RefreshLeft /></el-icon>
                       重置密码
                     </el-button>
                     <el-button 
@@ -179,7 +162,6 @@
                       @click="forceOffline(scope.row)"
                       class="action-button offline-button"
                     >
-                      <el-icon><RemoveFilled /></el-icon>
                       强制下线
                     </el-button>
                     <el-popconfirm 
@@ -194,7 +176,6 @@
                           type="danger" 
                           class="action-button delete-button"
                         >
-                          <el-icon><Delete /></el-icon>
                           删除
                         </el-button>
                       </template>
@@ -245,7 +226,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTreeApi } from '@/api/dept'
-import { Edit, Delete, RemoveFilled, RefreshLeft, User, Folder, Plus, Search, Refresh } from '@element-plus/icons-vue'
+import { Folder } from '@element-plus/icons-vue'
 import {
   getUserList,
   addUser,
@@ -459,7 +440,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 用户页面特有样式 */
 
 /* 列表头部样式 */
 .list-header {
@@ -474,7 +454,16 @@ onMounted(() => {
   border-radius: 6px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  height: 95%;
+  height: 81vh;
+}
+
+.dept-card-header {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  font-weight: 600;
+  color: #303133;
+  padding: 0 12px;
 }
 
 /* 搜索区域样式 */
@@ -490,16 +479,33 @@ onMounted(() => {
   width: 180px !important;
 }
 
-/* 表格样式 */
-.list-table {
-  height: calc(100vh - 350px);
-  overflow-y: auto;
-  margin-bottom: 12px;
-}
-
 .el-table {
   border-radius: 4px;
-  overflow: hidden;
+  /* min-width: 100%; */
+}
+
+.online-status {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.online-status.online {
+  background-color: #67C23A;
+  box-shadow: 0 0 8px rgba(103, 194, 58, 0.5);
+}
+
+.online-status.offline {
+  background-color: #C0C4CC;
+  box-shadow: 0 0 8px rgba(192, 196, 204, 0.5);
+}
+
+.username {
+  font-size: 14px;
+  color: #303133;
+  font-weight: 500;
 }
 
 .el-table th {

@@ -40,7 +40,7 @@ import static com.soft.base.constants.BaseConstant.LEFT_SLASH;
 @Slf4j
 @Aspect
 @Component
-@Order(9)
+@Order(99)
 @RequiredArgsConstructor
 public class SysLogAspect {
 

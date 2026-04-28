@@ -6,7 +6,7 @@
     <property name="CONSOLE_PATTERN" value="%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"/>
 
     <!-- 文件格式：包含年月日 -->
-    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} [%thread] - %msg%n"/>
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"/>
 
     <!-- 静默状态日志（生产环境推荐） -->
     <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
@@ -20,27 +20,14 @@
                     source="log.file.home"
                     defaultValue="logs"/>
 
-    <!-- ==================== 控制台：开发环境 ==================== -->
-    <springProfile name="dev">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    ${CONSOLE_PATTERN}
-                </pattern>
-            </encoder>
-        </appender>
-    </springProfile>
-
-    <!-- ==================== 控制台：非开发环境 ==================== -->
-    <springProfile name="!dev">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    ${CONSOLE_PATTERN}
-                </pattern>
-            </encoder>
-        </appender>
-    </springProfile>
+    <!-- ==================== 控制台 ==================== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                ${CONSOLE_PATTERN}
+            </pattern>
+        </encoder>
+    </appender>
 
     <!-- ==================== 普通日志：INFO / WARN ==================== -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -57,16 +44,24 @@
         </rollingPolicy>
 
         <encoder>
-            <!-- 包含年月日，日志级别放在时分秒后面 -->
             <pattern>
                 ${FILE_PATTERN}
             </pattern>
         </encoder>
 
-        <!-- 接收 INFO 及以上 -->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
+        <springProfile name="prod">
+            <!-- 接收 INFO 及以上 -->
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+        </springProfile>
+
+        <springProfile name="dev | default">
+            <!-- 接收 INFO 及以上 -->
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>DEBUG</level>
+            </filter>
+        </springProfile>
 
         <!-- 明确拒绝 ERROR（避免重复） -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">

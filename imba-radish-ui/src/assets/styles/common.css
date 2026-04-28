@@ -1,16 +1,13 @@
 /* 通用容器样式 */
 .container {
-  height: 100%;
-  padding: 12px;
-  background-color: #f5f7fa;
+  height: 70vh;
+  padding: 5px;
 }
 
-/* 表格样式 */
 .list-table {
-  width: 100%;
-  height: 45vh;
+  height: 61vh;
   overflow: auto;
-  padding-top: 8px;
+  margin-bottom: 5px;
 }
 
 /* 头部样式 */
@@ -101,16 +98,17 @@
 
 /* 树状结构样式 */
 .tree-card {
-  height: calc(100vh - 130px);
+  min-height: 61vh;
   overflow-y: auto;
   padding: 8px;
+  margin-left: 5px;
   box-sizing: border-box;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .custom-tree {
-  height: calc(100vh - 180px);
+  height: 61vh;
   overflow-y: auto;
   margin-top: 8px;
 }
@@ -146,15 +144,6 @@
   color: #409EFF;
 }
 
-.dept-card-header {
-  display: flex;
-  align-items: center;
-  height: 40px;
-  font-weight: 600;
-  color: #303133;
-  padding: 0 12px;
-}
-
 .header-icon {
   margin-right: 8px;
   font-size: 16px;
@@ -166,30 +155,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.online-status {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  transition: all 0.3s;
-}
-
-.online-status.online {
-  background-color: #67C23A;
-  box-shadow: 0 0 8px rgba(103, 194, 58, 0.5);
-}
-
-.online-status.offline {
-  background-color: #C0C4CC;
-  box-shadow: 0 0 8px rgba(192, 196, 204, 0.5);
-}
-
-.username {
-  font-size: 14px;
-  color: #303133;
-  font-weight: 500;
 }
 
 /* 按钮样式 */

@@ -80,7 +80,12 @@
 
         <!-- 任务参数 -->
         <el-form-item label="任务参数" prop="jobParam">
-          <el-input v-model="formData.jobParam" type="textarea" :rows="3" placeholder="请输入任务所需参数（JSON格式）" />
+          <div class="json-input-wrapper">
+            <el-input v-model="formData.jobParam" type="textarea" :rows="3" placeholder="请输入任务所需参数（JSON格式）" />
+            <el-button type="primary" size="small" @click="formatJson" class="format-btn">
+              格式化
+            </el-button>
+          </div>
         </el-form-item>
 
         <!-- 备注 -->
@@ -104,6 +109,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import CronGenerate from './CronGenerate.vue'
 import { Calendar } from '@element-plus/icons-vue'
 import { getJobApi } from '@/api/quartz'
@@ -194,6 +200,19 @@ const submitForm = async () => {
   }
 }
 
+// 格式化JSON
+const formatJson = () => {
+  try {
+    if (formData.value.jobParam) {
+      const parsed = JSON.parse(formData.value.jobParam)
+      formData.value.jobParam = JSON.stringify(parsed, null, 2)
+    }
+  } catch (error) {
+    // 提示用户JSON格式错误
+    ElMessage.error('JSON格式错误，请检查输入')
+  }
+}
+
 // 调度类型变更处理
 const handleScheduleTypeChange = (value: string) => {
   if (value === '0') {
@@ -272,5 +291,21 @@ onMounted(() => {
   border-radius: 4px;
   color: #67c23a;
   font-size: 13px;
+}
+
+.json-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.json-input-wrapper :deep(.el-textarea) {
+  width: 100%;
+}
+
+.format-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 1;
 }
 </style>

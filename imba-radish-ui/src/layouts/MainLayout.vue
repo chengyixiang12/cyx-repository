@@ -302,14 +302,13 @@ onMounted(() => {
     display: flex;
     min-height: 0;
     margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left: 5px;
 }
 
 .main-sidebar {
     background: #b3b9bf;
     border-radius: 4px;
-    margin-right: 10px;
+    margin-right: 5px;
+    margin-top: 4px;
     max-height: 100vh;
     overflow: hidden;
     overflow-y: auto;
@@ -328,9 +327,16 @@ onMounted(() => {
 
 .content-wrapper {
     flex: 1;
-    overflow: auto;
-    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px;
     min-height: 0;
+    background-color: #f5f7fa;
+}
+
+:deep(.el-tabs__header) {
+    margin-bottom: 5px;
+    margin-top: 0px;
 }
 
 .header-left {

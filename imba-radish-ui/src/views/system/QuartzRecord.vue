@@ -46,8 +46,8 @@
                 <el-table-column prop="endTime" label="结束时间" width="180" />
                 <el-table-column label="操作" min-width="200" fixed="right">
                     <template #default="{ row }">
-                        <el-button link type="primary" @click="viewLog(row.id)">查看执行日志</el-button>
-                        <el-button link type="primary" @click="viewParams(row.id)">查看任务执行参数</el-button>
+                        <el-button link type="primary" @click="viewLog(row.id)">查看日志</el-button>
+                        <el-button link type="primary" @click="viewParams(row.id)">查看参数</el-button>
                     </template>
                 </el-table-column>
             </el-table>
