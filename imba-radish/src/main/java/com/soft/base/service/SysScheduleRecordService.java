@@ -4,8 +4,7 @@ import com.soft.base.entity.SysScheduleRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.model.request.GetQuartzRecordListRequest;
 import com.soft.base.model.vo.GetQuartzRecordListVo;
-import com.soft.base.model.vo.PageVo;
-import jakarta.validation.constraints.NotNull;
+import com.soft.base.model.vo.PageVO;
 
 /**
 * @author 程益祥
@@ -14,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 */
 public interface SysScheduleRecordService extends IService<SysScheduleRecord> {
 
-    PageVo<GetQuartzRecordListVo> getQuartzRecordList(GetQuartzRecordListRequest request);
+    PageVO<GetQuartzRecordListVo> getQuartzRecordList(GetQuartzRecordListRequest request);
 
     String getLogDetail(Long id);
 }

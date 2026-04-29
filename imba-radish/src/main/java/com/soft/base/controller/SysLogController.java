@@ -3,14 +3,13 @@ package com.soft.base.controller;
 import com.soft.base.model.request.LogsRequest;
 import com.soft.base.model.vo.GetLogVo;
 import com.soft.base.model.vo.LogsVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +38,9 @@ public class SysLogController {
 
     @PostMapping(value = "/getLogs")
     @Operation(summary = "获取日志（复）")
-    public R<PageVo<LogsVo>> getLogs(@RequestBody LogsRequest request) {
+    public R<PageVO<LogsVo>> getLogs(@RequestBody LogsRequest request) {
         try {
-            PageVo<LogsVo> pageVo = sysLogService.getLogs(request);
+            PageVO<LogsVo> pageVo = sysLogService.getLogs(request);
             return R.ok(pageVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

@@ -1,10 +1,8 @@
 package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysDictType;
 import com.soft.base.mapper.SysDictTypeMapper;
 import com.soft.base.model.request.EditDictTypeRequest;
@@ -12,7 +10,7 @@ import com.soft.base.model.request.GetDictTypesRequest;
 import com.soft.base.model.request.SaveDictTypeRequest;
 import com.soft.base.model.vo.DictTypeVo;
 import com.soft.base.model.vo.DictTypesVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysDictTypeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
@@ -41,10 +39,10 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
-    public PageVo<DictTypesVo> getdictTypes(GetDictTypesRequest request) {
+    public PageVO<DictTypesVo> getdictTypes(GetDictTypesRequest request) {
         IPage<DictTypesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysDictTypeMapper.getdictTypes(page, request);
-        PageVo<DictTypesVo> pageVo = new PageVo<>();
+        PageVO<DictTypesVo> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;

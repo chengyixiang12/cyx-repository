@@ -16,7 +16,7 @@ import java.util.List;
 */
 public interface SysPermissionService extends IService<SysPermission> {
 
-    PageVo<PermissionsVo> getPermissions(PermissionsRequest request);
+    PageVO<PermissionsVo> getPermissions(PermissionsRequest request);
 
     List<String> getPermissionsByUserId(Long id);
 

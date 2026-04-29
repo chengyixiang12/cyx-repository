@@ -199,4 +199,38 @@
           AND sm.type IN ('0', '1')
         ORDER BY sm.order_num
     </select>
+    <select id="pageMenuTree" parameterType="com.soft.base.model.request.PageMenuTreeRequest" resultType="com.soft.base.model.vo.PageMenuTreeVO">
+        select
+        t1.id,
+        t1.name,
+        t1.type,
+        t1.`path`,
+        t1.component,
+        t1.order_num,
+        t1.status,
+        t1.visible,
+        exists (select 1 from sys_menu t2 where t2.del_flag = '0' and t2.parent_id = t1.id) as hasChild
+        from
+        sys_menu t1
+        where
+        t1.del_flag = '0'
+        <choose>
+            <when test="request.parentId == null">
+                and t1.parent_id is null
+            </when>
+            <otherwise>
+                and t1.parent_id = #{request.parentId}
+            </otherwise>
+        </choose>
+        <if test="request.keyword != null and request.keyword != ''">
+            <bind name="keywordLike" value="%request.keyword%"/>
+            and (t1.name like #{keywordLike} or t1.`path` like 'keywordLike')
+        </if>
+        <if test="request.status != null and request.status != ''">
+            and t1.status = #{request.status}
+        </if>
+        <if test="request.type != null and request.type != ''">
+            and t1.`type` = #{request.type}
+        </if>
+    </select>
 </mapper>

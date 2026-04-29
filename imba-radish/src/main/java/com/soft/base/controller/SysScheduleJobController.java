@@ -8,7 +8,7 @@ import com.soft.base.model.request.EditJobRequest;
 import com.soft.base.model.request.GetQuartzTasksRequest;
 import com.soft.base.model.vo.GetJobVo;
 import com.soft.base.model.vo.GetQuartzTasksVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysScheduleJobService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,8 +66,8 @@ public class SysScheduleJobController {
 
     @PostMapping(value = "/getQuartzTasks")
     @Operation(summary = "获取定时任务（复）")
-    public R<PageVo<GetQuartzTasksVo>> getQuartzTasks(@RequestBody @Valid GetQuartzTasksRequest request) {
-        PageVo<GetQuartzTasksVo> pageVo = sysScheduleJobService.getQuartzTasks(request);
+    public R<PageVO<GetQuartzTasksVo>> getQuartzTasks(@RequestBody @Valid GetQuartzTasksRequest request) {
+        PageVO<GetQuartzTasksVo> pageVo = sysScheduleJobService.getQuartzTasks(request);
         return R.ok(pageVo);
     }
 

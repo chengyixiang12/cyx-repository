@@ -13,6 +13,15 @@
               size="default"
             />
           </el-form-item>
+          <el-form-item label="父级:">
+            <el-input 
+              v-model="searchForm.parent" 
+              placeholder="部门名称/部门编号" 
+              clearable 
+              class="keyword-input"
+              size="default"
+            />
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleSearch" size="default">
               查询
@@ -46,6 +55,8 @@
           <el-table-column label="序号" min-width="60" align="center" type="index" />
           <el-table-column prop="name" label="部门名称" show-overflow-tooltip min-width="150" align="center" />
           <el-table-column prop="code" label="部门编码" show-overflow-tooltip min-width="150" align="center" />
+          <el-table-column prop="parentName" label="父级名称" show-overflow-tooltip min-width="150" align="center" />
+          <el-table-column prop="parentCode" label="父级编码" show-overflow-tooltip min-width="150" align="center" />
           <el-table-column prop="level" label="部门层级" show-overflow-tooltip min-width="150" align="center" />
           <el-table-column label="操作" min-width="150" align="center">
             <template #default="scope">

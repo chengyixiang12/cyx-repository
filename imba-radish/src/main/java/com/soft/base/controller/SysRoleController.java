@@ -9,7 +9,7 @@ import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetRoleSelectVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
 import com.soft.base.resultapi.R;
@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -143,8 +142,8 @@ public class SysRoleController {
 
     @PostMapping(value = "/getRoles")
     @Operation(summary = "获取角色（复）")
-    public R<PageVo<SysRolesVo>> getRoles(@RequestBody GetRolesRequest request) {
-        PageVo<SysRolesVo> resultPage = sysRoleService.getRoles(request);
+    public R<PageVO<SysRolesVo>> getRoles(@RequestBody GetRolesRequest request) {
+        PageVO<SysRolesVo> resultPage = sysRoleService.getRoles(request);
         return R.ok(resultPage);
     }
 

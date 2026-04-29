@@ -9,6 +9,7 @@ import com.soft.base.entity.SysUser;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.request.RegisterRequest;
 import com.soft.base.model.vo.LoginVo;
+import com.soft.base.properties.RadishProperty;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.AuthService;
 import com.soft.base.service.SysUsersService;
@@ -18,10 +19,9 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -41,10 +41,10 @@ import java.util.regex.Pattern;
 @RequestMapping(value = "/auth")
 @Slf4j
 @Validated
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Value(value = "${radish.graphics.expire-time}")
-    private Long graphicsCaptchaExpireTime;
+    private final RadishProperty radishProperty;
 
     private final AuthService authService;
 
@@ -53,17 +53,6 @@ public class AuthController {
     private final DefaultKaptcha captchaProducer;
 
     private final SysUsersService sysUsersService;
-
-    @Autowired
-    public AuthController(AuthService authService,
-                          RedisTemplate<String, Object> redisTemplate,
-                          DefaultKaptcha captchaProducer,
-                          SysUsersService sysUsersService) {
-        this.authService = authService;
-        this.redisTemplate = redisTemplate;
-        this.captchaProducer = captchaProducer;
-        this.sysUsersService = sysUsersService;
-    }
 
     @PostMapping("/login")
     @Operation(summary = "登录")
@@ -149,7 +138,7 @@ public class AuthController {
 
         String text = captchaProducer.createText();
 
-        redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + uuid, text, graphicsCaptchaExpireTime, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + uuid, text, radishProperty.getGraphics().getExpireTime(), TimeUnit.SECONDS);
 
         BufferedImage image = captchaProducer.createImage(text);
         ByteArrayOutputStream bis = new ByteArrayOutputStream();

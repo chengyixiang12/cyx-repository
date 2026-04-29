@@ -11,6 +11,7 @@ import com.soft.base.mapper.SysMenuMapper;
 import com.soft.base.model.ctf.MenuTree;
 import com.soft.base.model.request.EditMenuRequest;
 import com.soft.base.model.request.GetMenuListRequest;
+import com.soft.base.model.request.PageMenuTreeRequest;
 import com.soft.base.model.request.SaveMenuRequest;
 import com.soft.base.model.vo.*;
 import com.soft.base.service.SysMenuService;
@@ -79,10 +80,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public PageVo<GetMenuListVo> getMenuList(GetMenuListRequest request) {
+    public PageVO<GetMenuListVo> getMenuList(GetMenuListRequest request) {
         IPage<GetMenuListVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         sysMenuMapper.getMenuList(page, request);
-        PageVo<GetMenuListVo> pageVo = new PageVo<>();
+        PageVO<GetMenuListVo> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
@@ -157,6 +158,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         }
         List<MenusVo> menus = sysMenuMapper.getLeftMenus(userId);
         return getMenusVos(menus);
+    }
+
+    @Override
+    public PageVO<PageMenuTreeVO> pageMenuTree(PageMenuTreeRequest request) {
+        IPage<PageMenuTreeVO> page = new Page<>(request.getPageNum(), request.getPageSize());
+        page = sysMenuMapper.pageMenuTree(page, request);
+        return PageVO.<PageMenuTreeVO>builder().records(page.getRecords()).total(page.getTotal()).build();
     }
 
     /**

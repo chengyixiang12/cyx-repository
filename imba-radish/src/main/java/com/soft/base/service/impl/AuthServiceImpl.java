@@ -9,6 +9,7 @@ import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.vo.LoginVo;
+import com.soft.base.properties.RadishProperty;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
@@ -18,7 +19,6 @@ import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.*;
@@ -37,8 +37,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    @Value(value = "${radish.token.expire-time}")
-    private Long authorizationExpire;
+    private final RadishProperty radishProperty;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -139,7 +138,7 @@ public class AuthServiceImpl implements AuthService {
 
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), authorizationExpire, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
             loginVo.setToken(token);
             loginVo.setUsername(request.getUsername());
             return loginVo;

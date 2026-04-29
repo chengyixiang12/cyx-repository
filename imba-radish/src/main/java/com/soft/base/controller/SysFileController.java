@@ -8,7 +8,7 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import com.soft.base.resultapi.R;
@@ -144,8 +144,8 @@ public class SysFileController {
 
     @PostMapping(value = "/getFiles")
     @Operation(summary = "获取文件（复）")
-    public R<PageVo<FilesVo>> getFiles(@RequestBody FilesRequest request) {
-        PageVo<FilesVo> pageVo = sysFileService.getFiles(request);
+    public R<PageVO<FilesVo>> getFiles(@RequestBody FilesRequest request) {
+        PageVO<FilesVo> pageVo = sysFileService.getFiles(request);
         return R.ok(pageVo);
     }
 
@@ -158,8 +158,8 @@ public class SysFileController {
 
     @PostMapping(value = "/getMyFiles")
     @Operation(summary = "获取我的文件（复）")
-    public R<PageVo<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
-        PageVo<FilesVo> pageVo = sysFileService.getMyFiles(request);
+    public R<PageVO<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
+        PageVO<FilesVo> pageVo = sysFileService.getMyFiles(request);
         return R.ok(pageVo);
     }
 

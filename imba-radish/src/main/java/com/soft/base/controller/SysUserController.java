@@ -9,7 +9,7 @@ import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetUserVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UserInfoVo;
 import com.soft.base.model.vo.UsersVo;
 import com.soft.base.resultapi.R;
@@ -27,7 +27,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -58,8 +57,8 @@ public class SysUserController {
 
     @PostMapping(value = "/getUsers")
     @Operation(summary = "获取用户（复）")
-    public R<PageVo<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
-        PageVo<UsersVo> allUsers = sysUsersService.getUsers(request);
+    public R<PageVO<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
+        PageVO<UsersVo> allUsers = sysUsersService.getUsers(request);
         return R.ok(allUsers);
     }
 

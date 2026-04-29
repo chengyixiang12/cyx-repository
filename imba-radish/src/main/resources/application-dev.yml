@@ -15,10 +15,10 @@ spring:
           url: ${DATASOURCE_URL_MYSQL_MASTER}
           driver-class-name: com.mysql.cj.jdbc.Driver
         slave:
-          username: ${DATASOURCE_USERNAME_MYSQL_MASTER}
-          password: ${DATASOURCE_PASSWORD_MYSQL_MASTER}
-          url: ${DATASOURCE_URL_MYSQL_MASTER}
-          driver-class-name: com.mysql.cj.jdbc.Driver
+          username: ${DATASOURCE_USERNAME_MYSQL_SLAVE}
+          password: ${DATASOURCE_PASSWORD_MYSQL_SLAVE}
+          url: ${DATASOURCE_URL_MYSQL_SLAVE}
+          driver-class-name: org.postgresql.Driver
       hikari:
         # 连接池最大连接数
         maximum-pool-size: 10
@@ -169,3 +169,23 @@ flowable:
         default-async-job-acquire-wait-time: 2s
         # 每次拉取的最大作业数量（减少频繁查询）
         max-timer-jobs-per-acquisition: 20
+# 系统配置
+radish:
+  captcha:
+    # 主题
+    topic: 萝卜系统登录验证码
+    # 验证码过期时间（秒）
+    expire-time: 300
+  graphics:
+    # 图形验证码过期时间（秒）
+    expire-time: 60
+  token:
+    # token过期时间（秒）
+    expire-time: 60000
+  lock:
+    # 锁过期时间（秒）
+    expire: 10
+    # 最大重试次数
+    max-retry: 5
+    #重试间隔时间（毫秒）
+    retry-interval-time: 2000

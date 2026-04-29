@@ -6,7 +6,7 @@ import com.soft.base.model.dto.LogDto;
 import com.soft.base.model.request.LogsRequest;
 import com.soft.base.model.vo.GetLogVo;
 import com.soft.base.model.vo.LogsVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 
 /**
 * @author cyq
@@ -17,7 +17,7 @@ public interface SysLogService extends IService<SysLog> {
 
     void saveLog(LogDto logDto);
 
-    PageVo<LogsVo> getLogs(LogsRequest request);
+    PageVO<LogsVo> getLogs(LogsRequest request);
 
     GetLogVo getLog(Long id);
 

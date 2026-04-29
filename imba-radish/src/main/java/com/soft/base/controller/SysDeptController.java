@@ -13,7 +13,7 @@ import com.soft.base.model.request.SaveDeptRequest;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
 import com.soft.base.model.vo.GetDeptsVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDeptService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -158,8 +158,8 @@ public class SysDeptController {
 
     @PostMapping(value = "/getDepts")
     @Operation(summary = "获取部门（复）")
-    public R<PageVo<GetDeptsVo>> getDepts(@RequestBody GetDeptsRequest request) {
-        PageVo<GetDeptsVo> pageVo = sysDeptService.getDepts(request);
+    public R<PageVO<GetDeptsVo>> getDepts(@RequestBody GetDeptsRequest request) {
+        PageVO<GetDeptsVo> pageVo = sysDeptService.getDepts(request);
         return R.ok(pageVo);
     }
 }

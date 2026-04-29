@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysMenu;
 import com.soft.base.model.request.GetMenuListRequest;
+import com.soft.base.model.request.PageMenuTreeRequest;
 import com.soft.base.model.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -41,6 +42,9 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
     void menuHide(@Param("id") Long id);
 
     List<MenusVo> getLeftMenus(@Param("userId") Long userId);
+
+    IPage<PageMenuTreeVO> pageMenuTree(IPage<PageMenuTreeVO> page,
+                                       @Param("request") PageMenuTreeRequest request);
 }
 
 

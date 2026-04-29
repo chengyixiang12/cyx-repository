@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysMenu;
 import com.soft.base.model.request.EditMenuRequest;
 import com.soft.base.model.request.GetMenuListRequest;
+import com.soft.base.model.request.PageMenuTreeRequest;
 import com.soft.base.model.request.SaveMenuRequest;
 import com.soft.base.model.vo.*;
 
@@ -22,7 +23,7 @@ public interface SysMenuService extends IService<SysMenu> {
 
     void editMenu(EditMenuRequest request);
 
-    PageVo<GetMenuListVo> getMenuList(GetMenuListRequest request);
+    PageVO<GetMenuListVo> getMenuList(GetMenuListRequest request);
 
     GetMenuVo getMenu(Long id);
 
@@ -43,4 +44,6 @@ public interface SysMenuService extends IService<SysMenu> {
     void menuHide(Long id);
 
     List<MenusVo> getLeftMenus();
+
+    PageVO<PageMenuTreeVO> pageMenuTree(PageMenuTreeRequest request);
 }

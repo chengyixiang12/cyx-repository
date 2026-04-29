@@ -48,7 +48,7 @@ public class SysMenu extends BaseEntity {
      * 菜单类型：0-目录，1-菜单，2-按钮
      */
     @TableField(value = "type")
-    private Integer type;
+    private String type;
 
     /**
      * 排序号，数字越小，排序越靠前
@@ -60,13 +60,13 @@ public class SysMenu extends BaseEntity {
      * 菜单状态：0-禁用，1-启用
      */
     @TableField(value = "status")
-    private Integer status;
+    private String status;
 
     /**
      * 是否显示：0-隐藏，1-显示
      */
     @TableField(value = "visible")
-    private Integer visible;
+    private String visible;
 
     /**
      * 备注信息

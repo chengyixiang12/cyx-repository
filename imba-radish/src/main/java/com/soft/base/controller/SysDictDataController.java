@@ -3,13 +3,12 @@ package com.soft.base.controller;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.request.EditDictDataRequest;
 import com.soft.base.model.request.SaveDictDataRequest;
 import com.soft.base.model.vo.DictDataVo;
 import com.soft.base.model.vo.DictDatasVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDictDataService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +17,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +47,8 @@ public class SysDictDataController {
 
     @PostMapping(value = "/getDictDatas")
     @Operation(summary = "获取字典数据（复）")
-    public R<PageVo<DictDatasVo>> getDictDatas(@RequestBody DictDatasRequest request) {
-        PageVo<DictDatasVo> pageVo = sysDictDataService.getDictDatas(request);
+    public R<PageVO<DictDatasVo>> getDictDatas(@RequestBody DictDatasRequest request) {
+        PageVO<DictDatasVo> pageVo = sysDictDataService.getDictDatas(request);
         return R.ok(pageVo);
     }
 

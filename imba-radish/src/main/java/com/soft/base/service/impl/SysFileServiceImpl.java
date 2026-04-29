@@ -2,7 +2,6 @@ package com.soft.base.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.async.FileUploadAsync;
@@ -16,7 +15,7 @@ import com.soft.base.model.dto.FileHashDto;
 import com.soft.base.model.dto.SelectDeletedFileDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import com.soft.base.properties.MinioProperty;
@@ -38,7 +37,6 @@ import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Wrapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +117,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public PageVo<FilesVo> getFiles(FilesRequest request) {
+    public PageVO<FilesVo> getFiles(FilesRequest request) {
 
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
@@ -128,7 +126,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
-        PageVo<FilesVo> pageVo = new PageVo<>();
+        PageVO<FilesVo> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
@@ -194,7 +192,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public PageVo<FilesVo> getMyFiles(FilesRequest request) {
+    public PageVO<FilesVo> getMyFiles(FilesRequest request) {
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         Long userId = securityUtil.getUserInfo().getId();
         page = sysFileMapper.getMyFiles(page, request, userId);
@@ -203,7 +201,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
-        PageVo<FilesVo> pageVo = new PageVo<>();
+        PageVO<FilesVo> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;

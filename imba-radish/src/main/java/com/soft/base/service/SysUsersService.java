@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysUser;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetUserVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UsersVo;
-
-import java.io.IOException;
 
 /**
 * @author cyq
@@ -15,7 +13,7 @@ import java.io.IOException;
 * @createDate 2024-09-30 15:49:52
 */
 public interface SysUsersService extends IService<SysUser> {
-    PageVo<UsersVo> getUsers(GetUsersRequest request);
+    PageVO<UsersVo> getUsers(GetUsersRequest request);
 
     void editPassword(String targetPass, Long id);
 

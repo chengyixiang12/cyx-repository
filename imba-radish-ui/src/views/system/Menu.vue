@@ -1,7 +1,6 @@
 <template>
   <div class="menu-container container">
     <el-row :gutter="20">
-      <!-- 右侧菜单表格 -->
       <el-col :span="24">
         <el-card class="menu-card">
           <template #header>
@@ -31,14 +30,6 @@
                   <el-option label="禁用" :value="0" />
                 </el-select>
               </el-form-item>
-
-              <el-form-item label="菜单显示:">
-                <el-select v-model="searchForm.visible" placeholder="请选择" clearable style="width: 100px">
-                  <el-option label="显示" :value="1" />
-                  <el-option label="隐藏" :value="0" />
-                </el-select>
-              </el-form-item>
-
               <el-form-item label="菜单类型:">
                 <el-select v-model="searchForm.type" placeholder="请选择" clearable style="width: 100px">
                   <el-option label="目录" :value="0" />
@@ -46,7 +37,6 @@
                   <el-option label="按钮" :value="2" />
                 </el-select>
               </el-form-item>
-
               <el-form-item>
                 <el-button type="primary" @click="handleSearch">查询</el-button>
                 <el-button type="primary" @click="resetSearch">重置</el-button>
@@ -54,15 +44,21 @@
             </el-form>
           </div>
 
-          <!-- 菜单表格 -->
+          <!-- 菜单表格 - 树形数据与懒加载 -->
           <div class="list-table">
-            <el-table :data="menuList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
-              <el-table-column label="序号" min-width="50" align="center">
-                <template #default="scope">
-                  {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="name" align="center" label="菜单名称" show-overflow-tooltip />
+            <el-table 
+              :data="menuList" 
+              border 
+              size="small" 
+              style="width: 100%" 
+              v-loading="loading" 
+              :row-class-name="tableRowClassName"
+              lazy
+              :load="loadChildMenus"
+              :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+              row-key="id"
+            >
+              <el-table-column prop="name" align="center" label="菜单名称" show-overflow-tooltip min-width="180" />
               <el-table-column label="菜单图标" min-width="70" align="center">
                 <template #default="scope">
                   <el-icon v-if="scope.row.icon">
@@ -73,26 +69,46 @@
                   </el-icon>
                 </template>
               </el-table-column>
-              <el-table-column prop="type" align="center" label="类型" :formatter="formatType" show-overflow-tooltip />
-              <el-table-column prop="path" align="center" label="路由" show-overflow-tooltip />
-              <el-table-column prop="component" align="center" label="组件" show-overflow-tooltip />
-              <el-table-column prop="parentName" align="center" label="父级菜单" show-overflow-tooltip />
+              <el-table-column prop="type" align="center" label="类型" :formatter="formatType" show-overflow-tooltip width="80" />
+              <el-table-column prop="path" align="center" label="路由" show-overflow-tooltip min-width="150" />
+              <el-table-column prop="component" align="center" label="组件" show-overflow-tooltip min-width="180" />
               <el-table-column prop="orderNum" align="center" label="排序" min-width="65" sortable />
               <el-table-column prop="status" label="菜单状态" align="center" min-width="80">
                 <template #default="scope">
-                  <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                    inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
+                  <el-switch 
+                    v-model="scope.row.status" 
+                    :active-value="1" 
+                    :inactive-value="0" 
+                    active-color="#13ce66"
+                    inactive-color="#ff4949" 
+                    @change="handleStatusChange(scope.row)" 
+                  />
                 </template>
               </el-table-column>
               <el-table-column prop="visible" label="显示状态" align="center" min-width="80">
                 <template #default="scope">
-                  <el-switch v-model="scope.row.visible" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                    inactive-color="#ff4949" @change="handleVisibleChange(scope.row)" />
+                  <el-switch 
+                    v-model="scope.row.visible" 
+                    :active-value="1" 
+                    :inactive-value="0" 
+                    active-color="#13ce66"
+                    inactive-color="#ff4949" 
+                    @change="handleVisibleChange(scope.row)" 
+                  />
                 </template>
               </el-table-column>
               <el-table-column label="操作" min-width="200" align="center">
                 <template #default="scope">
                   <div class="action-buttons-container">
+                    <el-button 
+                      size="small" 
+                      type="primary" 
+                      @click="handleAddChild(scope.row)"
+                      class="action-button add-child-button"
+                    >
+                      <el-icon><Plus /></el-icon>
+                      新增
+                    </el-button>
                     <el-button 
                       size="small" 
                       type="primary" 
@@ -124,25 +140,36 @@
               </el-table-column>
             </el-table>
           </div>
-
-          <!-- 分页 -->
-          <div class="list-pagination">
-            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
-              :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
-          </div>
         </el-card>
       </el-col>
     </el-row>
   </div>
 
   <!-- 新增菜单弹窗 -->
-  <menu-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
-    @submit="handleAddSubmit" />
+  <menu-form-dialog 
+    v-model:visible="addDialogVisible" 
+    :is-add="true" 
+    v-if="addDialogVisible"
+    @submit="handleAddSubmit" 
+  />
 
   <!-- 编辑菜单弹窗 -->
-  <menu-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :menu-id="menuId"
-    :type="type" @submit="handleEditSubmit" />
+  <menu-form-dialog 
+    v-model:visible="editDialogVisible" 
+    :is-add="false" 
+    v-if="editDialogVisible" 
+    :menu-id="menuId"
+    @submit="handleEditSubmit" 
+  />
+
+  <!-- 新增子菜单弹窗 -->
+  <menu-form-dialog 
+    v-model:visible="addChildDialogVisible" 
+    :is-add="true" 
+    v-if="addChildDialogVisible" 
+    :parent-id="parentMenuId"
+    @submit="handleAddChildSubmit" 
+  />
 </template>
 
 <script lang="ts" setup>
@@ -157,7 +184,8 @@ import {
   enableMenuApi,
   disableMenuApi,
   menuShowApi,
-  menuHideApi
+  menuHideApi,
+  getMenuTreeApi
 } from '@/api/menu'
 import MenuFormDialog from './component/MenuFormDialog.vue'
 import type { EditMenuRequest, GetMenuListRequest, GetMenuListVo, SaveMenuRequest } from '@/types/menu'
@@ -168,8 +196,9 @@ const menuList = ref<GetMenuListVo[]>([])
 // 弹窗相关状态
 const addDialogVisible = ref(false)
 const editDialogVisible = ref(false)
+const addChildDialogVisible = ref(false)
 const menuId = ref<string>('')
-const type = ref<string>('')
+const parentMenuId = ref<string>('')
 const total = ref(0)
 
 // 搜索表单
@@ -179,7 +208,7 @@ const searchForm = ref<GetMenuListRequest>({
   type: '',
   visible: null,
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 1000,
 })
 
 const formatType = (row: any, column: any, cellValue: string) => {
@@ -197,19 +226,13 @@ const formatType = (row: any, column: any, cellValue: string) => {
 
 const iconsMap = new Map()
 
-// 初始化图标映射
 Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
-  // 将图标名称转换为统一格式（如全部小写）
   iconsMap.set(key.toLowerCase().replace(/icon$/, ''), component)
 })
 
 const getIconComponent = (iconName: string) => {
   if (!iconName) return null
-
-  // 统一处理图标名称格式
   const normalizedName = iconName.toLowerCase().replace(/^el-icon-/, '')
-
-  // 从映射中查找图标
   return iconsMap.get(normalizedName) || null
 }
 
@@ -218,7 +241,11 @@ const loadMenus = async () => {
   try {
     loading.value = true
     const res = await getMenuList(searchForm.value)
-    menuList.value = res.records || []
+    // 直接使用返回的记录，不需要构建树形结构
+    menuList.value = (res.records || []).map(menu => ({
+      ...menu,
+      hasChildren: menu.hasChild || false
+    }))
     total.value = res.total || 0
   } catch (error) {
     console.error('加载菜单列表失败:', error)
@@ -227,14 +254,36 @@ const loadMenus = async () => {
   }
 }
 
+// 懒加载子菜单
+const loadChildMenus = async (row: GetMenuListVo, treeNode: unknown, resolve: (data: GetMenuListVo[]) => void) => {
+  try {
+    const res = await getMenuTreeApi(row.id)
+    const children = res || []
+    // 标记是否有子节点
+    resolve(children.map(child => ({
+      ...child,
+      hasChildren: child.hasChild || false
+    })))
+  } catch (error) {
+    console.error('加载子菜单失败:', error)
+    resolve([])
+  }
+}
+
 // 新增菜单
 const handleAdd = () => {
+  menuId.value = ''
   addDialogVisible.value = true
+}
+
+// 新增子菜单
+const handleAddChild = (row: GetMenuListVo) => {
+  parentMenuId.value = row.id
+  addChildDialogVisible.value = true
 }
 
 // 编辑菜单
 const handleEdit = (row: GetMenuListVo) => {
-  type.value = row.type;
   menuId.value = row.id
   editDialogVisible.value = true
 }
@@ -242,59 +291,50 @@ const handleEdit = (row: GetMenuListVo) => {
 // 提交新增菜单
 const handleAddSubmit = async (formData: SaveMenuRequest) => {
   await addMenuStatusApi(formData)
-  loadMenus()
+  await loadMenus()
+}
+
+// 提交新增子菜单
+const handleAddChildSubmit = async (formData: SaveMenuRequest) => {
+  await addMenuStatusApi(formData)
+  await loadMenus()
 }
 
 // 提交编辑菜单
 const handleEditSubmit = async (formData: EditMenuRequest) => {
   await updateMenuStatusApi(formData)
-  loadMenus()
+  await loadMenus()
 }
 
 // 菜单状态变更
 const handleStatusChange = async (row: GetMenuListVo) => {
   if (row.status === 1) {
-    await enableMenuApi(row.id);
+    await enableMenuApi(row.id)
   } else {
-    await disableMenuApi(row.id);
+    await disableMenuApi(row.id)
   }
-  await loadMenus();
+  await loadMenus()
 }
 
 // 菜单显示状态变更
 const handleVisibleChange = async (row: GetMenuListVo) => {
   if (row.visible === 1) {
-    await menuShowApi(row.id);
+    await menuShowApi(row.id)
   } else {
-    await menuHideApi(row.id);
+    await menuHideApi(row.id)
   }
-  await loadMenus();
+  await loadMenus()
 }
 
 // 删除菜单
 const handleDelete = async (id: string) => {
   await deleteMenuApi(id)
-  loadMenus()
-}
-
-// 分页变化
-const handlePageChange = (page: number) => {
-  searchForm.value.pageNum = page
-  loadMenus()
-}
-
-const handleSizeChange = (size: number) => {
-  searchForm.value.pageSize = size
-  loadMenus()
+  await loadMenus()
 }
 
 const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
   return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
 }
-
-onMounted(() => {
-  loadMenus()
-})
 
 // 搜索
 const handleSearch = () => {
@@ -306,14 +346,16 @@ const resetSearch = () => {
   searchForm.value.status = null
   searchForm.value.type = ''
   searchForm.value.keyword = ''
+  searchForm.value.visible = null
   loadMenus()
 }
+
+onMounted(() => {
+  loadMenus()
+})
 </script>
 
 <style scoped>
-/* Menu页面特有样式 */
-
-/* 菜单卡片样式 */
 .menu-card {
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
@@ -321,7 +363,6 @@ const resetSearch = () => {
   height: 98%;
 }
 
-/* 列表头部样式 */
 .list-header {
   height: 48px;
   padding: 0 16px;
@@ -329,7 +370,26 @@ const resetSearch = () => {
   margin-bottom: 16px;
 }
 
-/* 搜索区域样式 */
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.title-icon {
+  font-size: 20px;
+}
+
+.right-header {
+  float: right;
+}
+
+.add-button {
+  margin-right: 0;
+}
+
 .search-container {
   padding: 16px;
   background-color: #fafafa;
@@ -337,14 +397,12 @@ const resetSearch = () => {
   margin-bottom: 16px;
 }
 
-/* 关键字输入框样式 */
 .keyword-input {
   width: 240px !important;
 }
 
-/* 表格样式 */
 .list-table {
-  height: calc(100vh - 400px);
+  height: calc(100vh - 350px);
   overflow-y: auto;
   margin-bottom: 16px;
 }
@@ -360,7 +418,6 @@ const resetSearch = () => {
   color: #303133;
 }
 
-/* 表格行样式 */
 .even-row {
   background-color: #ffffff;
 }
@@ -369,8 +426,25 @@ const resetSearch = () => {
   background-color: #f9f9f9;
 }
 
-/* 分页样式 */
-.list-pagination {
-  padding: 0 12px 12px;
+.action-buttons-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.add-child-button {
+  background-color: #67C23A;
+  border-color: #67C23A;
+}
+
+.add-child-button:hover {
+  background-color: #85ce61;
+  border-color: #85ce61;
 }
 </style>

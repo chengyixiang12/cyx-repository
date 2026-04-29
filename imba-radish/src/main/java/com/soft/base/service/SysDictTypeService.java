@@ -7,7 +7,7 @@ import com.soft.base.model.request.GetDictTypesRequest;
 import com.soft.base.model.request.SaveDictTypeRequest;
 import com.soft.base.model.vo.DictTypeVo;
 import com.soft.base.model.vo.DictTypesVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 */
 public interface SysDictTypeService extends IService<SysDictType> {
 
-    PageVo<DictTypesVo> getdictTypes(GetDictTypesRequest request);
+    PageVO<DictTypesVo> getdictTypes(GetDictTypesRequest request);
 
     void saveDictType(SaveDictTypeRequest request);
 

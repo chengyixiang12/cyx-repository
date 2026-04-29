@@ -14,14 +14,13 @@ import com.soft.base.model.request.*;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
 import com.soft.base.model.vo.GetDeptsVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysDeptService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
 * @author cyq
@@ -94,10 +93,10 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
-    public PageVo<GetDeptsVo> getDepts(GetDeptsRequest request) {
+    public PageVO<GetDeptsVo> getDepts(GetDeptsRequest request) {
         IPage<GetDeptsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysDeptMapper.getDepts(page, request);
-        PageVo<GetDeptsVo> pageVo = new PageVo<>();
+        PageVO<GetDeptsVo> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;

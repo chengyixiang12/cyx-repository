@@ -3,13 +3,12 @@ package com.soft.base.controller;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
-import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.EditDictTypeRequest;
 import com.soft.base.model.request.GetDictTypesRequest;
 import com.soft.base.model.request.SaveDictTypeRequest;
 import com.soft.base.model.vo.DictTypeVo;
 import com.soft.base.model.vo.DictTypesVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDictTypeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +20,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -45,8 +43,8 @@ public class SysDictTypeController {
 
     @PostMapping(value = "/getDictTypes")
     @Operation(summary = "获取字典类型（复）")
-    public R<PageVo<DictTypesVo>> getDictTypes(@RequestBody GetDictTypesRequest request) {
-        PageVo<DictTypesVo> dictTypesVos = sysDictTypeService.getdictTypes(request);
+    public R<PageVO<DictTypesVo>> getDictTypes(@RequestBody GetDictTypesRequest request) {
+        PageVO<DictTypesVo> dictTypesVos = sysDictTypeService.getdictTypes(request);
         return R.ok(dictTypesVos);
     }
 

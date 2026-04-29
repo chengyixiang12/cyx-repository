@@ -9,7 +9,7 @@ import com.soft.base.model.dto.LogDto;
 import com.soft.base.model.request.LogsRequest;
 import com.soft.base.model.vo.GetLogVo;
 import com.soft.base.model.vo.LogsVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysLogService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -37,10 +37,10 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog>
     }
 
     @Override
-    public PageVo<LogsVo> getLogs(LogsRequest request) {
+    public PageVO<LogsVo> getLogs(LogsRequest request) {
         IPage<LogsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysLogMapper.getLogs(page, request);
-        PageVo<LogsVo> pageVo = new PageVo<>();
+        PageVO<LogsVo> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;

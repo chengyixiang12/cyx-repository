@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.entity.SysDialogueDetails;
+import com.soft.base.enums.ResultEnum;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.GetRecentContentDto;
 import com.soft.base.model.dto.UserDto;
@@ -104,7 +105,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         }, error -> {
             log.error(error.getMessage());
             try {
-                session.sendMessage(new TextMessage("服务异常，请联系管理员"));
+                session.sendMessage(new TextMessage(ResultEnum.FAIL_NORMAL.getMessage()));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);

@@ -163,3 +163,23 @@ flowable:
         default-async-job-acquire-wait-time: 2s
         # 每次拉取的最大作业数量（减少频繁查询）
         max-timer-jobs-per-acquisition: 20
+# 登录验证码
+radish:
+  captcha:
+    # 主题
+    topic: 萝卜系统登录验证码
+    # 验证码过期时间（秒）
+    expire-time: 300
+  graphics:
+    # 图形验证码过期时间（秒）
+    expire-time: 60
+  token:
+    # token过期时间（秒）
+    expire-time: 600
+  lock:
+    # 锁过期时间（秒）
+    expire: 10
+    # 最大重试次数
+    max-retry: 5
+    #重试间隔时间（毫秒）
+    retry-interval-time: 2000

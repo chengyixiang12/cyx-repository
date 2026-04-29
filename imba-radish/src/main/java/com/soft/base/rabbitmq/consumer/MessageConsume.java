@@ -4,6 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.soft.base.constants.RabbitmqConstant;
 import com.soft.base.model.dto.LogDto;
 import com.soft.base.model.dto.rabbitmq.EmailDto;
+import com.soft.base.properties.RadishProperty;
 import com.soft.base.service.SysLogService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.handler.annotation.Header;
@@ -29,11 +31,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MessageConsume {
 
-    @Value(value = "${spring.mail.username}")
-    private String fromEmail;
+    private final MailProperties mailProperties;
 
-    @Value(value = "${radish.captcha.topic}")
-    private String topic;
+    private final RadishProperty radishProperty;
 
     private final JavaMailSender javaMailSender;
 
@@ -49,9 +49,9 @@ public class MessageConsume {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            helper.setFrom(fromEmail);
+            helper.setFrom(mailProperties.getUsername());
             helper.setTo(emailDto.getEmail());
-            helper.setSubject(topic);
+            helper.setSubject(radishProperty.getCaptcha().getTopic());
             helper.setText(emailDto.getContent(), true);
             javaMailSender.send(mimeMessage);
             channel.basicAck(deliveryTag, false);
