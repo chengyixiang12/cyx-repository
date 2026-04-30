@@ -12,7 +12,7 @@
             <result property="component" column="component" jdbcType="VARCHAR"/>
             <result property="icon" column="icon" jdbcType="VARCHAR"/>
             <result property="type" column="type" jdbcType="CHAR"/>
-            <result property="orderNum" column="order_num" jdbcType="INTEGER"/>
+            <result property="sort" column="sort" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="TINYINT"/>
             <result property="visible" column="visible" jdbcType="TINYINT"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
@@ -22,15 +22,6 @@
             <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
             <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
     </resultMap>
-
-    <sql id="Base_Column_List">
-        id,parent_id,name,
-        path,component,icon,
-        type,order_num,
-        status,visible,create_time,
-        update_time,remark,create_by,
-        update_by,del_flag
-    </sql>
 
     <select id="getMenuRoute" parameterType="java.util.List" resultType="MenusVo">
         SELECT
@@ -52,7 +43,7 @@
         sur.user_id = #{userId}
         AND sm.status = 1
         AND sm.type IN ('0', '1')
-        ORDER BY sm.order_num
+        ORDER BY sm.sort
     </select>
     <select id="getMenuList" parameterType="GetMenuListRequest" resultType="GetMenuListVo">
         SELECT
@@ -61,7 +52,7 @@
             sm.type,
             sm.`status`,
             sm.visible,
-            sm.order_num,
+            sm.sort,
             sm.icon,
             sm.path,
             sm.component,
@@ -95,7 +86,7 @@
             sm.component,
             sm.icon,
             sm.type,
-            sm.order_num,
+            sm.sort,
             sm.`status`,
             sm.visible,
             sm.remark
@@ -197,16 +188,17 @@
           AND sm.status = 1
           AND sm.visible = 1
           AND sm.type IN ('0', '1')
-        ORDER BY sm.order_num
+        ORDER BY sm.sort
     </select>
     <select id="pageMenuTree" parameterType="com.soft.base.model.request.PageMenuTreeRequest" resultType="com.soft.base.model.vo.PageMenuTreeVO">
         select
         t1.id,
         t1.name,
         t1.type,
+        t1.icon,
         t1.`path`,
         t1.component,
-        t1.order_num,
+        t1.sort,
         t1.status,
         t1.visible,
         exists (select 1 from sys_menu t2 where t2.del_flag = '0' and t2.parent_id = t1.id) as hasChild
@@ -223,7 +215,7 @@
             </otherwise>
         </choose>
         <if test="request.keyword != null and request.keyword != ''">
-            <bind name="keywordLike" value="%request.keyword%"/>
+            <bind name="keywordLike" value="'%' + request.keyword + '%'"/>
             and (t1.name like #{keywordLike} or t1.`path` like 'keywordLike')
         </if>
         <if test="request.status != null and request.status != ''">
@@ -232,5 +224,6 @@
         <if test="request.type != null and request.type != ''">
             and t1.`type` = #{request.type}
         </if>
+        order by t1.sort, t1.create_time desc
     </select>
 </mapper>

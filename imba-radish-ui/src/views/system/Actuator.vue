@@ -1,58 +1,22 @@
 <template>
-  <div class="actuator-container">
-    <h2>服务器监控</h2>
-    
-    <div class="status-card">
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>服务状态</span>
-            <el-tag :type="healthStatus === 'UP' ? 'success' : 'danger'">
-              {{ healthStatus === 'UP' ? '正常' : '异常' }}
-            </el-tag>
-          </div>
-        </template>
-        <div class="status-info">
-          <div class="info-item">
-            <span class="label">系统启动时间：</span>
-            <span class="value">{{ uptimeFormatted }}</span>
-          </div>
-          
-          <div class="components-status">
-            <h3>组件状态</h3>
-            <div class="components-grid">
-              <div 
-                v-for="(component, key) in healthComponents" 
-                :key="key" 
-                class="component-item"
-              >
-                <span class="component-name">{{ getComponentName(key) }}</span>
-                <el-tag 
-                  :type="component.status === 'UP' ? 'success' : 'danger'"
-                  size="small"
-                >
-                  {{ component.status === 'UP' ? '正常' : '异常' }}
-                </el-tag>
-                <div v-if="component.details" class="component-details">
-                  <template v-for="(value, detailKey) in component.details" :key="detailKey">
-                    <span class="detail-item" v-if="value !== null && value !== undefined">
-                      {{ getDetailName(detailKey) }}: {{ formatDetailValue(detailKey, value) }}
-                    </span>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </el-card>
+  <div class="actuator-container container">
+    <!-- 顶部刷新信息 -->
+    <div class="refresh-info">
+      <el-button type="primary" @click="refreshData" :loading="loading">
+        <el-icon><Refresh /></el-icon>
+        刷新数据
+      </el-button>
+      <span class="last-refresh">最后刷新：{{ lastRefreshTime }}</span>
     </div>
     
+    <!-- 指标监控 -->
     <div class="metrics-grid">
       <!-- CPU监控 -->
       <el-card shadow="hover" :body-style="{ padding: '20px' }">
         <template #header>
           <div class="card-header">
             <span>CPU监控</span>
+            <el-tag v-if="cpuLoading" size="small">加载中...</el-tag>
           </div>
         </template>
         <div class="cpu-info">
@@ -77,6 +41,7 @@
         <template #header>
           <div class="card-header">
             <span>内存监控</span>
+            <el-tag v-if="memoryLoading" size="small">加载中...</el-tag>
           </div>
         </template>
         <div class="memory-info">
@@ -105,6 +70,7 @@
         <template #header>
           <div class="card-header">
             <span>磁盘监控</span>
+            <el-tag v-if="diskLoading" size="small">加载中...</el-tag>
           </div>
         </template>
         <div class="disk-info">
@@ -152,12 +118,50 @@
       </el-card>
     </div>
     
-    <div class="refresh-info">
-      <el-button type="primary" @click="refreshData" :loading="loading">
-        <el-icon><Refresh /></el-icon>
-        刷新数据
-      </el-button>
-      <span class="last-refresh">最后刷新：{{ lastRefreshTime }}</span>
+    <!-- 组件状态（移到最下面） -->
+    <div class="status-card">
+      <el-card shadow="hover" :body-style="{ padding: '20px' }">
+        <template #header>
+          <div class="card-header">
+            <span>服务状态</span>
+            <el-tag :type="healthStatus === 'UP' ? 'success' : 'danger'">
+              {{ healthStatus === 'UP' ? '正常' : '异常' }}
+            </el-tag>
+          </div>
+        </template>
+        <div class="status-info">
+          <div class="info-item">
+            <span class="label">系统启动时间：</span>
+            <span class="value">{{ uptimeFormatted }}</span>
+          </div>
+          
+          <div class="components-status">
+            <h3>组件状态</h3>
+            <div class="components-grid">
+              <div 
+                v-for="(component, key) in healthComponents" 
+                :key="key" 
+                class="component-item"
+              >
+                <span class="component-name">{{ getComponentName(key) }}</span>
+                <el-tag 
+                  :type="component.status === 'UP' ? 'success' : 'danger'"
+                  size="small"
+                >
+                  {{ component.status === 'UP' ? '正常' : '异常' }}
+                </el-tag>
+                <div v-if="component.details" class="component-details">
+                  <template v-for="(value, detailKey) in component.details" :key="detailKey">
+                    <span class="detail-item" v-if="value !== null && value !== undefined">
+                      {{ getDetailName(detailKey) }}: {{ formatDetailValue(detailKey, value) }}
+                    </span>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-card>
     </div>
   </div>
 </template>
@@ -195,6 +199,12 @@ const memoryTotal = ref(0);
 const diskFree = ref(0);
 const diskTotal = ref(0);
 const lastRefreshTime = ref('');
+
+// 模块加载状态
+const cpuLoading = ref(false);
+const memoryLoading = ref(false);
+const diskLoading = ref(false);
+const healthLoading = ref(false);
 
 // 图表相关
 const cpuChartRef = ref<HTMLElement | null>(null);
@@ -415,40 +425,85 @@ const addHistoryData = () => {
   updateMemoryChart();
 };
 
-const refreshData = async () => {
-  loading.value = true;
+// 异步加载CPU数据
+const loadCpuData = async () => {
+  cpuLoading.value = true;
   try {
-    // 并行请求所有数据
-    const [
-      cpuUsageRes,
-      cpuCoreCountRes,
-      memoryUsageRes,
-      memoryTotalRes,
-      healthRes,
-      uptimeRes,
-      diskFreeRes,
-      diskTotalRes
-    ] = await Promise.all([
+    const [cpuUsageRes, cpuCoreCountRes] = await Promise.all([
       getCpuUsageApi(),
-      getCpuCoreCountApi(),
+      getCpuCoreCountApi()
+    ]);
+    cpuUsage.value = cpuUsageRes.measurements[0]?.value || 0;
+    cpuCoreCount.value = cpuCoreCountRes.measurements[0]?.value || 0;
+  } catch (error) {
+    console.error('获取CPU数据失败:', error);
+  } finally {
+    cpuLoading.value = false;
+  }
+};
+
+// 异步加载内存数据
+const loadMemoryData = async () => {
+  memoryLoading.value = true;
+  try {
+    const [memoryUsageRes, memoryTotalRes] = await Promise.all([
       getMemoryUsageApi(),
-      getMemoryTotalApi(),
-      getHealthApi(),
-      getUptimeApi(),
+      getMemoryTotalApi()
+    ]);
+    memoryUsed.value = memoryUsageRes.measurements[0]?.value || 0;
+    memoryTotal.value = memoryTotalRes.measurements[0]?.value || 0;
+  } catch (error) {
+    console.error('获取内存数据失败:', error);
+  } finally {
+    memoryLoading.value = false;
+  }
+};
+
+// 异步加载磁盘数据
+const loadDiskData = async () => {
+  diskLoading.value = true;
+  try {
+    const [diskFreeRes, diskTotalRes] = await Promise.all([
       getDiskFreeApi(),
       getDiskTotalApi()
     ]);
+    diskFree.value = diskFreeRes.measurements[0]?.value || 0;
+    diskTotal.value = diskTotalRes.measurements[0]?.value || 0;
+  } catch (error) {
+    console.error('获取磁盘数据失败:', error);
+  } finally {
+    diskLoading.value = false;
+  }
+};
 
-    // 处理响应数据
-    cpuUsage.value = cpuUsageRes.measurements[0]?.value || 0;
-    cpuCoreCount.value = cpuCoreCountRes.measurements[0]?.value || 0;
-    memoryUsed.value = memoryUsageRes.measurements[0]?.value || 0;
-    memoryTotal.value = memoryTotalRes.measurements[0]?.value || 0;
+// 异步加载健康状态数据
+const loadHealthData = async () => {
+  healthLoading.value = true;
+  try {
+    const [healthRes, uptimeRes] = await Promise.all([
+      getHealthApi(),
+      getUptimeApi()
+    ]);
     healthStatus.value = healthRes.status;
     healthComponents.value = healthRes.components || {};
     uptime.value = uptimeRes.measurements[0]?.value || 0;
-    diskFree.value = diskFreeRes.measurements[0]?.value || 0;
-    diskTotal.value = diskTotalRes.measurements[0]?.value || 0;
+  } catch (error) {
+    console.error('获取健康状态失败:', error);
+  } finally {
+    healthLoading.value = false;
+  }
+};
+
+const refreshData = async () => {
+  loading.value = true;
+  try {
+    // 模块异步加载
+    await Promise.all([
+      loadCpuData(),
+      loadMemoryData(),
+      loadDiskData(),
+      loadHealthData()
+    ]);
 
     // 添加历史数据
     addHistoryData();
@@ -497,7 +552,13 @@ onUnmounted(() => {
 
 <style scoped>
 .actuator-container {
-  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
 }
 
 h2 {
@@ -508,21 +569,21 @@ h2 {
 }
 
 .status-card {
-  margin-bottom: 20px;
+  margin: 0 10px 10px 10px;
 }
 
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin: 0 10px;
 }
 
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin: 10px;
 }
 
 .card-header {
@@ -554,7 +615,7 @@ h2 {
 }
 
 .chart-container {
-  height: 300px;
+  height: 200px;
   width: 100%;
 }
 
@@ -562,7 +623,8 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
 }
 
 .last-refresh {

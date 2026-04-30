@@ -1,114 +1,97 @@
 <template>
   <div class="role-container container">
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <el-card>
-          <template #header>
-            <div class="list-header">
-              <div class="header-title">
-                <el-icon class="title-icon"><User /></el-icon>
-                <span>角色管理</span>
-              </div>
-              <div class="right-header">
-                <el-button type="primary" @click="handleAdd" class="add-button">
-                  <el-icon><Plus /></el-icon>
-                  新增角色
-                </el-button>
-              </div>
+    <!-- 头部 -->
+    <div class="list-header">
+      <div class="header-title">
+        <span>角色管理</span>
+      </div>
+      <div class="right-header">
+        <el-button type="primary" @click="handleAdd" class="add-button">
+          新增角色
+        </el-button>
+      </div>
+    </div>
+
+    <!-- 搜索条件 -->
+    <div class="search-container">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="关键字:">
+          <el-input v-model="searchForm.keyword" placeholder="角色名称/编码" clearable class="keyword-input" />
+        </el-form-item>
+        <el-form-item label="角色状态:">
+          <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
+            <el-option label="启用" :value="1" />
+            <el-option label="禁用" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button type="primary" @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <!-- 角色表格 -->
+    <div class="table-wrapper">
+      <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
+        <el-table-column label="序号" min-width="50" align="center">
+          <template #default="scope">
+            {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" align="center" label="角色名称" show-overflow-tooltip />
+        <el-table-column prop="code" align="center" label="角色编码" show-overflow-tooltip />
+        <el-table-column prop="sortOrder" align="center" label="排序" min-width="70" sortable />
+        <el-table-column prop="status" label="状态" align="center" min-width="80">
+          <template #default="scope">
+            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
+              inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="isDefault" label="默认角色" align="center" min-width="80">
+          <template #default="scope">
+            <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" active-color="#13ce66"
+              inactive-color="#ff4949" @change="handleIsDefaultChange(scope.row)" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="fixRole" label="固定角色" align="center" min-width="80">
+          <template #default="scope">
+            <el-switch v-model="scope.row.fixRole" :active-value="1" :inactive-value="0" active-color="#13ce66"
+              inactive-color="#ff4949" @change="handleFixRoleChange(scope.row)" />
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="240" align="center">
+          <template #default="scope">
+            <div class="action-buttons-container">
+              <el-button type="primary" @click="handleEdit(scope.row.id)" class="action-button">
+                编辑
+              </el-button>
+              <el-button type="primary" @click="handleAssignPermission(scope.row.id)" class="action-button">
+                权限
+              </el-button>
+              <el-button type="primary" @click="handleAssignMenu(scope.row.id)" class="action-button">
+                菜单
+              </el-button>
+              <el-popconfirm title="确认删除该角色吗？" confirm-button-text="确认" cancel-button-text="取消"
+                @confirm="handleDelete(scope.row.id)">
+                <template #reference>
+                  <el-button type="danger" class="action-button">
+                    删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
             </div>
           </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
-          <!-- 搜索条件 -->
-          <div class="search-container">
-            <el-form :inline="true" :model="searchForm" class="search-form">
-              <el-form-item label="关键字:">
-                <el-input v-model="searchForm.keyword" placeholder="角色名称/编码" clearable class="keyword-input" />
-              </el-form-item>
-              <el-form-item label="角色状态:">
-                <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
-                  <el-option label="启用" :value="1" />
-                  <el-option label="禁用" :value="0" />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-                <el-button type="primary" @click="resetSearch">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-
-          <!-- 角色表格 -->
-          <div class="list-table">
-            <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
-              <el-table-column label="序号" min-width="50" align="center">
-                <template #default="scope">
-                  {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="name" align="center" label="角色名称" show-overflow-tooltip />
-              <el-table-column prop="code" align="center" label="角色编码" show-overflow-tooltip />
-              <el-table-column prop="sortOrder" align="center" label="排序" min-width="70" sortable />
-              <el-table-column prop="status" label="状态" align="center" min-width="80">
-                <template #default="scope">
-                  <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                    inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
-                </template>
-              </el-table-column>
-              <el-table-column prop="isDefault" label="默认角色" align="center" min-width="80">
-                <template #default="scope">
-                  <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                    inactive-color="#ff4949" @change="handleIsDefaultChange(scope.row)" />
-                </template>
-              </el-table-column>
-              <el-table-column prop="fixRole" label="固定角色" align="center" min-width="80">
-                <template #default="scope">
-                  <el-switch v-model="scope.row.fixRole" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                    inactive-color="#ff4949" @change="handleFixRoleChange(scope.row)" />
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" min-width="240" align="center">
-                <template #default="scope">
-                  <div class="action-buttons-container">
-                    <el-button size="small" type="primary" @click="handleEdit(scope.row.id)" class="action-button edit-button">
-                      <el-icon><Edit /></el-icon>
-                      编辑
-                    </el-button>
-                    <el-tooltip class="item" effect="dark" content="赋予权限" placement="top">
-                      <el-button size="small" type="primary" @click="handleAssignPermission(scope.row.id)" class="action-button edit-button">
-                        <el-icon><Key /></el-icon>
-                        权限
-                      </el-button>
-                    </el-tooltip>
-                    <el-tooltip class="item" effect="dark" content="赋予菜单" placement="top">
-                      <el-button size="small" type="primary" @click="handleAssignMenu(scope.row.id)" class="action-button edit-button">
-                        <el-icon><Menu /></el-icon>
-                        菜单
-                      </el-button>
-                    </el-tooltip>
-                    <el-popconfirm title="确认删除该角色吗？" confirm-button-text="确认" cancel-button-text="取消"
-                      @confirm="handleDelete(scope.row.id)">
-                      <template #reference>
-                        <el-button size="small" type="danger" class="action-button delete-button">
-                          <el-icon><Delete /></el-icon>
-                          删除
-                        </el-button>
-                      </template>
-                    </el-popconfirm>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-
-          <!-- 分页 -->
-          <div class="list-pagination">
-            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
-              :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <!-- 分页 -->
+    <div class="pagination">
+      <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
+        :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
+        @current-change="handlePageChange" @size-change="handleSizeChange" />
+    </div>
   </div>
 
   <!-- 新增角色弹窗 -->
@@ -130,7 +113,6 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { Edit, Delete, Menu, Key, User, Plus } from '@element-plus/icons-vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
 import { updateRoleMenusApi, updateRolePermissionsApi } from '@/api/role'
 import RoleFormDialog from './component/RoleFormDialog.vue'
@@ -295,5 +277,118 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 角色页面特有样式 */
+.role-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.title-icon {
+  font-size: 18px;
+  color: #409eff;
+}
+
+.right-header {
+  display: flex;
+  gap: 8px;
+}
+
+.search-container {
+  padding: 10px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  margin: 10px 5px 10px 5px;
+  flex-shrink: 0;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-form .el-form-item {
+  margin-bottom: 0;
+}
+
+.keyword-input {
+  width: 180px !important;
+}
+
+.table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: 6px;
+  border: 1px solid #edeef1;
+  margin: 0 5px 0 5px;
+}
+
+.table-wrapper :deep(.el-table) {
+  height: 100%;
+  min-height: 100%;
+}
+
+.table-wrapper :deep(.el-table__body-wrapper) {
+  overflow-y: auto;
+}
+
+.table-wrapper :deep(.el-table th) {
+  background-color: #f5f7fa !important;
+  font-weight: 600;
+  color: #606266;
+}
+
+.pagination {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  background-color: #fff;
+  z-index: 10;
+}
+
+.even-row {
+  background-color: #fff;
+}
+
+.odd-row {
+  background-color: #fafafa;
+}
+
+.action-buttons-container {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 5px 10px;
+  font-size: 12px;
+}
 </style>

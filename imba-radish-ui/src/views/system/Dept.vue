@@ -1,110 +1,107 @@
 <template>
   <div class="dept-container container">
-    <el-card class="dept-card">
-      <!-- 搜索条件 -->
-      <div class="search-container">
-        <el-form :inline="true" :model="searchForm" class="search-form">
-          <el-form-item label="关键字:">
-            <el-input 
-              v-model="searchForm.keyword" 
-              placeholder="部门名称/部门编号" 
-              clearable 
-              class="keyword-input"
-              size="default"
-            />
-          </el-form-item>
-          <el-form-item label="父级:">
-            <el-input 
-              v-model="searchForm.parent" 
-              placeholder="部门名称/部门编号" 
-              clearable 
-              class="keyword-input"
-              size="default"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch" size="default">
-              查询
-            </el-button>
-            <el-button @click="resetSearch" size="default">
-              重置
-            </el-button>
-          </el-form-item>
-          <el-form-item class="right-buttons">
-            <el-button type="primary" @click="handleAdd" class="add-button">
-              新增
-            </el-button>
-            <el-button type="success" @click="handleExport" class="export-button">
-              导出
-            </el-button>
-          </el-form-item>
-        </el-form>
+    <!-- 头部 -->
+    <div class="list-header">
+      <div class="header-title">
+        <span>部门管理</span>
       </div>
+      <div class="right-header">
+        <el-button type="primary" @click="handleAdd" class="add-button">
+          新增
+        </el-button>
+        <el-button type="success" @click="handleExport" class="export-button">
+          导出
+        </el-button>
+      </div>
+    </div>
 
-      <!-- 部门表格 -->
-      <div class="list-table">
-        <el-table 
-          :data="deptList" 
-          border 
-          style="width: 100%" 
-          v-loading="loading"
-          highlight-current-row
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="序号" min-width="60" align="center" type="index" />
-          <el-table-column prop="name" label="部门名称" show-overflow-tooltip min-width="150" align="center" />
-          <el-table-column prop="code" label="部门编码" show-overflow-tooltip min-width="150" align="center" />
-          <el-table-column prop="parentName" label="父级名称" show-overflow-tooltip min-width="150" align="center" />
-          <el-table-column prop="parentCode" label="父级编码" show-overflow-tooltip min-width="150" align="center" />
-          <el-table-column prop="level" label="部门层级" show-overflow-tooltip min-width="150" align="center" />
-          <el-table-column label="操作" min-width="150" align="center">
-            <template #default="scope">
-              <div class="action-buttons-container">
-                <el-button 
-                  size="small" 
-                  type="primary" 
-                  @click="handleEdit(scope.row)"
-                  class="action-button edit-button"
-                >
-                  编辑
-                </el-button>
-                <el-popconfirm 
-                  title="确认删除该部门吗？" 
-                  confirm-button-text="确认" 
-                  cancel-button-text="取消"
-                  @confirm="handleDelete(scope.row.id)"
-                >
-                  <template #reference>
-                    <el-button 
-                      size="small" 
-                      type="danger" 
-                      class="action-button delete-button"
-                    >
-                      删除
-                    </el-button>
-                  </template>
-                </el-popconfirm>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+    <!-- 搜索条件 -->
+    <div class="search-container">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="关键字:">
+          <el-input 
+            v-model="searchForm.keyword" 
+            placeholder="部门名称/部门编号" 
+            clearable 
+            class="keyword-input"
+          />
+        </el-form-item>
+        <el-form-item label="父级:">
+          <el-input 
+            v-model="searchForm.parent" 
+            placeholder="部门名称/部门编号" 
+            clearable 
+            class="keyword-input"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button type="primary" @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
 
-      <!-- 分页 -->
-      <div class="list-pagination">
-        <el-pagination 
-          :current-page="pagination.current" 
-          :page-size="pagination.size" 
-          :total="pagination.total"
-          :page-sizes="[10, 20, 50, 100]" 
-          layout="total, sizes, prev, pager, next, jumper"
-          @current-change="handlePageChange" 
-          @size-change="handleSizeChange" 
-          size="default" 
-        />
-      </div>
-    </el-card>
+    <!-- 部门表格 -->
+    <div class="table-wrapper">
+      <el-table 
+        :data="deptList" 
+        border 
+        size="small"
+        style="width: 100%" 
+        v-loading="loading"
+        highlight-current-row
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="序号" min-width="60" align="center" type="index" />
+        <el-table-column prop="name" label="部门名称" show-overflow-tooltip min-width="150" align="center" />
+        <el-table-column prop="code" label="部门编码" show-overflow-tooltip min-width="150" align="center" />
+        <el-table-column prop="parentName" label="父级名称" show-overflow-tooltip min-width="150" align="center" />
+        <el-table-column prop="parentCode" label="父级编码" show-overflow-tooltip min-width="150" align="center" />
+        <el-table-column prop="level" label="部门层级" show-overflow-tooltip min-width="150" align="center" />
+        <el-table-column label="操作" min-width="180" align="center">
+          <template #default="scope">
+            <div class="action-buttons-container">
+              <el-button 
+                type="primary" 
+                @click="handleEdit(scope.row)"
+                class="action-button edit-button"
+              >
+                编辑
+              </el-button>
+              <el-popconfirm 
+                title="确认删除该部门吗？" 
+                confirm-button-text="确认" 
+                cancel-button-text="取消"
+                @confirm="handleDelete(scope.row.id)"
+              >
+                <template #reference>
+                  <el-button 
+                    type="danger" 
+                    class="action-button delete-button"
+                  >
+                    删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+
+    <!-- 分页 -->
+    <div class="pagination">
+      <el-pagination 
+        :current-page="pagination.current" 
+        :page-size="pagination.size" 
+        :total="pagination.total"
+        :page-sizes="[10, 20, 50, 100]" 
+        layout="total, sizes, prev, pager, next, jumper"
+        @current-change="handlePageChange" 
+        @size-change="handleSizeChange" 
+      />
+    </div>
   </div>
 
   <!-- 新增部门弹窗 -->
@@ -267,60 +264,114 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 部门卡片样式 */
-.dept-card {
-  border-radius: 6px;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.08);
+.dept-container {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
 }
 
-/* 搜索区域样式 */
-.search-container {
-  padding: 12px;
-  background-color: #fafafa;
-  border-radius: 4px;
-  margin-bottom: 12px;
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #fff;
+  flex-shrink: 0;
 }
 
-/* 关键字输入框样式 */
-.keyword-input {
-  width: 200px !important;
-}
-
-/* 右侧按钮 */
-.right-buttons {
-  margin-left: auto;
-}
-
-.add-button {
-  margin-right: 10px;
-}
-
-/* 表格样式 */
-.el-table {
-  border-radius: 4px;
-}
-
-.el-table th {
-  background-color: #f5f7fa;
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
   font-weight: 600;
   color: #303133;
 }
 
-/* 操作按钮容器 */
-.action-buttons-container {
+.title-icon {
+  font-size: 18px;
+  color: #409eff;
+}
+
+.right-header {
   display: flex;
   gap: 8px;
 }
 
-.action-button {
-  min-width: 60px;
+.add-button {
+  margin-right: 8px;
 }
 
-/* 分页样式 */
-.list-pagination {
-  padding: 12px;
+.search-container {
+  padding: 10px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  margin: 10px 5px 10px 5px;
+  flex-shrink: 0;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-form .el-form-item {
+  margin-bottom: 0;
+}
+
+.keyword-input {
+  width: 180px !important;
+}
+
+.table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: 6px;
+  border: 1px solid #edeef1;
+  margin: 0 5px 0 5px;
+}
+
+.table-wrapper :deep(.el-table) {
+  height: 100%;
+  min-height: 100%;
+}
+
+.table-wrapper :deep(.el-table__body-wrapper) {
+  overflow-y: auto;
+}
+
+.table-wrapper :deep(.el-table th) {
+  background-color: #f5f7fa !important;
+  font-weight: 600;
+  color: #606266;
+}
+
+.pagination {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px;
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0;
+  background-color: #fff;
+  z-index: 10;
+}
+
+.action-buttons-container {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 5px 10px;
+  font-size: 12px;
 }
 </style>

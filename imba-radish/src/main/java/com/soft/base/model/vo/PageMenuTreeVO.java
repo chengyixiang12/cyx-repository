@@ -33,7 +33,7 @@ public class PageMenuTreeVO {
     private String component;
 
     @Schema(description = "排序")
-    private String orderNum;
+    private Integer sort;
 
     @Schema(description = "状态；1：启用；0：禁用")
     private String status;

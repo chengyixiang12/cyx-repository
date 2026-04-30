@@ -1,3 +1,5 @@
+import { PageRequest } from "./api";
+
 export interface MenuItem {
   id: string;
   path: string;
@@ -18,6 +20,11 @@ export interface GetMenuListVo {
   orderNum: number;
   icon: string;
   visible: number;
+  path: string;
+  component: string;
+  hasChild: boolean;
+  parentId: string;
+  children?: GetMenuListVo[];
 }
 
 export interface GetMenuListRequest {
@@ -88,4 +95,24 @@ export interface GetMenuTreeVo {
 
 export interface GetAssignedMenuVo {
   id: string;
+}
+
+export interface PageMenuTreeVO {
+  id: string
+  name: string | null
+  icon: string | null
+  type: string | null
+  path: string | null
+  component: string | null
+  sort: number | null
+  status: string | null
+  visible: string | null
+  hasChild: boolean | null
+}
+
+export interface PageMenuTreeRequest extends PageRequest {
+  keyword?: string | null;
+  status?: string | null;
+  type?: string | null;
+  parentId?: string | null;
 }

@@ -3,7 +3,6 @@ import MainLayout from '../layouts/MainLayout.vue'
 import { MenuItem } from '../types/menu'
 import { getMenuRouteApi } from '@/api/menu'
 import { showMessage } from '@/utils/message';
-import { clearCache } from '@/utils/clearCache';
 
 const viewModules = import.meta.glob('../views/**/*.vue', { eager: false });
 

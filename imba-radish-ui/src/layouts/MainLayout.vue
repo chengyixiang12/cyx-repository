@@ -48,9 +48,9 @@
             </div>
         </el-header>
 
-        <div class="main-left">
+        <div class="main-body">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '64px' : '180px'" class="main-sidebar">
+            <el-aside :width="isCollapsed ? '64px' : '180px'" class="main-left">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
                     text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
                     :collapse-transition="false">
@@ -81,14 +81,15 @@
             </el-aside>
 
             <!-- 右侧内容区 -->
-            <el-main class="main-content">
-                <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab" />
-                <div class="content-wrapper">
+            <el-main class="main-right">
+                <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
+                    @close-other="closeOtherTabs" @close-all="closeAllTabs" />
+                <div class="router-view-wrapper">
                     <router-view v-slot="{ Component }">
-                        <transition name="fade" mode="out-in">
-                            <div v-if="Component">
+                        <transition name="fade">
+                            <keep-alive>
                                 <component :is="Component" />
-                            </div>
+                            </keep-alive>
                         </transition>
                     </router-view>
                 </div>
@@ -165,6 +166,22 @@ const closeTab = (path: string) => {
             activePath.value = nextTab.path
             router.push({ path: nextTab.path })
         }
+    }
+}
+
+// 关闭其他标签
+const closeOtherTabs = (keepPath: string) => {
+    cachedTabs.value = cachedTabs.value.filter(tab => tab.path === keepPath || !tab.isClose)
+    activePath.value = keepPath
+}
+
+// 关闭全部标签
+const closeAllTabs = () => {
+    const homeTab = cachedTabs.value.find(tab => !tab.isClose)
+    if (homeTab) {
+        cachedTabs.value = [homeTab]
+        activePath.value = homeTab.path
+        router.push({ path: homeTab.path })
     }
 }
 
@@ -287,6 +304,7 @@ onMounted(() => {
 }
 
 .main-header {
+    height: 8vh;
     background: #b3b9bf;
     color: white;
     display: flex;
@@ -297,25 +315,25 @@ onMounted(() => {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.main-left {
+.main-body {
     flex: 1;
     display: flex;
+    flex-direction: row;
+    margin: 5px 0 5px 5px;
     min-height: 0;
-    margin-top: 5px;
 }
 
-.main-sidebar {
+.main-left {
     background: #b3b9bf;
     border-radius: 4px;
     margin-right: 5px;
     margin-top: 4px;
-    max-height: 100vh;
     overflow: hidden;
     overflow-y: auto;
-    /* height: 90vh; */
+    flex-shrink: 0;
 }
 
-.main-content {
+.main-right {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -325,13 +343,11 @@ onMounted(() => {
     min-height: 0;
 }
 
-.content-wrapper {
+.router-view-wrapper {
     flex: 1;
-    overflow-x: hidden;
-    overflow-y: auto;
     padding: 5px;
+    overflow: hidden;
     min-height: 0;
-    background-color: #f5f7fa;
 }
 
 :deep(.el-tabs__header) {
