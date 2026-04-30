@@ -103,11 +103,12 @@ public class LoggingJobListener implements JobListener {
 
                 SysScheduleRecord sysScheduleRecord = new SysScheduleRecord();
                 sysScheduleRecord.setLogInfo(collectedLogs);
+                sysScheduleRecord.setId(Long.parseLong(recordId));
                 sysScheduleRecord.setExecutionTime(System.currentTimeMillis() - jobExecutionContext.getFireTime().getTime());
                 sysScheduleRecord.setEndTime(endTime);
-                sysScheduleRecord.setStatus(BaseConstant.QuartzRecord.STATUS_COMPLETED);
+                sysScheduleRecord.setStatus(e == null ? BaseConstant.QuartzRecord.STATUS_COMPLETED : BaseConstant.QuartzRecord.STATUS_FAIL);
 
-                sysScheduleRecordService.save(sysScheduleRecord);
+                sysScheduleRecordService.updateById(sysScheduleRecord);
             }
 
             log.info("{}-{}任务执行结束", group, name);
