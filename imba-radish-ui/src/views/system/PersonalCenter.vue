@@ -218,7 +218,7 @@ const uploadAvatar = async (options: any) => {
 // 删除头像
 const removeAvatar = () => {
   avatarUrl.value = ''
-  ElMessage.success('头像已删除')
+  showMessage('头像已删除', 'success')
 }
 
 // 更新用户信息

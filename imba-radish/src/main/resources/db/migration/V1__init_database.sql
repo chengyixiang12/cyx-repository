@@ -171,7 +171,7 @@ CREATE TABLE `sys_menu` (
                             `component` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '前端组件路径',
                             `icon` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '菜单图标（如字体图标类名）',
                             `type` char(1) COLLATE utf8mb4_general_ci NOT NULL COMMENT '菜单类型：0-目录，1-菜单，2-按钮',
-                            `order_num` int COMMENT '排序号，数字越小，排序越靠前',
+                            `sort` int COMMENT '排序号，数字越小，排序越靠前',
                             `status` tinyint DEFAULT '1' COMMENT '菜单状态：0-禁用，1-启用',
                             `visible` tinyint DEFAULT '1' COMMENT '是否显示：0-隐藏，1-显示',
                             `remark` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注信息',

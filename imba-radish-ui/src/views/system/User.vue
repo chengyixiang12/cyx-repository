@@ -97,23 +97,23 @@
                     active-color="#13ce66" inactive-color="#ff4949" @change="handleLockChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="260" align="center">
+              <el-table-column label="操作" min-width="340" align="center">
                 <template #default="scope">
                   <div class="action-buttons-container">
-                    <el-button type="primary" @click="handleEdit(scope.row)" class="action-button">
+                    <el-button type="primary" size="small" @click="handleEdit(scope.row)" class="action-button">
                       编辑
                     </el-button>
-                    <el-button type="warning" @click="handleResetPassword(scope.row.id)" class="action-button">
+                    <el-button type="warning" size="small" @click="handleResetPassword(scope.row.id)" class="action-button">
                       重置密码
                     </el-button>
-                    <el-button v-show="scope.row.isOnline === 1" type="info" @click="forceOffline(scope.row)"
+                    <el-button v-show="scope.row.isOnline === 1" type="info" size="small" @click="forceOffline(scope.row)"
                       class="action-button">
                       强制下线
                     </el-button>
                     <el-popconfirm title="确认删除该用户吗？" confirm-button-text="确认" cancel-button-text="取消"
                       @confirm="handleDelete(scope.row.id)">
                       <template #reference>
-                        <el-button type="danger" class="action-button">
+                        <el-button type="danger" size="small" class="action-button">
                           删除
                         </el-button>
                       </template>
@@ -483,6 +483,17 @@ onMounted(() => {
   background-color: #f5f7fa !important;
   font-weight: 600;
   color: #606266;
+}
+
+.action-buttons-container {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.action-button {
+  flex-shrink: 0;
 }
 
 .pagination {
