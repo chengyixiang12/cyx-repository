@@ -24,13 +24,6 @@
             <el-option label="禁用" :value="0" />
           </el-select>
         </el-form-item>
-        <el-form-item label="菜单类型:">
-          <el-select v-model="searchForm.type" placeholder="请选择" clearable style="width: 100px">
-            <el-option label="目录" :value="0" />
-            <el-option label="菜单" :value="1" />
-            <el-option label="按钮" :value="2" />
-          </el-select>
-        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">查询</el-button>
           <el-button type="primary" @click="resetSearch">重置</el-button>

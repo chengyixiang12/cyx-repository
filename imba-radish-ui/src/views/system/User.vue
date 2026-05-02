@@ -106,10 +106,14 @@
                     <el-button type="warning" size="small" @click="handleResetPassword(scope.row.id)" class="action-button">
                       重置密码
                     </el-button>
-                    <el-button v-show="scope.row.isOnline === 1" type="info" size="small" @click="forceOffline(scope.row)"
-                      class="action-button">
-                      强制下线
-                    </el-button>
+                    <el-popconfirm title="确认强制该用户下线吗？" confirm-button-text="确认" cancel-button-text="取消"
+                      @confirm="forceOffline(scope.row)">
+                      <template #reference>
+                        <el-button v-show="scope.row.isOnline === 1" type="info" size="small" class="action-button">
+                          强制下线
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
                     <el-popconfirm title="确认删除该用户吗？" confirm-button-text="确认" cancel-button-text="取消"
                       @confirm="handleDelete(scope.row.id)">
                       <template #reference>

@@ -17,7 +17,7 @@
           and t1.job_id = #{jobId}
         <if test="keyword != null and keyword != ''">
           <bind name="keywordPattern" value="'%' + keyword + '%'"/>
-            and (t1.job_name like #{keyword} or t1.job_group like #{keywordPattern})
+            and (t1.job_name like #{keywordPattern} or t1.job_group like #{keywordPattern})
         </if>
         <if test="startTime != null and endTime != null">
             and t1.start_time between #{startTime} and #{endTime}

@@ -140,6 +140,9 @@ knife4j:
   enable: true
 # 性能监控配置
 management:
+  health:
+    mail:
+      enabled: false
   endpoints:
     web:
       exposure:
