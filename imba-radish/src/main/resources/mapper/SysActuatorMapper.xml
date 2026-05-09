@@ -29,4 +29,22 @@
               and t1.del_flag = 0
             order by t1.create_time desc
     </select>
+        <select id="listActuatorPage" parameterType="ListActuatorPageRequest" resultType="ListActuatorVO">
+                select
+                        t1.create_time,
+                        t1.health_db,
+                        t1.health_disk_space,
+                        t1.health_mail,
+                        t1.health_ping,
+                        t1.health_rabbit,
+                        t1.health_redis,
+                        t1.health_ssl,
+                        t1.health
+                from
+                        sys_actuator t1
+                where
+                        t1.create_time between #{request.startTime} and #{request.endTime}
+                  and t1.del_flag = 0
+                order by t1.create_time desc
+        </select>
 </mapper>

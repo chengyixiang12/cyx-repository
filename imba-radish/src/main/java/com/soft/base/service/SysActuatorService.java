@@ -2,7 +2,9 @@ package com.soft.base.service;
 
 import com.soft.base.entity.SysActuator;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.soft.base.model.request.ListActuatorPageRequest;
 import com.soft.base.model.vo.ListActuatorVO;
+import com.soft.base.model.vo.PageVO;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,4 +17,6 @@ import java.util.List;
 public interface SysActuatorService extends IService<SysActuator> {
 
     List<ListActuatorVO> listActuator(LocalDateTime startTime, LocalDateTime endTime);
+
+    PageVO<ListActuatorVO> listActuatorPage(ListActuatorPageRequest request);
 }

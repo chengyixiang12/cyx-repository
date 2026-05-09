@@ -159,30 +159,66 @@
           <div class="components-status">
             <h3>组件状态</h3>
             <div class="components-table-wrapper">
-              <table class="components-table">
-                <thead>
-                  <tr>
-                    <th>时间</th>
-                    <th>数据库</th>
-                    <th>磁盘空间</th>
-                    <th>系统响应</th>
-                    <th>RabbitMQ</th>
-                    <th>Redis</th>
-                    <th>SSL证书</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(item, index) in healthHistory" :key="index">
-                    <td>{{ item.time }}</td>
-                    <td><el-tag :type="item.db === 'UP' ? 'success' : 'danger'" size="small">{{ item.db === 'UP' ? '正常' : '异常' }}</el-tag></td>
-                    <td><el-tag :type="item.diskSpace === 'UP' ? 'success' : 'danger'" size="small">{{ item.diskSpace === 'UP' ? '正常' : '异常' }}</el-tag></td>
-                    <td><el-tag :type="item.ping === 'UP' ? 'success' : 'danger'" size="small">{{ item.ping === 'UP' ? '正常' : '异常' }}</el-tag></td>
-                    <td><el-tag :type="item.rabbit === 'UP' ? 'success' : 'danger'" size="small">{{ item.rabbit === 'UP' ? '正常' : '异常' }}</el-tag></td>
-                    <td><el-tag :type="item.redis === 'UP' ? 'success' : 'danger'" size="small">{{ item.redis === 'UP' ? '正常' : '异常' }}</el-tag></td>
-                    <td><el-tag :type="item.ssl === 'UP' ? 'success' : 'danger'" size="small">{{ item.ssl === 'UP' ? '正常' : '异常' }}</el-tag></td>
-                  </tr>
-                </tbody>
-              </table>
+              <el-table :data="healthHistory" border size="small" :loading="tableLoading" highlight-current-row>
+                <el-table-column prop="createTime" label="时间" min-width="180" align="center">
+                  <template #default="scope">
+                    {{ formatTableTime(scope.row.createTime) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="healthDb" label="数据库" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.healthDb === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.healthDb === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="healthDiskSpace" label="磁盘空间" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.healthDiskSpace === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.healthDiskSpace === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="healthPing" label="系统响应" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.healthPing === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.healthPing === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="healthRabbit" label="RabbitMQ" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.healthRabbit === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.healthRabbit === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="healthRedis" label="Redis" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.healthRedis === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.healthRedis === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="healthSsl" label="SSL证书" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.healthSsl === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.healthSsl === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+            <div class="pagination-wrapper">
+              <el-pagination
+                :current-page="pagination.current"
+                :page-size="pagination.size"
+                :total="pagination.total"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+                @current-change="handlePageChange"
+                @size-change="handleSizeChange"
+              />
             </div>
           </div>
         </div>
@@ -196,22 +232,16 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import * as echarts from 'echarts';
 import dayjs from 'dayjs';
 import {
-  listActuatorApi
+  listActuatorApi,
+  listActuatorPageApi
 } from '@/api/actuator';
 import { Refresh } from '@element-plus/icons-vue';
 import type { ListActuatorVO } from '@/types/actuator';
 import { showMessage } from '@/utils/message';
 
-// 类型定义
-interface HealthComponent {
-  status: string;
-  details?: Record<string, any>;
-}
-
 // 状态变量
 const loading = ref(false);
 const healthStatus = ref('UP');
-const healthComponents = ref<Record<string, HealthComponent>>({});
 const uptime = ref(0);
 const cpuCoreCount = ref(0);
 const cpuUsage = ref(0);
@@ -237,17 +267,18 @@ const startTime = ref<Date | null>(null);
 const endTime = ref<Date | null>(null);
 const quickTimeRange = ref<number | string>(7);
 
-// 组件状态历史记录
-interface HealthHistoryItem {
-  time: string;
-  db: string;
-  diskSpace: string;
-  ping: string;
-  rabbit: string;
-  redis: string;
-  ssl: string;
-}
-const healthHistory = ref<HealthHistoryItem[]>([]);
+// 组件状态历史记录（直接使用 ListActuatorVO）
+const healthHistory = ref<ListActuatorVO[]>([]);
+
+// 分页状态
+const pagination = ref({
+  current: 1,
+  size: 10,
+  total: 0
+});
+
+// 表格加载状态
+const tableLoading = ref(false);
 
 // 计算属性
 const uptimeFormatted = computed(() => {
@@ -287,48 +318,6 @@ const formatMemory = (bytes: number) => {
 
 const formatDisk = (bytes: number) => {
   return formatMemory(bytes);
-};
-
-// 获取组件名称
-const getComponentName = (key: string): string => {
-  const componentNames: Record<string, string> = {
-    db: '数据库',
-    diskSpace: '磁盘空间',
-    // mail: '邮件服务',
-    ping: '系统响应',
-    rabbit: 'RabbitMQ',
-    redis: 'Redis',
-    ssl: 'SSL证书'
-  };
-  return componentNames[key] || key;
-};
-
-// 获取详情名称
-const getDetailName = (key: string): string => {
-  const detailNames: Record<string, string> = {
-    database: '数据库类型',
-    validationQuery: '验证查询',
-    result: '结果',
-    total: '总空间',
-    free: '可用空间',
-    threshold: '阈值',
-    path: '路径',
-    exists: '是否存在',
-    location: '服务器地址',
-    version: '版本'
-  };
-  return detailNames[key] || key;
-};
-
-// 格式化详情值
-const formatDetailValue = (key: string, value: any): string => {
-  if (key === 'total' || key === 'free' || key === 'threshold') {
-    return formatMemory(value);
-  }
-  if (typeof value === 'boolean') {
-    return value ? '是' : '否';
-  }
-  return String(value);
 };
 
 // 初始化图表
@@ -520,22 +509,10 @@ const loadChartData = async () => {
         uptime.value = latestData.uptime;
       }
 
-      // 更新组件健康状态
-      healthComponents.value = {
-        db: { status: latestData.healthDb || 'UNKNOWN' },
-        diskSpace: { status: latestData.healthDiskSpace || 'UNKNOWN' },
-        // mail: { status: latestData.healthMail || 'UNKNOWN' },
-        ping: { status: latestData.healthPing || 'UNKNOWN' },
-        rabbit: { status: latestData.healthRabbit || 'UNKNOWN' },
-        redis: { status: latestData.healthRedis || 'UNKNOWN' },
-        ssl: { status: latestData.healthSsl || 'UNKNOWN' }
-      };
-
       // 从服务端获取数据，构建图表数据和组件状态历史（不使用本地存储）
       const times: string[] = [];
       const cpuData: number[] = [];
       const memoryData: number[] = [];
-      const healthItems: HealthHistoryItem[] = [];
 
       // 图表数据需要时间正序（从左到右递增），所以反转数组
       const reversedList = [...actuatorList].reverse();
@@ -580,21 +557,6 @@ const loadChartData = async () => {
         }
       });
 
-      // 组件状态列表保持倒序（最新的在最上面），直接遍历原始数组
-      actuatorList.forEach((item: ListActuatorVO) => {
-        if (item.createTime) {
-          healthItems.push({
-            time: dayjs(item.createTime).format('YYYY-MM-DD HH:mm:ss'),
-            db: item.healthDb || 'UNKNOWN',
-            diskSpace: item.healthDiskSpace || 'UNKNOWN',
-            ping: item.healthPing || 'UNKNOWN',
-            rabbit: item.healthRabbit || 'UNKNOWN',
-            redis: item.healthRedis || 'UNKNOWN',
-            ssl: item.healthSsl || 'UNKNOWN'
-          });
-        }
-      });
-
       // 保持最多显示20个数据点（取最新的20个）
       const maxPoints = 15;
       if (times.length > maxPoints) {
@@ -602,11 +564,7 @@ const loadChartData = async () => {
         times.splice(0, startIndex);
         cpuData.splice(0, startIndex);
         memoryData.splice(0, startIndex);
-        healthItems.splice(0, startIndex);
       }
-
-      // 更新组件状态历史
-      healthHistory.value = healthItems;
 
       // 更新图表（直接传入服务端获取的数据）
       updateCpuChart(times, cpuData);
@@ -661,6 +619,9 @@ const refreshChartData = async () => {
   }
   
   await loadChartData();
+  // 同时刷新表格数据
+  pagination.value.current = 1;
+  loadTableData();
 };
 
 const refreshData = async () => {
@@ -678,6 +639,9 @@ const refreshData = async () => {
 
     // 更新最后刷新时间
     lastRefreshTime.value = new Date().toLocaleString();
+    // 同时刷新表格数据
+    pagination.value.current = 1;
+    loadTableData();
   } catch (error) {
     console.error('获取监控数据失败:', error);
   } finally {
@@ -706,6 +670,59 @@ const formatDateTime = (date: Date): string => {
   return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
 };
 
+// 格式化表格时间
+const formatTableTime = (timeStr?: string): string => {
+  if (!timeStr) return '-';
+  try {
+    return dayjs(timeStr).format('YYYY-MM-DD HH:mm:ss');
+  } catch {
+    return timeStr;
+  }
+};
+
+// 加载分页表格数据
+const loadTableData = async () => {
+  tableLoading.value = true;
+  try {
+    const params: {
+      pageNum: number;
+      pageSize: number;
+      startTime?: string;
+      endTime?: string;
+    } = {
+      pageNum: pagination.value.current,
+      pageSize: pagination.value.size
+    };
+
+    if (startTime.value) {
+      params.startTime = formatDateTime(startTime.value);
+    }
+    if (endTime.value) {
+      params.endTime = formatDateTime(endTime.value);
+    }
+
+    const result = await listActuatorPageApi(params);
+    healthHistory.value = result.records || [];
+    pagination.value.total = result.total || 0;
+  } catch (error) {
+    console.error('获取组件状态分页数据失败:', error);
+  } finally {
+    tableLoading.value = false;
+  }
+};
+
+// 分页事件处理
+const handlePageChange = (page: number) => {
+  pagination.value.current = page;
+  loadTableData();
+};
+
+const handleSizeChange = (size: number) => {
+  pagination.value.size = size;
+  pagination.value.current = 1;
+  loadTableData();
+};
+
 onMounted(() => {
   // 设置默认时间范围
   setDefaultTimeRange();
@@ -714,6 +731,8 @@ onMounted(() => {
     initCharts();
     // 图表初始化完成后再加载数据
     refreshData();
+    // 加载表格数据
+    loadTableData();
   }, 100);
   // 监听窗口大小变化
   window.addEventListener('resize', handleResize);
@@ -856,36 +875,20 @@ h2 {
   overflow-x: auto;
 }
 
-.components-table {
-  width: 100%;
-  border-collapse: collapse;
+.components-table-wrapper :deep(.el-table) {
   font-size: 14px;
 }
 
-.components-table th,
-.components-table td {
-  padding: 12px 15px;
-  text-align: center;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.components-table th {
+.components-table-wrapper :deep(.el-table th) {
   background-color: #f5f7fa;
-  font-weight: bold;
+  font-weight: 600;
   color: #606266;
-  white-space: nowrap;
 }
 
-.components-table tbody tr:hover {
-  background-color: #f5f7fa;
-}
-
-.components-table td {
-  color: #303133;
-}
-
-.components-table .el-tag {
-  margin: 0;
+.pagination-wrapper {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .component-details {

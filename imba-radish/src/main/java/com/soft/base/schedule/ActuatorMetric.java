@@ -43,11 +43,11 @@ public class ActuatorMetric {
         sysActuator.setCpuCount(cpuCount != null ? cpuCount.intValue() : null);
 
         // 3. jvm.memory.max - JVM堆最大内存（字节）
-        Double jvmMemoryMax = getGaugeValue("jvm.memory.max", Tags.of("area", "heap"));
+        Double jvmMemoryMax = getGaugeValue("jvm.memory.max");
         sysActuator.setMemeryMax(jvmMemoryMax != null ? jvmMemoryMax.longValue() : null);
 
         // 4. jvm.memory.used - JVM堆已使用内存（字节）
-        Double jvmMemoryUsed = getGaugeValue("jvm.memory.used", Tags.of("area", "heap"));
+        Double jvmMemoryUsed = getGaugeValue("jvm.memory.used");
         sysActuator.setMemeryUsed(jvmMemoryUsed != null ? jvmMemoryUsed.longValue() : null);
 
         // 5. disk.free - 磁盘可用空间（字节）

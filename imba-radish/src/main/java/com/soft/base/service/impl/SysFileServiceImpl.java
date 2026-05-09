@@ -226,7 +226,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         if (StringUtils.isBlank(url)) {
             SysFile sysFile = sysFileMapper.selectById(id);
 
-
             if ("1".equals(isInline)) {
                 Map<String, String> headerMap = new HashMap<>();
                 String value = sysFile.getFileSuffix().toLowerCase().replaceFirst("\\.", "");

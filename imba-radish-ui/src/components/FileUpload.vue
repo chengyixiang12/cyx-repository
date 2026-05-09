@@ -26,7 +26,6 @@
 import { ref } from 'vue'
 import { uploadChunkApi, uploadFileApi, mergeChunkApi, getFileByMd5Api } from '@/api/file'
 import { showMessage } from '@/utils/message'
-import SparkMD5 from 'spark-md5';
 import { calculateFileMd5, chunkSize } from '@/utils/filemd5';
 
 const emit = defineEmits(['upload-success'])

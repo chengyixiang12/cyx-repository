@@ -9,12 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class WebController implements CommandLineRunner {
+public class WebController {
 
     private final SysUsersService sysUsersService;
-
-    @Override
-    public void run(String... args) throws Exception {
-
-    }
 }

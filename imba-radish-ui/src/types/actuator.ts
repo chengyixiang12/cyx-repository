@@ -37,3 +37,10 @@ export interface ListActuatorVO {
     healthSsl?: string;
     health?: string;
 }
+
+export interface ListActuatorPageRequest {
+    pageNum: number;
+    pageSize: number;
+    startTime?: string;
+    endTime?: string;
+}

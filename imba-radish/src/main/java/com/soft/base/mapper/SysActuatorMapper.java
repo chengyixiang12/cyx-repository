@@ -1,7 +1,10 @@
 package com.soft.base.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysActuator;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.soft.base.model.request.ListActuatorPageRequest;
 import com.soft.base.model.vo.ListActuatorVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,6 +21,8 @@ public interface SysActuatorMapper extends BaseMapper<SysActuator> {
 
     List<ListActuatorVO> listActuator(@Param("startTime") LocalDateTime startTime,
                                       @Param("endTime") LocalDateTime endTime);
+
+    Page<ListActuatorVO> listActuatorPage(IPage<ListActuatorVO> page, @Param("request") ListActuatorPageRequest request);
 }
 
 
