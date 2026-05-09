@@ -1,6 +1,7 @@
 package com.soft.base.core.conf;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -34,8 +35,19 @@ public class JacksonConfig {
         timeModule.addSerializer(LocalDateTime.class,
                 new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         mapper.registerModule(timeModule);
+
         // 忽略null值
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        // 禁止循环引用（避免无限递归）
+        mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+
+        // 如果日期字符串为空字符串，设置为null
+        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+
+        // 避免丢失精度（Long类型的ID等）
+        mapper.configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true);
         return mapper;
     }
 }
