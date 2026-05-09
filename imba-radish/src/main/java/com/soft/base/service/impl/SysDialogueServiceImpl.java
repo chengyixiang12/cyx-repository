@@ -9,10 +9,9 @@ import com.soft.base.model.request.RenameRequest;
 import com.soft.base.model.request.SaveDialogueRequest;
 import com.soft.base.model.vo.GetDialoguesVo;
 import com.soft.base.model.vo.GetTitleVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysDialogueService;
 import com.soft.base.mapper.SysDialogueMapper;
-import com.soft.base.utils.BeanUtil;
 import com.soft.base.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -36,14 +35,14 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     }
 
     @Override
-    public PageVo<GetDialoguesVo> getDialogues(GetDialoguesRequest request) {
+    public PageVO<GetDialoguesVo> getDialogues(GetDialoguesRequest request) {
         IPage<GetDialoguesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         Long userId = securityUtil.getUserInfo().getId();
         if (securityUtil.isAdmin()) {
             userId = null;
         }
         page = sysDialogueMapper.getDialogues(page, request.getKeyword(), userId);
-        PageVo<GetDialoguesVo> pageVo = new PageVo<>();
+        PageVO<GetDialoguesVo> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;

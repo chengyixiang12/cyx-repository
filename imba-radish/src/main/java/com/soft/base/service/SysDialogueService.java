@@ -7,9 +7,7 @@ import com.soft.base.model.request.RenameRequest;
 import com.soft.base.model.request.SaveDialogueRequest;
 import com.soft.base.model.vo.GetDialoguesVo;
 import com.soft.base.model.vo.GetTitleVo;
-import com.soft.base.model.vo.PageVo;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import com.soft.base.model.vo.PageVO;
 
 /**
 * @author cyq
@@ -18,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 */
 public interface SysDialogueService extends IService<SysDialogue> {
 
-    PageVo<GetDialoguesVo> getDialogues(GetDialoguesRequest request);
+    PageVO<GetDialoguesVo> getDialogues(GetDialoguesRequest request);
 
     Long saveDialogue(SaveDialogueRequest request);
 

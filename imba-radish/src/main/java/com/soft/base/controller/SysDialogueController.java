@@ -5,7 +5,7 @@ import com.soft.base.model.request.RenameRequest;
 import com.soft.base.model.request.SaveDialogueRequest;
 import com.soft.base.model.vo.GetDialoguesVo;
 import com.soft.base.model.vo.GetTitleVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.resultapi.R;
 import com.soft.base.service.SysDialogueService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/5/30 14:38
  **/
 
@@ -42,8 +41,8 @@ public class SysDialogueController {
 
     @PostMapping(value = "/getDialogues")
     @Operation(summary = "获取历史对话（复）")
-    public R<PageVo<GetDialoguesVo>> getDialogues(@RequestBody GetDialoguesRequest request) {
-        PageVo<GetDialoguesVo> pageVo = sysDialogueService.getDialogues(request);
+    public R<PageVO<GetDialoguesVo>> getDialogues(@RequestBody GetDialoguesRequest request) {
+        PageVO<GetDialoguesVo> pageVo = sysDialogueService.getDialogues(request);
         return R.ok(pageVo);
     }
 

@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.WebSocketConstant;
 import com.soft.base.entity.SysDialogueDetails;
+import com.soft.base.enums.ResultEnum;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.model.dto.GetRecentContentDto;
 import com.soft.base.model.dto.UserDto;
@@ -19,9 +20,7 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.deepseek.DeepSeekAssistantMessage;
 import org.springframework.ai.deepseek.DeepSeekChatModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
@@ -34,7 +33,7 @@ import java.util.List;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/5/28 17:37
  **/
 @Component
@@ -67,7 +66,10 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         List<Message> messages = new ArrayList<>();
 
         // 添加系统提示词
-        messages.add(SystemMessage.builder().text("你是一名程序员助手，专注于解决java方面的问题，请使用中文回答。").build());
+        messages.add(SystemMessage
+                .builder()
+                .text("使用中文回答。")
+                .build());
 
         if (CollectionUtil.isNotEmpty(recentContext)) {
             for (GetRecentContentDto getRecentContentDto : recentContext) {
@@ -103,7 +105,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         }, error -> {
             log.error(error.getMessage());
             try {
-                session.sendMessage(new TextMessage("服务异常，请联系管理员"));
+                session.sendMessage(new TextMessage(ResultEnum.FAIL_NORMAL.getMessage()));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
                 throw new RuntimeException(e);

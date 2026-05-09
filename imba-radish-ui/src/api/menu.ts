@@ -1,5 +1,5 @@
 import { PaginatedData } from '@/types/api';
-import type { EditMenuRequest, GetAssignedMenuVo, GetMenuListRequest, GetMenuListVo, GetMenuTreeVo, GetMenuVo, GetSelectMenuVo, MenuItem, SaveMenuRequest } from '@/types/menu'
+import type { EditMenuRequest, GetAssignedMenuVo, GetMenuListRequest, GetMenuListVo, GetMenuTreeVo, GetMenuVo, GetSelectMenuVo, MenuItem, PageMenuTreeRequest, PageMenuTreeVO, SaveMenuRequest } from '@/types/menu'
 import { get, post, del, put } from '@/utils/http'
 
 /**
@@ -110,5 +110,15 @@ export async function menuHideApi(id: string) {
  */
 export async function getMenuRouteApi(): Promise<MenuItem[]> {
     const res = await get<MenuItem[]>('/menu/getMenuRoute', { flag: true });
+    return res.data;
+}
+
+/**
+ * 分页查询菜单树
+ * @param data 
+ * @returns 
+ */
+export async function pageMenuTreeApi(data: PageMenuTreeRequest): Promise<PaginatedData<PageMenuTreeVO>> {
+    const res = await post<PaginatedData<PageMenuTreeVO>>('/menu/pageMenuTree', data, { flag: true })
     return res.data;
 }

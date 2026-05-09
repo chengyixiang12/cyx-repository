@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import java.util.List;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/11/20 14:40
  **/
 
@@ -44,8 +43,8 @@ public class SysPermissionController {
 
     @PostMapping(value = "/getPermissions")
     @Operation(summary = "获取权限（复）")
-    public R<PageVo<PermissionsVo>> getPermissions(@RequestBody PermissionsRequest request) {
-        PageVo<PermissionsVo> pageVo = sysPermissionService.getPermissions(request);
+    public R<PageVO<PermissionsVo>> getPermissions(@RequestBody PermissionsRequest request) {
+        PageVO<PermissionsVo> pageVo = sysPermissionService.getPermissions(request);
         return R.ok(pageVo);
     }
 

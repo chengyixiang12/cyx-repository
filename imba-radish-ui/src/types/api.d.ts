@@ -32,3 +32,8 @@ export interface ApiError {
   };
   config?: AxiosRequestConfig;
 }
+
+export interface PageRequest {
+  pageNum: number | 1;
+  pageSize: number | 10;
+}

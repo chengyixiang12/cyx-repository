@@ -24,12 +24,13 @@ export interface LoginRequest {
 
   export interface UserInfoVo {
     id: string;
-    username: string;
-    deptId: number;
-    nickname: string;
-    phone: string;
-    email: string;
-    permissions: Array<string>
+    username: string | null;
+    deptId?: number | null;
+    nickname?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    avatar?: string | null;
+    permissions?: Array<string>
   }
   
   // 后端通用响应结构

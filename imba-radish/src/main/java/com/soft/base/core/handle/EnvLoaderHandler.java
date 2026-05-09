@@ -14,11 +14,12 @@ import java.util.Properties;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/5/15 10:55
  **/
 @Slf4j
 public class EnvLoaderHandler implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+
     @Override
     public void initialize(ConfigurableApplicationContext context) {
         try (InputStream is = new FileInputStream(".env")) {

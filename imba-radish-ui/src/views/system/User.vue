@@ -1,17 +1,16 @@
 <template>
-  <div class="user-container">
+  <div class="user-container container">
     <el-row :gutter="20">
       <!-- 左侧组织架构树 -->
       <el-col :span="4">
-        <el-card shadow="hover" class="tree-card">
-          <template #header>
-            <div class="dept-card-header">
-              <span>组织架构</span>
-            </div>
-          </template>
-          <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current
+        <div class="tree-container">
+          <div class="tree-header">
+            <span>组织架构</span>
+          </div>
+          <div class="tree-content">
+            <el-tree v-if="deptTree.length > 0" :data="deptTree" :props="treeProps" node-key="id" highlight-current
               @node-click="handleDeptClick" @expand-change="handleExpandChange" :default-expanded-keys="[firstNodeKey]"
-              class="custom-tree" :expand-on-click-node="false">
+              class="custom-tree" :expand-on-click-node="false" :indent="16">
               <template #default="{ node }">
                 <el-tooltip effect="dark" :content="node.label" placement="right-start"
                   v-if="shouldShowTooltip(node.label)">
@@ -20,19 +19,24 @@
                 <span v-else class="tree-node-label">{{ node.label }}</span>
               </template>
             </el-tree>
-        </el-card>
+          </div>
+        </div>
       </el-col>
 
       <!-- 右侧用户表格 -->
       <el-col :span="20">
-        <el-card>
-          <template #header>
-            <div class="list-header">
-              <div class="right-header">
-                <el-button type="primary" @click="handleAdd">新增</el-button>
-              </div>
+        <div class="user-right-container">
+          <!-- 头部 -->
+          <div class="list-header">
+            <div class="header-title">
+              <span>用户管理</span>
             </div>
-          </template>
+            <div class="right-header">
+              <el-button type="primary" @click="handleAdd">
+                新增
+              </el-button>
+            </div>
+          </div>
 
           <!-- 搜索条件 -->
           <div class="search-container">
@@ -41,13 +45,13 @@
                 <el-input v-model="searchForm.nameLikeQry" placeholder="用户名/昵称" clearable class="keyword-input" />
               </el-form-item>
               <el-form-item label="状态:">
-                <el-select v-model="searchForm.enabled" placeholder="请选择" clearable style="width: 100px">
+                <el-select v-model="searchForm.enabled" placeholder="请选择" clearable style="width: 120px">
                   <el-option label="启用" :value="1" />
                   <el-option label="禁用" :value="0" />
                 </el-select>
               </el-form-item>
               <el-form-item label="账户状态:">
-                <el-select v-model="searchForm.accountNonLocked" placeholder="请选择" clearable style="width: 100px">
+                <el-select v-model="searchForm.accountNonLocked" placeholder="请选择" clearable style="width: 120px">
                   <el-option label="正常" :value="1" />
                   <el-option label="锁定" :value="0" />
                 </el-select>
@@ -60,72 +64,77 @@
           </div>
 
           <!-- 用户表格 -->
-          <div class="list-table">
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading">
+          <div class="table-wrapper">
+            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading"
+              :row-class-name="rowClassName" highlight-current-row>
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
                 </template>
               </el-table-column>
-              <el-table-column prop="username" label="用户名" show-overflow-tooltip min-width="80" align="center">
+              <el-table-column prop="username" label="用户名" show-overflow-tooltip min-width="120" align="center">
                 <template #default="scope">
-                  <div style="display: flex; align-items: center; gap: 9px;">
-                    <span :style="{
-                      display: 'inline-block',
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: scope.row.isOnline === 1 ? '#13ce66' : '#c0c4cc'
-                    }" />
-                    <span>{{ scope.row.username }}</span>
+                  <div class="user-info">
+                    <span class="online-status"
+                      :class="{ 'online': scope.row.isOnline === 1, 'offline': scope.row.isOnline === 0 }"></span>
+                    <span class="username">{{ scope.row.username }}</span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="phone" label="手机号码" align="center" show-overflow-tooltip />
-              <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip />
-              <el-table-column prop="nickname" label="昵称" align="center" show-overflow-tooltip />
-              <el-table-column prop="deptName" label="部门" align="center" show-overflow-tooltip />
+              <el-table-column prop="nickname" label="昵称" align="center" show-overflow-tooltip min-width="100" />
+              <el-table-column prop="phone" label="手机号码" align="center" show-overflow-tooltip min-width="120" />
+              <el-table-column prop="email" label="邮箱" align="center" show-overflow-tooltip min-width="150" />
+              <el-table-column prop="deptName" label="部门" align="center" show-overflow-tooltip min-width="100" />
               <el-table-column prop="enabled" label="状态" align="center" min-width="80">
                 <template #default="scope">
                   <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" active-color="#13ce66"
                     inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
                 </template>
               </el-table-column>
-
-              <el-table-column prop="accountNonLocked" label="账户" align="center" min-width="100">
+              <el-table-column prop="accountNonLocked" label="账户状态" align="center" min-width="100">
                 <template #default="scope">
                   <el-switch v-model="scope.row.accountNonLocked" :active-value="1" :inactive-value="0"
                     active-color="#13ce66" inactive-color="#ff4949" @change="handleLockChange(scope.row)" />
                 </template>
               </el-table-column>
-              <el-table-column label="操作" min-width="120" align="center">
+              <el-table-column label="操作" min-width="340" align="center">
                 <template #default="scope">
-                  <el-button size="small" type="primary" @click="handleEdit(scope.row)" :icon="Edit" circle />
-                  <el-tooltip class="item" effect="dark" content="重置密码" placement="top">
-                    <el-button size="small" type="primary" @click="handleResetPassword(scope.row.id)" :icon="RefreshLeft" circle />
-                  </el-tooltip>
-                  <el-tooltip class="item" effect="dark" content="强制下线" placement="top">
-                    <el-button v-show="scope.row.isOnline === 1" size="small" type="primary"
-                      @click="forceOffline(scope.row)" :icon="RemoveFilled" circle />
-                  </el-tooltip>
-                  <el-popconfirm title="确认删除吗？" confirm-button-text="确认" cancel-button-text="取消"
-                    @confirm="handleDelete(scope.row.id)">
-                    <template #reference>
-                      <el-button size="small" type="danger" :icon="Delete" circle />
-                    </template>
-                  </el-popconfirm>
+                  <div class="action-buttons-container">
+                    <el-button type="primary" size="small" @click="handleEdit(scope.row)" class="action-button">
+                      编辑
+                    </el-button>
+                    <el-button type="warning" size="small" @click="handleResetPassword(scope.row.id)" class="action-button">
+                      重置密码
+                    </el-button>
+                    <el-popconfirm title="确认强制该用户下线吗？" confirm-button-text="确认" cancel-button-text="取消"
+                      @confirm="forceOffline(scope.row)">
+                      <template #reference>
+                        <el-button v-show="scope.row.isOnline === 1" type="info" size="small" class="action-button">
+                          强制下线
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                    <el-popconfirm title="确认删除该用户吗？" confirm-button-text="确认" cancel-button-text="取消"
+                      @confirm="handleDelete(scope.row.id)">
+                      <template #reference>
+                        <el-button type="danger" size="small" class="action-button">
+                          删除
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
+                  </div>
                 </template>
               </el-table-column>
             </el-table>
           </div>
 
           <!-- 分页 -->
-          <div class="list-pagination">
+          <div class="pagination">
             <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
               :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
+              @current-change="handlePageChange" @size-change="handleSizeChange" />
           </div>
-        </el-card>
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -141,7 +150,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTreeApi } from '@/api/dept'
-import { Edit, Delete, RemoveFilled, RefreshLeft } from '@element-plus/icons-vue'
 import {
   getUserList,
   addUser,
@@ -342,6 +350,11 @@ const handleResetPassword = async (id: number) => {
   resetPasswordApi(id)
 }
 
+// 表格行样式
+const rowClassName = ({ row, rowIndex }: { row: any; rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 // 初始化加载
 onMounted(() => {
   loadDeptTree()
@@ -351,125 +364,187 @@ onMounted(() => {
 
 <style scoped>
 .user-container {
-  height: 100%;
-  padding: 12px;
-  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
 }
 
-.list-table {
+.user-container :deep(.el-row) {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+}
+
+.user-container :deep(.el-col) {
+  display: flex;
+  min-height: 0;
+}
+
+/* 左侧部门树容器 */
+.tree-container {
   width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
-/* 优化左侧树样式 */
-.tree-card {
-  height: calc(100vh - 130px);
-  overflow-y: auto;
-  padding: 4px;
-  box-sizing: border-box;
+.tree-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+  flex-shrink: 0;
+}
+
+.tree-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px;
+}
+
+/* 右侧用户容器 */
+.user-right-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 .list-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  height: 35px;
-  padding: 0 12px;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
 }
 
 .right-header {
-  margin-left: auto;
-}
-
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-  padding: 14px !important;
+  display: flex;
+  gap: 8px;
 }
 
 .search-container {
-  padding: 12px;
+  padding: 10px;
   background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
+  border-radius: 6px;
+  margin: 10px 5px 10px 5px;
+  flex-shrink: 0;
 }
 
 .search-form {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-form .el-form-item {
+  margin-bottom: 0;
 }
 
 .keyword-input {
-  width: 200px !important;
+  width: 180px !important;
 }
 
-:deep(.el-form-item) {
-  margin-bottom: 0;
-  margin-right: 16px;
+.table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: 6px;
+  border: 1px solid #edeef1;
+  margin: 0 5px 0 5px;
 }
 
-:deep(.el-form-item__label) {
-  padding-right: 8px;
-  color: #606266;
+.table-wrapper :deep(.el-table) {
+  height: 100%;
+  min-height: 100%;
 }
 
-.custom-tree {
-  height: 67vh;
+.table-wrapper :deep(.el-table__body-wrapper) {
   overflow-y: auto;
 }
 
-:deep(.custom-tree)::-webkit-scrollbar {
-  height: 6px;
-  width: 5px;
+.table-wrapper :deep(.el-table th) {
+  background-color: #f5f7fa !important;
+  font-weight: 600;
+  color: #606266;
 }
 
-:deep(.custom-tree)::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+.action-buttons-container {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.tree-node-label {
-  display: inline-block;
-  max-width: 130px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-  font-size: 13px;
-  color: #303133;
+.action-button {
+  flex-shrink: 0;
 }
 
-.list-pagination {
-  margin-top: 16px;
+.pagination {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px;
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0;
+  z-index: 10;
 }
 
-.dept-card-header {
+.online-status {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: all 0.3s;
+  margin-right: 6px;
+}
+
+.online-status.online {
+  background-color: #67C23A;
+  box-shadow: 0 0 8px rgba(103, 194, 58, 0.5);
+}
+
+.online-status.offline {
+  background-color: #C0C4CC;
+  box-shadow: 0 0 8px rgba(192, 196, 204, 0.5);
+}
+
+.even-row {
+  background-color: #fff;
+}
+
+.odd-row {
+  background-color: #fafafa;
+}
+
+.action-buttons-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 32px;
-  font-weight: 500;
-  color: #303133;
+  gap: 6px;
+  /* justify-content: center; */
 }
 
-.header-button {
-  padding: 4px 12px;
-  font-size: 13px;
-  height: 28px;
+.action-button {
+  padding: 5px 10px;
+  font-size: 12px;
 }
 </style>

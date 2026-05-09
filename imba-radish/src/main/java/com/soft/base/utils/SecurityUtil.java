@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/10/25 16:37
  **/
 
@@ -44,6 +44,6 @@ public class SecurityUtil {
      * @return
      */
     public boolean isAdmin() {
-        return getRoleCodes().contains(BaseConstant.MANAGER_ROLE_CODE);
+        return getRoleCodes().contains(BaseConstant.Role.MANAGER_ROLE_CODE);
     }
 }

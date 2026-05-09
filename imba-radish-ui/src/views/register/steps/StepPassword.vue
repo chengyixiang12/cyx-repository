@@ -19,7 +19,6 @@
 import type { RegisterRequest } from '@/types/register'
 import type { FormInstance, FormRules } from 'element-plus'
 import { computed, ref } from 'vue'
-import { showMessage } from '@/utils/message'
 
 const props = defineProps<{ modelValue: RegisterRequest }>()
 const emit = defineEmits<{
@@ -30,9 +29,25 @@ const emit = defineEmits<{
 
 const formRef = ref<FormInstance>()
 
+const validateConfirmPassword = (rule: any, value: string, callback: any) => {
+  if (!value) {
+    callback(new Error('请确认密码'))
+  } else if (value !== formData.value.password) {
+    callback(new Error('两次输入密码不一致'))
+  } else {
+    callback()
+  }
+}
+
 const rules: FormRules = {
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  confirmPassword: [{ required: true, message: '请确认密码', trigger: 'blur' }]
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到20个字符之间', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: '请确认密码', trigger: 'blur' },
+    { validator: validateConfirmPassword, trigger: 'blur' }
+  ]
 }
 
 const formData = computed({
@@ -41,13 +56,26 @@ const formData = computed({
 })
 
 const handleNext = async () => {
-  const valid = await formRef.value?.validate()
-  if (valid) {
-    if (formData.value.password === formData.value.confirmPassword) {
+  try {
+    const valid = await formRef.value?.validate()
+    if (valid) {
       emit('next')
-    } else {
-      showMessage('两次密码输入不一致', 'info')
     }
+  } catch (error) {
+    // 校验失败时不执行下一步
   }
 }
 </script>
+
+<style scoped>
+.register-link {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.el-form-item {
+  margin-bottom: 20px;
+}
+</style>

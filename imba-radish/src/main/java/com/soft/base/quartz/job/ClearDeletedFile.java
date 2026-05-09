@@ -52,6 +52,5 @@ public class ClearDeletedFile implements Job {
             sysFileService.deleteRealByIds(list);
             log.info("清理完毕");
         }
-
     }
 }

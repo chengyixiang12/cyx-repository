@@ -23,7 +23,7 @@ spring:
         options:
           model: ${DEEPSEEK_MODEL}
           frequency-penalty: 0.2
-          maxTokens: 1024
+          maxTokens: 4096
           temperature: 0.7
           top-p: 0.9
           logprobs: false
@@ -123,44 +123,25 @@ jwt:
   # 单位秒；1小时过期
   expire: 3600000
 
-# 登录验证码
-radish:
-  captcha:
-    # 主题
-    topic: 萝卜系统登录验证码
-    # 验证码过期时间（秒）
-    expire-time: 300
-  graphics:
-    # 图形验证码过期时间（秒）
-    expire-time: 60
-  token:
-    # token过期时间（秒）
-    expire-time: 36000
-  lock:
-    # 锁过期时间（秒）
-    expire: 10
-    # 最大重试次数
-    max-retry: 5
-    #重试间隔时间（毫秒）
-    retry-interval-time: 2000
-
 # webclient配置
 web-client:
-  # 响应超时；单位：秒
   response-timeout: 5
-  # 连接超时；单位：毫秒
   connect-timeout: 5000
+  pool:
+    max-connection: 100
+    pending-acquire-timeout: 30
+    max-idle-time: 30
+    max-life-time: 300
+    evict-in-background: 120
+
 
 # minio对象存储
 minio:
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
-  # 文件桶名
   default-bucket: ${MINIO_DEFAULT_BUCKET}
-  # 用户头像桶名
   avatar-bucket: ${MINIO_AVATAR_BUCKET}
-  # 文件url过期时间
   expire: 3600
-  # 时间单位
   time-unit: seconds
+  connect-timeout: 10000

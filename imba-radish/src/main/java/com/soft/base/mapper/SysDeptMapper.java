@@ -25,8 +25,6 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
 
     List<DeptTreeVo> getAllDept();
 
-    void deleteDeptBatch(@Param("request") DeleteRequest request);
-
     DeptVo getDept(@Param("id") Long id);
 
     List<ExportDeptDto> exportDept(@Param("ids") List<Long> ids);

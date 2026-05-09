@@ -33,4 +33,16 @@ public @interface SysLog {
      * @return
      */
     LogTypeEnum type() default LogTypeEnum.OPERATION;
+
+    /**
+     * 是否记录请求参数
+     * @return
+     */
+    boolean requestParam() default true;
+
+    /**
+     * 是否记录响应参数
+     * @return
+     */
+    boolean responseParam() default true;
 }

@@ -6,7 +6,7 @@ import org.apache.ibatis.type.Alias;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/5/30 16:25
  **/
 @Schema(description = "新增对话请求参数")

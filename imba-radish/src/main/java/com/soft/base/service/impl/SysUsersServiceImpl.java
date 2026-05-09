@@ -1,7 +1,6 @@
 package com.soft.base.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -21,15 +20,16 @@ import com.soft.base.model.request.GetUsersRequest;
 import com.soft.base.model.request.ResetUsernameRequest;
 import com.soft.base.model.request.SaveUserRequest;
 import com.soft.base.model.vo.GetUserVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UsersVo;
 import com.soft.base.rabbitmq.producer.EmailProduce;
 import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
-import com.soft.base.utils.UniversalUtil;
+import com.soft.base.utils.CommonUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
 import com.soft.base.websocket.handle.message.concrete.ForceOfflineHandler;
+import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -75,12 +75,10 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final UniversalUtil universalUtil;
-
     private final EmailProduce emailProduce;
 
     @Override
-    public PageVo<UsersVo> getUsers(GetUsersRequest request) {
+    public PageVO<UsersVo> getUsers(GetUsersRequest request) {
         IPage<UsersVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         List<Long> deptIds = new ArrayList<>();
         GetUsersDto getUsersDto = new GetUsersDto();
@@ -95,7 +93,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         BeanUtils.copyProperties(request, getUsersDto);
         getUsersDto.setDeptIds(deptIds);
         Page<UsersVo> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
-        PageVo<UsersVo> pageVo = new PageVo<>();
+        PageVO<UsersVo> pageVo = new PageVO<>();
         allUsers.getRecords().forEach(item -> {
             item.setIsOnline(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId()) ? 1 : 0);
             if (StringUtils.isNotBlank(item.getPhone())) {
@@ -129,7 +127,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resetPassword(Long id) {
-        String password = universalUtil.generatePassword();
+        String password = CommonUtil.generatePassword();
 
         String encode = passwordEncoder.encode(password);
 
@@ -337,10 +335,11 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     private void sendWebsocket(Long id) throws IOException {
         // 重置用户名后需强制用户离线
         ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        JSONObject forceOfflineParam = new JSONObject();
-        forceOfflineParam.put("order", WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        forceOfflineParam.put("receiver", id);
-        TextMessage textMessage = new TextMessage(forceOfflineParam.toJSONString());
+        ForceOfflineRecParam forceOfflineParam = new ForceOfflineRecParam();
+        forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+        forceOfflineParam.setReceiver(id);
+        forceOfflineParam.setMsg("密码已修改，请重新登录");
+        TextMessage textMessage = new TextMessage(forceOfflineParam.toString());
         concreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
     }
 

@@ -8,7 +8,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@MapperScan({"com.soft.module.mapper","com.soft.base.mapper"})
 @EnableCaching
 @EnableScheduling
 public class ImbaRadishApplication {

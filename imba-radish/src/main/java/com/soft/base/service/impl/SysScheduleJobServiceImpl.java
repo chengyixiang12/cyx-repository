@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.entity.SysDictData;
 import com.soft.base.entity.SysScheduleJob;
 import com.soft.base.enums.QuartzIntervalEnum;
 import com.soft.base.exception.GlobalException;
@@ -16,7 +15,7 @@ import com.soft.base.model.request.EditJobRequest;
 import com.soft.base.model.request.GetQuartzTasksRequest;
 import com.soft.base.model.vo.GetJobVo;
 import com.soft.base.model.vo.GetQuartzTasksVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysDictDataService;
 import com.soft.base.service.SysScheduleJobService;
 import org.apache.commons.lang3.StringUtils;
@@ -68,10 +67,10 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
     }
 
     @Override
-    public PageVo<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request) {
+    public PageVO<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request) {
         Page<GetQuartzTasksVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysScheduleJobMapper.getQuartzTasks(page, request);
-        PageVo<GetQuartzTasksVo> pageVo = new PageVo<>();
+        PageVO<GetQuartzTasksVo> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
 

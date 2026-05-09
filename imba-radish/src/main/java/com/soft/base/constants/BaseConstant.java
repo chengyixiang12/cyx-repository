@@ -62,13 +62,7 @@ public class BaseConstant {
     /**
      * aes偏移量
      */
-    @Deprecated
     public final static String AES_OFFSET = "0000000001000001";
-
-    /**
-     * 默认管理员角色
-     */
-    public final static String MANAGER_ROLE_CODE = "ROLE_ADMIN";
 
     /**
      * 登录方式：密码
@@ -105,12 +99,12 @@ public class BaseConstant {
          * 非默认角色标识
          */
         public final static Integer UN_DEFAULT_ROLE_FLAG = 0;
-    }
 
-    /**
-     * 本地缓存永不过期
-     */
-    public final static Long LOCAL_CACHE_EXPIRE_NEVER = -1L;
+        /**
+         * 默认管理员角色
+         */
+        public final static String MANAGER_ROLE_CODE = "ROLE_ADMIN";
+    }
 
     /**
      * tmp文件后缀
@@ -207,5 +201,26 @@ public class BaseConstant {
          * 定时任务-cron调度
          */
         public static final String QUARTZ_CRON_SCHEDULE = "1";
+    }
+
+    /**
+     * 定时任务记录
+     */
+    public static class QuartzRecord {
+
+        /**
+         * 执行中
+         */
+        public static final String STATUS_EXECUTING = "1";
+
+        /**
+         * 执行完成
+         */
+        public static final String STATUS_COMPLETED = "2";
+
+        /**
+         * 执行失败
+         */
+        public static final String STATUS_FAIL = "3";
     }
 }

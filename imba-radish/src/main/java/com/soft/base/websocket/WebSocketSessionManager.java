@@ -1,13 +1,11 @@
 package com.soft.base.websocket;
 
+import cn.hutool.cache.CacheUtil;
+import cn.hutool.cache.impl.TimedCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author: cyx
@@ -18,7 +16,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class WebSocketSessionManager {
 
-    private static final Map<String, WebSocketSession> USER_SESSION_MAP = new ConcurrentHashMap<>();
+    // 默认缓存30秒过期
+    private static final TimedCache<String, WebSocketSession> USER_SESSION_CACHE = CacheUtil.newTimedCache(30000);
+
+    static {
+        // 启动定时清理，每10秒清理一次
+        USER_SESSION_CACHE.schedulePrune(10000);
+    }
 
     /**
      * 添加用户session
@@ -26,7 +30,7 @@ public class WebSocketSessionManager {
      * @param session
      */
     public static void addSession(Long sessionKey, WebSocketSession session) {
-        USER_SESSION_MAP.put(String.valueOf(sessionKey), session);
+        USER_SESSION_CACHE.put(String.valueOf(sessionKey), session);
     }
 
     /**
@@ -39,7 +43,7 @@ public class WebSocketSessionManager {
             if (session != null && session.isOpen()) {
                 session.close();
             }
-            USER_SESSION_MAP.remove(String.valueOf(sessionKey));
+            USER_SESSION_CACHE.remove(String.valueOf(sessionKey));
         } catch (IOException e) {
             log.error("{}的session会话未正常关闭", sessionKey);
         }
@@ -51,30 +55,22 @@ public class WebSocketSessionManager {
      * @return
      */
     public static WebSocketSession getSession(Long sessionKey) {
-        return USER_SESSION_MAP.get(String.valueOf(sessionKey));
-    }
-
-    /**
-     * 获取所有的key
-     * @return
-     */
-    public static Set<String> getKeys() {
-        return new HashSet<>(USER_SESSION_MAP.keySet());
+        return USER_SESSION_CACHE.get(String.valueOf(sessionKey), false);
     }
 
     /**
      * 清空用户会话
      */
     public static void clear() {
-        USER_SESSION_MAP.forEach((k, v) -> {
+        USER_SESSION_CACHE.forEach(item -> {
             try {
-                if (v != null && v.isOpen()) {
-                    v.close();
+                if (item != null && item.isOpen()) {
+                    item.close();
                 }
             } catch (Exception e) {
-                log.warn("{}的session会话关闭时出错", k, e);
+                log.warn("session会话关闭时出错", e);
             }
         });
-        USER_SESSION_MAP.clear();
+        USER_SESSION_CACHE.clear();
     }
 }

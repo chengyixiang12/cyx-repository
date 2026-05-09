@@ -36,10 +36,10 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     }
 
     @Override
-    public PageVo<PermissionsVo> getPermissions(PermissionsRequest request) {
+    public PageVO<PermissionsVo> getPermissions(PermissionsRequest request) {
         IPage<PermissionsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysPermissionMapper.getPermissions(page, request);
-        PageVo<PermissionsVo> pageVo = new PageVo<>();
+        PageVO<PermissionsVo> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;

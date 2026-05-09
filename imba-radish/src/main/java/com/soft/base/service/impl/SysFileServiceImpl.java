@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.async.FileUploadAsync;
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.constants.RabbitmqConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysFile;
 import com.soft.base.exception.GlobalException;
@@ -14,14 +13,12 @@ import com.soft.base.mapper.SysFileMapper;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.dto.FileHashDto;
 import com.soft.base.model.dto.SelectDeletedFileDto;
-import com.soft.base.model.dto.rabbitmq.GenerateFileHashDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import com.soft.base.properties.MinioProperty;
-import com.soft.base.rabbitmq.producer.FileHashProduce;
 import com.soft.base.service.SysDictDataService;
 import com.soft.base.service.SysFileService;
 import com.soft.base.utils.MinioUtil;
@@ -70,7 +67,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     private final FileUploadAsync fileUploadAsync;
 
     @Override
-    public UploadFileVo uploadFile(MultipartFile multipartFile) {
+    public UploadFileVo uploadFile(MultipartFile multipartFile, String fileMd5) {
         UploadFileVo uploadFileVo = new UploadFileVo();
         SysFile sysFile = new SysFile();
         String originalFilename = multipartFile.getOriginalFilename();
@@ -79,25 +76,9 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         }
 
         try {
-            MessageDigest digest = MessageDigest.getInstance(BaseConstant.TYPE_ALGORITHM);
-            try (DigestInputStream dis = new DigestInputStream(multipartFile.getInputStream(), digest)) {
-                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
-                int length = BaseConstant.BUFFER_SIZE;
-                while (length != BaseConstant.FILE_OVER_SIGN) {
-                    length = dis.read(buffer);
-                }
-            }
-            byte[] hashBytes = digest.digest();
-            String hashCode = new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
-
-            FileHashDto fileHashDto = sysFileMapper.getFileByHash(hashCode);
-
+            FileHashDto fileHashDto = sysFileMapper.getFileByHash(fileMd5);
             if (fileHashDto != null) {
                 BeanUtils.copyProperties(fileHashDto, sysFile);
-                if (!originalFilename.equals(sysFile.getOriginalName())) {
-                    sysFile.setOriginalName(originalFilename);
-                }
-                sysFileMapper.insert(sysFile);
             } else {
                 long fileSize = multipartFile.getSize();
                 String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
@@ -113,14 +94,14 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 sysFile.setObjectKey(objectKey);
                 sysFile.setOriginalName(originalFilename);
                 sysFile.setFileSize(fileSize);
-                sysFile.setFileHash(hashCode);
-                sysFileMapper.insert(sysFile);
+                sysFile.setFileHash(fileMd5);
             }
+            sysFileMapper.insert(sysFile);
             uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
             uploadFileVo.setFileName(sysFile.getOriginalName());
 
             return uploadFileVo;
-        } catch (NoSuchAlgorithmException | IOException e) {
+        } catch (IOException e) {
             throw new GlobalException(e.getLocalizedMessage());
         }
     }
@@ -136,7 +117,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public PageVo<FilesVo> getFiles(FilesRequest request) {
+    public PageVO<FilesVo> getFiles(FilesRequest request) {
 
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
@@ -145,7 +126,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
-        PageVo<FilesVo> pageVo = new PageVo<>();
+        PageVO<FilesVo> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
@@ -211,7 +192,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public PageVo<FilesVo> getMyFiles(FilesRequest request) {
+    public PageVO<FilesVo> getMyFiles(FilesRequest request) {
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         Long userId = securityUtil.getUserInfo().getId();
         page = sysFileMapper.getMyFiles(page, request, userId);
@@ -220,7 +201,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
-        PageVo<FilesVo> pageVo = new PageVo<>();
+        PageVO<FilesVo> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
@@ -245,7 +226,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         if (StringUtils.isBlank(url)) {
             SysFile sysFile = sysFileMapper.selectById(id);
 
-
             if ("1".equals(isInline)) {
                 Map<String, String> headerMap = new HashMap<>();
                 String value = sysFile.getFileSuffix().toLowerCase().replaceFirst("\\.", "");
@@ -266,7 +246,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public UploadFileVo mergeChunk(File fileTemp) {
+    public UploadFileVo mergeChunk(File fileTemp, String fileMd5) {
         String fileName = fileTemp.getName();
         String fileKey = IdUtil.fastSimpleUUID();
         String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
@@ -282,15 +262,27 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         sysFile.setOriginalName(fileName);
         sysFile.setFileSize(fileSize);
         sysFile.setFileSize(fileSize);
+        sysFile.setFileHash(fileMd5);
         sysFileMapper.insert(sysFile);
 
-        fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize, sysFile.getId());
+        fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize);
 
         UploadFileVo uploadFileVo = new UploadFileVo();
         uploadFileVo.setFileName(fileName);
         uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
 
         return uploadFileVo;
+    }
+
+    @Override
+    public String getFileByMd5(String fileMd5, String fileName) {
+        SysFile sysFile = sysFileMapper.getFileByMd5(fileMd5);
+        if (sysFile == null) {
+            return null;
+        }
+        sysFile.setOriginalName(fileName);
+        sysFileMapper.insert(sysFile);
+        return String.valueOf(sysFile.getId());
     }
 }
 

@@ -16,7 +16,7 @@ import java.time.Duration;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/10/25 17:27
  **/
 @Configuration
@@ -58,6 +58,7 @@ public class RedisConfig {
         return RedisCacheManager.builder(factory)
                 .withCacheConfiguration("radish:users", userDetailsCacheConfig) // 特定缓存配置
                 .cacheDefaults(defaultConfig) // 默认配置
+                .transactionAware() // 增加事务
                 .build();
     }
 }

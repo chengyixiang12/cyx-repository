@@ -14,10 +14,10 @@ export interface SaveUserRequest {
 export interface EditUserRequest {
     id: string | null;
     nickname: string | null;
-    deptId: string | null;
+    deptId?: string | null;
     email: string | null;
     phone: string | null;
-    roleIds: string[] | null;
+    roleIds?: string[] | null;
 }
 
 export interface GetUserVo {
@@ -28,6 +28,7 @@ export interface GetUserVo {
     phone: string | null;
     deptId: string | null;
     roleIds: string[] | null;
+    avatar?: string | null;
 }
 
 export interface AllUserVo {
@@ -38,4 +39,11 @@ export interface AllUserVo {
     nickname: string;
     enabled: number;
     accountNonLocked: number;
+}
+
+export interface EditSelfRequest {
+    nickname: string | null;
+    email: string | null;
+    phone: string | null;
+    avatar?: string | null;
 }

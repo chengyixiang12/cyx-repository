@@ -1,5 +1,5 @@
 import { get, post, put, del } from '@/utils/http';
-import { SaveUserRequest, EditUserRequest, GetUserVo, AllUserVo } from '@/types/user';
+import { SaveUserRequest, EditUserRequest, GetUserVo, AllUserVo, EditSelfRequest } from '@/types/user';
 import { PaginatedData } from '@/types/api'
 import { ApiResponse, UserInfoVo } from '@/types/login';
 
@@ -108,4 +108,22 @@ export async function updatePasswordApi(data: { originalPass: string, targetPass
  */
 export async function resetPasswordApi(id: number) {
    return get('/user/resetPassword', { flag: true, params: { id } })
+}
+
+/**
+ * 获取用户
+ * @param id 
+ * @returns 
+ */
+export async function getUserApi(id: string): Promise<GetUserVo> {
+   const res = await get<GetUserVo>('/user/getUser', { flag: true, params: { id } })
+   return res.data;
+}
+
+/**
+ * 修改个人信息
+ * @param params 
+ */
+export async function editSelfApi(params: EditSelfRequest): Promise<any> {
+   return put('/user/editSelf', params, { flag: true })
 }

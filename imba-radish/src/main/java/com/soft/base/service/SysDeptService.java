@@ -7,7 +7,7 @@ import com.soft.base.model.request.*;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
 import com.soft.base.model.vo.GetDeptsVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 
 import java.util.List;
 
@@ -30,13 +30,11 @@ public interface SysDeptService extends IService<SysDept> {
 
     void editDept(EditDeptRequest request);
 
-    void deleteDeptBatch(DeleteRequest request);
-
     DeptVo getDept(Long id);
 
     List<ExportDeptDto> exportDept(ExportDeptRequest request);
 
-    PageVo<GetDeptsVo> getDepts(GetDeptsRequest request);
+    PageVO<GetDeptsVo> getDepts(GetDeptsRequest request);
 
     List<Long> getChildDeptIds(List<Long> deptIds);
 

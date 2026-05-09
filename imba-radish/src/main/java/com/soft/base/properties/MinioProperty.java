@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/5/29 18:09
  **/
 @Component
@@ -50,5 +50,10 @@ public class MinioProperty {
      * 时间单位
      */
     private TimeUnit timeUnit;
+
+    /**
+     * 连接超时；单位：毫秒
+     */
+    private Integer connectTimeout;
 
 }

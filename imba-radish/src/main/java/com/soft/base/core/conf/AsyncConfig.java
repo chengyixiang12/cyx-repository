@@ -1,6 +1,5 @@
 package com.soft.base.core.conf;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -28,9 +27,12 @@ public class AsyncConfig implements AsyncConfigurer {
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
     }
 
-    @NotNull
+    /**
+     * 异步指定线程池
+     * @return
+     */
     @Override
     public Executor getAsyncExecutor() {
-        return new DelegatingSecurityContextAsyncTaskExecutor(threadPoolTaskExecutor);
+        return new DelegatingSecurityContextAsyncTaskExecutor(threadPoolTaskExecutor); // 让异步线程池具备上下文传递的能力
     }
 }

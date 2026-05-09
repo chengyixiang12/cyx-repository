@@ -3,13 +3,12 @@ package com.soft.base.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysDictData;
 import com.soft.base.model.dto.DictDataDto;
-import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.request.EditDictDataRequest;
 import com.soft.base.model.request.SaveDictDataRequest;
 import com.soft.base.model.vo.DictDataVo;
 import com.soft.base.model.vo.DictDatasVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.Map;
 */
 public interface SysDictDataService extends IService<SysDictData> {
 
-    PageVo<DictDatasVo> getDictDatas(DictDatasRequest request);
+    PageVO<DictDatasVo> getDictDatas(DictDatasRequest request);
 
     DictDataVo getDictData(Long id);
 
@@ -31,7 +30,7 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void deleteDictData(Long id);
 
-    void deleteDictDataBatch(DeleteRequest request);
+    void deleteDictDataBatch(List<Long> ids);
 
     boolean existValue(Long parentId, String value);
 

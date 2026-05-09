@@ -1,84 +1,97 @@
 <template>
-    <div class="menu-container">
-        <el-row :gutter="20">
-            <!-- 日志表格 -->
-            <el-col :span="24">
-                <el-card>
-                    <template #header>
-                        <div class="list-header"></div>
+    <div class="log-container container">
+        <!-- 头部 -->
+        <div class="list-header">
+            <div class="header-title">
+                <span>日志管理</span>
+            </div>
+            <div class="right-header">
+            </div>
+        </div>
+
+        <!-- 搜索条件 -->
+        <div class="search-container">
+            <el-form :inline="true" :model="searchForm" class="search-form">
+                <el-form-item label="关键字:">
+                    <el-input v-model="searchForm.keyword" placeholder="模块名称/请求ip/访问路径" clearable
+                        class="keyword-input" />
+                </el-form-item>
+                <el-form-item label="日志级别:">
+                    <el-select v-model="searchForm.logLevel" placeholder="请选择" clearable
+                        style="width: 100px">
+                        <el-option label="普通" :value="1" />
+                        <el-option label="警告" :value="2" />
+                        <el-option label="错误" :value="3" />
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="handleSearch">查询</el-button>
+                    <el-button type="primary" @click="resetSearch">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+
+        <!-- 日志表格 -->
+        <div class="table-wrapper">
+            <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
+                <el-table-column label="序号" min-width="50" align="center">
+                    <template #default="scope">
+                        {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
                     </template>
-
-                    <!-- 搜索条件 -->
-                    <div class="search-container">
-                        <el-form :inline="true" :model="searchForm" class="search-form">
-                            <el-form-item label="关键字:">
-                                <el-input v-model="searchForm.keyword" placeholder="模块名称/请求ip/访问路径" clearable
-                                    class="keyword-input" />
-                            </el-form-item>
-                            <el-form-item label="日志级别:">
-                                <el-select v-model="searchForm.logLevel" placeholder="请选择" clearable
-                                    style="width: 100px">
-                                    <el-option label="普通" :value="1" />
-                                    <el-option label="警告" :value="2" />
-                                    <el-option label="错误" :value="3" />
-                                </el-select>
-                            </el-form-item>
-
-                            <el-form-item>
-                                <el-button type="primary" @click="handleSearch">查询</el-button>
-                                <el-button type="primary" @click="resetSearch">重置</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-
-                    <!-- 菜单表格 -->
-                    <div class="list-table">
-                        <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading">
-                            <el-table-column label="序号" min-width="50" align="center">
-                                <template #default="scope">
-                                    {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
+                </el-table-column>
+                <el-table-column prop="moduleName" align="center" label="模块名称" show-overflow-tooltip />
+                <el-table-column prop="nickname" align="center" label="创建人" show-overflow-tooltip />
+                <el-table-column prop="createTime" min-width="120" align="center" label="创建时间" show-overflow-tooltip />
+                <el-table-column prop="logLevel" align="center" label="日志级别" :formatter="logLevelType"
+                    show-overflow-tooltip />
+                <el-table-column prop="executionTime" align="center" label="耗时（ms）" min-width="90" />
+                <el-table-column prop="requestMethod" align="center" label="请求方法" />
+                <el-table-column prop="statusCode" align="center" label="状态码" />
+                <el-table-column prop="operationDesc" align="center" label="操作描述" show-overflow-tooltip />
+                <el-table-column label="操作" min-width="140" align="center">
+                    <template #default="scope">
+                        <div class="action-buttons-container">
+                            <el-button 
+                                type="primary" 
+                                @click="handleView(scope.row)"
+                                class="action-button"
+                            >
+                                查看
+                            </el-button>
+                            <el-popconfirm 
+                                title="确认删除该日志吗？" 
+                                confirm-button-text="确认" 
+                                cancel-button-text="取消"
+                                @confirm="handleDelete(scope.row.id)"
+                            >
+                                <template #reference>
+                                    <el-button 
+                                        type="danger" 
+                                        class="action-button"
+                                    >
+                                        删除
+                                    </el-button>
                                 </template>
-                            </el-table-column>
-                            <el-table-column prop="moduleName" align="center" label="模块名称" show-overflow-tooltip />
-                            <el-table-column prop="nickname" align="center" label="创建人" show-overflow-tooltip />
-                            <el-table-column prop="createTime" min-width="120" align="center" label="创建时间" show-overflow-tooltip />
-                            <el-table-column prop="logLevel" align="center" label="日志级别" :formatter="logLevelType"
-                                show-overflow-tooltip />
-                            <el-table-column prop="executionTime" align="center" label="耗时（ms）" />
-                            <el-table-column prop="requestMethod" align="center" label="请求方法" />
-                            <el-table-column prop="statusCode" align="center" label="状态码" />
-                            <el-table-column prop="operationDesc" align="center" label="操作描述" show-overflow-tooltip />
-                            <el-table-column label="操作" min-width="120" align="center">
-                                <template #default="scope">
-                                    <el-button size="small" type="primary" @click="handleView(scope.row)" :icon="View"
-                                        circle />
-                                    <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
-                                        @confirm="handleDelete(scope.row.id)">
-                                        <template #reference>
-                                            <el-button size="small" type="danger" :icon="Delete" circle />
-                                        </template>
-                                    </el-popconfirm>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </div>
+                            </el-popconfirm>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
 
-                    <!-- 分页 -->
-                    <div class="list-pagination">
-                        <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize"
-                            :total="total" :page-sizes="[10, 20, 50, 100]"
-                            layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
-                            @size-change="handleSizeChange" size="default" />
-                    </div>
-                </el-card>
-            </el-col>
-        </el-row>
+        <!-- 分页 -->
+        <div class="pagination">
+            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize"
+                :total="total" :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
+                @size-change="handleSizeChange" />
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { View, Delete } from '@element-plus/icons-vue'
 import { getLogsApi, deleteLogApi } from '@/api/log'
 import type { LogsRequest, LogsVo } from '@/types/log'
 import { useRouter } from 'vue-router'
@@ -149,6 +162,10 @@ const handleSizeChange = (size: number) => {
     handleSearch()
 }
 
+const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 // 搜索
 const handleSearch = () => {
     loadLogs()
@@ -170,83 +187,118 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.menu-container {
-    height: 100%;
-    padding: 10px;
-    background-color: #f5f7fa;
-}
-
-.list-table {
-    width: 100%;
-    height: 52vh;
-    overflow: auto;
-    padding-top: 12px;
+.log-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
 }
 
 .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 36px;
-    padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.title-icon {
+  font-size: 18px;
+  color: #409eff;
 }
 
 .right-header {
-    margin-left: auto;
-}
-
-.el-card {
-    height: 100%;
-    border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-
-:deep(.el-card__header) {
-    padding: 8px 12px !important;
-    min-height: 36px !important;
-    border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-card__body) {
-    padding: 14px !important;
+  display: flex;
+  gap: 8px;
 }
 
 .search-container {
-    padding: 12px;
-    background-color: #fafafa;
-    border-bottom: 1px solid #ebeef5;
+  padding: 10px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  margin: 10px 5px 10px 5px;
+  flex-shrink: 0;
 }
 
 .search-form {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-form .el-form-item {
+  margin-bottom: 0;
 }
 
 .keyword-input {
-    width: 200px !important;
+  width: 180px !important;
 }
 
-:deep(.el-form-item) {
-    margin-bottom: 0;
-    margin-right: 16px;
+.table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: 6px;
+  border: 1px solid #edeef1;
+  margin: 0 5px 0 5px;
 }
 
-:deep(.el-form-item__label) {
-    padding-right: 8px;
-    color: #606266;
+.table-wrapper :deep(.el-table) {
+  height: 100%;
+  min-height: 100%;
 }
 
-.list-pagination {
-    margin-top: 16px;
-    display: flex;
-    justify-content: flex-end;
+.table-wrapper :deep(.el-table__body-wrapper) {
+  overflow-y: auto;
 }
 
-.header-button {
-    padding: 4px 12px;
-    font-size: 13px;
-    height: 28px;
+.table-wrapper :deep(.el-table th) {
+  background-color: #f5f7fa !important;
+  font-weight: 600;
+  color: #606266;
+}
+
+.pagination {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  background-color: #fff;
+  z-index: 10;
+}
+
+.even-row {
+  background-color: #fff;
+}
+
+.odd-row {
+  background-color: #fafafa;
+}
+
+.action-buttons-container {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 5px 10px;
+  font-size: 12px;
 }
 </style>

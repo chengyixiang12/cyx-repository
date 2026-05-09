@@ -1,7 +1,7 @@
 spring:
   servlet:
     multipart:
-      location: E:\java\cyx-repository\imba-radish\tmp
+      location: E:/project/java/cyx/tmp
       max-file-size: 5MB
       max-request-size: 10MB
       file-size-threshold: 1MB
@@ -15,9 +15,9 @@ spring:
           url: ${DATASOURCE_URL_MYSQL_MASTER}
           driver-class-name: com.mysql.cj.jdbc.Driver
         slave:
-          username: ${DATASOURCE_USERNAME_POSTGRESQL_SLAVE}
-          password: ${DATASOURCE_PASSWORD_POSTGRESQL_SLAVE}
-          url: ${DATASOURCE_URL_POSTGRESQL_SLAVE}
+          username: ${DATASOURCE_USERNAME_MYSQL_SLAVE}
+          password: ${DATASOURCE_PASSWORD_MYSQL_SLAVE}
+          url: ${DATASOURCE_URL_MYSQL_SLAVE}
           driver-class-name: org.postgresql.Driver
       hikari:
         # 连接池最大连接数
@@ -98,16 +98,9 @@ logging:
     org.flowable.job.service.impl.asyncexecutor: info
     root: info
   config: classpath:logback-spring.xml
-log:
-  # 是否开启日志记录
-  enable: true
-  # 是否记录请求及响应数据
-  record-param: false
-  file:
-    home: logs
 # 临时文件存储路径
 tmp:
-  path: E:\java\cyx-repository\imba-radish\tmp
+  path: E:/project/java/cyx/tmp
 # 不鉴权url
 permit:
   urls:
@@ -125,18 +118,24 @@ rate-limit:
   # 是否开启限流
   enable: true
   # 最大请求数；单位：个
-  max-request: 60
+  max-request: 20
   # 窗口大小；单位：秒
   window-size: 1
+  permit:
+    urls:
+      - /file/uploadChunk
 # 大文件存储路径
 storage:
   big-file:
-    location: D:/bigFile
+    location: E:/project/java/cyx/tmp
 # 启用knife4j文档
 knife4j:
   enable: true
 # 性能监控配置
 management:
+  health:
+    mail:
+      enabled: false
   endpoints:
     web:
       exposure:
@@ -148,7 +147,7 @@ management:
       show-details: always
 # flowable
 flowable:
-  database-schema-update: false
+  database-schema-update: true
   check-process-definitions: true
   idm:
     # 禁用身份认证
@@ -166,3 +165,28 @@ flowable:
         default-async-job-acquire-wait-time: 2s
         # 每次拉取的最大作业数量（减少频繁查询）
         max-timer-jobs-per-acquisition: 20
+# 系统配置
+radish:
+  captcha:
+    # 主题
+    topic: 萝卜系统登录验证码
+    # 验证码过期时间（秒）
+    expire-time: 300
+  graphics:
+    # 图形验证码过期时间（秒）
+    expire-time: 60
+  token:
+    # token过期时间（秒）
+    expire-time: 60000
+  lock:
+    # 锁过期时间（秒）
+    expire: 10
+    # 最大重试次数
+    max-retry: 5
+    #重试间隔时间（毫秒）
+    retry-interval-time: 2000
+  log:
+    # 是否开启日志记录
+    enable: true
+    # 日志位置
+    location: logs

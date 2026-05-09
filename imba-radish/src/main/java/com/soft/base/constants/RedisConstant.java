@@ -106,5 +106,10 @@ public class RedisConstant {
     /**
      * 文件url签名
      */
-    public static final String FILE_SIGNATURE_URL = "radish:file:signature:url:";
+    public static final String FILE_SIGNATURE_URL = "radish:file-signature-url:";
+
+    /**
+     * 接口访问控制
+     */
+    public static final String ACCESS_CONTROL = "radish:access-control:";
 }

@@ -1,0 +1,2 @@
+ALTER TABLE radish_master.sys_menu MODIFY COLUMN status char(1) DEFAULT '1' NULL COMMENT '菜单状态：0-禁用，1-启用';
+ALTER TABLE radish_master.sys_menu MODIFY COLUMN visible char(1) DEFAULT '1' NULL COMMENT '是否显示：0-隐藏，1-显示';

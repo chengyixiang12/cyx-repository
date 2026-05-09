@@ -3,15 +3,14 @@ package com.soft.base.service.impl;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysUser;
+import com.soft.base.entity.SysUserRole;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.enums.WebSocketOrderEnum;
 import com.soft.base.exception.GlobalException;
 import com.soft.base.model.request.LoginRequest;
 import com.soft.base.model.vo.LoginVo;
-import com.soft.base.service.AuthService;
-import com.soft.base.service.SecretKeyService;
-import com.soft.base.service.SysDeptService;
-import com.soft.base.service.SysUsersService;
+import com.soft.base.properties.RadishProperty;
+import com.soft.base.service.*;
 import com.soft.base.utils.RSAUtil;
 import com.soft.base.websocket.WebSocketConcreteHolder;
 import com.soft.base.websocket.WebSocketSessionManager;
@@ -20,7 +19,6 @@ import com.soft.base.websocket.receive.ForceOfflineRecParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.*;
@@ -39,8 +37,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    @Value(value = "${radish.token.expire-time}")
-    private Long authorizationExpire;
+    private final RadishProperty radishProperty;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -58,10 +55,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final SysDeptService sysDeptService;
 
+    private final SysUserRoleService sysUserRoleService;
+
+    private final SysRoleService sysRoleService;
+
     @Override
     public void register(SysUser sysUser) {
         try {
-            Long userId = sysUsersService.getManager(BaseConstant.MANAGER_ROLE_CODE);
+            Long userId = sysUsersService.getManager(BaseConstant.Role.MANAGER_ROLE_CODE);
             sysUser.setCreateBy(userId);
             sysUser.setUpdateBy(userId);
             // 解密密码
@@ -75,6 +76,12 @@ public class AuthServiceImpl implements AuthService {
             Long deptId = sysDeptService.getRootDept();
             sysUser.setDeptId(deptId);
             sysUsersService.save(sysUser);
+
+            // 赋予注册用户角色
+            SysUserRole sysUserRole = new SysUserRole();
+            sysUserRole.setUserId(sysUser.getId());
+            sysUserRole.setRoleId(sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG));
+            sysUserRoleService.save(sysUserRole);
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
@@ -96,11 +103,11 @@ public class AuthServiceImpl implements AuthService {
                     SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
                     id = sysUser.getId();
                     request.setUsername(sysUser.getUsername());
-                    String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail().hashCode());
+                    String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(sysUser.getEmail().hashCode()));
                     if (!request.getEmailCaptcha().equals(emailCaptCha)) {
                         throw new BadCredentialsException("验证码错误");
                     }
-                    redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getUsername());
+                    redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(sysUser.getEmail().hashCode()));
                     break;
                 }
                 default: {
@@ -131,7 +138,7 @@ public class AuthServiceImpl implements AuthService {
 
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), authorizationExpire, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
             loginVo.setToken(token);
             loginVo.setUsername(request.getUsername());
             return loginVo;

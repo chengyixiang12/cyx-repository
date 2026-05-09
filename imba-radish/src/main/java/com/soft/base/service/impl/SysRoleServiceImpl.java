@@ -11,7 +11,7 @@ import com.soft.base.mapper.SysRoleMapper;
 import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetRoleSelectVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
 import com.soft.base.service.SysRoleService;
@@ -49,8 +49,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public void deleteRoleBatch(DeleteRequest request) {
-        sysRoleMapper.deleteRoleBatch(request);
+    public void deleteRoleBatch(List<Long> ids) {
+        sysRoleMapper.deleteByIds(ids);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public PageVo<SysRolesVo> getRoles(GetRolesRequest request) {
-        PageVo<SysRolesVo> pageVo = new PageVo<>();
+    public PageVO<SysRolesVo> getRoles(GetRolesRequest request) {
+        PageVO<SysRolesVo> pageVo = new PageVO<>();
         IPage<SysRolesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
 
         page = sysRoleMapper.getRoles(page, request);

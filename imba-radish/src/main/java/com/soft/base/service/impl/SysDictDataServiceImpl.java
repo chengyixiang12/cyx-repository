@@ -9,13 +9,12 @@ import com.soft.base.constants.RedisConstant;
 import com.soft.base.entity.SysDictData;
 import com.soft.base.mapper.SysDictDataMapper;
 import com.soft.base.model.dto.DictDataDto;
-import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.DictDatasRequest;
 import com.soft.base.model.request.EditDictDataRequest;
 import com.soft.base.model.request.SaveDictDataRequest;
 import com.soft.base.model.vo.DictDataVo;
 import com.soft.base.model.vo.DictDatasVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysDictDataService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +51,10 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public PageVo<DictDatasVo> getDictDatas(DictDatasRequest request) {
+    public PageVO<DictDatasVo> getDictDatas(DictDatasRequest request) {
         IPage<DictDatasVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysDictDataMapper.getDictDatas(page, request);
-        PageVo<DictDatasVo> pageVo = new PageVo<>();
+        PageVO<DictDatasVo> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
@@ -94,9 +93,9 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public void deleteDictDataBatch(DeleteRequest request) {
-        sysDictDataMapper.deleteByIds(request.getIds());
-        request.getIds().forEach(this::removeCache);
+    public void deleteDictDataBatch(List<Long> ids) {
+        sysDictDataMapper.deleteByIds(ids);
+        ids.forEach(this::removeCache);
     }
 
     @Override

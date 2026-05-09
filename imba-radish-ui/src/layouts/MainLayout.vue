@@ -27,8 +27,8 @@
                 </el-tooltip>
                 <el-dropdown>
                     <span class="user-info">
-                        <el-avatar :size="36" :src="user.avatar" />
-                        <span class="user-name">{{ user.name }}</span>
+                        <el-avatar :size="36" :src="avatarUrl" />
+                        <span class="user-name">{{ userInfo.nickname }}</span>
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>
@@ -48,9 +48,9 @@
             </div>
         </el-header>
 
-        <div class="main-left">
+        <div class="main-body">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '64px' : '180px'" class="main-sidebar">
+            <el-aside :width="isCollapsed ? '5vw' : '15vw'" class="main-left">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
                     text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
                     :collapse-transition="false">
@@ -81,19 +81,18 @@
             </el-aside>
 
             <!-- 右侧内容区 -->
-            <el-main class="main-content">
-                <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab" />
-
-                <!-- <div class="content-wrapper">
-                    
-                </div> -->
-                <router-view v-slot="{ Component }">
-                    <transition name="fade" mode="out-in">
+            <el-main class="main-right">
+                <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
+                    @close-other="closeOtherTabs" @close-all="closeAllTabs" />
+                <div class="router-view-wrapper">
+                    <router-view v-slot="{ Component }">
                         <div v-if="Component">
-                            <component :is="Component" />
+                            <transition name="fade">
+                                <component :is="Component" />
+                            </transition>
                         </div>
-                    </transition>
-                </router-view>
+                    </router-view>
+                </div>
             </el-main>
         </div>
     </div>
@@ -109,29 +108,24 @@ import {
     Fold,
     HomeFilled,
     Bell
-} from '@element-plus/icons-vue';
-import { clearCache } from '../utils/clearCache';
-import { UserInfoVo } from '@/types/login';
-import { logouted } from '@/api/login';
-import { getAvatarApi } from '@/api/user';
-import { ElTooltip } from 'element-plus';
-import type { MenuItem } from '@/types/menu';
-import { getMessageNumApi } from '@/api/message';
-import { getLeftMenusApi } from '@/api/dashboard';
-import ModuleTabs from './component/ModuleTabs.vue';
+} from '@element-plus/icons-vue'
+import { clearCache } from '../utils/clearCache'
+import { UserInfoVo } from '@/types/login'
+import { logouted } from '@/api/login'
+import { ElTooltip } from 'element-plus'
+import type { MenuItem } from '@/types/menu'
+import { getMessageNumApi } from '@/api/message'
+import { getLeftMenusApi } from '@/api/dashboard'
+import ModuleTabs from './component/ModuleTabs.vue'
 import { useRoute } from 'vue-router'
-import { CachedTabsType } from '@/types/layout';
-import { getWebSocketInstance } from '@/utils/websocket';
-import { showMessage } from '@/utils/message';
-import { avatar_url } from '@/common/global-config';
-import { WebsocketMessage } from '@/utils/websocketManager';
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { CachedTabsType } from '@/types/layout'
+import { getWebSocketInstance } from '@/utils/websocket'
+import { showMessage } from '@/utils/message'
+import { WebsocketMessage } from '@/utils/websocketManager'
+import { downloadFileApi } from '@/api/file';
 
-const router = useRouter();
-const user = ref({
-    name: '',
-    avatar: ''
-});
+const router = useRouter()
+const avatarUrl = ref('')
 const route = useRoute()
 const isCollapsed = ref(false)
 // 未读消息数
@@ -172,6 +166,22 @@ const closeTab = (path: string) => {
             activePath.value = nextTab.path
             router.push({ path: nextTab.path })
         }
+    }
+}
+
+// 关闭其他标签
+const closeOtherTabs = (keepPath: string) => {
+    cachedTabs.value = cachedTabs.value.filter(tab => tab.path === keepPath || !tab.isClose)
+    activePath.value = keepPath
+}
+
+// 关闭全部标签
+const closeAllTabs = () => {
+    const homeTab = cachedTabs.value.find(tab => !tab.isClose)
+    if (homeTab) {
+        cachedTabs.value = [homeTab]
+        activePath.value = homeTab.path
+        router.push({ path: homeTab.path })
     }
 }
 
@@ -219,11 +229,6 @@ const loadMenu = async () => {
     menuList.value = await getLeftMenusApi();
 }
 
-// 组件挂载时获取用户昵称
-const getNickname = async () => {
-    user.value.name = userInfo.nickname;
-}
-
 const handleMessageClick = async () => {
     // 跳转到消息界面
 }
@@ -264,21 +269,25 @@ const initWebsocket = async () => {
     }
     ws.refreshToken = (data: WebsocketMessage) => {
         const token = data.token;
-        sessionStorage.setItem('Authorization', token);
+        if (token) {
+            sessionStorage.setItem('Authorization', token);
+        }
     };
 }
 
 // 获取用户头像
 const getAvatar = async () => {
-    const userId = userInfo.id
-    getAvatarApi(userId).then((uri) => {
-        user.value.avatar = avatar_url + '/' + uri
-    })
+    const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
+    if (!userInfo.avatar) {
+        avatarUrl.value = ''
+        return
+    }
+    const res = await downloadFileApi(userInfo.avatar)
+    avatarUrl.value = URL.createObjectURL(res)
 }
 
 onMounted(() => {
     loadMenu();
-    getNickname();
     getMessageNum();
     existDashboard();
     initWebsocket();
@@ -295,6 +304,7 @@ onMounted(() => {
 }
 
 .main-header {
+    height: 8vh;
     background: #b3b9bf;
     color: white;
     display: flex;
@@ -305,26 +315,25 @@ onMounted(() => {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.main-left {
+.main-body {
     flex: 1;
     display: flex;
+    flex-direction: row;
+    margin: 5px 0 5px 5px;
     min-height: 0;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left: 5px;
 }
 
-.main-sidebar {
+.main-left {
     background: #b3b9bf;
     border-radius: 4px;
-    margin-right: 10px;
-    max-height: 100vh;
+    margin-right: 5px;
+    margin-top: 4px;
     overflow: hidden;
     overflow-y: auto;
-    /* height: 90vh; */
+    flex-shrink: 0;
 }
 
-.main-content {
+.main-right {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -332,6 +341,18 @@ onMounted(() => {
     padding: 0;
     margin-right: 5px;
     min-height: 0;
+}
+
+.router-view-wrapper {
+    flex: 1;
+    padding: 5px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+:deep(.el-tabs__header) {
+    margin-bottom: 5px;
+    margin-top: 0px;
 }
 
 .header-left {
@@ -370,6 +391,7 @@ onMounted(() => {
 
 .el-menu {
     border-right: none;
+    width: 100%;
 }
 
 .el-menu-item,

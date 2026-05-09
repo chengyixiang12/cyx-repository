@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/11/18 17:51
  **/
 
@@ -27,11 +27,9 @@ public class EditUserRequest {
     private String nickname;
 
     @Schema(description = "部门")
-    @NotNull(message = "部门不能为空")
     private Long deptId;
 
     @Schema(description = "邮箱")
-    @NotBlank(message = "邮箱不能为空")
     private String email;
 
     @Schema(description = "手机号码")
@@ -41,5 +39,5 @@ public class EditUserRequest {
     private List<Long> roleIds;
 
     @Schema(description = "用户头像")
-    private String avatar;
+    private Long avatar;
 }

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+    <!-- ==================== 定义日志输出格式 ==================== -->
+    <!-- 控制台格式：无年月日 -->
+    <property name="CONSOLE_PATTERN" value="%d{HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"/>
+
+    <!-- 文件格式：包含年月日 -->
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"/>
+
     <!-- 静默状态日志（生产环境推荐） -->
     <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
 
@@ -10,32 +17,17 @@
     <!-- 日志目录：优先使用 Spring 配置 -->
     <springProperty scope="context"
                     name="LOG_HOME"
-                    source="log.file.home"
+                    source="radish.log.location"
                     defaultValue="logs"/>
 
-    <!-- ==================== 控制台：开发环境（彩色） ==================== -->
-    <springProfile name="dev">
-        <withJansi>true</withJansi>
-
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    %highlight(%-5level) %cyan(%d{HH:mm:ss.SSS}) [%thread] %blue(%logger{36}) - %msg%n
-                </pattern>
-            </encoder>
-        </appender>
-    </springProfile>
-
-    <!-- ==================== 控制台：非开发环境（无颜色） ==================== -->
-    <springProfile name="!dev">
-        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    %-5level%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n
-                </pattern>
-            </encoder>
-        </appender>
-    </springProfile>
+    <!-- ==================== 控制台 ==================== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                ${CONSOLE_PATTERN}
+            </pattern>
+        </encoder>
+    </appender>
 
     <!-- ==================== 普通日志：INFO / WARN ==================== -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -53,14 +45,23 @@
 
         <encoder>
             <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} [%thread] - %msg%n
+                ${FILE_PATTERN}
             </pattern>
         </encoder>
 
-        <!-- 接收 INFO 及以上 -->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
+        <springProfile name="prod">
+            <!-- 接收 INFO 及以上 -->
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+        </springProfile>
+
+        <springProfile name="dev | default">
+            <!-- 接收 INFO 及以上 -->
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>DEBUG</level>
+            </filter>
+        </springProfile>
 
         <!-- 明确拒绝 ERROR（避免重复） -->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -86,7 +87,7 @@
 
         <encoder>
             <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} [%thread] - %msg%n
+                ${FILE_PATTERN}
             </pattern>
         </encoder>
 
@@ -98,11 +99,19 @@
         </filter>
     </appender>
 
+    <!-- MDC 感知的日志收集器 -->
+    <appender name="MDC_COLLECTOR" class="com.soft.base.quartz.log.QuartzAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${CONSOLE_PATTERN}</pattern>
+        </layout>
+    </appender>
+
     <!-- ==================== 根日志级别 ==================== -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
         <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="MDC_COLLECTOR"/>
     </root>
 
 </configuration>

@@ -1,12 +1,13 @@
 package com.soft.base.model.dto;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/12/11 11:05
  **/
 
@@ -16,14 +17,18 @@ import org.apache.ibatis.type.Alias;
 public class ExportDeptDto {
 
     @Schema(description = "部门id")
+    @ExcelProperty(index = 0, value = "部门id")
     private Long id;
 
     @Schema(description = "部门编码")
+    @ExcelProperty(index = 1, value = "部门编码")
     private String code;
 
     @Schema(description = "部门名称")
+    @ExcelProperty(index = 2, value = "部门名称")
     private String name;
 
     @Schema(description = "父级部门名称")
+    @ExcelProperty(index = 3, value = "父级部门名称")
     private String parentName;
 }

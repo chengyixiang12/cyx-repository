@@ -1,3 +1,4 @@
+
 export interface WebsocketMessage {
   status: boolean
   order: string
@@ -12,13 +13,12 @@ export class WebsocketManager {
 
   private readonly HEARTBEAT_INTERVAL = 30000
   private readonly HEARTBEAT_TIMEOUT_LIMIT = 3
-  private readonly RECONNECT_INTERVAL = 5000
+  private readonly RECONNECT_INTERVAL = 30000
   private readonly MAX_RECONNECT_ATTEMPTS = 5
 
   private missedHeartbeats = 0
   private reconnectAttempts = 0
 
-  private token = ''
   private url = ''
   private isActive = false;
   public onMessage: ((data: WebsocketMessage) => void) | null = null
@@ -31,12 +31,15 @@ export class WebsocketManager {
     this.url = url
   }
 
+  /**
+   * 
+   * @param token 连接websocket
+   */
   connect(token: string) {
     if (this.socket) {
       this.socket.close()
     }
 
-    this.token = token
     this.socket = new WebSocket(`${this.url}?Authorization=${encodeURIComponent(token)}`)
 
     this.socket.onopen = () => {
@@ -69,7 +72,7 @@ export class WebsocketManager {
           this.missedHeartbeats = 0
           break
         }
-        default : {
+        default: {
           this.onMessage?.(data)
           break
         }
@@ -88,8 +91,11 @@ export class WebsocketManager {
     }
   }
 
+  /**
+   * 开始心跳
+   */
   private startHeartbeat() {
-    this.stopHeartbeat()
+    this.stopHeartbeat();
     this.heartbeatTimer = window.setInterval(() => {
       if (this.socket?.readyState !== WebSocket.OPEN) return
 
@@ -97,7 +103,7 @@ export class WebsocketManager {
         this.socket.send(JSON.stringify({ order: 'HEART_BEAT' }))
         this.missedHeartbeats++
         if (this.missedHeartbeats >= this.HEARTBEAT_TIMEOUT_LIMIT) {
-          console.error('[WebSocket] 心跳失败过多，关闭连接')
+          console.error('[WebSocket] 心跳失败过多，关闭连接');
           this.socket?.close()
         }
       } catch (e) {
@@ -113,6 +119,10 @@ export class WebsocketManager {
     }
   }
 
+  /**
+   * 重连websocket
+   * @returns 
+   */
   private tryReconnect() {
     if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
       console.error('[WebSocket] 达到最大重连次数，放弃')
@@ -122,13 +132,18 @@ export class WebsocketManager {
     if (this.reconnectTimer) return
 
     console.log(`[WebSocket] ${this.RECONNECT_INTERVAL / 1000}s 后尝试重连`)
+    const token = sessionStorage.getItem('Authorization') || '';
     this.reconnectTimer = window.setTimeout(() => {
       this.reconnectAttempts++
-      this.connect(this.token)
+      this.connect(token)
       this.reconnectTimer = null
     }, this.RECONNECT_INTERVAL)
   }
 
+  /**
+   * 发送消息
+   * @param data 
+   */
   send(data: string | object) {
     if (this.socket?.readyState === WebSocket.OPEN) {
       const payload = typeof data === 'string' ? data : JSON.stringify(data)
@@ -138,6 +153,9 @@ export class WebsocketManager {
     }
   }
 
+  /**
+   * 关闭
+   */
   close() {
     if (this.socket) {
       this.socket.close()

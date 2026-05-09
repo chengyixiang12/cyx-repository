@@ -28,16 +28,6 @@
         fix_role
     </sql>
 
-    <update id="deleteRoleBatch" parameterType="java.util.List">
-        UPDATE sys_role
-        SET del_flag = '0'
-        WHERE
-        fix_role = 0
-        AND id IN
-        <foreach collection="request.ids" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </update>
     <select id="getRole" parameterType="java.lang.Long" resultType="SysRoleVo">
         SELECT
         sr.id,

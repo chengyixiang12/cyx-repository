@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.base.mapper.SysActuatorMapper">
+
+    <select id="listActuator" resultType="ListActuatorVO">
+            select
+                    t1.create_time,
+                    t1.cpu_usage,
+                    t1.cpu_count,
+                    t1.memery_used,
+                    t1.memery_max,
+                    t1.uptime,
+                    t1.disk_free,
+                    t1.disk_total,
+                    t1.health_db,
+                    t1.health_disk_space,
+                    t1.health_mail,
+                    t1.health_ping,
+                    t1.health_rabbit,
+                    t1.health_redis,
+                    t1.health_ssl,
+                    t1.health
+            from
+                    sys_actuator t1
+            where
+                    t1.create_time between #{startTime} and #{endTime}
+              and t1.del_flag = 0
+            order by t1.create_time desc
+    </select>
+        <select id="listActuatorPage" parameterType="ListActuatorPageRequest" resultType="ListActuatorVO">
+                select
+                        t1.create_time,
+                        t1.health_db,
+                        t1.health_disk_space,
+                        t1.health_mail,
+                        t1.health_ping,
+                        t1.health_rabbit,
+                        t1.health_redis,
+                        t1.health_ssl,
+                        t1.health
+                from
+                        sys_actuator t1
+                where
+                        t1.create_time between #{request.startTime} and #{request.endTime}
+                  and t1.del_flag = 0
+                order by t1.create_time desc
+        </select>
+</mapper>

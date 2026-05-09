@@ -1,21 +1,22 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <div>
-    <router-view></router-view>
+    <el-config-provider :size="componentSize" :locale="locale">
+      <router-view></router-view>
+    </el-config-provider>
+
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+
+const componentSize = ref<'small'>('small')
+const locale = ref(zhCn)
+</script>
 
 <style scoped>
 * {
   box-sizing: border-box;
-}
-.custom-message {
-  top: 20% !important;  /* 控制垂直位置 */
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  min-width: 200px !important;
-  text-align: center !important;
 }
 </style>

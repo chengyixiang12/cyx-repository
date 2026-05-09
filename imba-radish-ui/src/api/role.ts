@@ -19,7 +19,7 @@ export async function getRolesApi(data: GetRolesRequest): Promise<PaginatedData<
  * @returns 
  */
 export async function getRoleApi(id: string): Promise<SysRoleVo> {
-    const res = await get<SysRoleVo>(`/role/${id}`, { flag: true})
+    const res = await get<SysRoleVo>('/role/getRole', { params: { id }, flag: true })
     return res.data;
 }
 
@@ -52,7 +52,7 @@ export async function deleteRoleApi(id: string) {
  * @param id 
  */
 export async function enableRoleApi(id :string) {
-    await get(`/role/enableRole/${id}`, { flag: true })
+    await get('/role/enableRole', { flag: true, params: { id } })
 }
 
 /**
@@ -60,7 +60,7 @@ export async function enableRoleApi(id :string) {
  * @param id 
  */
 export async function forbiddenRoleApi(id :string) {
-    await get(`/role/forbiddenRole/${id}`, { flag: true })
+    await get('/role/forbiddenRole', { params: { id }, flag: true })
 }
 
 /**
@@ -68,7 +68,7 @@ export async function forbiddenRoleApi(id :string) {
  * @param id 
  */
 export async function setDefaultRoleApi(id :string) {
-    await get(`/role/setDefaultRole/${id}`, { flag: true })
+    await get('/role/setDefaultRole', { params: { id }, flag: true })
 }
 
 /**

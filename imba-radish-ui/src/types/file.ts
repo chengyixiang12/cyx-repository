@@ -1,5 +1,5 @@
 export interface UploadFileVo {
-    fileId: number;
+    fileId: string;
     fileName: string;
 }
 

@@ -49,7 +49,7 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import { ref, computed, defineEmits, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { DeptTreeVo } from '@/types/dept'
 import { SaveUserRequest } from '@/types/user'
 import { getUser } from '@/api/user'
@@ -124,12 +124,12 @@ const handleSubmit = async () => {
 const getUserById = async (id: string) => {
   const userInfo = await getUser(id)
   formData.value = {
-    username: userInfo.username,
+    username: userInfo.username || '',
     password: '',
-    nickname: userInfo.nickname,
-    email: userInfo.email,
+    nickname: userInfo.nickname || '',
+    email: userInfo.email || '',
     phone: userInfo.phone || '',
-    deptId: userInfo.deptId,
+    deptId: userInfo.deptId || '',
     roleIds: userInfo.roleIds || []
   }
 }

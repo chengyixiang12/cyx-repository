@@ -7,9 +7,7 @@ import com.soft.base.model.request.EditJobRequest;
 import com.soft.base.model.request.GetQuartzTasksRequest;
 import com.soft.base.model.vo.GetJobVo;
 import com.soft.base.model.vo.GetQuartzTasksVo;
-import com.soft.base.model.vo.PageVo;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import com.soft.base.model.vo.PageVO;
 
 /**
 * @author cyq
@@ -20,7 +18,7 @@ public interface SysScheduleJobService extends IService<SysScheduleJob> {
 
     void createJob(CreateJobRequest request);
 
-    PageVo<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request);
+    PageVO<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request);
 
     void startJob(Long id);
 

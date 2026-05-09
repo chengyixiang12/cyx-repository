@@ -1,6 +1,7 @@
 package com.soft.base.controller;
 
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.core.annotation.LogIgnore;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
@@ -8,7 +9,7 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.model.request.FilesRequest;
 import com.soft.base.model.vo.FilesVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UploadAvatarVo;
 import com.soft.base.model.vo.UploadFileVo;
 import com.soft.base.resultapi.R;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description:
  * @DateTime: 2024/10/26 15:22
  **/
 
@@ -72,8 +73,9 @@ public class SysFileController {
 
     @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
-    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
-        UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile);
+    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile,
+                                      @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "fileMd5不能为空") String fileMd5) {
+        UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile, fileMd5);
         return R.ok("上传成功", uploadFileVo);
     }
 
@@ -143,22 +145,22 @@ public class SysFileController {
 
     @PostMapping(value = "/getFiles")
     @Operation(summary = "获取文件（复）")
-    public R<PageVo<FilesVo>> getFiles(@RequestBody FilesRequest request) {
-        PageVo<FilesVo> pageVo = sysFileService.getFiles(request);
+    public R<PageVO<FilesVo>> getFiles(@RequestBody FilesRequest request) {
+        PageVO<FilesVo> pageVo = sysFileService.getFiles(request);
         return R.ok(pageVo);
     }
 
     @PostMapping(value = "/uploadAvatar")
     @Operation(summary = "上传用户头像")
-    public R<UploadAvatarVo> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
+    public R<UploadAvatarVo> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile) {
         UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
         return R.ok(uploadAvatarVo);
     }
 
     @PostMapping(value = "/getMyFiles")
     @Operation(summary = "获取我的文件（复）")
-    public R<PageVo<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
-        PageVo<FilesVo> pageVo = sysFileService.getMyFiles(request);
+    public R<PageVO<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
+        PageVO<FilesVo> pageVo = sysFileService.getMyFiles(request);
         return R.ok(pageVo);
     }
 
@@ -184,14 +186,11 @@ public class SysFileController {
     })
     public R<Object> uploadChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5,
                                  @RequestParam(value = "chunkIndex", required = false) @NotNull(message = "索引不能为空") Integer chunkIndex,
-                                 @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") MultipartFile chunk) throws IOException {
+                                 @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") @LogIgnore MultipartFile chunk) throws IOException {
 
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
-        if (!chunkDir.exists()) {
-            boolean flag = chunkDir.mkdirs();
-            if (!flag) {
-                return R.fail("分片目录创建失败");
-            }
+        if (!chunkDir.exists() && !chunkDir.mkdirs()) {
+            return R.fail("分片目录创建失败");
         }
 
         File chunkFile = new File(chunkDir, chunkIndex.toString());
@@ -215,7 +214,6 @@ public class SysFileController {
             return R.fail("分片数量错误");
         }
 
-        ;
         File fileTemp = new File(chunkDir, fileName);
         try (FileOutputStream os = new FileOutputStream(fileTemp);
                 FileChannel out = os.getChannel()) {
@@ -238,11 +236,19 @@ public class SysFileController {
                 chunk.delete();
             }
 
-            UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp);
+            UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp, fileMd5);
 
             return R.ok("上传成功", uploadFileVo);
         } catch (IOException e) {
             throw new GlobalException(e);
         }
+    }
+
+    @GetMapping(value = "/getFileByMd5")
+    @Operation(summary = "根据md5获取文件")
+    public R<String> getFileByMd5(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "md5不能为空") String fileMd5,
+                                  @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName) {
+        String id = sysFileService.getFileByMd5(fileMd5, fileName);
+        return R.ok(id);
     }
 }

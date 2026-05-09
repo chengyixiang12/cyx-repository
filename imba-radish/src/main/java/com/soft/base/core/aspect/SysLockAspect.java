@@ -4,13 +4,14 @@ import cn.hutool.core.util.IdUtil;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
 import com.soft.base.core.annotation.SysLock;
+import com.soft.base.enums.ResultEnum;
 import com.soft.base.exception.GlobalException;
+import com.soft.base.properties.RadishProperty;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx
- * @Description: 锁切面
+ * @Description: 全局锁
  * @DateTime: 2025/4/12 16:32
  **/
 
@@ -27,23 +28,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @Order(1)
+@RequiredArgsConstructor
 public class SysLockAspect {
 
-    @Value("${radish.lock.expire}")
-    private Long lockExpire;
-
-    @Value("${radish.lock.max-retry}")
-    private Integer maxRetry;
-
-    @Value("${radish.lock.retry-interval-time}")
-    private Long retryIntervalTime;
+    private final RadishProperty radishProperty;
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    public SysLockAspect(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     @Around("@annotation(sysLock)")
     public Object around(ProceedingJoinPoint joinPoint, SysLock sysLock) throws Throwable {
@@ -52,18 +42,18 @@ public class SysLockAspect {
         String lockFlag = IdUtil.fastSimpleUUID();
         boolean locked = false;
         try {
-            while (retryCount < maxRetry) {
-                Boolean success = redisTemplate.opsForValue().setIfAbsent(RedisConstant.LOCK_KEY + key, lockFlag, lockExpire, TimeUnit.SECONDS);
+            while (retryCount < radishProperty.getLock().getMaxRetry()) {
+                Boolean success = redisTemplate.opsForValue().setIfAbsent(RedisConstant.LOCK_KEY + key, lockFlag, radishProperty.getLock().getExpire(), TimeUnit.SECONDS);
                 if (Boolean.TRUE.equals(success)) {
                     locked = true;
                     break;
                 }
                 retryCount++;
-                TimeUnit.MILLISECONDS.sleep(retryIntervalTime);
+                TimeUnit.MILLISECONDS.sleep(radishProperty.getLock().getRetryIntervalTime());
             }
 
             if (!locked) {
-                throw new GlobalException("系统繁忙，请稍后再试");
+                throw new GlobalException(ResultEnum.RATE_LIMIT.getMessage());
             }
 
             return joinPoint.proceed();

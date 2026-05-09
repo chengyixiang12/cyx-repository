@@ -33,17 +33,30 @@ public class RabbitMQConfig {
         factory.setConnectionFactory(connectionFactory);
         // 消费端也设置Jackson2JsonMessageConverter，用于反序列化
         factory.setMessageConverter(new Jackson2JsonMessageConverter());
+        // 消息手动确认
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        // 每次从队列取出一条消息消费
+        factory.setPrefetchCount(1);
+        // 拒绝重试
+        factory.setDefaultRequeueRejected(false);
         return factory;
     }
 
     @Bean(name = "directQueueOne")
     public Queue directQueueOne() {
-        return new Queue(RabbitmqConstant.DIRECT_QUEUE_ONE, false, false, false);
+        return QueueBuilder
+                .nonDurable(RabbitmqConstant.Direct.QUEUE_ONE)
+                .deadLetterExchange(RabbitmqConstant.DeadLetter.DEAD_LETTER_EXCHANGE)
+                .deadLetterRoutingKey(RabbitmqConstant.DeadLetter.DEAD_LETTER_ROUTING_KEY)
+                .build();
     }
 
     @Bean(name = "directExchange")
     public DirectExchange directExchange() {
-        return new DirectExchange(RabbitmqConstant.DIRECT_EXCHANGE, false, false);
+        return ExchangeBuilder
+                .directExchange(RabbitmqConstant.Direct.EXCHANGE)
+                .durable(false)
+                .build();
     }
 
     @Bean(name = "directBindingOne")
@@ -52,53 +65,58 @@ public class RabbitMQConfig {
         return BindingBuilder
                 .bind(directQueueOne)
                 .to(directExchange)
-                .with(RabbitmqConstant.DIRECT_ROUTEKEY_ONE);
+                .with(RabbitmqConstant.Direct.ROUTE_KEY_ONE);
     }
 
     @Bean(name = "topicQueueEmail")
     public Queue topicQueueEmail() {
-        return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_EMAIL, false, false, false);
-    }
-
-    @Bean(name = "topicQueueFileHash")
-    public Queue topicQueueFileHash() {
-        return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_FILEHASH, false, false, false);
-    }
-
-    @Bean(name = "topicQueueDead")
-    public Queue topicQueueDead() {
-        return new Queue(RabbitmqConstant.TOPIC_QUEUE_SEND_DEAD, false, false, false);
+        return QueueBuilder
+                .nonDurable(RabbitmqConstant.Topic.QUEUE_SEND_EMAIL)
+                .deadLetterExchange(RabbitmqConstant.DeadLetter.DEAD_LETTER_EXCHANGE)
+                .deadLetterRoutingKey(RabbitmqConstant.DeadLetter.DEAD_LETTER_ROUTING_KEY)
+                .build();
     }
 
     @Bean(name = "topicExchange")
     public TopicExchange topicExchange() {
-        return new TopicExchange(RabbitmqConstant.TOPIC_EXCHANGE, false, false);
+        return ExchangeBuilder
+                .topicExchange(RabbitmqConstant.Topic.EXCHANGE)
+                .durable(false)
+                .build();
     }
 
-    @Bean(name = "topicBindingDead")
-    public Binding topicBindingDead(@Qualifier(value = "topicQueueDead") Queue topicQueueDead,
-                                    @Qualifier(value = "topicExchange") TopicExchange topicExchange) {
-        return BindingBuilder
-                .bind(topicQueueDead)
-                .to(topicExchange)
-                .with(RabbitmqConstant.TOPIC_ROUTE_KEY_DEAD);
-    }
-
-    @Bean(name = "topicBindingRestPassword")
-    public Binding topicBindingRestPassword(@Qualifier(value = "topicQueueEmail") Queue topicQueueEmail,
+    @Bean(name = "topicBindingEmail")
+    public Binding topicBindingEmail(@Qualifier(value = "topicQueueEmail") Queue topicQueueEmail,
                                             @Qualifier(value = "topicExchange") TopicExchange topicExchange) {
         return BindingBuilder
                 .bind(topicQueueEmail)
                 .to(topicExchange)
-                .with(RabbitmqConstant.TOPIC_ROUTE_KEY_EMAIL);
+                .with(RabbitmqConstant.Topic.ROUTE_KEY_EMAIL);
     }
 
-    @Bean(name = "topicBindingFileHash")
-    public Binding topicBindingFileHash(@Qualifier(value = "topicQueueFileHash") Queue topicQueueFileHash,
-                                        @Qualifier(value = "topicExchange") TopicExchange topicExchange) {
+    @Bean(name = "deadLetterQueue")
+    public Queue deadLetterQueue() {
+        return QueueBuilder
+                .nonDurable(RabbitmqConstant.DeadLetter.DEAD_LETTER_QUEUE)
+                .maxLength(100)
+                .ttl(1000)
+                .build();
+    }
+
+    @Bean(name = "deadLetterExchange")
+    public DirectExchange deadLetterExchange() {
+        return ExchangeBuilder
+                .directExchange(RabbitmqConstant.DeadLetter.DEAD_LETTER_EXCHANGE)
+                .durable(false)
+                .build();
+    }
+
+    @Bean(name = "deadLetterBinding")
+    public Binding deadLetterBinding(@Qualifier("deadLetterQueue") Queue deadLetterQueue,
+                                     @Qualifier("deadLetterExchange") DirectExchange deadLetterExchange) {
         return BindingBuilder
-                .bind(topicQueueFileHash)
-                .to(topicExchange)
-                .with(RabbitmqConstant.TOPIC_ROUTE_KEY_FILEHASH);
+                .bind(deadLetterQueue)
+                .to(deadLetterExchange)
+                .with(RabbitmqConstant.DeadLetter.DEAD_LETTER_ROUTING_KEY);
     }
 }

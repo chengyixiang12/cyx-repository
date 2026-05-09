@@ -3,12 +3,13 @@ package com.soft.base.controller;
 import com.soft.base.constants.RegexConstant;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
+import com.soft.base.entity.SysUser;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.enums.SecretKeyEnum;
 import com.soft.base.model.dto.UserDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetUserVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UserInfoVo;
 import com.soft.base.model.vo.UsersVo;
 import com.soft.base.resultapi.R;
@@ -25,7 +26,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -56,8 +57,8 @@ public class SysUserController {
 
     @PostMapping(value = "/getUsers")
     @Operation(summary = "获取用户（复）")
-    public R<PageVo<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
-        PageVo<UsersVo> allUsers = sysUsersService.getUsers(request);
+    public R<PageVO<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
+        PageVO<UsersVo> allUsers = sysUsersService.getUsers(request);
         return R.ok(allUsers);
     }
 
@@ -108,7 +109,7 @@ public class SysUserController {
     @PutMapping
     @Operation(summary = "编辑用户")
     public R<Object> editUser(@RequestBody @Valid EditUserRequest request) {
-        if (sysUsersService.existsEmail(request.getId(), request.getEmail())) {
+        if (StringUtils.isNotBlank(request.getEmail()) && sysUsersService.existsEmail(request.getId(), request.getEmail())) {
             return R.fail("邮箱已注册");
         }
         String username = sysUsersService.getUsername(request.getId());
@@ -122,8 +123,14 @@ public class SysUserController {
         try {
             UserInfoVo userInfoVo = new UserInfoVo();
             UserDto userInfo = securityUtil.getUserInfo();
-            BeanUtils.copyProperties(userInfo, userInfoVo);
-            userInfoVo.setId(userInfoVo.getId());
+            SysUser sysUser = sysUsersService.getById(userInfo.getId());
+            userInfoVo.setId(String.valueOf(sysUser.getId()));
+            userInfoVo.setUsername(sysUser.getUsername());
+            userInfoVo.setEmail(sysUser.getEmail());
+            userInfoVo.setPhone(sysUser.getPhone());
+            userInfoVo.setAvatar(String.valueOf(sysUser.getAvatar()));
+            userInfoVo.setNickname(sysUser.getNickname());
+            userInfoVo.setDeptId(String.valueOf(sysUser.getDeptId()));
 
             List<String> roleCodes = securityUtil.getRoleCodes();
             if (roleCodes != null && !roleCodes.isEmpty()) {
@@ -221,5 +228,20 @@ public class SysUserController {
     public R<String> getAvatar(@RequestParam(value = "id", required = false) Long id) {
         String avatarUri = sysUsersService.getAvatar(id);
         return R.ok(avatarUri);
+    }
+
+    @PutMapping(value = "/editSelf")
+    @Operation(summary = "修改个人信息")
+    public R<Object> editSelf(@RequestBody EditSelfRequest request) {
+        Long id = securityUtil.getUserInfo().getId();
+        SysUser sysUser = new SysUser();
+        sysUser.setId(id);
+        sysUser.setNickname(request.getNickname());
+        sysUser.setEmail(request.getEmail());
+        sysUser.setPhone(request.getPhone());
+        sysUser.setAvatar(request.getAvatar());
+
+        sysUsersService.updateById(sysUser);
+        return R.ok();
     }
 }

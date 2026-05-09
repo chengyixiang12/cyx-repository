@@ -5,7 +5,7 @@ import com.soft.base.entity.SysRole;
 import com.soft.base.model.dto.FixRolesDto;
 import com.soft.base.model.request.*;
 import com.soft.base.model.vo.GetRoleSelectVo;
-import com.soft.base.model.vo.PageVo;
+import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.SysRoleVo;
 import com.soft.base.model.vo.SysRolesVo;
 
@@ -22,13 +22,13 @@ public interface SysRoleService extends IService<SysRole> {
 
     Boolean existCode(String code, Long id);
 
-    void deleteRoleBatch(DeleteRequest request);
+    void deleteRoleBatch(List<Long> ids);
 
     Boolean fixRoleFlag(Long id);
 
     SysRoleVo getRole(Long id);
 
-    PageVo<SysRolesVo> getRoles(GetRolesRequest request);
+    PageVO<SysRolesVo> getRoles(GetRolesRequest request);
 
     void enableRole(Long id);
 

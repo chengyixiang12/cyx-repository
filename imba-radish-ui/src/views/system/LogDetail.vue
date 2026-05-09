@@ -1,13 +1,13 @@
 <template>
-    <div class="log-detail-container">
+    <div class="log-detail-container container">
         <!-- 返回按钮 -->
-        <el-button type="primary" icon="ArrowLeft" @click="handleBack" class="back-button">
+        <el-button type="primary" :icon="ArrowLeft" @click="handleBack" class="back-button">
             返回
         </el-button>
-        <el-card>
+        <el-card class="detail-card">
             <div class="short-fields">
                 <el-row :gutter="20">
-                    <el-col v-for="item in displayData.filter(i => !i.isLong)" :key="item.label" :span="8">
+                    <el-col v-for="item in displayData.filter(i => !i.isLong)" :key="item.label" :span="8" :xs="12" :sm="8">
                         <div class="field-item">
                             <span class="field-label">{{ item.label }}：</span>
                             <span class="field-value">{{ item.value }}</span>
@@ -30,6 +30,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ArrowLeft } from '@element-plus/icons-vue'
 import { getLogDetailApi } from '@/api/log'
 
 const route = useRoute()
@@ -85,39 +86,89 @@ onMounted(() => {
 <style scoped>
 .log-detail-container {
     padding: 20px;
-    background: #f5f7fa;
+    background: #f8f9fa;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .back-button {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    --el-button-bg-color: #409eff;
+    --el-button-border-color: #409eff;
 }
 
 .detail-card {
-    padding: 20px;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+}
+
+.short-fields {
+    margin-bottom: 24px;
 }
 
 .field-item {
     margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
 }
 
 .field-label {
-    font-weight: bold;
-    color: #333;
+    font-weight: 600;
+    color: #303133;
+    font-size: 14px;
+    margin-bottom: 4px;
 }
 
 .field-value {
-    margin-left: 8px;
-    color: #666;
+    color: #606266;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.long-fields {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e4e7ed;
+}
+
+.long-fields:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 .long-text {
     margin-top: 8px;
-    padding: 10px;
-    background: #fafafa;
-    border: 1px solid #ebeef5;
-    border-radius: 4px;
-    color: #555;
+    padding: 16px;
+    background: #f5f7fa;
+    border: 1px solid #e4e7ed;
+    border-radius: 6px;
+    color: #303133;
     white-space: pre-wrap;
     word-break: break-word;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+    .log-detail-container {
+        padding: 16px;
+    }
+    
+    .detail-card {
+        padding: 16px;
+    }
+    
+    .field-item {
+        margin-bottom: 12px;
+    }
+    
+    .long-text {
+        padding: 12px;
+    }
 }
 </style>

@@ -62,6 +62,17 @@
         <div class="register-link">
           <el-link type="primary" @click="goToRegister">没有账号？前往注册</el-link>
         </div>
+
+        <!-- 源码地址 -->
+        <div class="source-link">
+          <el-link href="https://github.com/chengyixiang12/cyx-repository/tree/for-update" target="_blank"
+            :underline="false">
+            <el-icon>
+              <Star />
+            </el-icon>
+            <span>源码地址</span>
+          </el-link>
+        </div>
       </el-form>
     </div>
   </div>
@@ -71,6 +82,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import { FormInstance, FormRules } from 'element-plus';
+import { Star } from '@element-plus/icons-vue';
 import { getGraphicCaptcha, login, sendCaptchaApi } from '@/api/login';
 import { getPublicKey } from '@/api/auth';
 import { RSAUtil } from '@/utils/rsa';
@@ -85,6 +97,7 @@ const loginFormRef = ref<FormInstance>();
 const loading = ref(false);
 const captchaUrl = ref('');
 const countdown = ref(0);
+let timer: number | null = null
 
 const loginForm = ref({
   username: '',
@@ -122,6 +135,19 @@ const refreshCaptcha = async () => {
   }
 };
 
+const startCountdown = (seconds: number = 300) => {
+  countdown.value = seconds
+  if (timer) clearInterval(timer)
+  timer = window.setInterval(() => {
+    if (countdown.value > 0) {
+      countdown.value--
+    } else {
+      if (timer) clearInterval(timer)
+      timer = null
+    }
+  }, 1000)
+}
+
 const sendEmailCaptcha = async () => {
   if (!loginForm.value.email) {
     showMessage('请先输入邮箱地址', 'warning');
@@ -129,11 +155,7 @@ const sendEmailCaptcha = async () => {
   }
   try {
     await sendCaptchaApi(loginForm.value.email);
-    countdown.value = 60;
-    const timer = setInterval(() => {
-      countdown.value--;
-      if (countdown.value <= 0) clearInterval(timer);
-    }, 1000);
+    startCountdown();
   } catch (error) {
     // showMessage('发送验证码失败', 'error');
     console.error('获取验证码失败:', error);
@@ -209,6 +231,10 @@ onMounted(() => {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+.login-card .el-form-item {
+  margin-bottom: 20px;
+}
+
 .login-tabs {
   margin-bottom: 20px;
 }
@@ -268,5 +294,28 @@ onMounted(() => {
   text-align: center;
   font-size: 14px;
   color: #666;
+}
+
+.source-link {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.source-link:hover {
+  opacity: 1;
+}
+
+.source-link .el-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #606266;
+}
+
+.source-link .el-link:hover {
+  color: #409eff;
 }
 </style>

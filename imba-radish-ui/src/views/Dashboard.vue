@@ -19,12 +19,8 @@
             </div>
           </template>
           <div class="content-list">
-            <div 
-              v-for="item in announcements" 
-              :key="item.id" 
-              class="content-item"
-              @click="showAnnouncementDetail(item)"
-            >
+            <div v-for="item in announcements" :key="item.id" class="content-item"
+              @click="showAnnouncementDetail(item)">
               <div class="content-title">{{ item.title }}</div>
               <div class="content-time">{{ formatTime(item.publishTime) }}</div>
             </div>
@@ -41,12 +37,7 @@
             </div>
           </template>
           <div class="content-list">
-            <div 
-              v-for="item in todos" 
-              :key="item.id" 
-              class="content-item"
-              @click="showTodoDetail(item)"
-            >
+            <div v-for="item in todos" :key="item.id" class="content-item" @click="showTodoDetail(item)">
               <div class="content-title">
                 <el-tag :type="item.status === '已完成' ? 'success' : 'warning'" size="small">
                   {{ item.status }}
@@ -112,7 +103,7 @@ const currentTodo = ref({
 // 方法
 const getNickname = () => {
   const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
-  nickname.value = userInfo.nickname;
+  nickname.value = userInfo.nickname ?? '';
 }
 
 const formatTime = (time: string) => {
@@ -139,13 +130,14 @@ onMounted(() => {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 50%;
 }
 
 /* 上部欢迎卡片样式调整 */
 .welcome-card {
   margin-bottom: 16px;
   padding: 16px 0;
+  min-height: 200px;
 }
 
 .welcome-message {
@@ -167,7 +159,8 @@ onMounted(() => {
 /* 内容区域调整 */
 .content-row {
   flex: 1;
-  min-height: 0; /* 防止内容溢出 */
+  min-height: 0;
+  /* 防止内容溢出 */
 }
 
 .card-header {
@@ -177,7 +170,8 @@ onMounted(() => {
 
 .content-list {
   padding: 8px;
-  height: calc(100% - 56px); /* 减去标题栏高度 */
+  height: calc(100% - 56px);
+  /* 减去标题栏高度 */
   overflow-y: auto;
 }
 

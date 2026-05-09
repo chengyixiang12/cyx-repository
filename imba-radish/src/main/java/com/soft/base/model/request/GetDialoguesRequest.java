@@ -7,7 +7,7 @@ import org.apache.ibatis.type.Alias;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2025/5/30 14:53
  **/
 @EqualsAndHashCode(callSuper = true)

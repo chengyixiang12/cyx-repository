@@ -4,6 +4,7 @@ import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.request.EditMenuRequest;
 import com.soft.base.model.request.GetMenuListRequest;
+import com.soft.base.model.request.PageMenuTreeRequest;
 import com.soft.base.model.request.SaveMenuRequest;
 import com.soft.base.model.vo.*;
 import com.soft.base.resultapi.R;
@@ -24,7 +25,7 @@ import java.util.List;
 
 /**
  * @Author: cyx
- * @Description: TODO
+ * @Description: 
  * @DateTime: 2024/11/10 13:34
  **/
 
@@ -87,8 +88,8 @@ public class SysMenuController {
 
     @PostMapping(value = "/getMenuList")
     @Operation(summary = "获取菜单列表")
-    public R<PageVo<GetMenuListVo>> getMenuList(@RequestBody GetMenuListRequest request) {
-        PageVo<GetMenuListVo> pageVo = sysMenuService.getMenuList(request);
+    public R<PageVO<GetMenuListVo>> getMenuList(@RequestBody GetMenuListRequest request) {
+        PageVO<GetMenuListVo> pageVo = sysMenuService.getMenuList(request);
         return R.ok(pageVo);
     }
 
@@ -154,5 +155,12 @@ public class SysMenuController {
     public R<List<MenusVo>> getLeftMenus() {
         List<MenusVo> menusVos = sysMenuService.getLeftMenus();
         return R.ok(menusVos);
+    }
+
+    @PostMapping(value = "/pageMenuTree")
+    @Operation(summary = "获取树形结构的菜单分页列表")
+    public R<PageVO<PageMenuTreeVO>> pageMenuTree(@RequestBody PageMenuTreeRequest request) {
+        PageVO<PageMenuTreeVO> page = sysMenuService.pageMenuTree(request);
+        return R.ok(page);
     }
 }

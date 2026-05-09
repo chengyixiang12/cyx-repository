@@ -1,77 +1,93 @@
 <template>
-  <div class="dictType-container">
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <el-card>
-          <template #header>
-            <div class="list-header">
-              <div class="right-header">
-                <el-button type="primary" @click="handleAddType">新增</el-button>
-              </div>
+  <div class="dictType-container container">
+    <!-- 头部 -->
+    <div class="list-header">
+      <div class="header-title">
+        <span>字典类型管理</span>
+      </div>
+      <div class="right-header">
+        <el-button type="primary" @click="handleAddType" class="add-button">
+          新增类型
+        </el-button>
+      </div>
+    </div>
+
+    <!-- 搜索条件 -->
+    <div class="search-container">
+      <el-form :inline="true" :model="searchForm" class="search-form">
+        <el-form-item label="关键字:">
+          <el-input v-model="searchForm.keyword" placeholder="字典名称/类型" clearable class="keyword-input" />
+        </el-form-item>
+        <el-form-item label="状态:">
+          <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
+            <el-option label="启用" :value="1" />
+            <el-option label="禁用" :value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button type="primary" @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+
+    <!-- 类型表格 -->
+    <div class="table-wrapper">
+      <el-table :data="dictTypeList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
+        <el-table-column label="序号" min-width="50" align="center">
+          <template #default="scope">
+            {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="dictName" label="字典名称" align="center" show-overflow-tooltip>
+          <template #default="scope">
+            <el-link @click="goToData(scope.row)" type="primary">{{ scope.row.dictName }}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sortOrder" label="排序" align="center" min-width="80" sortable />
+        <el-table-column prop="status" label="状态" min-width="80" align="center">
+          <template #default="scope">
+            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
+              @change="changeStatus(scope.row)" />
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" min-width="200" align="center">
+          <template #default="scope">
+            <div class="action-buttons-container">
+              <el-button 
+                type="primary" 
+                @click="handleEditType(scope.row)"
+                class="action-button edit-button"
+              >
+                编辑
+              </el-button>
+              <el-popconfirm 
+                title="确认删除该类型吗？" 
+                confirm-button-text="确认" 
+                cancel-button-text="取消"
+                @confirm="deleteType(scope.row.id)"
+              >
+                <template #reference>
+                  <el-button 
+                    type="danger" 
+                    class="action-button delete-button"
+                  >
+                    删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
             </div>
           </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
-          <!-- 搜索条件 -->
-          <div class="search-container">
-            <el-form :inline="true" :model="searchForm" class="search-form">
-              <el-form-item label="关键字:">
-                <el-input v-model="searchForm.keyword" placeholder="字典名称/类型" clearable class="keyword-input" />
-              </el-form-item>
-              <el-form-item label="状态:">
-                <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
-                  <el-option label="启用" :value="1" />
-                  <el-option label="禁用" :value="0" />
-                </el-select>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-                <el-button type="primary" @click="resetSearch">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-
-          <!-- 类型表格 -->
-          <div class="list-table">
-            <el-table :data="dictTypeList" border size="small" style="width: 100%" v-loading="loading">
-              <el-table-column label="序号" min-width="50" align="center">
-                <template #default="scope">
-                  {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="dictName" label="字典名称" align="center" show-overflow-tooltip>
-                <template #default="scope">
-                  <el-link @click="goToData(scope.row)" type="primary">{{ scope.row.dictName }}</el-link>
-                </template>
-              </el-table-column>
-              <el-table-column prop="sortOrder" label="排序" align="center" min-width="80" sortable />
-              <el-table-column prop="status" label="状态" min-width="80" align="center">
-                <template #default="scope">
-                  <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
-                    @change="changeStatus(scope.row)" />
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" min-width="120" align="center">
-                <template #default="scope">
-                  <el-button size="small" type="primary" :icon="Edit" circle @click="handleEditType(scope.row)" />
-                  <el-popconfirm title="确认删除？" @confirm="deleteType(scope.row.id)">
-                    <template #reference>
-                      <el-button size="small" type="danger" :icon="Delete" circle />
-                    </template>
-                  </el-popconfirm>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-
-          <!-- 分页 -->
-          <div class="list-pagination">
-            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
-              layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
-              @size-change="handleSizeChange" size="default" />
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <!-- 分页 -->
+    <div class="pagination">
+      <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
+        layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
+        @size-change="handleSizeChange" />
+    </div>
   </div>
 
   <dict-type-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" @submit="handleAddSubmit" />
@@ -80,7 +96,6 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { Edit, Delete } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { getDictTypesApi, deleteDictTypeApi, enableDictTypeApi, forbiddenDictTypeApi, saveDictTypeApi, editDictTypeApi } from '@/api/dictType'
 import type { DictTypesVo, GetDictTypesRequest, SaveDictTypeRequest } from '@/types/dictType'
@@ -161,6 +176,10 @@ const handleSizeChange = (val: number) => {
   handleSearch()
 }
 
+const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
+  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
+}
+
 const handleSearch = async () => {
   try {
     loading.value = true;
@@ -178,82 +197,117 @@ onMounted(() => {
 </script>
 <style scoped>
 .dictType-container {
-  height: 100%;
-  padding: 10px;
-  background-color: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
 }
 
 .list-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  height: 36px;
-  padding: 0 12px;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #fff;
+  flex-shrink: 0;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.title-icon {
+  font-size: 18px;
+  color: #409eff;
 }
 
 .right-header {
-  margin-left: auto;
-}
-
-.header-button {
-  padding: 4px 12px;
-  font-size: 13px;
-  height: 28px;
+  display: flex;
+  gap: 8px;
 }
 
 .search-container {
-  padding: 12px;
+  padding: 10px;
   background-color: #fafafa;
-  border-bottom: 1px solid #ebeef5;
+  border-radius: 6px;
+  margin: 10px 5px 10px 5px;
+  flex-shrink: 0;
 }
 
 .search-form {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-form .el-form-item {
+  margin-bottom: 0;
 }
 
 .keyword-input {
-  width: 200px !important;
+  width: 180px !important;
 }
 
-:deep(.el-form-item) {
-  margin-bottom: 0;
-  margin-right: 16px;
+.table-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border-radius: 6px;
+  border: 1px solid #edeef1;
+  margin: 0 5px 0 5px;
 }
 
-:deep(.el-form-item__label) {
-  padding-right: 8px;
+.table-wrapper :deep(.el-table) {
+  height: 100%;
+  min-height: 100%;
+}
+
+.table-wrapper :deep(.el-table__body-wrapper) {
+  overflow-y: auto;
+}
+
+.table-wrapper :deep(.el-table th) {
+  background-color: #f5f7fa !important;
+  font-weight: 600;
   color: #606266;
 }
 
-.list-table {
-  width: 100%;
-  height: 52vh;
-  overflow: auto;
-  padding-top: 12px;
-}
-
-.list-pagination {
-  margin-top: 16px;
+.pagination {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px;
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0;
+  background-color: #fff;
+  z-index: 10;
 }
 
-.el-card {
-  height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+.even-row {
+  background-color: #fff;
 }
 
-:deep(.el-card__header) {
-  padding: 8px 12px !important;
-  min-height: 36px !important;
-  border-bottom: 1px solid #ebeef5;
+.odd-row {
+  background-color: #fafafa;
 }
 
-:deep(.el-card__body) {
-    padding: 14px !important;
+.action-buttons-container {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 5px 10px;
+  font-size: 12px;
 }
 </style>

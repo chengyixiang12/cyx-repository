@@ -121,7 +121,8 @@
         su.nickname,
         su.email,
         su.phone,
-        su.dept_id
+        su.dept_id,
+        su.avatar
         FROM
         sys_user su
         WHERE
