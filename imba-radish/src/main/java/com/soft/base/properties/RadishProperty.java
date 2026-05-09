@@ -22,6 +22,8 @@ public class RadishProperty {
 
     private Lock lock = new Lock();
 
+    private Log log = new Log();
+
     @Data
     public static class Captcha {
 
@@ -71,5 +73,19 @@ public class RadishProperty {
          * 重试间隔时间（毫秒）
          */
         private Integer retryIntervalTime;
+    }
+
+    @Data
+    public static class Log {
+
+        /**
+         * 是否开启日志记录
+         */
+        private Boolean enable;
+
+        /**
+         * 日志位置
+         */
+        private String location;
     }
 }

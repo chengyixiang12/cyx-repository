@@ -93,13 +93,6 @@ logging:
     org.flowable.job.service.impl.asyncexecutor: info
     root: info
   config: classpath:logback-spring.xml
-log:
-  # 是否开启日志记录
-  enable: true
-  # 是否记录请求及响应数据
-  record-param: false
-  file:
-    home: /opt/docker/project/logs
 # 临时文件存储路径
 tmp:
   path: /opt/docker/project/tmp
@@ -186,3 +179,8 @@ radish:
     max-retry: 5
     #重试间隔时间（毫秒）
     retry-interval-time: 2000
+  log:
+    # 是否开启日志记录
+    enable: true
+    # 日志位置
+    location: logs

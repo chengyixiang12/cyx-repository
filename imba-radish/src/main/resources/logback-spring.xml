@@ -17,7 +17,7 @@
     <!-- 日志目录：优先使用 Spring 配置 -->
     <springProperty scope="context"
                     name="LOG_HOME"
-                    source="log.file.home"
+                    source="radish.log.location"
                     defaultValue="logs"/>
 
     <!-- ==================== 控制台 ==================== -->

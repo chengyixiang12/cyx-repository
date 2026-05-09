@@ -39,10 +39,6 @@ public class JacksonConfig {
         // 忽略null值
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        // 禁止循环引用（避免无限递归）
-        mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator(),
-                ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-
         // 如果日期字符串为空字符串，设置为null
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 

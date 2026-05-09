@@ -132,10 +132,10 @@ public class SysRoleController {
         return R.ok("删除成功", null);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/getRole")
     @Operation(summary = "获取角色（单）")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<SysRoleVo> getRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
+    public R<SysRoleVo> getRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         SysRoleVo sysRoleVo = sysRoleService.getRole(id);
         return R.ok(sysRoleVo);
     }
@@ -149,20 +149,20 @@ public class SysRoleController {
 
     @SysLog(value = "启用", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_enable')")
-    @GetMapping(value = "/enableRole/{id}")
+    @GetMapping(value = "/enableRole")
     @Operation(summary = "启用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> enableRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
+    public R<Object> enableRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.enableRole(id);
         return R.ok("启用成功", null);
     }
 
     @SysLog(value = "禁用", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_fbn')")
-    @GetMapping(value = "/forbiddenRole/{id}")
+    @GetMapping(value = "/forbiddenRole")
     @Operation(summary = "禁用")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> forbiddenRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
+    public R<Object> forbiddenRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.forbiddenRole(id);
         return R.ok("禁用成功", null);
     }
@@ -170,10 +170,10 @@ public class SysRoleController {
     @SysLock(name = "role")
     @SysLog(value = "设置默认角色", module = LogModuleEnum.ROLE)
     @PreAuthorize(value = "@cps.hasPermission('sys_role_set_def')")
-    @GetMapping(value = "/setDefaultRole/{id}")
+    @GetMapping(value = "/setDefaultRole")
     @Operation(summary = "设置默认角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<Object> setDefaultRole(@PathVariable(value = "id") @NotNull(message = "主键不能为空") Long id) {
+    public R<Object> setDefaultRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.setDefaultRole(id);
         return R.ok("设置成功", null);
     }

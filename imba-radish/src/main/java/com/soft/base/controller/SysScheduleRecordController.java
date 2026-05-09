@@ -36,6 +36,7 @@ public class SysScheduleRecordController {
     }
 
     @GetMapping(value = "/getLogDetail")
+    @Operation(summary = "获取定时任务详情")
     public R<String> getLogDetail(@RequestParam(value = "id") @NotNull(message = "id不能为空") Long id) {
         String logDetail = sysScheduleRecordService.getLogDetail(id);
         return R.ok(logDetail);

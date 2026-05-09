@@ -1,5 +1,5 @@
 <template>
-    <div class="log-detail-container">
+    <div class="log-detail-container container">
         <!-- 返回按钮 -->
         <el-button type="primary" :icon="ArrowLeft" @click="handleBack" class="back-button">
             返回
@@ -87,7 +87,8 @@ onMounted(() => {
 .log-detail-container {
     padding: 20px;
     background: #f8f9fa;
-    min-height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .back-button {

@@ -1,6 +1,7 @@
 package com.soft.base.controller;
 
 import com.soft.base.constants.BaseConstant;
+import com.soft.base.core.annotation.LogIgnore;
 import com.soft.base.core.annotation.SysLock;
 import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
@@ -72,7 +73,7 @@ public class SysFileController {
 
     @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
-    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile,
+    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile,
                                       @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "fileMd5不能为空") String fileMd5) {
         UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile, fileMd5);
         return R.ok("上传成功", uploadFileVo);
@@ -151,7 +152,7 @@ public class SysFileController {
 
     @PostMapping(value = "/uploadAvatar")
     @Operation(summary = "上传用户头像")
-    public R<UploadAvatarVo> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") MultipartFile multipartFile) {
+    public R<UploadAvatarVo> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile) {
         UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
         return R.ok(uploadAvatarVo);
     }
@@ -185,7 +186,7 @@ public class SysFileController {
     })
     public R<Object> uploadChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5,
                                  @RequestParam(value = "chunkIndex", required = false) @NotNull(message = "索引不能为空") Integer chunkIndex,
-                                 @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") MultipartFile chunk) throws IOException {
+                                 @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") @LogIgnore MultipartFile chunk) throws IOException {
 
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
         if (!chunkDir.exists() && !chunkDir.mkdirs()) {

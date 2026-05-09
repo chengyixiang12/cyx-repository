@@ -50,7 +50,7 @@
 
         <div class="main-body">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '64px' : '180px'" class="main-left">
+            <el-aside :width="isCollapsed ? '5vw' : '15vw'" class="main-left">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
                     text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
                     :collapse-transition="false">
@@ -391,6 +391,7 @@ onMounted(() => {
 
 .el-menu {
     border-right: none;
+    width: 100%;
 }
 
 .el-menu-item,
