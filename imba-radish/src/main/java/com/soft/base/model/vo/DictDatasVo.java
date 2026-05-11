@@ -9,7 +9,7 @@ import lombok.Data;
  * @DateTime: 2024/11/20 11:42
  **/
 @Data
-@Schema(description = "获取字典数据（复）响应参数")
+@Schema(description = "获取字典数据列表响应参数")
 public class DictDatasVo {
 
     @Schema(description = "主键")

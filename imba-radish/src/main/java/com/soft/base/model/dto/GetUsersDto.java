@@ -13,7 +13,7 @@ import java.util.List;
  **/
 
 @Data
-@Schema(description = "获取用户（复）传输参数")
+@Schema(description = "获取用户列表传输参数")
 @Alias(value = "GetUsersDto")
 public class GetUsersDto {
 

@@ -42,7 +42,7 @@ public class SysPermissionController {
     }
 
     @PostMapping(value = "/getPermissions")
-    @Operation(summary = "获取权限（复）")
+    @Operation(summary = "获取权限列表")
     public R<PageVO<PermissionsVo>> getPermissions(@RequestBody PermissionsRequest request) {
         PageVO<PermissionsVo> pageVo = sysPermissionService.getPermissions(request);
         return R.ok(pageVo);

@@ -18,7 +18,7 @@ export interface PermissionsVo {
     code: string | null,
     name: string | null,
     type: string | null,
-    status: number | null,
+    status: string | null,
     description: string | null
 }
 
@@ -26,7 +26,7 @@ export interface PermissionsRequest {
     keyword: string | null,
     pageNum: number,
     pageSize: number,
-    status: number | null,
+    status: string | null,
     type: string | null
 }
 
@@ -34,7 +34,7 @@ export interface SavePermissionRequest {
     name: string,
     code: string,
     type: string,
-    status: number,
+    status: string,
     description: string | null
 }
 
@@ -53,6 +53,6 @@ export interface GetPermissionVo {
     name: string,
     code: string,
     type: string,
-    status: number,
+    status: string,
     description: string | null
 }

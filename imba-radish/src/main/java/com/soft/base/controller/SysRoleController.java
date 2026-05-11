@@ -109,7 +109,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_del')")
     @DeleteMapping(value = "/deleteRoleBatch")
     @Operation(summary = "批量删除角色")
-    public R<Object> deleteRoleBatch(@RequestParam(value = "ids") @Valid List<Long> ids) {
+    public R<Object> deleteRoleBatch(@RequestParam(value = "ids") @NotNull List<@NotNull Long> ids) {
         List<FixRolesDto> fixRolesFlag = sysRoleService.fixRolesFlag(ids);
         if (!fixRolesFlag.isEmpty()) {
             StringBuilder message = new StringBuilder();
@@ -133,7 +133,7 @@ public class SysRoleController {
     }
 
     @GetMapping(value = "/getRole")
-    @Operation(summary = "获取角色（单）")
+    @Operation(summary = "获取角色详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<SysRoleVo> getRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         SysRoleVo sysRoleVo = sysRoleService.getRole(id);
@@ -141,7 +141,7 @@ public class SysRoleController {
     }
 
     @PostMapping(value = "/getRoles")
-    @Operation(summary = "获取角色（复）")
+    @Operation(summary = "获取角色列表")
     public R<PageVO<SysRolesVo>> getRoles(@RequestBody GetRolesRequest request) {
         PageVO<SysRolesVo> resultPage = sysRoleService.getRoles(request);
         return R.ok(resultPage);
@@ -203,6 +203,7 @@ public class SysRoleController {
 
     @SysLog(value = "设置固定角色", module = LogModuleEnum.ROLE)
     @GetMapping(value = "/setFixRole")
+    @PreAuthorize(value = "@cps.hasPermission('sys_role_set_fix')")
     @Operation(summary = "设置固定角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> setFixRole(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
@@ -212,6 +213,7 @@ public class SysRoleController {
 
     @SysLog(value = "取消固定角色", module = LogModuleEnum.ROLE)
     @GetMapping(value = "/cancelFixRole")
+    @PreAuthorize(value = "@cps.hasPermission('sys_role_set_fix_cancel')")
     @Operation(summary = "取消固定角色")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> cancelFixRole(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {

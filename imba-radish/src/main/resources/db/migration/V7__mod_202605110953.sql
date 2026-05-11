@@ -1,0 +1,1 @@
+ALTER TABLE radish_master.sys_permission MODIFY COLUMN status char(1) NULL COMMENT '状态；1：启用；0：禁用';

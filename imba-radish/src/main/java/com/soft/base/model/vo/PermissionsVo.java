@@ -9,7 +9,7 @@ import lombok.Data;
  * @DateTime: 2024/11/20 14:43
  **/
 @Data
-@Schema(description = "获取权限（复）响应参数")
+@Schema(description = "获取权限列表响应参数")
 public class PermissionsVo {
 
     @Schema(description = "主键")
@@ -22,7 +22,7 @@ public class PermissionsVo {
     private String name;
 
     @Schema(description = "状态；1：启用；0：禁用")
-    private Integer status;
+    private String status;
 
     @Schema(description = "描述")
     private String description;

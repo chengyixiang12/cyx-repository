@@ -12,12 +12,15 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "获取权限（复）请求参数")
+@Schema(description = "获取权限列表请求参数")
 public class PermissionsRequest extends PageRequest {
 
     @Schema(description = "关键词")
     private String keyword;
 
     @Schema(description = "状态")
-    private Integer status;
+    private String status;
+
+    @Schema(description = "类型")
+    private String type;
 }

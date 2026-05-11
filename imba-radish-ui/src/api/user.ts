@@ -77,15 +77,6 @@ export async function forbiddenUser(id: string) {
 }
 
 /**
- * 获取用户头像
- * @param params 
- */
-export async function getAvatarApi(id: string): Promise<string> {
-   const res = await get('/user/getAvatar', { flag: true,  params: { id } })
-   return res.data;
-}
-
-/**
 * 获取登录用户信息
 * @param params 登录参数
 */

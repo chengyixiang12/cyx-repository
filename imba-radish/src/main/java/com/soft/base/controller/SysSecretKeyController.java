@@ -1,5 +1,6 @@
 package com.soft.base.controller;
 
+import com.soft.base.constants.BaseConstant;
 import com.soft.base.core.annotation.SysLog;
 import com.soft.base.enums.LogModuleEnum;
 import com.soft.base.model.vo.PublicKeyVo;
@@ -37,10 +38,9 @@ public class SysSecretKeyController {
     }
 
     @GetMapping(value = "/getPublicKey")
-    @Operation(summary = "获取公钥")
-    @Parameter(name = "type", description = "密钥类型", required = true, in = ParameterIn.QUERY)
-    public R<PublicKeyVo> getPublicKey(@RequestParam(value = "type", required = false) @NotBlank(message = "密钥类型不能为空") String type) {
-        String publicKey = secretKeyService.getPublicKey(type);
+    @Operation(summary = "获取登录密码加密公钥")
+    public R<PublicKeyVo> getPublicKey() {
+        String publicKey = secretKeyService.getPublicKey(BaseConstant.SecretKey.LOGIN_PASSWORD_ENCRYPT);
         PublicKeyVo publicKeyVo = new PublicKeyVo();
         publicKeyVo.setPublicKey(publicKey);
         return R.ok(publicKeyVo);

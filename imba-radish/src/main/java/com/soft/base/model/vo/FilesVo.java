@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @DateTime: 2024/11/20 16:46
  **/
 @Data
-@Schema(description = "获取文件（复）响应参数")
+@Schema(description = "获取文件列表响应参数")
 public class FilesVo {
 
     @Schema(description = "主键")

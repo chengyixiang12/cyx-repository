@@ -1,5 +1,5 @@
 <template>
-  <div class="permission-container container">
+  <div class="container">
     <!-- 头部 -->
     <div class="list-header">
       <div class="header-title">
@@ -20,8 +20,8 @@
         </el-form-item>
         <el-form-item label="状态:">
           <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
-            <el-option label="启用" :value="1" />
-            <el-option label="禁用" :value="0" />
+            <el-option label="启用" value="1" />
+            <el-option label="禁用" value="0" />
           </el-select>
         </el-form-item>
 
@@ -41,7 +41,7 @@
 
     <!-- 权限表格 -->
     <div class="table-wrapper">
-      <el-table :data="permissionList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
+      <el-table :data="permissionList" border size="small" style="width: 100%" v-loading="loading" height="60vh">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -50,12 +50,12 @@
         <el-table-column prop="name" align="center" label="名称" show-overflow-tooltip />
         <el-table-column prop="type" align="center" label="类型" show-overflow-tooltip>
           <template #default="scope">
-            {{ scope.row.type === 1 ? '菜单' : '按钮' }}
+            {{ scope.row.type === '1' ? '菜单' : '按钮' }}
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" align="center" min-width="80">
           <template #default="scope">
-            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
+            <el-switch v-model="scope.row.status" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66"
               inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
           </template>
         </el-table-column>
@@ -132,7 +132,7 @@ const total = ref(0)
 // 搜索表单
 const searchForm = ref<PermissionsRequest>({
   keyword: '',
-  status: null,
+  status: '',
   type: '',
   pageNum: 1,
   pageSize: 10,
@@ -177,7 +177,7 @@ const handleEditSubmit = async (formData: EditPermissionRequest) => {
 
 // 改变权限状态
 const handleStatusChange = async (row: PermissionsVo) => {
-  if (row.status === 1) {
+  if (row.status === '1') {
     await enablePermissionApi(row.id);
   } else {
     await forbiddenPermissionApi(row.id);
@@ -209,14 +209,10 @@ const handleSearch = () => {
 }
 
 const resetSearch = () => {
-  searchForm.value.status = null
+  searchForm.value.status = ''
   searchForm.value.type = ''
   searchForm.value.keyword = ''
   loadPermissions()
-}
-
-const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
-  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
 }
 
 onMounted(() => {
@@ -225,118 +221,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.permission-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  background-color: #fff;
-}
 
-.list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #ebeef5;
-  background-color: #fff;
-  flex-shrink: 0;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.title-icon {
-  font-size: 18px;
-  color: #409eff;
-}
-
-.right-header {
-  display: flex;
-  gap: 8px;
-}
-
-.search-container {
-  padding: 10px;
-  background-color: #fafafa;
-  border-radius: 6px;
-  margin: 10px 5px 10px 5px;
-  flex-shrink: 0;
-}
-
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.search-form .el-form-item {
-  margin-bottom: 0;
-}
-
-.keyword-input {
-  width: 180px !important;
-}
-
-.table-wrapper {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  border-radius: 6px;
-  border: 1px solid #edeef1;
-  margin: 0 5px 0 5px;
-}
-
-.table-wrapper :deep(.el-table) {
-  height: 100%;
-  min-height: 100%;
-}
-
-.table-wrapper :deep(.el-table__body-wrapper) {
-  overflow-y: auto;
-}
-
-.table-wrapper :deep(.el-table th) {
-  background-color: #f5f7fa !important;
-  font-weight: 600;
-  color: #606266;
-}
-
-.pagination {
-  position: sticky;
-  bottom: 0;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  background-color: #fff;
-  z-index: 10;
-}
-
-.even-row {
-  background-color: #fff;
-}
-
-.odd-row {
-  background-color: #fafafa;
-}
-
-.action-buttons-container {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-}
-
-.action-button {
-  padding: 5px 10px;
-  font-size: 12px;
-}
 </style>

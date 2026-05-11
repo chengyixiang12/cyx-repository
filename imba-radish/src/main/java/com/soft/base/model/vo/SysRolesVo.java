@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
  **/
 
 @Data
-@Schema(description = "获取角色（复）响应参数")
+@Schema(description = "获取角色列表响应参数")
 @Alias(value = "SysRolesVo")
 public class SysRolesVo {
 

@@ -144,7 +144,7 @@ public class SysFileController {
     }
 
     @PostMapping(value = "/getFiles")
-    @Operation(summary = "获取文件（复）")
+    @Operation(summary = "获取文件列表")
     public R<PageVO<FilesVo>> getFiles(@RequestBody FilesRequest request) {
         PageVO<FilesVo> pageVo = sysFileService.getFiles(request);
         return R.ok(pageVo);
@@ -158,7 +158,7 @@ public class SysFileController {
     }
 
     @PostMapping(value = "/getMyFiles")
-    @Operation(summary = "获取我的文件（复）")
+    @Operation(summary = "获取我的文件列表")
     public R<PageVO<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
         PageVO<FilesVo> pageVo = sysFileService.getMyFiles(request);
         return R.ok(pageVo);

@@ -1,5 +1,5 @@
 <template>
-  <div class="user-container container">
+  <div class="container">
     <el-row :gutter="20">
       <!-- 左侧组织架构树 -->
       <el-col :span="4">
@@ -65,8 +65,7 @@
 
           <!-- 用户表格 -->
           <div class="table-wrapper">
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading"
-              :row-class-name="rowClassName" highlight-current-row>
+            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading" height="60vh">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
@@ -350,11 +349,6 @@ const handleResetPassword = async (id: number) => {
   resetPasswordApi(id)
 }
 
-// 表格行样式
-const rowClassName = ({ row, rowIndex }: { row: any; rowIndex: number }) => {
-  return rowIndex % 2 === 0 ? 'even-row' : 'odd-row'
-}
-
 // 初始化加载
 onMounted(() => {
   loadDeptTree()
@@ -363,25 +357,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.user-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  
-}
-
-.user-container :deep(.el-row) {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  margin: 0;
-}
-
-.user-container :deep(.el-col) {
-  display: flex;
-  min-height: 0;
-}
-
 /* 左侧部门树容器 */
 .tree-container {
   width: 100%;
@@ -410,104 +385,12 @@ onMounted(() => {
 
 /* 右侧用户容器 */
 .user-right-container {
+  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-
-.list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #ebeef5;
-  background-color: #fff;
-  flex-shrink: 0;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.right-header {
-  display: flex;
-  gap: 8px;
-}
-
-.search-container {
-  padding: 10px;
-  background-color: #fafafa;
-  border-radius: 6px;
-  margin: 10px 5px 10px 5px;
-  flex-shrink: 0;
-}
-
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.search-form .el-form-item {
-  margin-bottom: 0;
-}
-
-.keyword-input {
-  width: 180px !important;
-}
-
-.table-wrapper {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  border-radius: 6px;
-  border: 1px solid #edeef1;
-  margin: 0 5px 0 5px;
-}
-
-.table-wrapper :deep(.el-table) {
-  height: 100%;
-  min-height: 100%;
-}
-
-.table-wrapper :deep(.el-table__body-wrapper) {
-  overflow-y: auto;
-}
-
-.table-wrapper :deep(.el-table th) {
-  background-color: #f5f7fa !important;
-  font-weight: 600;
-  color: #606266;
-}
-
-.action-buttons-container {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.action-button {
-  flex-shrink: 0;
-}
-
-.pagination {
-  position: sticky;
-  bottom: 0;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  z-index: 10;
 }
 
 .online-status {
@@ -527,24 +410,5 @@ onMounted(() => {
 .online-status.offline {
   background-color: #C0C4CC;
   box-shadow: 0 0 8px rgba(192, 196, 204, 0.5);
-}
-
-.even-row {
-  background-color: #fff;
-}
-
-.odd-row {
-  background-color: #fafafa;
-}
-
-.action-buttons-container {
-  display: flex;
-  gap: 6px;
-  /* justify-content: center; */
-}
-
-.action-button {
-  padding: 5px 10px;
-  font-size: 12px;
 }
 </style>

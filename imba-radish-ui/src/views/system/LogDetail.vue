@@ -1,5 +1,5 @@
 <template>
-    <div class="log-detail-container container">
+    <div class="log-detail-container">
         <!-- 返回按钮 -->
         <el-button type="primary" :icon="ArrowLeft" @click="handleBack" class="back-button">
             返回
@@ -85,6 +85,8 @@ onMounted(() => {
 
 <style scoped>
 .log-detail-container {
+    height: 100%;
+    min-height: 100%;
     padding: 20px;
     background: #f8f9fa;
     overflow-y: auto;
@@ -151,24 +153,5 @@ onMounted(() => {
     font-family: 'Courier New', Courier, monospace;
     font-size: 13px;
     line-height: 1.5;
-}
-
-/* 响应式调整 */
-@media screen and (max-width: 768px) {
-    .log-detail-container {
-        padding: 16px;
-    }
-    
-    .detail-card {
-        padding: 16px;
-    }
-    
-    .field-item {
-        margin-bottom: 12px;
-    }
-    
-    .long-text {
-        padding: 12px;
-    }
 }
 </style>

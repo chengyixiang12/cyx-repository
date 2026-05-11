@@ -10,7 +10,7 @@ import org.apache.ibatis.type.Alias;
  * @description
  */
 @Data
-@Schema(description = "获取定时任务（复）响应参数")
+@Schema(description = "获取定时任务列表响应参数")
 @Alias(value = "GetQuartzTasksVo")
 public class GetQuartzTasksVo {
 

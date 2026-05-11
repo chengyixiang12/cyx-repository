@@ -37,7 +37,7 @@ public class SysLogController {
     }
 
     @PostMapping(value = "/getLogs")
-    @Operation(summary = "获取日志（复）")
+    @Operation(summary = "获取日志列表")
     public R<PageVO<LogsVo>> getLogs(@RequestBody LogsRequest request) {
         try {
             PageVO<LogsVo> pageVo = sysLogService.getLogs(request);

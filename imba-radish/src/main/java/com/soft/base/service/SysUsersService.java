@@ -19,10 +19,6 @@ public interface SysUsersService extends IService<SysUser> {
 
     void resetPassword(Long id);
 
-    String getEmail(String username);
-
-    boolean checkUsernameExist(String username);
-
     void saveUser(SaveUserRequest request);
 
     void editUser(EditUserRequest request, String username);
@@ -52,8 +48,6 @@ public interface SysUsersService extends IService<SysUser> {
     void forbiddenUser(String username);
 
     SysUser getUserByEmail(String email);
-
-    String getAvatar(Long id);
 
     Long getPrimaryKeyByUsername(String username);
 }

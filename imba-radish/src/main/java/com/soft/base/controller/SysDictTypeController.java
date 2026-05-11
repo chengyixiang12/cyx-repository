@@ -42,7 +42,7 @@ public class SysDictTypeController {
     private final SysDictTypeService sysDictTypeService;
 
     @PostMapping(value = "/getDictTypes")
-    @Operation(summary = "获取字典类型（复）")
+    @Operation(summary = "获取字典类型列表")
     public R<PageVO<DictTypesVo>> getDictTypes(@RequestBody GetDictTypesRequest request) {
         PageVO<DictTypesVo> dictTypesVos = sysDictTypeService.getdictTypes(request);
         return R.ok(dictTypesVos);
@@ -69,7 +69,7 @@ public class SysDictTypeController {
     }
 
     @GetMapping
-    @Operation(summary = "获取字典类型（单）")
+    @Operation(summary = "获取字典类型详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<DictTypeVo> getDictType(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
         DictTypeVo dictTypeVo = sysDictTypeService.getDictType(Long.parseLong(id));

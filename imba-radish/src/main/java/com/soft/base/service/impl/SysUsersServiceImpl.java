@@ -148,16 +148,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
-    public String getEmail(String username) {
-        return sysUsersMapper.getEmail(username);
-    }
-
-    @Override
-    public boolean checkUsernameExist(String username) {
-        return sysUsersMapper.exists(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getUsername, username).or().eq(SysUser::getEmail, username));
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveUser(SaveUserRequest request) {
         String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
@@ -315,11 +305,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     public SysUser getUserByEmail(String email) {
         return sysUsersMapper.getUserByEmail(email);
-    }
-
-    @Override
-    public String getAvatar(Long id) {
-        return sysUsersMapper.getAvatar(id);
     }
 
     @Override

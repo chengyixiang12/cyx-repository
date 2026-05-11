@@ -18,7 +18,6 @@ public interface SysPermissionService extends IService<SysPermission> {
 
     PageVO<PermissionsVo> getPermissions(PermissionsRequest request);
 
-    List<String> getPermissionsByUserId(Long id);
 
     void savePermission(SavePermissionRequest request);
 

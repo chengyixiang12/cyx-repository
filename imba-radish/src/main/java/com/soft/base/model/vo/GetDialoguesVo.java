@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @Description: 
  * @DateTime: 2025/5/30 14:44
  **/
-@Schema(description = "获取历史对话（复）响应参数")
+@Schema(description = "获取历史对话列表响应参数")
 @Data
 @Alias(value = "GetDialoguesVo")
 public class GetDialoguesVo {

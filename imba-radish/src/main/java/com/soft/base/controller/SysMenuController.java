@@ -94,7 +94,7 @@ public class SysMenuController {
     }
 
     @GetMapping(value = "/getMenu")
-    @Operation(summary = "获取菜单（单）")
+    @Operation(summary = "获取菜单详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<GetMenuVo> getMenu(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         GetMenuVo getMenuVo = sysMenuService.getMenu(id);

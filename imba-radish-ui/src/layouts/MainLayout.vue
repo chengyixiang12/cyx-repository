@@ -1,7 +1,7 @@
 <template>
-    <div class="main-container">
+    <div class="page-container">
         <!-- 顶部导航栏 -->
-        <el-header class="main-header">
+        <el-header class="page-header">
             <div class="header-left">
                 <!-- 添加菜单收缩按钮 -->
                 <el-icon class="collapse-icon" @click="toggleCollapse">
@@ -48,9 +48,9 @@
             </div>
         </el-header>
 
-        <div class="main-body">
+        <div class="page-body">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '5vw' : '15vw'" class="main-left">
+            <el-aside :width="isCollapsed ? '64px' : '160px'" class="main-left">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
                     text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
                     :collapse-transition="false">
@@ -296,14 +296,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.main-container {
+.page-container {
     height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 
-.main-header {
+.page-header {
     height: 8vh;
     background: #b3b9bf;
     color: white;
@@ -315,7 +315,8 @@ onMounted(() => {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.main-body {
+.page-body {
+    height: 92vh;
     flex: 1;
     display: flex;
     flex-direction: row;

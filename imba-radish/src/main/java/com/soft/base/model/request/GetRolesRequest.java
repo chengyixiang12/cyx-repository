@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "获取角色（复）")
+@Schema(description = "获取角色列表")
 @Alias(value = "GetRolesRequest")
 public class GetRolesRequest extends PageRequest {
 

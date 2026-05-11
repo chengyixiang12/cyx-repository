@@ -18,7 +18,7 @@ import java.util.List;
 public class SetPermissionsRequest {
 
     @Schema(description = "角色主键")
-    @NotBlank(message = "角色主键不能为空")
+    @NotNull(message = "角色主键不能为空")
     private Long roleId;
 
     @Schema(description = "权限id集合")

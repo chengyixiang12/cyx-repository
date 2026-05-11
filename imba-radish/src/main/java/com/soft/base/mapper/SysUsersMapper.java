@@ -22,17 +22,11 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
 
     Long getManager(@Param("roleCode") String managerRoleCode);
 
-    UserEmailDto getEmailByUsername(@Param("username") String username);
-
-    String getEmail(@Param("username") String username);
-
     GetUserVo getUser(@Param("id") Long id);
 
     void lockUser(@Param("username") String username);
 
     void unlockUser(@Param("username") String username);
-
-    String getUsernameById(@Param("id") Long id);
 
     Boolean existsEmail(@Param("id") Long id,
                         @Param("email") String email);
@@ -46,8 +40,6 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
     void forbiddenUser(@Param("username") String username);
 
     SysUser getUserByEmail(@Param("email") String email);
-
-    String getAvatar(@Param("id") Long id);
 
     Long getPrimaryKeyByUsername(@Param("username") String username);
 }

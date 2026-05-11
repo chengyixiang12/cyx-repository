@@ -91,29 +91,6 @@
         su.create_by
         LIMIT 1
     </select>
-    <select id="getEmailByUsername" parameterType="java.lang.String" resultType="UserEmailDto">
-        SELECT
-        su.email,
-        su.account_non_expired AS "accountNonExpired",
-        su.account_non_locked AS "accountNonLocked",
-        su.credentials_non_expired AS "credentialsNonExpired",
-        su.enabled
-        FROM
-        sys_user su
-        WHERE
-        su.del_flag = '0'
-        AND su.username = #{username}
-    </select>
-    <select id="getEmail" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT
-        su.email
-        FROM
-        sys_user su
-        WHERE
-        su.del_flag = '0'
-        AND su.username = #{username}
-        OR su.email = #{username}
-    </select>
     <select id="getUser" parameterType="java.lang.Long" resultType="GetUserVo">
         SELECT
         su.id,
@@ -143,15 +120,6 @@
         del_flag = '0'
         AND username = #{username}
     </update>
-    <select id="getUsernameById" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT
-        su.username
-        FROM
-        `sys_user` su
-        WHERE
-        su.del_flag = '0'
-        AND su.`id` = #{id}
-    </select>
     <select id="existsEmail" resultType="java.lang.Boolean">
         SELECT
         COUNT( * )
@@ -216,17 +184,6 @@
         WHERE
             su.del_flag = '0'
           AND su.email = #{email}
-    </select>
-    <select id="getAvatar" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT
-            concat(sf.bucket, '/', sf.object_key)
-        FROM
-            sys_user su
-                JOIN sys_file sf
-                     ON
-                         su.avatar = sf.id
-        WHERE
-            su.id = #{id}
     </select>
     <select id="getPrimaryKeyByUsername" parameterType="java.lang.String" resultType="java.lang.Long">
         select t1.id

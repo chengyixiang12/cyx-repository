@@ -116,7 +116,7 @@ public class SysDeptController {
     }
 
     @GetMapping
-    @Operation(summary = "获取部门（单）")
+    @Operation(summary = "获取部门详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         DeptVo deptVo = sysDeptService.getDept(id);
@@ -157,7 +157,7 @@ public class SysDeptController {
     }
 
     @PostMapping(value = "/getDepts")
-    @Operation(summary = "获取部门（复）")
+    @Operation(summary = "获取部门列表")
     public R<PageVO<GetDeptsVo>> getDepts(@RequestBody GetDeptsRequest request) {
         PageVO<GetDeptsVo> pageVo = sysDeptService.getDepts(request);
         return R.ok(pageVo);

@@ -65,7 +65,7 @@ public class SysScheduleJobController {
     }
 
     @PostMapping(value = "/getQuartzTasks")
-    @Operation(summary = "获取定时任务（复）")
+    @Operation(summary = "获取定时任务列表")
     public R<PageVO<GetQuartzTasksVo>> getQuartzTasks(@RequestBody @Valid GetQuartzTasksRequest request) {
         PageVO<GetQuartzTasksVo> pageVo = sysScheduleJobService.getQuartzTasks(request);
         return R.ok(pageVo);

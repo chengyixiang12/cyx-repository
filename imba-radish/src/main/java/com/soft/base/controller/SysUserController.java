@@ -56,7 +56,8 @@ public class SysUserController {
     private final SysPermissionService sysPermissionService;
 
     @PostMapping(value = "/getUsers")
-    @Operation(summary = "获取用户（复）")
+    @Operation(summary = "获取用户列表")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_page')")
     public R<PageVO<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
         PageVO<UsersVo> allUsers = sysUsersService.getUsers(request);
         return R.ok(allUsers);
@@ -82,7 +83,6 @@ public class SysUserController {
     @GetMapping(value = "/resetPassword")
     @Operation(summary = "重置密码")
     public R<Object> resetPassword(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-
         sysUsersService.resetPassword(id);
         return R.ok("密码重置成功", null);
     }
@@ -144,7 +144,8 @@ public class SysUserController {
     }
 
     @GetMapping(value = "/getUser")
-    @Operation(summary = "获取用户")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_get_user_info')")
+    @Operation(summary = "获取用户详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<GetUserVo> getUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         GetUserVo getUserVo = sysUsersService.getUser(id);
@@ -176,6 +177,7 @@ public class SysUserController {
     @SysLog(value = "重置用户名", module = LogModuleEnum.USER)
     @SysLock(name = "user")
     @PutMapping(value = "/resetUsername")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_reset_username')")
     @Operation(summary = "重置用户名")
     public R<Object> resetUsername(@RequestBody @Valid ResetUsernameRequest request) {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
@@ -220,14 +222,6 @@ public class SysUserController {
         String username = sysUsersService.getUsername(id);
         sysUsersService.forbiddenUser(username);
         return R.ok("用户已禁用", null);
-    }
-
-    @GetMapping(value = "/getAvatar")
-    @Operation(summary = "获取用户头像")
-    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<String> getAvatar(@RequestParam(value = "id", required = false) Long id) {
-        String avatarUri = sysUsersService.getAvatar(id);
-        return R.ok(avatarUri);
     }
 
     @PutMapping(value = "/editSelf")

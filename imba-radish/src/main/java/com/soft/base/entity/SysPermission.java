@@ -30,7 +30,7 @@ public class SysPermission extends BaseEntity {
      * 状态；1：启用；0：禁用
      */
     @TableField(value = "status")
-    private Integer status;
+    private String status;
 
     /**
      * 描述
@@ -39,7 +39,7 @@ public class SysPermission extends BaseEntity {
     private String description;
 
     /**
-     * 权限类型
+     * 类型；1：菜单；2：按钮
      */
     @TableField(value = "type")
     private String type;

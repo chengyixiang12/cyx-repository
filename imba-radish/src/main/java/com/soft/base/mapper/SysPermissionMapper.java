@@ -22,8 +22,6 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     IPage<PermissionsVo> getPermissions(IPage<PermissionsVo> page,
                                         @Param("request") PermissionsRequest request);
 
-    List<String> getPermissionsByUserId(@Param("id") Long id);
-
     List<String> getPermissionsByRoleCodes(@Param("roleCodes") List<String> roleCodes);
 
     List<GetAllPermissionVo> getAllPermission();

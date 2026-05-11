@@ -36,19 +36,13 @@
         sys_permission sp
         WHERE
         sp.del_flag = '0'
-    </select>
-    <select id="getPermissionsByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT DISTINCT
-        sp.`code`
-        FROM
-        sys_permission sp
-        JOIN sys_role_permission srp ON sp.id = srp.permission_id
-        JOIN sys_role sr ON srp.role_id = sr.id
-        JOIN sys_user_role sur ON sur.role_id = sr.id
-        WHERE
-        sp.del_flag = '0'
-        AND sr.del_flag = '0'
-        AND sur.user_id = #{id}
+        <if test="request.type != null and request.type != ''">
+            and sp.type = #{request.type}
+        </if>
+        <if test="request.status != null and request.status != ''">
+            and sp.status = #{request.status}
+        </if>
+        order by sp.create_time desc
     </select>
     <select id="getPermissionsByRoleCodes" parameterType="java.util.List" resultType="java.lang.String">
         SELECT
@@ -86,13 +80,13 @@
     </select>
     <update id="enablePermission" parameterType="java.lang.Long">
         update sys_permission
-        set status = 1
+        set status = '1'
         where del_flag = '0'
         and id = #{id}
     </update>
     <update id="forbiddenPermission" parameterType="java.lang.Long">
         update sys_permission
-        set status = 0
+        set status = '0'
         where del_flag = '0'
           and id = #{id}
     </update>

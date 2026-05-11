@@ -223,4 +223,15 @@ public class BaseConstant {
          */
         public static final String STATUS_FAIL = "3";
     }
+
+    /**
+     * 密钥
+     */
+    public static class SecretKey {
+
+        /**
+         * 加密登录密码的密钥
+         */
+        public static final String LOGIN_PASSWORD_ENCRYPT = "0";
+    }
 }

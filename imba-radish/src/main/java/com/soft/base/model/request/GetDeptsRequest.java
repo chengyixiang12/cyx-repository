@@ -13,7 +13,7 @@ import org.apache.ibatis.type.Alias;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "获取部门（复）请求参数")
+@Schema(description = "获取部门列表请求参数")
 @Alias(value = "GetDeptsRequest")
 public class GetDeptsRequest extends PageRequest {
 

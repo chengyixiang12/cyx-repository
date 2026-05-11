@@ -40,7 +40,7 @@ public class SysDialogueController {
     }
 
     @PostMapping(value = "/getDialogues")
-    @Operation(summary = "获取历史对话（复）")
+    @Operation(summary = "获取历史对话列表")
     public R<PageVO<GetDialoguesVo>> getDialogues(@RequestBody GetDialoguesRequest request) {
         PageVO<GetDialoguesVo> pageVo = sysDialogueService.getDialogues(request);
         return R.ok(pageVo);

@@ -46,11 +46,6 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     }
 
     @Override
-    public List<String> getPermissionsByUserId(Long id) {
-        return sysPermissionMapper.getPermissionsByUserId(id);
-    }
-
-    @Override
     public void savePermission(SavePermissionRequest request) {
         SysPermission sysPermission = new SysPermission();
         BeanUtils.copyProperties(request, sysPermission);

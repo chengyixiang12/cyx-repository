@@ -19,7 +19,10 @@ public class SavePermissionRequest {
     private String code;
 
     @Schema(description = "状态")
-    private Integer status;
+    private String status;
+
+    @Schema(description = "类型；1：菜单；2：按钮")
+    private String type;
 
     @Schema(description = "描述")
     private String description;

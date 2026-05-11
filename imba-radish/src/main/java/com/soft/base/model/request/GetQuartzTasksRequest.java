@@ -12,7 +12,7 @@ import org.apache.ibatis.type.Alias;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "获取定时任务（复）请求参数")
+@Schema(description = "获取定时任务列表请求参数")
 @Alias(value = "GetQuartzTasksRequest")
 public class GetQuartzTasksRequest extends PageRequest {
 

@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
  **/
 
 @Data
-@Schema(description = "获取菜单（单）相应参数")
+@Schema(description = "获取菜单详情相应参数")
 @Alias(value = "GetMenuVo")
 public class GetMenuVo {
 

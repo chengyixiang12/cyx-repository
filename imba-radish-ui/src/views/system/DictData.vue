@@ -1,14 +1,14 @@
 <template>
-  <div class="dictData-container container">
+  <div class="container">
     <!-- 头部 -->
     <div class="list-header">
+      <el-button type="primary" @click="goBack" class="go-back">
+        返回
+      </el-button>
       <div class="header-title">
         <span>{{ route.query.dictName }}</span>
       </div>
       <div class="right-header">
-        <el-button link @click="goBack" class="go-back">
-          返回
-        </el-button>
         <el-button type="primary" @click="handleAddData" class="add-button">
           新增数据
         </el-button>
@@ -36,7 +36,8 @@
 
     <!-- 数据表格 -->
     <div class="table-wrapper">
-      <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName">
+      <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading"
+        :row-class-name="tableRowClassName" height="60vh">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -46,7 +47,8 @@
         <el-table-column prop="value" align="center" label="值" />
         <el-table-column prop="isDefault" label="默认" min-width="80" align="center">
           <template #default="scope">
-            <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" @change="setDefault(scope.row)" />
+            <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0"
+              @change="setDefault(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" min-width="80" align="center">
@@ -59,24 +61,13 @@
         <el-table-column label="操作" min-width="180" align="center">
           <template #default="scope">
             <div class="action-buttons-container">
-              <el-button 
-                type="primary" 
-                @click="editData(scope.row)"
-                class="action-button edit-button"
-              >
+              <el-button type="primary" @click="editData(scope.row)" class="action-button edit-button">
                 编辑
               </el-button>
-              <el-popconfirm 
-                title="确认删除该数据吗？" 
-                confirm-button-text="确认" 
-                cancel-button-text="取消"
-                @confirm="deleteData(scope.row.id)"
-              >
+              <el-popconfirm title="确认删除该数据吗？" confirm-button-text="确认" cancel-button-text="取消"
+                @confirm="deleteData(scope.row.id)">
                 <template #reference>
-                  <el-button 
-                    type="danger" 
-                    class="action-button delete-button"
-                  >
+                  <el-button type="danger" class="action-button delete-button">
                     删除
                   </el-button>
                 </template>
@@ -96,9 +87,11 @@
   </div>
 
   <!--新增弹窗-->
-  <dict-data-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" @submit="handleAddSubmit" />
+  <dict-data-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
+    @submit="handleAddSubmit" />
   <!--编辑弹窗-->
-  <dict-data-form-dialog v-model:visible="editDialogVisible" :is-add="false" :dict-data-id="dictDataId" v-if="editDialogVisible" @submit="handleEditSubmit" />
+  <dict-data-form-dialog v-model:visible="editDialogVisible" :is-add="false" :dict-data-id="dictDataId"
+    v-if="editDialogVisible" @submit="handleEditSubmit" />
 </template>
 
 <script lang="ts" setup>
@@ -204,7 +197,7 @@ const setDefault = async (row: DictDatasVo) => {
 const handlePageChange = (val: number) => {
   searchForm.value.pageNum = val;
   handleSearch()
- }
+}
 const handleSizeChange = (val: number) => {
   searchForm.value.pageSize = val;
   handleSearch()
@@ -219,127 +212,5 @@ onMounted(() => {
 })
 </script>
 <style scoped>
-.dictData-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  background-color: #fff;
-}
 
-.list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #ebeef5;
-  background-color: #fff;
-  flex-shrink: 0;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.title-icon {
-  font-size: 18px;
-  color: #409eff;
-}
-
-.right-header {
-  display: flex;
-  gap: 8px;
-}
-
-.search-container {
-  padding: 10px;
-  background-color: #fafafa;
-  border-radius: 6px;
-  margin: 10px 5px 10px 5px;
-  flex-shrink: 0;
-}
-
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-}
-
-.search-form .el-form-item {
-  margin-bottom: 0;
-}
-
-.keyword-input {
-  width: 180px !important;
-}
-
-.table-wrapper {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  border-radius: 6px;
-  border: 1px solid #edeef1;
-  margin: 0 5px 0 5px;
-}
-
-.table-wrapper :deep(.el-table) {
-  height: 100%;
-  min-height: 100%;
-}
-
-.table-wrapper :deep(.el-table__body-wrapper) {
-  overflow-y: auto;
-}
-
-.table-wrapper :deep(.el-table th) {
-  background-color: #f5f7fa !important;
-  font-weight: 600;
-  color: #606266;
-}
-
-.pagination {
-  position: sticky;
-  bottom: 0;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  background-color: #fff;
-  z-index: 10;
-}
-
-.even-row {
-  background-color: #fff;
-}
-
-.odd-row {
-  background-color: #fafafa;
-}
-
-.action-buttons-container {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-}
-
-.action-button {
-  padding: 5px 10px;
-  font-size: 12px;
-}
-
-.go-back {
-  font-size: 14px;
-  color: #606266;
-}
-
-.go-back:hover {
-  color: #409EFF;
-}
 </style>

@@ -46,14 +46,14 @@ public class SysDictDataController {
     }
 
     @PostMapping(value = "/getDictDatas")
-    @Operation(summary = "获取字典数据（复）")
+    @Operation(summary = "获取字典数据列表")
     public R<PageVO<DictDatasVo>> getDictDatas(@RequestBody DictDatasRequest request) {
         PageVO<DictDatasVo> pageVo = sysDictDataService.getDictDatas(request);
         return R.ok(pageVo);
     }
 
     @GetMapping
-    @Operation(summary = "获取字典数据（单）")
+    @Operation(summary = "获取字典数据详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<DictDataVo> getDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         DictDataVo dictDataVo = sysDictDataService.getDictData(id);

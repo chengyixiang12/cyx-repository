@@ -13,7 +13,7 @@ import org.apache.ibatis.type.Alias;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "获取字典类型（复）请求参数")
+@Schema(description = "获取字典类型列表请求参数")
 @Alias(value = "GetDictTypesRequest")
 public class GetDictTypesRequest extends PageRequest {
 

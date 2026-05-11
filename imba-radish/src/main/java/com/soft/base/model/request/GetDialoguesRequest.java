@@ -11,7 +11,7 @@ import org.apache.ibatis.type.Alias;
  * @DateTime: 2025/5/30 14:53
  **/
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "获取历史对话（复）请求参数")
+@Schema(description = "获取历史对话列表请求参数")
 @Data
 @Alias(value = "GetDialoguesRequest")
 public class GetDialoguesRequest extends PageRequest {
