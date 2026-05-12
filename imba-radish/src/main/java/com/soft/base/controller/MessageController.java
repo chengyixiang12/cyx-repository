@@ -61,7 +61,7 @@ public class MessageController {
         if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + email))) {
             return R.fail("请勿重复发送验证码");
         }
-        emailProduce.send(email, getCaptchaEmailContent(String.valueOf(Math.abs(email.hashCode()))));
+        emailProduce.send(email, getCaptchaEmailContent(email));
         return R.ok("验证码已发送，请留意您的邮箱", null);
     }
 
@@ -75,12 +75,10 @@ public class MessageController {
             return R.fail("邮箱尚未注册，请前往注册");
         }
 
-        String username = sysUser.getUsername();
-
-        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + username))) {
+        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + email))) {
             return R.fail("请勿重复发送验证码");
         }
-        emailProduce.send(email, getCaptchaEmailContent(String.valueOf(Math.abs(email.hashCode()))));
+        emailProduce.send(email, getCaptchaEmailContent(email));
         return R.ok("验证码已发送，请留意您的邮箱", null);
     }
 

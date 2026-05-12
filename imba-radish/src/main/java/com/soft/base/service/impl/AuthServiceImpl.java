@@ -103,11 +103,11 @@ public class AuthServiceImpl implements AuthService {
                     SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
                     id = sysUser.getId();
                     request.setUsername(sysUser.getUsername());
-                    String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(sysUser.getEmail().hashCode()));
+                    String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail());
                     if (!request.getEmailCaptcha().equals(emailCaptCha)) {
                         throw new BadCredentialsException("验证码错误");
                     }
-                    redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(sysUser.getEmail().hashCode()));
+                    redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail());
                     break;
                 }
                 default: {

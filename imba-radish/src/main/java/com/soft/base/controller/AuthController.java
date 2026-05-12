@@ -89,7 +89,7 @@ public class AuthController {
                 return R.fail("图形验证码错误");
             }
         } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
-            Boolean existEmailCaptcha = redisTemplate.hasKey(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(request.getEmail().hashCode()));
+            Boolean existEmailCaptcha = redisTemplate.hasKey(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
             if (!existEmailCaptcha) {
                 return R.fail("邮箱验证码已过期");
             }
@@ -115,7 +115,7 @@ public class AuthController {
             return R.fail("邮箱已注册");
         }
 
-        String captchaCache = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + Math.abs(request.getEmail().hashCode()));
+        String captchaCache = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
         if (!request.getVerificationCode().equals(captchaCache)) {
             return R.fail("验证码错误，请检查您的邮箱是否更改或者验证码是否过期");
         }
