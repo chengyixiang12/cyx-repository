@@ -65,7 +65,7 @@
 
           <!-- 用户表格 -->
           <div class="table-wrapper">
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading" height="60vh">
+            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading" max-height="60vh">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
@@ -360,6 +360,7 @@ onMounted(() => {
 /* 左侧部门树容器 */
 .tree-container {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   border-radius: 6px;
@@ -385,7 +386,7 @@ onMounted(() => {
 
 /* 右侧用户容器 */
 .user-right-container {
-  height: 100%;
+  flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -396,7 +397,7 @@ onMounted(() => {
 .online-status {
   display: inline-block;
   width: 10px;
-  height: 10px;
+  height: 100%;
   border-radius: 50%;
   transition: all 0.3s;
   margin-right: 6px;

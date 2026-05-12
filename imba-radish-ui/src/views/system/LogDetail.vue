@@ -7,9 +7,9 @@
         <el-card class="detail-card">
             <div class="short-fields">
                 <el-row :gutter="20">
-                    <el-col v-for="item in displayData.filter(i => !i.isLong)" :key="item.label" :span="8" :xs="12" :sm="8">
+                    <el-col v-for="item in displayData.filter(i => !i.isLong)" :key="item.label" :span="12" :xs="24" :sm="12" :md="8">
                         <div class="field-item">
-                            <span class="field-label">{{ item.label }}：</span>
+                            <span class="field-label">{{ item.label }}</span>
                             <span class="field-value">{{ item.value }}</span>
                         </div>
                     </el-col>
@@ -86,7 +86,6 @@ onMounted(() => {
 <style scoped>
 .log-detail-container {
     height: 100%;
-    min-height: 100%;
     padding: 20px;
     background: #f8f9fa;
     overflow-y: auto;
@@ -113,18 +112,23 @@ onMounted(() => {
 .field-item {
     margin-bottom: 16px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .field-label {
     font-weight: 600;
-    color: #303133;
+    color: #909399;
     font-size: 14px;
-    margin-bottom: 4px;
+}
+
+.field-label::after {
+    content: ':';
 }
 
 .field-value {
-    color: #606266;
+    color: #303133;
     font-size: 14px;
     line-height: 1.5;
 }
