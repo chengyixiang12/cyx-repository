@@ -1,9 +1,8 @@
 <template>
-    <div class="page-container">
+    <el-container class="page-container">
         <!-- 顶部导航栏 -->
         <el-header class="page-header">
             <div class="header-left">
-                <!-- 添加菜单收缩按钮 -->
                 <el-icon class="collapse-icon" @click="toggleCollapse">
                     <Expand v-if="isCollapsed" />
                     <Fold v-else />
@@ -12,14 +11,12 @@
                 <img src="../assets/dashboard.png" class="logo" alt="Logo">
             </div>
             <div class="header-right">
-                <!-- 消息图标 -->
                 <div class="message-icon-wrapper">
                     <el-icon class="message-icon" @click="handleMessageClick">
                         <Bell />
                         <span v-if="unreadCount > 0" class="message-dot"></span>
                     </el-icon>
                 </div>
-                <!-- 新增带提示的首页图标 -->
                 <el-tooltip content="首页" placement="bottom" effect="light">
                     <el-icon class="home-icon" @click="goHome">
                         <HomeFilled />
@@ -48,7 +45,8 @@
             </div>
         </el-header>
 
-        <div class="page-body">
+        <!-- 主体内容区 -->
+        <el-container class="page-body">
             <!-- 左侧菜单栏 -->
             <el-aside :width="isCollapsed ? '64px' : '160px'" class="main-left">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
@@ -86,7 +84,7 @@
                     @close-other="closeOtherTabs" @close-all="closeAllTabs" />
                 <div class="router-view-wrapper">
                     <router-view v-slot="{ Component }">
-                        <div v-if="Component">
+                        <div v-if="Component" class="router-view">
                             <transition name="fade">
                                 <component :is="Component" />
                             </transition>
@@ -94,8 +92,15 @@
                     </router-view>
                 </div>
             </el-main>
-        </div>
-    </div>
+        </el-container>
+
+        <!-- 底部页脚 -->
+        <el-footer class="page-footer">
+            <div class="footer-content">
+                <span>© 2024 萝卜系统 - 后台管理系统</span>
+            </div>
+        </el-footer>
+    </el-container>
 </template>
 
 <script lang="ts" setup>
@@ -298,13 +303,11 @@ onMounted(() => {
 <style scoped>
 .page-container {
     height: 100vh;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
 }
 
 .page-header {
-    height: 8vh;
+    height: 64px;
     background: #b3b9bf;
     color: white;
     display: flex;
@@ -316,22 +319,18 @@ onMounted(() => {
 }
 
 .page-body {
-    height: 92vh;
     flex: 1;
-    display: flex;
-    flex-direction: row;
-    margin: 5px 0 5px 5px;
+    /* margin: 5px 0 5px 5px; */
     min-height: 0;
 }
 
 .main-left {
     background: #b3b9bf;
-    border-radius: 4px;
+    /* border-radius: 4px; */
     margin-right: 5px;
-    margin-top: 4px;
+    /* margin-top: 4px; */
     overflow: hidden;
     overflow-y: auto;
-    flex-shrink: 0;
 }
 
 .main-right {
@@ -349,6 +348,28 @@ onMounted(() => {
     padding: 5px;
     overflow: hidden;
     min-height: 0;
+}
+
+.router-view {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.page-footer {
+    height: 40px;
+    background: #b3b9bf;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+    font-size: 12px;
+    text-align: center;
 }
 
 :deep(.el-tabs__header) {

@@ -65,7 +65,7 @@
 
           <!-- 用户表格 -->
           <div class="table-wrapper">
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading" max-height="60vh">
+            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 350px)">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}

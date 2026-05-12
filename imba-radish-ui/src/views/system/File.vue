@@ -24,7 +24,7 @@
 
     <!-- 文件表格 -->
     <div class="table-wrapper">
-      <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading" height="60vh">
+      <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 350px)">
         <el-table-column type="selection" min-width="20" align="center" />
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">

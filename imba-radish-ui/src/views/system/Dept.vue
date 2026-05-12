@@ -34,7 +34,7 @@
     <!-- 部门表格 -->
     <div class="table-wrapper">
       <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading" highlight-current-row
-        @selection-change="handleSelectionChange" height="60vh">
+        @selection-change="handleSelectionChange" height="calc(100vh - 350px)">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="序号" min-width="60" align="center" type="index" />
         <el-table-column prop="name" label="部门名称" show-overflow-tooltip min-width="150" align="center" />

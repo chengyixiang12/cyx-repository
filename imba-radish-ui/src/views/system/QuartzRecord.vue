@@ -31,7 +31,7 @@
 
         <!-- 数据列表区域 -->
         <div class="table-wrapper">
-            <el-table v-loading="loading" :data="tableData" border size="small" style="width: 100%" height="60vh">
+            <el-table v-loading="loading" :data="tableData" border size="small" style="width: 100%" height="calc(100vh - 350px)">
                 <el-table-column type="index" label="序号" min-width="50" align="center" />
                 <el-table-column prop="jobName" label="任务名称" min-width="120" show-overflow-tooltip />
                 <el-table-column prop="jobType" label="任务类型" min-width="120" />

@@ -41,14 +41,16 @@ body {
   background: transparent;
 }
 
-* {
+/* * {
   scrollbar-width: thin;
   scrollbar-color: #c1c1c1 #f0f0f0;
-}
+} */
 
 .container {
+  height: calc(100vh - 170px);
   flex: 1;
   min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -101,6 +103,7 @@ body {
   min-height: 0;
   border-radius: 6px;
   margin: 0 5px 0 5px;
+  overflow: hidden;
 }
 
 .action-buttons-container {
@@ -116,5 +119,5 @@ body {
   display: flex;
   justify-content: flex-end;
   flex-shrink: 0;
-  z-index: 10;
+  margin-top: auto;
 }

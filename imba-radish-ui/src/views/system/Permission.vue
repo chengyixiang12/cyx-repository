@@ -41,7 +41,7 @@
 
     <!-- 权限表格 -->
     <div class="table-wrapper">
-      <el-table :data="permissionList" border size="small" style="width: 100%" v-loading="loading" height="60vh">
+      <el-table :data="permissionList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 350px)">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}

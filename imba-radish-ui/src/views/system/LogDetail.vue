@@ -85,7 +85,7 @@ onMounted(() => {
 
 <style scoped>
 .log-detail-container {
-    height: 100%;
+    height: calc(100vh - 170px);
     padding: 20px;
     background: #f8f9fa;
     overflow-y: auto;
