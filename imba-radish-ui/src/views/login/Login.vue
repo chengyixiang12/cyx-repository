@@ -84,7 +84,7 @@ import { ref, computed, onMounted } from 'vue';
 import { FormInstance, FormRules } from 'element-plus';
 import { Star } from '@element-plus/icons-vue';
 import { getGraphicCaptcha, login, sendCaptchaApi } from '@/api/login';
-import { getPublicKey } from '@/api/auth';
+import { getPublicKeyApi } from '@/api/auth';
 import { RSAUtil } from '@/utils/rsa';
 import { showMessage } from '@/utils/message';
 import router from '@/router/routers';
@@ -177,7 +177,7 @@ const handleLogin = async () => {
     };
 
     if (currentLoginType.value === 'password') {
-      const publicKey = await getPublicKey(0);
+      const publicKey = await getPublicKeyApi();
       loginParam.username = loginForm.value.username;
       loginParam.password = RSAUtil.encrypt(loginForm.value.password, publicKey);
       loginParam.graphicsCaptcha = loginForm.value.graphicsCaptcha;
