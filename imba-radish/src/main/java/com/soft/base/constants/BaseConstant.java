@@ -234,4 +234,15 @@ public class BaseConstant {
          */
         public static final String LOGIN_PASSWORD_ENCRYPT = "0";
     }
+
+    /**
+     * 监控常量
+     */
+    public static class Actuator {
+
+        /**
+         * 使用率趋势最大点数
+         */
+        public static final Integer MAX_POINTS = 20;
+    }
 }

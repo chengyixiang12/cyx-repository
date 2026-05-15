@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysActuator;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soft.base.model.request.ListActuatorPageRequest;
+import com.soft.base.model.vo.GetLatestActuatorMetricVO;
 import com.soft.base.model.vo.ListActuatorVO;
+import com.soft.base.model.vo.ListUsageTrendVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
@@ -23,6 +25,14 @@ public interface SysActuatorMapper extends BaseMapper<SysActuator> {
                                       @Param("endTime") LocalDateTime endTime);
 
     Page<ListActuatorVO> listActuatorPage(IPage<ListActuatorVO> page, @Param("request") ListActuatorPageRequest request);
+
+    GetLatestActuatorMetricVO getLatestActuatorMetric();
+
+    List<ListUsageTrendVO> listCpuTrend(@Param("startTime") LocalDateTime startTime,
+                                        @Param("endTime") LocalDateTime endTime);
+
+    List<ListUsageTrendVO> listMemeryTrend(@Param("startTime") LocalDateTime startTime,
+                                           @Param("endTime") LocalDateTime endTime);
 }
 
 

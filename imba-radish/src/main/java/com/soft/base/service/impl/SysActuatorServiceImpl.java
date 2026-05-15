@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysActuator;
 import com.soft.base.mapper.SysActuatorMapper;
 import com.soft.base.model.request.ListActuatorPageRequest;
+import com.soft.base.model.vo.GetLatestActuatorMetricVO;
 import com.soft.base.model.vo.ListActuatorVO;
+import com.soft.base.model.vo.ListUsageTrendVO;
 import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysActuatorService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,21 @@ public class SysActuatorServiceImpl extends ServiceImpl<SysActuatorMapper, SysAc
         pageVO.setRecords(page.getRecords());
         pageVO.setTotal(page.getTotal());
         return pageVO;
+    }
+
+    @Override
+    public GetLatestActuatorMetricVO getLatestActuatorMetric() {
+        return sysActuatorMapper.getLatestActuatorMetric();
+    }
+
+    @Override
+    public List<ListUsageTrendVO> listCpuTrend(LocalDateTime startTime, LocalDateTime endTime) {
+        return sysActuatorMapper.listCpuTrend(startTime, endTime);
+    }
+
+    @Override
+    public List<ListUsageTrendVO> listMemeryTrend(LocalDateTime startTime, LocalDateTime endTime) {
+        return sysActuatorMapper.listMemeryTrend(startTime, endTime);
     }
 }
 

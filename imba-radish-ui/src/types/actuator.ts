@@ -44,3 +44,18 @@ export interface ListActuatorPageRequest {
     startTime?: string;
     endTime?: string;
 }
+
+export interface GetLatestActuatorMetricVO {
+    cpuCount: number;
+    cpuUsage: number;
+    memeryUsed: number;
+    memeryMax: number;
+    uptime: number;
+    diskFree: number;
+    diskTotal: number;
+}
+
+export interface ListUsageTrendVO {
+    createTime: string;
+    usageRate: number;
+}
