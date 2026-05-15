@@ -34,7 +34,7 @@
                                     <User />
                                 </el-icon> 个人中心
                             </el-dropdown-item>
-                            <el-dropdown-item divided @click="logout">
+                            <el-dropdown-item divided @click="handleLogout">
                                 <el-icon>
                                     <SwitchButton />
                                 </el-icon> 退出登录
@@ -45,7 +45,7 @@
             </div>
         </el-header>
 
-        <!-- 主体内容区 -->
+        <!-- 主体内容区：左侧菜单 + 右侧内容（main + footer） -->
         <el-container class="page-body">
             <!-- 左侧菜单栏 -->
             <el-aside :width="isCollapsed ? '64px' : '160px'" class="main-left">
@@ -78,28 +78,31 @@
                 </el-menu>
             </el-aside>
 
-            <!-- 右侧内容区 -->
-            <el-main class="main-right">
-                <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
-                    @close-other="closeOtherTabs" @close-all="closeAllTabs" />
-                <div class="router-view-wrapper">
-                    <router-view v-slot="{ Component }">
-                        <div v-if="Component" class="router-view">
-                            <transition name="fade">
-                                <component :is="Component" />
-                            </transition>
-                        </div>
-                    </router-view>
-                </div>
-            </el-main>
-        </el-container>
+            <!-- 右侧内容区：main + footer 垂直排列 -->
+            <el-container class="main-right-wrapper">
+                <!-- 主内容区 -->
+                <el-main class="main-right">
+                    <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
+                        @close-other="closeOtherTabs" @close-all="closeAllTabs" />
+                    <div class="router-view-wrapper">
+                        <router-view v-slot="{ Component }">
+                            <div v-if="Component" class="router-view">
+                                <transition name="fade">
+                                    <component :is="Component" />
+                                </transition>
+                            </div>
+                        </router-view>
+                    </div>
+                </el-main>
 
-        <!-- 底部页脚 -->
-        <el-footer class="page-footer">
-            <div class="footer-content">
-                <span>© 2024 萝卜系统 - 后台管理系统</span>
-            </div>
-        </el-footer>
+                <!-- 底部页脚 -->
+                <el-footer class="page-footer">
+                    <div class="footer-content">
+                        <span>© 2024 萝卜系统 - 后台管理系统</span>
+                    </div>
+                </el-footer>
+            </el-container>
+        </el-container>
     </el-container>
 </template>
 
@@ -117,7 +120,7 @@ import {
 import { clearCache } from '../utils/clearCache'
 import { UserInfoVo } from '@/types/login'
 import { logouted } from '@/api/login'
-import { ElTooltip } from 'element-plus'
+import { ElTooltip, ElMessageBox } from 'element-plus'
 import type { MenuItem } from '@/types/menu'
 import { getMessageNumApi } from '@/api/message'
 import { getLeftMenusApi } from '@/api/dashboard'
@@ -224,6 +227,25 @@ const logout = () => {
     });
 }
 
+// 退出登录确认
+const handleLogout = async () => {
+    try {
+        await ElMessageBox.confirm(
+            '确定要退出登录吗？',
+            '提示',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                buttonSize: 'small'
+            }
+        )
+        logout()
+    } catch {
+        // 用户取消退出
+    }
+}
+
 // 首页
 const goHome = () => {
     router.push('/');
@@ -308,7 +330,7 @@ onMounted(() => {
 
 .page-header {
     height: 64px;
-    background: #b3b9bf;
+    background: #858ea1;
     color: white;
     display: flex;
     justify-content: space-between;
@@ -325,12 +347,18 @@ onMounted(() => {
 }
 
 .main-left {
-    background: #b3b9bf;
-    /* border-radius: 4px; */
-    margin-right: 5px;
-    /* margin-top: 4px; */
+    background: #dadbdd;
     overflow: hidden;
     overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+.main-right-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .main-right {
@@ -339,7 +367,6 @@ onMounted(() => {
     flex-direction: column;
     overflow: hidden;
     padding: 0;
-    margin-right: 5px;
     min-height: 0;
 }
 
@@ -358,8 +385,7 @@ onMounted(() => {
 
 .page-footer {
     height: 40px;
-    background: #b3b9bf;
-    color: #fff;
+    background: #dadbdd;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -368,7 +394,6 @@ onMounted(() => {
 }
 
 .footer-content {
-    font-size: 12px;
     text-align: center;
 }
 

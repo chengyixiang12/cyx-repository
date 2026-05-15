@@ -7,7 +7,7 @@
       </div>
       <div class="right-header">
         <el-button type="primary" @click="handleAddType" class="add-button">
-          新增类型
+          新增
         </el-button>
       </div>
     </div>

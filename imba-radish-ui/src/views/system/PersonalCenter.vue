@@ -111,7 +111,7 @@ import { updatePasswordApi, getUserApi, editSelfApi } from '@/api/user'
 import { GetUserVo } from '@/types/user'
 import { UserInfoVo } from '@/types/login'
 import { downloadFileApi, uploadFileApi } from '@/api/file'
-import { getPublicKey } from '@/api/auth'
+import { getPublicKeyApi } from '@/api/auth'
 import { RSAUtil } from '@/utils/rsa'
 import { calculateFileMd5 } from '@/utils/filemd5'
 import { showMessage } from '@/utils/message'
@@ -235,7 +235,7 @@ const updateProfile = async () => {
 // 修改密码
 const updatePassword = async () => {
   passwordFormRef.value?.validate()
-  const publicKey = await getPublicKey(0);
+  const publicKey = await getPublicKeyApi();
   await updatePasswordApi({
     originalPass: RSAUtil.encrypt(passwordForm.oldPassword, publicKey),
     targetPass: RSAUtil.encrypt(passwordForm.newPassword, publicKey)

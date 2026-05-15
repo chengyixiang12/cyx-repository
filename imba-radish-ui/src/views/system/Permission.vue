@@ -7,7 +7,7 @@
       </div>
       <div class="right-header">
         <el-button type="primary" @click="handleAdd" class="add-button">
-          新增权限
+          新增
         </el-button>
       </div>
     </div>

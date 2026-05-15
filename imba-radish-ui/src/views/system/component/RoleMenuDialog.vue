@@ -81,15 +81,4 @@ const handleSubmit = () => {
 
 <style scoped>
 
-.tree-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  max-height: 60vh;
-  padding-right: 10px;
-}
-
-.dialog-footer {
-  text-align: right;
-  padding: 10px 20px;
-}
 </style>

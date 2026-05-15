@@ -99,12 +99,17 @@
               <el-table-column label="操作" min-width="340" align="center">
                 <template #default="scope">
                   <div class="action-buttons-container">
-                    <el-button type="primary" size="small" @click="handleEdit(scope.row)" class="action-button">
+                    <el-button type="primary" @click="handleEdit(scope.row)" class="action-button">
                       编辑
                     </el-button>
-                    <el-button type="warning" size="small" @click="handleResetPassword(scope.row.id)" class="action-button">
-                      重置密码
-                    </el-button>
+                    <el-popconfirm title="确认重置该用户密码吗？" confirm-button-text="确认" cancel-button-text="取消"
+                      @confirm="handleResetPassword(scope.row.id)">
+                      <template #reference>
+                        <el-button type="warning" class="action-button">
+                          重置密码
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
                     <el-popconfirm title="确认强制该用户下线吗？" confirm-button-text="确认" cancel-button-text="取消"
                       @confirm="forceOffline(scope.row)">
                       <template #reference>
@@ -116,7 +121,7 @@
                     <el-popconfirm title="确认删除该用户吗？" confirm-button-text="确认" cancel-button-text="取消"
                       @confirm="handleDelete(scope.row.id)">
                       <template #reference>
-                        <el-button type="danger" size="small" class="action-button">
+                        <el-button type="danger" class="action-button">
                           删除
                         </el-button>
                       </template>
@@ -165,7 +170,7 @@ import type { DeptTreeVo } from '@/types/dept'
 import UserFormDialog from './component/UserFormDialog.vue'
 import { ElTooltip } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa'
-import { getPublicKey } from '@/api/auth'
+import { getPublicKeyApi } from '@/api/auth'
 import { getWebSocketInstance } from '@/utils/websocket'
 
 const loading = ref(false)
@@ -203,7 +208,7 @@ const shouldShowTooltip = (label: string) => {
 
 // 提交新增用户
 const handleAddSubmit = async (formData: SaveUserRequest) => {
-  const publicKey = await getPublicKey(0)
+  const publicKey = await getPublicKeyApi()
   formData.password = RSAUtil.encrypt(formData.password, publicKey);
   await addUser(formData)
   await loadUsers()
@@ -380,8 +385,13 @@ onMounted(() => {
 .tree-content {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
   padding: 10px;
+}
+
+.tree-node-label {
+  white-space: nowrap;
 }
 
 /* 右侧用户容器 */

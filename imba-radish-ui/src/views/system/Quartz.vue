@@ -6,7 +6,7 @@
         <span>定时任务</span>
       </div>
       <div class="right-header">
-        <el-button type="primary" @click="handleAdd">新增任务</el-button>
+        <el-button type="primary" @click="handleAdd">新增</el-button>
       </div>
     </div>
 

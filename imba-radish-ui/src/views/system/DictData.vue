@@ -10,7 +10,7 @@
       </div>
       <div class="right-header">
         <el-button type="primary" @click="handleAddData" class="add-button">
-          新增数据
+          新增
         </el-button>
       </div>
     </div>

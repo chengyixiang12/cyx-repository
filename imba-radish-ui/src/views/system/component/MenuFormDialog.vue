@@ -233,39 +233,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dialog-body-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  max-height: 60vh;
-  padding-right: 10px;
-}
 
-.scrollable-form {
-  padding: 25px;
-}
-
-.el-form-item {
-  margin-bottom: 20px;
-}
-
-:deep(.el-select-dropdown__item) {
-  height: 36px;
-  padding: 0 12px;
-}
-
-:deep(.el-select-group__title) {
-  padding-left: 12px;
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-}
-
-.icon-tips {
-  margin-top: 8px;
-  font-size: 10px;
-  color: var(--el-text-color-secondary);
-}
-
-.icon-tips p {
-  margin: 4px 0;
-}
 </style>
