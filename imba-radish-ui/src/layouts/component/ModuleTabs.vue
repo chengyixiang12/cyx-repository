@@ -9,7 +9,7 @@
         </div>
         <div class="tabs-right">
             <el-dropdown @command="handleDropdownCommand">
-                <el-button type="text" class="tabs-more-btn">
+                <el-button link class="tabs-more-btn">
                     <el-icon><MoreFilled /></el-icon>
                 </el-button>
                 <template #dropdown>

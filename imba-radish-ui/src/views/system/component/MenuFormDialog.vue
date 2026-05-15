@@ -30,7 +30,7 @@
         </el-form-item>
 
         <el-form-item label="排序" prop="orderNum">
-          <el-input v-model="formData.orderNum" type="text" @input="handleSortInput" placeholder="请填写序号" />
+          <el-input v-model="formData.orderNum" type="number" @input="handleSortInput" placeholder="请填写序号" />
         </el-form-item>
 
         <el-form-item label="图标" prop="icon">

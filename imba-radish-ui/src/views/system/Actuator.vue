@@ -116,28 +116,21 @@
       </el-card>
     </div>
 
-    <!-- 折线图监控 -->
-    <div class="charts-grid">
-      <!-- CPU使用率折线图 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>CPU使用率趋势</span>
-          </div>
-        </template>
-        <div ref="cpuChartRef" class="chart-container"></div>
-      </el-card>
-
-      <!-- 内存使用率折线图 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>内存使用率趋势</span>
-          </div>
-        </template>
-        <div ref="memoryChartRef" class="chart-container"></div>
-      </el-card>
-    </div>
+    <!-- 趋势图监控 -->
+    <el-card shadow="hover" :body-style="{ padding: '20px' }" class="trend-card">
+      <el-tabs v-model="activeTrendTab" type="border-card" @tab-change="handleTrendTabChange">
+        <el-tab-pane label="CPU使用率趋势" name="cpu">
+          <template #default>
+            <div ref="cpuChartRef" class="chart-container"></div>
+          </template>
+        </el-tab-pane>
+        <el-tab-pane label="内存使用率趋势" name="memory">
+          <template #default>
+            <div ref="memoryChartRef" class="chart-container"></div>
+          </template>
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
 
     <!-- 组件状态 -->
     <div class="status-card">
@@ -228,7 +221,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import * as echarts from 'echarts';
 import dayjs from 'dayjs';
 import {
@@ -261,6 +254,9 @@ const cpuChartRef = ref<HTMLElement | null>(null);
 const memoryChartRef = ref<HTMLElement | null>(null);
 let cpuChart: echarts.ECharts | null = null;
 let memoryChart: echarts.ECharts | null = null;
+const activeTrendTab = ref('cpu');
+const cpuChartData = ref<{ times: string[]; data: number[] }>({ times: [], data: [] });
+const memoryChartData = ref<{ times: string[]; data: number[] }>({ times: [], data: [] });
 
 // 时间范围选择（仅作用于图表）
 const startTime = ref<Date | null>(null);
@@ -320,15 +316,19 @@ const formatDisk = (bytes: number) => {
   return formatMemory(bytes);
 };
 
-// 初始化图表
-const initCharts = () => {
-  if (cpuChartRef.value) {
+// 初始化CPU图表（在onMounted的nextTick里调用）
+const initCpuChart = () => {
+  if (cpuChartRef.value && !cpuChart) {
     cpuChart = echarts.init(cpuChartRef.value);
-    updateCpuChart([], []);
+    updateCpuChart(cpuChartData.value.times, cpuChartData.value.data);
   }
-  if (memoryChartRef.value) {
+};
+
+// tab切换时按需初始化内存图表
+const handleTrendTabChange = (tabName: string) => {
+  if (tabName === 'memory' && !memoryChart && memoryChartRef.value) {
     memoryChart = echarts.init(memoryChartRef.value);
-    updateMemoryChart([], []);
+    updateMemoryChart(memoryChartData.value.times, memoryChartData.value.data);
   }
 };
 
@@ -382,10 +382,7 @@ const updateCpuChart = (times: string[], data: number[]) => {
         color: '#409EFF'
       },
       areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
-          { offset: 1, color: 'rgba(64, 158, 255, 0.1)' }
-        ])
+        color: 'rgba(64, 158, 255, 0.2)'
       },
       symbol: 'circle',
       symbolSize: 6
@@ -440,10 +437,7 @@ const updateMemoryChart = (times: string[], data: number[]) => {
         color: '#67C23A'
       },
       areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(103, 194, 58, 0.3)' },
-          { offset: 1, color: 'rgba(103, 194, 58, 0.1)' }
-        ])
+        color: 'rgba(103, 194, 58, 0.2)'
       },
       symbol: 'circle',
       symbolSize: 6
@@ -566,9 +560,13 @@ const loadChartData = async () => {
         memoryData.splice(0, startIndex);
       }
 
-      // 更新图表（直接传入服务端获取的数据）
-      updateCpuChart(times, cpuData);
-      updateMemoryChart(times, memoryData);
+      // 存储图表数据（供懒加载图表使用）
+      cpuChartData.value = { times: [...times], data: [...cpuData] };
+      memoryChartData.value = { times: [...times], data: [...memoryData] };
+
+      // 更新图表（仅更新已初始化的图表）
+      if (cpuChart) updateCpuChart(times, cpuData);
+      if (memoryChart) updateMemoryChart(times, memoryData);
     }
   } catch (error) {
     console.error('获取监控数据失败:', error);
@@ -651,8 +649,11 @@ const refreshData = async () => {
 
 // 窗口大小变化时调整图表
 const handleResize = () => {
-  cpuChart?.resize();
-  memoryChart?.resize();
+  if (activeTrendTab.value === 'cpu') {
+    cpuChart?.resize();
+  } else {
+    memoryChart?.resize();
+  }
 };
 
 
@@ -723,18 +724,12 @@ const handleSizeChange = (size: number) => {
   loadTableData();
 };
 
-onMounted(() => {
-  // 设置默认时间范围
+onMounted(async () => {
   setDefaultTimeRange();
-  // 先初始化图表，确保图表实例存在
-  setTimeout(() => {
-    initCharts();
-    // 图表初始化完成后再加载数据
-    refreshData();
-    // 加载表格数据
-    loadTableData();
-  }, 100);
-  // 监听窗口大小变化
+  await nextTick();
+  initCpuChart();
+  refreshData();
+  loadTableData();
   window.addEventListener('resize', handleResize);
 });
 
@@ -776,11 +771,13 @@ h2 {
   margin: 0 10px;
 }
 
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 10px;
+.trend-card {
   margin: 10px;
+  flex-shrink: 0;
+}
+
+.trend-card :deep(.el-tabs__content) {
+  padding: 0;
 }
 
 .card-header {

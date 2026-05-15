@@ -28,7 +28,7 @@
                 </el-form-item>
 
                 <el-form-item label="排序" prop="sortOrder">
-                    <el-input v-model="formData.sortOrder" type="text" @input="handleSortInput" placeholder="请输入排序值（数字越小越靠前）" />
+                    <el-input v-model="formData.sortOrder" type="number" @input="handleSortInput" placeholder="请输入排序值（数字越小越靠前）" />
                 </el-form-item>
 
                 <el-form-item label="备注" prop="remark">
