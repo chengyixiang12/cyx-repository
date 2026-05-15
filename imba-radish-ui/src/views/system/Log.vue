@@ -34,7 +34,7 @@
 
         <!-- 日志表格 -->
         <div class="table-wrapper">
-            <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 350px)">
+            <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 325px)">
                 <el-table-column label="序号" min-width="50" align="center">
                     <template #default="scope">
                         {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}

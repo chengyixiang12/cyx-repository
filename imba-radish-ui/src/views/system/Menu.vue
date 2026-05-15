@@ -34,7 +34,7 @@
     <!-- 菜单表格 - 树形数据与懒加载 -->
     <div class="table-wrapper">
       <el-table :data="menuList" border size="small" style="width: 100%" v-loading="loading" lazy
-        :load="loadChildMenus" :tree-props="{ children: 'children', hasChildren: 'hasChild' }" row-key="id" height="calc(100vh - 350px)">
+        :load="loadChildMenus" :tree-props="{ children: 'children', hasChildren: 'hasChild' }" row-key="id" height="calc(100vh - 325px)">
         <el-table-column prop="name" align="center" label="菜单名称" show-overflow-tooltip min-width="180" />
         <el-table-column label="菜单图标" min-width="70" align="center">
           <template #default="scope">
