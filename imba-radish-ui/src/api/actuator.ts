@@ -44,7 +44,7 @@ export async function listCpuTrendApi(startTime: string, endTime: string): Promi
  * @param startTime 开始时间
  * @param endTime 结束时间
  */
-export async function listMemeryTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
-    const res = await get<ListUsageTrendVO[]>(`/actuator/listMemeryTrend`, { params: { startTime, endTime }, flag: true });
+export async function listMemoryTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
+    const res = await get<ListUsageTrendVO[]>(`/actuator/listMemoryTrend`, { params: { startTime, endTime }, flag: true });
     return res.data;
 }

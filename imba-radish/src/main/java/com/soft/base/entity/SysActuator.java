@@ -29,14 +29,92 @@ public class SysActuator extends BaseEntity {
     /**
      * 内存使用量
      */
-    @TableField(value = "memery_used")
-    private Long memeryUsed;
+    @TableField(value = "memory_used")
+    private Long memoryUsed;
 
     /**
      * 最大内存容量
      */
-    @TableField(value = "memery_max")
-    private Long memeryMax;
+    @TableField(value = "memory_max")
+    private Long memoryMax;
+
+    /**
+     * 堆内存最大容量
+     */
+    @TableField(value = "memory_heap_max")
+    private Long memoryHeapMax;
+
+    /**
+     * 堆内存使用量
+     */
+    @TableField(value = "memory_heap_used")
+    private Long memoryHeapUsed;
+
+    /**
+     * 非堆内存最大容量
+     */
+    @TableField(value = "memory_noheap_max")
+    private Long memoryNoheapMax;
+
+    /**
+     * 非堆内存使用量
+     */
+    @TableField(value = "memory_noheap_used")
+    private Long memoryNoheapUsed;
+
+    /**
+     * G1的eden区内存使用量
+     */
+    @TableField(value = "memory_g1_eden_used")
+    private Long memoryG1EdenUsed;
+
+    /**
+     * G1的survivor区内存使用量
+     */
+    @TableField(value = "memory_g1_survivor_used")
+    private Long memoryG1SurvivorUsed;
+
+    /**
+     * G1的老年代内存使用量
+     */
+    @TableField(value = "memory_g1_old_used")
+    private Long memoryG1OldUsed;
+
+    /**
+     * G1的老年代最大内存容量
+     */
+    @TableField(value = "memory_g1_old_max")
+    private Long memoryG1OldMax;
+
+    /**
+     * 代码缓存最大内存容量
+     */
+    @TableField(value = "memory_code_cache_max")
+    private Long memoryCodeCacheMax;
+
+    /**
+     * 代码缓存内存使用量
+     */
+    @TableField(value = "memory_code_cache_used")
+    private Long memoryCodeCacheUsed;
+
+    /**
+     * 元空间内存使用量
+     */
+    @TableField(value = "memory_metaspace_used")
+    private Long memoryMetaspaceUsed;
+
+    /**
+     * 压缩类空间内存使用容量
+     */
+    @TableField(value = "memory_compress_class_space_used")
+    private Long memoryCompressClassSpaceUsed;
+
+    /**
+     * 压缩类空间最大内存容量
+     */
+    @TableField(value = "memory_compress_class_space_max")
+    private Long memoryCompressClassSpaceMax;
 
     /**
      * 系统运行时长

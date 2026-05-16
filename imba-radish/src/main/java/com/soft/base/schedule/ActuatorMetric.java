@@ -32,35 +32,78 @@ public class ActuatorMetric {
     @Scheduled(cron = "0 */1 * * * *")
     public void run() {
         SysActuator sysActuator = new SysActuator();
-        sysActuator.setCreateTime(LocalDateTime.now());  // 设置创建时间
 
         // 1. system.cpu.usage - CPU使用率（0-1之间的浮点值）
         Double cpuUsage = getGaugeValue("system.cpu.usage");
-        sysActuator.setCpuUsage(cpuUsage);
-
         // 2. system.cpu.count - CPU逻辑核心数
         Double cpuCount = getGaugeValue("system.cpu.count");
-        sysActuator.setCpuCount(cpuCount != null ? cpuCount.intValue() : null);
-
-        // 3. jvm.memory.max - JVM堆最大内存（字节）
-        Double jvmMemoryMax = getGaugeValue("jvm.memory.max");
-        sysActuator.setMemeryMax(jvmMemoryMax != null ? jvmMemoryMax.longValue() : null);
-
-        // 4. jvm.memory.used - JVM堆已使用内存（字节）
-        Double jvmMemoryUsed = getGaugeValue("jvm.memory.used");
-        sysActuator.setMemeryUsed(jvmMemoryUsed != null ? jvmMemoryUsed.longValue() : null);
-
+        // 3. jvm.memory.max - 堆最大内存（字节）
+        Double memoryHeapMax = getGaugeValue("jvm.memory.max", Tags.of("area", "heap"));
+        // 4. jvm.memory.used - 堆已使用内存（字节）
+        Double memoryHeapUsed = getGaugeValue("jvm.memory.used", Tags.of("area", "heap"));
         // 5. disk.free - 磁盘可用空间（字节）
         Double diskFree = getGaugeValue("disk.free");
-        sysActuator.setDiskFree(diskFree != null ? diskFree.longValue() : null);
-
         // 6. disk.total - 磁盘总空间（字节）
         Double diskTotal = getGaugeValue("disk.total");
-        sysActuator.setDiskTotal(diskTotal != null ? diskTotal.longValue() : null);
-
-        // 7. process.uptime - 进程运行时间（指标单位：秒）
+        // 7. process.uptime - 进程运行时间（秒）
         Double uptime = getGaugeValue("process.uptime");
+        // 8. jvm.memory.max - 非堆最大内存（字节）
+        Double memoryNoheapMax = getGaugeValue("jvm.memory.max", Tags.of("area", "nonheap"));
+        // 9. jvm.memory.used - 非堆已使用内存（字节）
+        Double memoryNoheapUsed = getGaugeValue("jvm.memory.used", Tags.of("area", "nonheap"));
+        // 11. jvm.memory.used - G1 Eden区已使用内存（字节）
+        Double memoryG1EdenUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "G1 Eden Space"));
+        // 13. jvm.memory.used - G1 Survivor区已使用内存（字节）
+        Double memoryG1SurvivorUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "G1 Survivor Space"));
+        // 14. jvm.memory.max - G1老年代最大内存（字节）
+        Double memoryG1OldMax = getGaugeValue("jvm.memory.max", Tags.of("id", "G1 Old Gen"));
+        // 15. jvm.memory.used - G1老年代已使用内存（字节）
+        Double memoryG1OldUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "G1 Old Gen"));
+        // 16. jvm.memory.max - CodeCache最大内存（字节）
+        Double memoryCodeCacheMax = getGaugeValue("jvm.memory.max", Tags.of("id", "CodeCache"));
+        // 17. jvm.memory.used - CodeCache已使用内存（字节）
+        Double memoryCodeCacheUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "CodeCache"));
+        // 19. jvm.memory.used - Metaspace已使用内存（字节）
+        Double memoryMetaspaceUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "Metaspace"));
+        // 20. jvm.memory.max - Compressed Class Space最大内存（字节）
+        Double memoryCompressClassSpaceMax = getGaugeValue("jvm.memory.max", Tags.of("id", "Compressed Class Space"));
+        // 21. jvm.memory.used - Compressed Class Space已使用内存（字节）
+        Double memoryCompressClassSpaceUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "Compressed Class Space"));
+
+        sysActuator.setCreateTime(LocalDateTime.now());
+        sysActuator.setCpuUsage(cpuUsage);
+        sysActuator.setCpuCount(cpuCount != null ? cpuCount.intValue() : null);
+        sysActuator.setMemoryHeapMax(memoryHeapMax != null ? memoryHeapMax.longValue() : null);
+        sysActuator.setMemoryHeapUsed(memoryHeapUsed != null ? memoryHeapUsed.longValue() : null);
+        sysActuator.setMemoryNoheapMax(memoryNoheapMax != null ? memoryNoheapMax.longValue() : null);
+        sysActuator.setMemoryNoheapUsed(memoryNoheapUsed != null ? memoryNoheapUsed.longValue() : null);
+        sysActuator.setMemoryG1EdenUsed(memoryG1EdenUsed != null ? memoryG1EdenUsed.longValue() : null);
+        sysActuator.setMemoryG1SurvivorUsed(memoryG1SurvivorUsed != null ? memoryG1SurvivorUsed.longValue() : null);
+        sysActuator.setMemoryG1OldMax(memoryG1OldMax != null ? memoryG1OldMax.longValue() : null);
+        sysActuator.setMemoryG1OldUsed(memoryG1OldUsed != null ? memoryG1OldUsed.longValue() : null);
+        sysActuator.setMemoryCodeCacheMax(memoryCodeCacheMax != null ? memoryCodeCacheMax.longValue() : null);
+        sysActuator.setMemoryCodeCacheUsed(memoryCodeCacheUsed != null ? memoryCodeCacheUsed.longValue() : null);
+        sysActuator.setMemoryMetaspaceUsed(memoryMetaspaceUsed != null ? memoryMetaspaceUsed.longValue() : null);
+        sysActuator.setMemoryCompressClassSpaceMax(memoryCompressClassSpaceMax != null ? memoryCompressClassSpaceMax.longValue() : null);
+        sysActuator.setMemoryCompressClassSpaceUsed(memoryCompressClassSpaceUsed != null ? memoryCompressClassSpaceUsed.longValue() : null);
+        sysActuator.setDiskFree(diskFree != null ? diskFree.longValue() : null);
+        sysActuator.setDiskTotal(diskTotal != null ? diskTotal.longValue() : null);
         sysActuator.setUptime(uptime != null ? uptime.longValue() : null);
+
+        // 总内存使用 = 堆已使用 + 非堆已使用
+        Long totalMemoryUsed = null;
+        if (memoryHeapUsed != null && memoryNoheapUsed != null) {
+            totalMemoryUsed = memoryHeapUsed.longValue() + memoryNoheapUsed.longValue();
+        }
+
+        // 总内存最大 = 堆最大 + 非堆最大
+        Long totalMemoryMax = null;
+        if (memoryHeapMax != null && memoryNoheapMax != null) {
+            totalMemoryMax = memoryHeapMax.longValue() + memoryNoheapMax.longValue();
+        }
+
+        sysActuator.setMemoryUsed(totalMemoryUsed);
+        sysActuator.setMemoryMax(totalMemoryMax);
 
         // 8. 整体健康状态
         HealthComponent health = healthEndpoint.health();

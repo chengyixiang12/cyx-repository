@@ -19,10 +19,10 @@ public class GetLatestActuatorMetricVO {
     private Double cpuUsage;
 
     @Schema(description = "jvm总内存使用率")
-    private Long memeryUsed;
+    private Long memoryUsed;
 
     @Schema(description = "jvm总内存大小")
-    private Long memeryMax;
+    private Long memoryMax;
 
     @Schema(description = "系统运行时间")
     private Long uptime;

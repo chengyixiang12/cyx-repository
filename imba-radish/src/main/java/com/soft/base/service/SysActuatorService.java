@@ -26,5 +26,5 @@ public interface SysActuatorService extends IService<SysActuator> {
 
     List<ListUsageTrendVO> listCpuTrend(LocalDateTime startTime, LocalDateTime endTime);
 
-    List<ListUsageTrendVO> listMemeryTrend(LocalDateTime startTime, LocalDateTime endTime);
+    List<ListUsageTrendVO> listMemoryTrend(LocalDateTime startTime, LocalDateTime endTime);
 }

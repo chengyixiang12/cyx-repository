@@ -31,7 +31,7 @@ public interface SysActuatorMapper extends BaseMapper<SysActuator> {
     List<ListUsageTrendVO> listCpuTrend(@Param("startTime") LocalDateTime startTime,
                                         @Param("endTime") LocalDateTime endTime);
 
-    List<ListUsageTrendVO> listMemeryTrend(@Param("startTime") LocalDateTime startTime,
+    List<ListUsageTrendVO> listMemoryTrend(@Param("startTime") LocalDateTime startTime,
                                            @Param("endTime") LocalDateTime endTime);
 }
 

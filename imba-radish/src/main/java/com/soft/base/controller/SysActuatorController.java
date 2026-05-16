@@ -68,16 +68,18 @@ public class SysActuatorController {
         return R.ok(downsample(sysActuatorService.listCpuTrend(startTime, endTime), BaseConstant.Actuator.MAX_POINTS));
     }
 
-    @GetMapping(value = "/listMemeryTrend")
+    @GetMapping(value = "/listMemoryTrend")
     @Operation(summary = "获取jvm内存趋势")
     @Parameters(value = {
             @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
     })
-    public R<List<ListUsageTrendVO>> listMemeryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+    public R<List<ListUsageTrendVO>> listMeoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
                                                       @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return R.ok(downsample(sysActuatorService.listMemeryTrend(startTime, endTime), BaseConstant.Actuator.MAX_POINTS));
+        return R.ok(downsample(sysActuatorService.listMemoryTrend(startTime, endTime), BaseConstant.Actuator.MAX_POINTS));
     }
+
+
 
     /**
      * 对时间序列数据应用 LTTB 降采样

@@ -24,9 +24,9 @@ public class ListActuatorVO {
 
     private Integer cpuCount;
 
-    private Long memeryUsed;
+    private Long memoryUsed;
 
-    private Long memeryMax;
+    private Long memoryMax;
 
     private Long uptime;
 

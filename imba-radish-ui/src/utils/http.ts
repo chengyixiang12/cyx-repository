@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import axios, { AxiosResponse, Method } from 'axios';
 import { ApiResponse, ApiError, RequestConfig } from '@/types/method';
 import router from '@/router/routers';
 import { clearCache } from '@/utils/clearCache';

@@ -8,8 +8,8 @@
         select t1.create_time,
                t1.cpu_usage,
                t1.cpu_count,
-               t1.memery_used,
-               t1.memery_max,
+               t1.memory_used,
+               t1.memory_max,
                t1.uptime,
                t1.disk_free,
                t1.disk_total,
@@ -44,8 +44,8 @@
     <select id="getLatestActuatorMetric" resultType="GetLatestActuatorMetricVO">
         select t1.cpu_usage,
                t1.cpu_count,
-               t1.memery_used,
-               t1.memery_max,
+               t1.memory_used,
+               t1.memory_max,
                t1.uptime,
                t1.disk_free,
                t1.disk_total
@@ -61,8 +61,8 @@
         </if>
         order by t1.create_time
     </select>
-    <select id="listMemeryTrend" resultType="ListUsageTrendVO">
-        select ROUND(t1.memery_used / t1.memery_max, 2) as usageRate,
+    <select id="listMemoryTrend" resultType="ListUsageTrendVO">
+        select ROUND(t1.memory_used / t1.memory_max, 2) as usageRate,
         t1.create_time
         from sys_actuator t1
         where t1.del_flag = '0'

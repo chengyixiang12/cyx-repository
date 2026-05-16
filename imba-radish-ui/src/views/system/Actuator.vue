@@ -68,11 +68,11 @@
           <div class="metric-info">
             <div class="info-item">
               <span class="label">已用内存：</span>
-              <span class="value">{{ formatMemory(latestActuatorMetric.memeryUsed) }}</span>
+              <span class="value">{{ formatMemory(latestActuatorMetric.memoryUsed) }}</span>
             </div>
             <div class="info-item">
               <span class="label">总内存：</span>
-              <span class="value">{{ formatMemory(latestActuatorMetric.memeryMax) }}</span>
+              <span class="value">{{ formatMemory(latestActuatorMetric.memoryMax) }}</span>
             </div>
             <div class="info-item">
               <span class="label">内存使用率：</span>
@@ -143,14 +143,7 @@
     <!-- 组件状态 -->
     <div class="status-card">
       <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>服务状态</span>
-            <el-tag :type="healthStatus === 'UP' ? 'success' : 'danger'">
-              {{ healthStatus === 'UP' ? '正常' : '异常' }}
-            </el-tag>
-          </div>
-        </template>
+        
         <div class="status-info">
           <div class="components-status">
             <h3>组件状态</h3>
@@ -159,6 +152,13 @@
                 <el-table-column prop="createTime" label="时间" min-width="180" align="center">
                   <template #default="scope">
                     {{ formatTableTime(scope.row.createTime) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="health" label="服务器" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.health === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.health === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
                   </template>
                 </el-table-column>
                 <el-table-column prop="healthDb" label="数据库" min-width="100" align="center">
@@ -225,7 +225,7 @@ import {
   listActuatorPageApi,
   getLatestActuatorMetricApi,
   listCpuTrendApi,
-  listMemeryTrendApi
+  listMemoryTrendApi
 } from '@/api/actuator';
 import { Refresh } from '@element-plus/icons-vue';
 import type { GetLatestActuatorMetricVO, ListActuatorVO } from '@/types/actuator';
@@ -233,13 +233,12 @@ import { showMessage } from '@/utils/message';
 
 // 状态变量
 const loading = ref(false);
-const healthStatus = ref('UP');
 const lastRefreshTime = ref('');
 const latestActuatorMetric = reactive<GetLatestActuatorMetricVO>({
   cpuCount: 0,
   cpuUsage: 0,
-  memeryUsed: 0,
-  memeryMax: 0,
+  memoryUsed: 0,
+  memoryMax: 0,
   uptime: 0,
   diskFree: 0,
   diskTotal: 0
@@ -286,8 +285,8 @@ const uptimeFormatted = computed(() => {
 });
 
 const memoryUsage = computed<number>(() => {
-  if (latestActuatorMetric.memeryMax === 0) return 0;
-  return Number(((latestActuatorMetric.memeryUsed / latestActuatorMetric.memeryMax) * 100).toFixed(2));
+  if (latestActuatorMetric.memoryMax === 0) return 0;
+  return Number(((latestActuatorMetric.memoryUsed / latestActuatorMetric.memoryMax) * 100).toFixed(2));
 });
 
 // 方法
@@ -334,7 +333,7 @@ const loadCpuTrend = async () => {
  */
 const loadMemoryTrend = async () => {
   if (!startTime.value || !endTime.value) return;
-  const memoryTrend = await listMemeryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
+  const memoryTrend = await listMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
   // 更新图表图表数据
   updateMemoryChart(memoryTrend.map(item => item.createTime), memoryTrend.map(item => Number((item.usageRate * 100).toFixed(2))));
 };
