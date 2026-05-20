@@ -11,8 +11,6 @@ import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 /**
  * @author cyx
  * @description: 采集系统监控指标（CPU、内存、磁盘、运行时间及各组件健康状态）
@@ -70,7 +68,6 @@ public class ActuatorMetric {
         // 21. jvm.memory.used - Compressed Class Space已使用内存（字节）
         Double memoryCompressClassSpaceUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "Compressed Class Space"));
 
-        sysActuator.setCreateTime(LocalDateTime.now());
         sysActuator.setCpuUsage(cpuUsage);
         sysActuator.setCpuCount(cpuCount != null ? cpuCount.intValue() : null);
         sysActuator.setMemoryHeapMax(memoryHeapMax != null ? memoryHeapMax.longValue() : null);

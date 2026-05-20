@@ -51,7 +51,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             }
             if (!token.startsWith(TokenConstant.TOKEN_PREFIX)) {
                 log.info("非法鉴权：{}", token);
-                ResponseUtil.writeMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
+                ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
                 return;
             }
             // 去除token前缀
@@ -59,7 +59,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
             if (StringUtils.isEmpty(username)) {
                 log.info("{}，鉴权过期", token);
-                ResponseUtil.writeMsg(response, HttpConstant.UNAUTHORIZED, R.fail(ResultEnum.AUTHENTICATION_FAIL.getCode(), ResultEnum.AUTHENTICATION_FAIL.getMessage()));
+                ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.AUTHENTICATION_FAIL.getCode(), ResultEnum.AUTHENTICATION_FAIL.getMessage()));
                 return;
             }
             UserDto user = (UserDto) this.userDetailsService.loadUserByUsername(username);

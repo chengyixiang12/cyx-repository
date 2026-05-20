@@ -4,11 +4,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysScheduleRecord;
+import com.soft.base.mapper.SysScheduleRecordMapper;
 import com.soft.base.model.request.GetQuartzRecordListRequest;
 import com.soft.base.model.vo.GetQuartzRecordListVo;
 import com.soft.base.model.vo.PageVO;
 import com.soft.base.service.SysScheduleRecordService;
-import com.soft.base.mapper.SysScheduleRecordMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

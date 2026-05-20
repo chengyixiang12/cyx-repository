@@ -2,9 +2,9 @@ package com.soft.base.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.base.entity.SysDialogueDetails;
+import com.soft.base.mapper.SysDialogueDetailsMapper;
 import com.soft.base.model.dto.GetRecentContentDto;
 import com.soft.base.service.SysDialogueDetailsService;
-import com.soft.base.mapper.SysDialogueDetailsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

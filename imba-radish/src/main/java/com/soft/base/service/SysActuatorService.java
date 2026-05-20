@@ -1,7 +1,7 @@
 package com.soft.base.service;
 
-import com.soft.base.entity.SysActuator;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.soft.base.entity.SysActuator;
 import com.soft.base.model.request.ListActuatorPageRequest;
 import com.soft.base.model.vo.GetLatestActuatorMetricVO;
 import com.soft.base.model.vo.ListActuatorVO;
@@ -27,4 +27,6 @@ public interface SysActuatorService extends IService<SysActuator> {
     List<ListUsageTrendVO> listCpuTrend(LocalDateTime startTime, LocalDateTime endTime);
 
     List<ListUsageTrendVO> listMemoryTrend(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<ListUsageTrendVO> listHeapMemoryTrend(LocalDateTime startTime, LocalDateTime endTime);
 }

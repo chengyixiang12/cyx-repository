@@ -1,6 +1,5 @@
 package com.soft.base.quartz.job;
 
-import com.soft.base.model.dto.FileDetailDto;
 import com.soft.base.service.SysFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;

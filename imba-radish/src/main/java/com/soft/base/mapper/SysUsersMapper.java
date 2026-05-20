@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysUser;
 import com.soft.base.model.dto.GetUsersDto;
-import com.soft.base.model.dto.UserEmailDto;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.UsersVo;
 import org.apache.ibatis.annotations.Param;

@@ -2,7 +2,10 @@ package com.soft.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.base.entity.SysUser;
-import com.soft.base.model.request.*;
+import com.soft.base.model.request.EditUserRequest;
+import com.soft.base.model.request.GetUsersRequest;
+import com.soft.base.model.request.ResetUsernameRequest;
+import com.soft.base.model.request.SaveUserRequest;
 import com.soft.base.model.vo.GetUserVo;
 import com.soft.base.model.vo.PageVO;
 import com.soft.base.model.vo.UsersVo;

@@ -1,6 +1,7 @@
 package com.soft.base.websocket.handle.message.concrete.filetransfer;
 
 import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.base.constants.BaseConstant;
 import com.soft.base.constants.RedisConstant;
@@ -14,14 +15,12 @@ import com.soft.base.websocket.receive.FileTransferOverRecParam;
 import com.soft.base.websocket.send.SendParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import cn.hutool.core.date.DateUtil;
 
 import java.io.*;
 import java.nio.file.Files;

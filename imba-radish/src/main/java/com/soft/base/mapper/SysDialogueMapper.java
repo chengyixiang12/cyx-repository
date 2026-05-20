@@ -1,8 +1,8 @@
 package com.soft.base.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysDialogue;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soft.base.model.vo.GetDialoguesVo;
 import org.apache.ibatis.annotations.Param;
 

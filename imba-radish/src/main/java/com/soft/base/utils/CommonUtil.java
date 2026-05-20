@@ -1,7 +1,6 @@
 package com.soft.base.utils;
 
 import com.soft.base.constants.BaseConstant;
-import com.soft.base.constants.RedisConstant;
 import com.soft.base.exception.GlobalException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

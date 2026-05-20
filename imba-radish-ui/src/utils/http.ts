@@ -71,8 +71,6 @@ function handleErrorCode(data: ApiResponse) {
   if (authErrorCodes.includes(data.code)) {
     clearCache();
     router.push('/login');
-  } else if (data.code === 5003) {
-    router.push('/403');
   }
   showCustomMessage(data.msg, data.code)
 }
@@ -210,13 +208,6 @@ export async function postBlob<Blob>(
     blob: response.data,
     filename
   }
-}
-
-// Actuator专用请求方法
-export async function getActuator<Metrics>(endpoint: string): Promise<Metrics> {
-  endpoint = `/actuator${endpoint}`
-  const response = await instance.get<Metrics>(endpoint)
-  return response.data;
 }
 
 /**

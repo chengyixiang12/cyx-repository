@@ -5,7 +5,6 @@ import com.soft.base.websocket.handle.CustomWebSocketHandlerDecorator;
 import com.soft.base.websocket.handle.WebSocketHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;

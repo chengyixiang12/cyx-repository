@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.base.entity.SysRole;
 import com.soft.base.model.dto.FixRolesDto;
-import com.soft.base.model.request.DeleteRequest;
 import com.soft.base.model.request.GetRolesRequest;
 import com.soft.base.model.request.SetMenusRequest;
 import com.soft.base.model.request.SetPermissionsRequest;

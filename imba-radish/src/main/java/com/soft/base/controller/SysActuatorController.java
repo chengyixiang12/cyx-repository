@@ -74,9 +74,20 @@ public class SysActuatorController {
             @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
     })
-    public R<List<ListUsageTrendVO>> listMeoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+    public R<List<ListUsageTrendVO>> listMemoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
                                                       @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
         return R.ok(downsample(sysActuatorService.listMemoryTrend(startTime, endTime), BaseConstant.Actuator.MAX_POINTS));
+    }
+
+    @GetMapping(value = "/listHeapMemoryTrend")
+    @Operation(summary = "获取堆内存趋势")
+    @Parameters(value = {
+            @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
+    })
+    public R<List<ListUsageTrendVO>> listHeapMemoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+                                                         @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return R.ok(downsample(sysActuatorService.listHeapMemoryTrend(startTime, endTime), BaseConstant.Actuator.MAX_POINTS));
     }
 
 

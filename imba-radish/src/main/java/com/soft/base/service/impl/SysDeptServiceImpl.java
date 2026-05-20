@@ -10,7 +10,10 @@ import com.soft.base.exception.GlobalException;
 import com.soft.base.mapper.SysDeptMapper;
 import com.soft.base.mapper.SysUsersMapper;
 import com.soft.base.model.dto.ExportDeptDto;
-import com.soft.base.model.request.*;
+import com.soft.base.model.request.EditDeptRequest;
+import com.soft.base.model.request.ExportDeptRequest;
+import com.soft.base.model.request.GetDeptsRequest;
+import com.soft.base.model.request.SaveDeptRequest;
 import com.soft.base.model.vo.DeptTreeVo;
 import com.soft.base.model.vo.DeptVo;
 import com.soft.base.model.vo.GetDeptsVo;
@@ -20,7 +23,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
 * @author cyq

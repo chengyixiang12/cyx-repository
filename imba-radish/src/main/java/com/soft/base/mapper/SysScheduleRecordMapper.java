@@ -1,10 +1,9 @@
 package com.soft.base.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.base.entity.SysScheduleRecord;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soft.base.model.vo.GetQuartzRecordListVo;
-import jakarta.validation.constraints.NotBlank;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;

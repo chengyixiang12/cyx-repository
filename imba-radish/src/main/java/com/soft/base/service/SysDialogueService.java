@@ -1,7 +1,7 @@
 package com.soft.base.service;
 
-import com.soft.base.entity.SysDialogue;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.soft.base.entity.SysDialogue;
 import com.soft.base.model.request.GetDialoguesRequest;
 import com.soft.base.model.request.RenameRequest;
 import com.soft.base.model.request.SaveDialogueRequest;
