@@ -61,7 +61,12 @@ public class SysActuatorServiceImpl extends ServiceImpl<SysActuatorMapper, SysAc
 
     @Override
     public List<ListUsageTrendVO> listHeapMemoryTrend(LocalDateTime startTime, LocalDateTime endTime) {
-        return List.of();
+        return sysActuatorMapper.listHeapMemoryTrend(startTime, endTime);
+    }
+
+    @Override
+    public List<ListUsageTrendVO> listMetaspaceMemoryTrend(LocalDateTime startTime, LocalDateTime endTime) {
+        return sysActuatorMapper.listMetaspaceMemoryTrend(startTime, endTime);
     }
 }
 

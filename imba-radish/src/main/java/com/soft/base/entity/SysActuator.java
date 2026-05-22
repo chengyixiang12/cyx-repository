@@ -81,12 +81,6 @@ public class SysActuator extends BaseEntity {
     private Long memoryG1OldUsed;
 
     /**
-     * G1的老年代最大内存容量
-     */
-    @TableField(value = "memory_g1_old_max")
-    private Long memoryG1OldMax;
-
-    /**
      * 代码缓存最大内存容量
      */
     @TableField(value = "memory_code_cache_max")
@@ -97,6 +91,12 @@ public class SysActuator extends BaseEntity {
      */
     @TableField(value = "memory_code_cache_used")
     private Long memoryCodeCacheUsed;
+
+    /**
+     * 元空间最大内存容量
+     */
+    @TableField(value = "memory_metaspace_max")
+    private Long memoryMetaspaceMax;
 
     /**
      * 元空间内存使用量

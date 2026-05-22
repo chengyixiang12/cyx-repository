@@ -90,6 +90,17 @@ public class SysActuatorController {
         return R.ok(downsample(sysActuatorService.listHeapMemoryTrend(startTime, endTime), BaseConstant.Actuator.MAX_POINTS));
     }
 
+    @GetMapping(value = "/listMetaspaceMemoryTrend")
+    @Operation(summary = "获取元空间内存趋势")
+    @Parameters(value = {
+            @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
+    })
+    public R<List<ListUsageTrendVO>> listMetaspaceMemoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+                                                         @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return R.ok(downsample(sysActuatorService.listMetaspaceMemoryTrend(startTime, endTime), BaseConstant.Actuator.MAX_POINTS));
+    }
+
 
 
     /**

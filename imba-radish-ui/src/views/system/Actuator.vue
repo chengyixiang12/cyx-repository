@@ -225,7 +225,9 @@ import {
   listActuatorPageApi,
   getLatestActuatorMetricApi,
   listCpuTrendApi,
-  listMemoryTrendApi
+  listMemoryTrendApi,
+  listHeapMemoryTrendApi,
+  listMetaspaceMemoryTrendApi
 } from '@/api/actuator';
 import { Refresh } from '@element-plus/icons-vue';
 import type { GetLatestActuatorMetricVO, ListActuatorVO } from '@/types/actuator';
@@ -308,6 +310,19 @@ const formatDisk = (bytes: number) => {
   return formatMemory(bytes);
 };
 
+// 格式化时间为时分秒（HH:mm:ss）
+const formatTimeShort = (timeStr: string): string => {
+  try {
+    const date = new Date(timeStr);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  } catch {
+    return timeStr;
+  }
+};
+
 // 加载最新指标数据（使用getLatestActuatorMetricApi）
 const loadLatestMetrics = async () => {
   try {
@@ -324,8 +339,8 @@ const loadLatestMetrics = async () => {
 const loadCpuTrend = async () => {
   if (!startTime.value || !endTime.value) return;
   const cpuTrend = await listCpuTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
-  // 更新图表图表数据
-  updateCpuChart(cpuTrend.map(item => item.createTime), cpuTrend.map(item => Number((item.usageRate * 100).toFixed(2))));
+  // 更新图表数据（使用时分秒格式）
+  updateCpuChart(cpuTrend.map(item => formatTimeShort(item.createTime)), cpuTrend.map(item => Number((item.usageRate * 100).toFixed(2))));
 };
 
 /**
@@ -334,8 +349,20 @@ const loadCpuTrend = async () => {
 const loadMemoryTrend = async () => {
   if (!startTime.value || !endTime.value) return;
   const memoryTrend = await listMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
-  // 更新图表图表数据
-  updateMemoryChart(memoryTrend.map(item => item.createTime), memoryTrend.map(item => Number((item.usageRate * 100).toFixed(2))));
+  
+  // 堆内存数据接口
+  const heapTrend = await listHeapMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
+  
+  // 元空间内存数据接口
+  const metaspaceTrend = await listMetaspaceMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
+  
+  // 更新图表数据（使用时分秒格式）
+  updateMemoryChart(
+    memoryTrend.map(item => formatTimeShort(item.createTime)),
+    memoryTrend.map(item => Number((item.usageRate * 100).toFixed(2))),
+    heapTrend.map(item => Number((item.usageRate * 100).toFixed(2))),
+    metaspaceTrend.map(item => Number((item.usageRate * 100).toFixed(2)))
+  );
 };
 
 // tab切换时卸载当前图表并加载目标图表
@@ -396,7 +423,7 @@ const updateCpuChart = async (times: string[], data: number[]) => {
       type: 'category',
       data: times,
       axisLabel: {
-        rotate: 45
+        interval: Math.floor(times.length / 6)
       }
     },
     yAxis: {
@@ -425,9 +452,6 @@ const updateCpuChart = async (times: string[], data: number[]) => {
       lineStyle: {
         color: '#409EFF'
       },
-      areaStyle: {
-        color: 'rgba(64, 158, 255, 0.2)'
-      },
       symbol: 'circle',
       symbolSize: 6
     }]
@@ -436,27 +460,83 @@ const updateCpuChart = async (times: string[], data: number[]) => {
   cpuChart.setOption(option);
 };
 
-// 更新内存图表
-const updateMemoryChart = async (times: string[], data: number[]) => {
+// 更新内存图表（支持内存使用率、堆内存和元空间内存三条折线）
+const updateMemoryChart = async (times: string[], memoryData: number[], heapData?: number[], metaspaceData?: number[]) => {
   if (!memoryChart) return;
+
+  const series = [
+    {
+      name: '内存使用率',
+      data: memoryData,
+      type: 'line',
+      smooth: true,
+      lineStyle: { color: '#67C23A' },
+      symbol: 'circle',
+      symbolSize: 6
+    }
+  ];
+
+  // 如果有堆内存数据，添加堆内存折线
+  if (heapData && heapData.length > 0) {
+    series.push({
+      name: '堆内存',
+      data: heapData,
+      type: 'line',
+      smooth: true,
+      lineStyle: { color: '#E6A23C' },
+      symbol: 'circle',
+      symbolSize: 6
+    });
+  }
+
+  // 如果有元空间内存数据，添加元空间内存折线
+  if (metaspaceData && metaspaceData.length > 0) {
+    series.push({
+      name: '元空间',
+      data: metaspaceData,
+      type: 'line',
+      smooth: true,
+      lineStyle: { color: '#F56C6C' },
+      symbol: 'circle',
+      symbolSize: 6
+    });
+  }
+
+  const hasHeapData = heapData && heapData.length > 0;
+  const hasMetaspaceData = metaspaceData && metaspaceData.length > 0;
+  
+  const legendData: string[] = ['内存使用率'];
+  if (hasHeapData) legendData.push('堆内存');
+  if (hasMetaspaceData) legendData.push('元空间');
 
   const option = {
     tooltip: {
       trigger: 'axis',
-      formatter: '{b}: {c}%'
+      formatter: (params: any) => {
+        let result = params[0].name + '<br/>';
+        params.forEach((item: any) => {
+          result += `${item.marker} ${item.seriesName}: ${item.value}%<br/>`;
+        });
+        return result;
+      }
+    },
+    legend: {
+      data: legendData,
+      top: 0,
+      right: 10
     },
     grid: {
       left: '3%',
       right: '4%',
       bottom: '15%',
-      top: '8%',
+      top: hasHeapData || hasMetaspaceData ? '12%' : '8%',
       containLabel: true
     },
     xAxis: {
       type: 'category',
       data: times,
       axisLabel: {
-        rotate: 45
+        interval: Math.floor(times.length / 6)
       }
     },
     yAxis: {
@@ -478,19 +558,7 @@ const updateMemoryChart = async (times: string[], data: number[]) => {
         }
       }
     },
-    series: [{
-      data: data,
-      type: 'line',
-      smooth: true,
-      lineStyle: {
-        color: '#67C23A'
-      },
-      areaStyle: {
-        color: 'rgba(103, 194, 58, 0.2)'
-      },
-      symbol: 'circle',
-      symbolSize: 6
-    }]
+    series
   };
 
   memoryChart.setOption(option);

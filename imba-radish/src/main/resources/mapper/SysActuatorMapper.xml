@@ -71,4 +71,24 @@
         </if>
         order by t1.create_time
     </select>
+    <select id="listHeapMemoryTrend" resultType="ListUsageTrendVO">
+        select ROUND(t1.memory_heap_used / t1.memory_heap_max, 2) as usageRate,
+        t1.create_time
+        from sys_actuator t1
+        where t1.del_flag = '0'
+        <if test="startTime != null and endTime != null">
+            and t1.create_time between #{startTime} and #{endTime}
+        </if>
+        order by t1.create_time
+    </select>
+    <select id="listMetaspaceMemoryTrend" resultType="ListUsageTrendVO">
+        select ROUND(t1.memory_metaspace_used / t1.memory_metaspace_max, 2) as usageRate,
+        t1.create_time
+        from sys_actuator t1
+        where t1.del_flag = '0'
+        <if test="startTime != null and endTime != null">
+            and t1.create_time between #{startTime} and #{endTime}
+        </if>
+        order by t1.create_time
+    </select>
 </mapper>

@@ -1,7 +1,7 @@
 spring:
   servlet:
     multipart:
-      location: /opt/docker/project/tmp
+      location: /opt/project/tmp
       max-file-size: 5MB
       max-request-size: 10MB
       file-size-threshold: 1MB
@@ -95,7 +95,7 @@ logging:
   config: classpath:logback-spring.xml
 # 临时文件存储路径
 tmp:
-  path: /opt/docker/project/tmp
+  path: /opt/project/tmp
 # 不鉴权url
 permit:
   urls:
@@ -122,7 +122,7 @@ rate-limit:
 # 大文件存储路径
 storage:
   big-file:
-    location: /opt/docker/project/tmp
+    location: /opt/project/tmp
 # 启用knife4j文档
 knife4j:
   enable: true

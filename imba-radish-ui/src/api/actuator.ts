@@ -48,3 +48,23 @@ export async function listMemoryTrendApi(startTime: string, endTime: string): Pr
     const res = await get<ListUsageTrendVO[]>(`/actuator/listMemoryTrend`, { params: { startTime, endTime }, flag: true });
     return res.data;
 }
+
+/**
+ * 获取堆内存趋势
+ * @param startTime 开始时间
+ * @param endTime 结束时间
+ */
+export async function listHeapMemoryTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
+    const res = await get<ListUsageTrendVO[]>(`/actuator/listHeapMemoryTrend`, { params: { startTime, endTime }, flag: true });
+    return res.data;
+}
+
+/**
+ * 获取元空间内存趋势
+ * @param startTime 开始时间
+ * @param endTime 结束时间
+ */
+export async function listMetaspaceMemoryTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
+    const res = await get<ListUsageTrendVO[]>(`/actuator/listMetaspaceMemoryTrend`, { params: { startTime, endTime }, flag: true });
+    return res.data;
+}
