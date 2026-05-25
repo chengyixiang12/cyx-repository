@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.soft.base.mapper.SysRoleMapper">
+<mapper namespace="com.soft.sys.mapper.SysRoleMapper">
 
-    <resultMap id="BaseResultMap" type="com.soft.base.entity.SysRole">
+    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysRole">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="sortOrder" column="sort_order" jdbcType="INTEGER"/>
             <result property="createBy" column="create_by" jdbcType="VARCHAR"/>

@@ -1,6 +1,6 @@
 package com.soft.module.controller;
 
-import com.soft.base.service.SysUsersService;
+import com.soft.sys.service.SysUsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

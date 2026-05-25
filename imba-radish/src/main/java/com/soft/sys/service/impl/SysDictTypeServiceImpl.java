@@ -1,0 +1,95 @@
+package com.soft.sys.service.impl;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.sys.entity.SysDictType;
+import com.soft.sys.mapper.SysDictTypeMapper;
+import com.soft.sys.model.request.EditDictTypeRequest;
+import com.soft.sys.model.request.GetDictTypesRequest;
+import com.soft.sys.model.request.SaveDictTypeRequest;
+import com.soft.sys.model.vo.DictTypeVo;
+import com.soft.sys.model.vo.DictTypesVo;
+import com.soft.sys.model.vo.PageVO;
+import com.soft.sys.service.SysDictTypeService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+* @author cyq
+* @description 针对表【sys_dict_type】的数据库操作Service实现
+* @createDate 2024-11-04 15:51:07
+*/
+@Service
+@CacheConfig(cacheNames = "radish:dict")
+public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType>
+    implements SysDictTypeService{
+
+    private final SysDictTypeMapper sysDictTypeMapper;
+
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public SysDictTypeServiceImpl(SysDictTypeMapper sysDictTypeMapper, RedisTemplate<String, Object> redisTemplate) {
+        this.sysDictTypeMapper = sysDictTypeMapper;
+        this.redisTemplate = redisTemplate;
+    }
+
+    @Override
+    public PageVO<DictTypesVo> getdictTypes(GetDictTypesRequest request) {
+        IPage<DictTypesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+        page = sysDictTypeMapper.getdictTypes(page, request);
+        PageVO<DictTypesVo> pageVo = new PageVO<>();
+        pageVo.setRecords(page.getRecords());
+        pageVo.setTotal(page.getTotal());
+        return pageVo;
+    }
+
+    @Override
+    public void saveDictType(SaveDictTypeRequest request) {
+        SysDictType sysDictType = new SysDictType();
+        BeanUtils.copyProperties(request, sysDictType);
+        sysDictTypeMapper.insert(sysDictType);
+    }
+
+    @Override
+    public void editDictType(EditDictTypeRequest request) {
+        SysDictType sysDictType = new SysDictType();
+        BeanUtils.copyProperties(request, sysDictType);
+        sysDictTypeMapper.updateById(sysDictType);
+    }
+
+    @Override
+    public DictTypeVo getDictType(Long id) {
+        return sysDictTypeMapper.getDictType(id);
+    }
+
+    @Override
+    public void deleteDictType(Long id) {
+        SysDictType sysDictType = sysDictTypeMapper.selectById(id);
+        sysDictTypeMapper.deleteById(id);
+//        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictType.getDictType());
+    }
+
+    @Override
+    public void deleteDictTypeBatch(List<Long> ids) {
+        sysDictTypeMapper.deleteByIds(ids);
+    }
+
+    @Override
+    public void enableDictType(Long id) {
+        sysDictTypeMapper.enableDictType(id);
+    }
+
+    @Override
+    public void forbiddenDictType(Long id) {
+        sysDictTypeMapper.forbiddenDictType(id);
+    }
+}
+
+
+
+

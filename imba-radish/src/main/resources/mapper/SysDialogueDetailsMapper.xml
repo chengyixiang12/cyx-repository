@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.soft.base.mapper.SysDialogueDetailsMapper">
+<mapper namespace="com.soft.sys.mapper.SysDialogueDetailsMapper">
 
-    <resultMap id="BaseResultMap" type="com.soft.base.entity.SysDialogueDetails">
+    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysDialogueDetails">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
             <result property="createBy" column="create_by" jdbcType="BIGINT"/>

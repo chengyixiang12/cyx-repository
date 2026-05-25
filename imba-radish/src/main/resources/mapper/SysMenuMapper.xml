@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.soft.base.mapper.SysMenuMapper">
+<mapper namespace="com.soft.sys.mapper.SysMenuMapper">
 
-    <resultMap id="BaseResultMap" type="com.soft.base.entity.SysMenu">
+    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysMenu">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
@@ -190,7 +190,7 @@
           AND sm.type IN ('0', '1')
         ORDER BY sm.sort
     </select>
-    <select id="pageMenuTree" parameterType="com.soft.base.model.request.PageMenuTreeRequest" resultType="com.soft.base.model.vo.PageMenuTreeVO">
+    <select id="pageMenuTree" parameterType="com.soft.sys.model.request.PageMenuTreeRequest" resultType="com.soft.sys.model.vo.PageMenuTreeVO">
         select
         t1.id,
         t1.name,

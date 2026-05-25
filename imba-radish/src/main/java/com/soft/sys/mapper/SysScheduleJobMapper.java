@@ -1,0 +1,33 @@
+package com.soft.sys.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.soft.sys.entity.SysScheduleJob;
+import com.soft.sys.model.request.GetQuartzTasksRequest;
+import com.soft.sys.model.vo.GetJobVo;
+import com.soft.sys.model.vo.GetQuartzTasksVo;
+import org.apache.ibatis.annotations.Param;
+
+/**
+* @author cyq
+* @description 针对表【sys_schedule_job(调度任务表)】的数据库操作Mapper
+* @createDate 2025-07-11 19:56:32
+* @Entity com.soft.base.entity.SysScheduleJob
+*/
+public interface SysScheduleJobMapper extends BaseMapper<SysScheduleJob> {
+
+    Page<GetQuartzTasksVo> getQuartzTasks(@Param("page") Page<GetQuartzTasksVo> page,
+                                          @Param("request") GetQuartzTasksRequest request);
+
+    boolean isStarted(@Param("id") Long id);
+
+    void startJob(@Param("id") Long id);
+
+    void stopJob(@Param("id") Long id);
+
+    GetJobVo getJob(@Param("id") Long id);
+}
+
+
+
+

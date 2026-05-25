@@ -100,7 +100,7 @@
     </appender>
 
     <!-- MDC 感知的日志收集器 -->
-    <appender name="MDC_COLLECTOR" class="com.soft.base.quartz.log.QuartzAppender">
+    <appender name="MDC_COLLECTOR" class="com.soft.sys.quartz.log.QuartzAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>${CONSOLE_PATTERN}</pattern>
         </layout>
