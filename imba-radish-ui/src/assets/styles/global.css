@@ -103,6 +103,10 @@ body {
   align-items: center;
 }
 
+.keyword-input {
+  width: 200px;
+}
+
 .search-form .el-form-item {
   margin-bottom: 0;
 }

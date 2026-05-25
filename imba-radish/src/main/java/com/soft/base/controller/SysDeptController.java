@@ -112,7 +112,7 @@ public class SysDeptController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysDeptService.removeById(id);
-        return R.ok();
+        return R.ok("删除成功");
     }
 
     @GetMapping

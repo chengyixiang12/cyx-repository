@@ -94,7 +94,7 @@ export async function mergeChunkApi(fileMd5: string, fileName: string, total: nu
 /**
  * 获取文件url
  * @param id 
- * @param isInline 
+ * @param isInline 是否缩略图展示
  * @returns 
  */
 export async function getFileUrlApi(id: string, isInline: string): Promise<string> {

@@ -2,7 +2,7 @@ spring:
   servlet:
     multipart:
       location: /opt/project/tmp
-      max-file-size: 5MB
+      max-file-size: 10MB
       max-request-size: 10MB
       file-size-threshold: 1MB
   datasource:

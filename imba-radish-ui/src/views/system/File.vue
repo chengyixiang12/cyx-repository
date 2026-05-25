@@ -6,6 +6,7 @@
         <span>文件管理</span>
       </div>
       <div class="right-header">
+        <FileUpload @upload-success="handleUploadSuccess" />
       </div>
     </div>
 
@@ -24,7 +25,8 @@
 
     <!-- 文件表格 -->
     <div class="table-wrapper">
-      <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 325px)">
+      <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading"
+        height="calc(100vh - 325px)">
         <el-table-column type="selection" min-width="20" align="center" />
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
@@ -75,9 +77,10 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
 import { FilesRequest, FilesVo } from '@/types/file'
-import { deleteFileApi, getFilesApi, downloadFileApi } from '@/api/file'
+import { deleteFileApi, getFilesApi, downloadFileApi, getFileUrlApi } from '@/api/file'
 import { download } from '@/utils/download'
 import { showMessage } from '@/utils/message'
+import FileUpload from '@/components/FileUpload.vue'
 
 const loading = ref(false)
 const total = ref(0)
@@ -103,11 +106,11 @@ const loadFiles = async () => {
 // 添加一个格式化文件大小的函数
 const formatFileSize = (size: number): string => {
   if (size === 0) return '0 B'
-  
+
   const units = ['B', 'KB', 'MB', 'GB', 'TB']
   const k = 1024
   const i = Math.floor(Math.log(size) / Math.log(k))
-  
+
   return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + units[i]
 }
 
@@ -140,8 +143,29 @@ const handleSizeChange = (val: number) => {
 // 下载文件
 const handleDownload = async (row: FilesVo) => {
   showMessage('正在下载，请等待', 'success');
-  const blob = await downloadFileApi(row.id);
-  download(blob, row.originalName);
+  
+  const MAX_SIZE = 20 * 1024 * 1024; // 20MB
+  
+  if (row.fileSize > MAX_SIZE) {
+    // 文件超过20MB，使用 URL 方式下载
+    const fileUrl = await getFileUrlApi(row.id, '0');
+    // 创建临时 a 标签下载
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = row.originalName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    // 小文件，使用原来的 blob 方式下载
+    const blob = await downloadFileApi(row.id);
+    download(blob, row.originalName);
+  }
+}
+
+// 处理上传成功
+const handleUploadSuccess = () => {
+  loadFiles()
 }
 
 onMounted(() => {
@@ -149,6 +173,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

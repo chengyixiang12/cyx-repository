@@ -1,5 +1,5 @@
 <template>
-    <div class="page-container">
+    <div class="container">
         <div style="margin-bottom: 5px;">
             <el-row :gutter="20" style="width: 100%;">
                 <el-col :span="24">
@@ -51,10 +51,10 @@
             </el-row>
         </div>
         <!-- 分页 -->
-          <div class="list-pagination">
+          <div class="pagination">
             <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
               :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handlePageChange" @size-change="handleSizeChange" size="default" />
+              @current-change="handlePageChange" @size-change="handleSizeChange" />
           </div>
     </div>
 
@@ -65,7 +65,7 @@
 import { ref, onMounted } from 'vue';
 import { MoreFilled } from '@element-plus/icons-vue';
 import { deleteDialogueApi, getDialogueHistoriesApi, renameApi } from '@/api/dialogueHistory'
-import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo, GetTitleVo, RenameRequest } from '@/types/dialogueHistory';
+import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo, RenameRequest } from '@/types/dialogueHistory';
 import AnswerFormDialog from './component/AnswerFormDialog.vue';
 
 const visibleCards = ref<GetDialogueHistoriesVo[]>([]);
@@ -124,13 +124,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.page-container {
-    padding: 10px;
-    background-color: #f5f7fa;
-}
 
 .card-container {
-    max-height: 62vh;
+    max-height: calc(100vh - 200px);
     overflow: auto;
 }
 
@@ -186,10 +182,5 @@ onMounted(() => {
 
 .load-more-trigger {
     height: 1px;
-}
-.list-pagination {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
 }
 </style>

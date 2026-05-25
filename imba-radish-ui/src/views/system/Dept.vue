@@ -167,7 +167,7 @@ const loadDepts = async () => {
 
 // 删除部门
 const handleDelete = async (id: string) => {
-  await deleteDeptApi(Number(id))
+  await deleteDeptApi(id)
   await loadDepts()
 }
 

@@ -123,6 +123,7 @@ public class SysScheduleJobController {
     }
 
     @DeleteMapping(value = "/deleteJob")
+    @Operation(summary = "删除job")
     public R<Object> deleteJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysScheduleJobService.deleteJob(id);
         return R.ok("删除成功");

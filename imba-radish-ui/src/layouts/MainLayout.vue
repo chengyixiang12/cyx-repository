@@ -86,11 +86,11 @@
                         @close-other="closeOtherTabs" @close-all="closeAllTabs" />
                     <div class="router-view-wrapper">
                         <router-view v-slot="{ Component }">
-                            <div v-if="Component" class="router-view">
-                                <transition name="fade">
-                                    <component :is="Component" />
-                                </transition>
-                            </div>
+                            <transition name="fade" mode="out-in">
+                                <div>
+                                    <component :is="Component" :key="Component" />
+                                </div>
+                            </transition>
                         </router-view>
                     </div>
                 </el-main>

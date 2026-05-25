@@ -15,10 +15,10 @@ export interface GetDeptsRequest {
 
 export interface GetDeptsVo {
     id: string;
-    code: number;
-    name: number;
-    parentCode: number;
-    parentName: number;
+    code: string;
+    name: string;
+    parentCode: string;
+    parentName: string;
     level: number;
 }
 

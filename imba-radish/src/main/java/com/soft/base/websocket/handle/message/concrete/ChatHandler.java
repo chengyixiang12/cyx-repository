@@ -15,6 +15,7 @@ import com.soft.base.websocket.receive.ChatRecParam;
 import com.soft.base.websocket.send.ChatSendParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -94,6 +95,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
 
         chatModel.stream(prompt).subscribe(item -> {
             String partialText = item.getResult().getOutput().getText();
+            if (partialText == null) return;
             chatSendParams.setAnswer(partialText);
             try {
                 session.sendMessage(new TextMessage(chatSendParams.toJsonString()));
