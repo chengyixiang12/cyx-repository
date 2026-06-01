@@ -22,119 +22,92 @@ import org.springframework.stereotype.Component;
 public class ActuatorMetric {
 
     private final MeterRegistry meterRegistry;
-
     private final SysActuatorService sysActuatorService;
-
     private final HealthEndpoint healthEndpoint;
 
     @Scheduled(cron = "0 */1 * * * *")
     public void run() {
         SysActuator sysActuator = new SysActuator();
 
-        // 1. system.cpu.usage - CPU使用率（0-1之间的浮点值）
+        Double test = getGaugeValue("jvm.memory.max", Tags.of("area", "heap"));
+
+        // ========== 1. 基础系统指标 ==========
         Double cpuUsage = getGaugeValue("system.cpu.usage");
-        // 2. system.cpu.count - CPU逻辑核心数
         Double cpuCount = getGaugeValue("system.cpu.count");
-        // 3. jvm.memory.max - 堆最大内存（字节）
-        Double memoryHeapMax = getGaugeValue("jvm.memory.max", Tags.of("area", "heap"));
-        // 4. jvm.memory.used - 堆已使用内存（字节）
-        Double memoryHeapUsed = getGaugeValue("jvm.memory.used", Tags.of("area", "heap"));
-        // 5. disk.free - 磁盘可用空间（字节）
-        Double diskFree = getGaugeValue("disk.free");
-        // 6. disk.total - 磁盘总空间（字节）
-        Double diskTotal = getGaugeValue("disk.total");
-        // 7. process.uptime - 进程运行时间（秒）
         Double uptime = getGaugeValue("process.uptime");
-        // 8. jvm.memory.used - Metaspace已使用内存（字节）
-        Double memoryMetaspaceUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "Metaspace"));
-        // 9. jvm.memory.used - G1 Eden区已使用内存（字节）
+
+        // ========== 2. 磁盘指标 ==========
+        Double diskFree = getGaugeValue("disk.free");
+        Double diskTotal = getGaugeValue("disk.total");
+
+        // ========== 3. 堆内存指标（G1收集器） ==========
+        Double memoryHeapMax = getGaugeValue("jvm.memory.max", Tags.of("area", "heap"));
+        
+        // G1各区域使用量
         Double memoryG1EdenUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "G1 Eden Space"));
-        // 10. jvm.memory.used - G1 Survivor区已使用内存（字节）
         Double memoryG1SurvivorUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "G1 Survivor Space"));
-        // 12. jvm.memory.used - G1老年代已使用内存（字节）
         Double memoryG1OldUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "G1 Old Gen"));
-        // 13. jvm.memory.max - CodeCache最大内存（字节）
-        Double memoryCodeCacheMax = getGaugeValue("jvm.memory.max", Tags.of("id", "CodeCache"));
-        // 14. jvm.memory.used - CodeCache已使用内存（字节）
-        Double memoryCodeCacheUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "CodeCache"));
-        // 15. jvm.memory.max - Metaspace最大内存（字节）
+        
+        // 堆内存使用量 = Eden + Survivor + Old
+        Double memoryHeapUsed = sumNonNull(memoryG1EdenUsed, memoryG1SurvivorUsed, memoryG1OldUsed);
+
+        // ========== 4. 非堆内存指标 ==========
+        Double memoryMetaspaceUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "Metaspace"));
         Double memoryMetaspaceMax = getGaugeValue("jvm.memory.max", Tags.of("id", "Metaspace"));
-        // 16. jvm.memory.max - Compressed Class Space最大内存（字节）
-        Double memoryCompressClassSpaceMax = getGaugeValue("jvm.memory.max", Tags.of("id", "Compressed Class Space"));
-        // 17. jvm.memory.used - Compressed Class Space已使用内存（字节）
+        
+        Double memoryCodeCacheUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "CodeCache"));
+        Double memoryCodeCacheMax = getGaugeValue("jvm.memory.max", Tags.of("id", "CodeCache"));
+        
         Double memoryCompressClassSpaceUsed = getGaugeValue("jvm.memory.used", Tags.of("id", "Compressed Class Space"));
+        Double memoryCompressClassSpaceMax = getGaugeValue("jvm.memory.max", Tags.of("id", "Compressed Class Space"));
 
-        sysActuator.setCpuUsage(cpuUsage);
-        sysActuator.setCpuCount(cpuCount != null ? cpuCount.intValue() : null);
-        sysActuator.setMemoryHeapMax(memoryHeapMax != null ? memoryHeapMax.longValue() : null);
-        sysActuator.setMemoryHeapUsed(memoryHeapUsed != null ? memoryHeapUsed.longValue() : null);
-        sysActuator.setMemoryG1EdenUsed(memoryG1EdenUsed != null ? memoryG1EdenUsed.longValue() : null);
-        sysActuator.setMemoryG1SurvivorUsed(memoryG1SurvivorUsed != null ? memoryG1SurvivorUsed.longValue() : null);
-        sysActuator.setMemoryG1OldUsed(memoryG1OldUsed != null ? memoryG1OldUsed.longValue() : null);
-        sysActuator.setMemoryCodeCacheMax(memoryCodeCacheMax != null ? memoryCodeCacheMax.longValue() : null);
-        sysActuator.setMemoryCodeCacheUsed(memoryCodeCacheUsed != null ? memoryCodeCacheUsed.longValue() : null);
-        sysActuator.setMemoryMetaspaceUsed(memoryMetaspaceUsed != null ? memoryMetaspaceUsed.longValue() : null);
-        sysActuator.setMemoryCompressClassSpaceMax(memoryCompressClassSpaceMax != null ? memoryCompressClassSpaceMax.longValue() : null);
-        sysActuator.setMemoryCompressClassSpaceUsed(memoryCompressClassSpaceUsed != null ? memoryCompressClassSpaceUsed.longValue() : null);
-        sysActuator.setDiskFree(diskFree != null ? diskFree.longValue() : null);
-        sysActuator.setDiskTotal(diskTotal != null ? diskTotal.longValue() : null);
-        sysActuator.setUptime(uptime != null ? uptime.longValue() : null);
-
-        // 非堆内存计算（非堆内存 = Metaspace + CodeCache）
+        // ========== 5. 计算聚合指标 ==========
         // 非堆内存最大 = Metaspace max + CodeCache max
-        Long calculatedNoheapMax = null;
-        if (memoryMetaspaceMax != null && memoryCodeCacheMax != null) {
-            calculatedNoheapMax = memoryMetaspaceMax.longValue() + memoryCodeCacheMax.longValue();
-        } else if (memoryMetaspaceMax != null) {
-            calculatedNoheapMax = memoryMetaspaceMax.longValue();
-        } else if (memoryCodeCacheMax != null) {
-            calculatedNoheapMax = memoryCodeCacheMax.longValue();
-        }
-
+        Long calculatedNoheapMax = sumNonNullToLong(memoryMetaspaceMax, memoryCodeCacheMax);
         // 非堆内存使用 = Metaspace used + CodeCache used
-        Long calculatedNoheapUsed = null;
-        if (memoryMetaspaceUsed != null && memoryCodeCacheUsed != null) {
-            calculatedNoheapUsed = memoryMetaspaceUsed.longValue() + memoryCodeCacheUsed.longValue();
-        } else if (memoryMetaspaceUsed != null) {
-            calculatedNoheapUsed = memoryMetaspaceUsed.longValue();
-        } else if (memoryCodeCacheUsed != null) {
-            calculatedNoheapUsed = memoryCodeCacheUsed.longValue();
-        }
-
+        Long calculatedNoheapUsed = sumNonNullToLong(memoryMetaspaceUsed, memoryCodeCacheUsed);
         // 总内存使用 = 堆已使用 + 非堆已使用
-        Long totalMemoryUsed = null;
-        if (memoryHeapUsed != null && calculatedNoheapUsed != null) {
-            totalMemoryUsed = memoryHeapUsed.longValue() + calculatedNoheapUsed;
-        } else if (memoryHeapUsed != null) {
-            totalMemoryUsed = memoryHeapUsed.longValue();
-        } else if (calculatedNoheapUsed != null) {
-            totalMemoryUsed = calculatedNoheapUsed;
-        }
-
+        Long totalMemoryUsed = sumNonNullToLong(memoryHeapUsed) + calculatedNoheapUsed;
         // 总内存最大 = 堆最大 + 非堆最大
-        Long totalMemoryMax = null;
-        if (memoryHeapMax != null && calculatedNoheapMax != null) {
-            totalMemoryMax = memoryHeapMax.longValue() + calculatedNoheapMax;
-        } else if (memoryHeapMax != null) {
-            totalMemoryMax = memoryHeapMax.longValue();
-        } else if (calculatedNoheapMax != null) {
-            totalMemoryMax = calculatedNoheapMax;
-        }
+        Long totalMemoryMax = sumNonNullToLong(memoryHeapMax) + calculatedNoheapMax;
 
+        // ========== 6. 设置实体属性 ==========
+        // CPU和运行时间
+        sysActuator.setCpuUsage(cpuUsage);
+        sysActuator.setCpuCount(toInt(cpuCount, 0));
+        sysActuator.setUptime(toLong(uptime, 0L));
+
+        // 磁盘
+        sysActuator.setDiskFree(toLong(diskFree, 0L));
+        sysActuator.setDiskTotal(toLong(diskTotal, 0L));
+
+        // 堆内存
+        sysActuator.setMemoryHeapMax(toLong(memoryHeapMax, 0L));
+        sysActuator.setMemoryHeapUsed(toLong(memoryHeapUsed, 0L));
+        sysActuator.setMemoryG1EdenUsed(toLong(memoryG1EdenUsed, 0L));
+        sysActuator.setMemoryG1SurvivorUsed(toLong(memoryG1SurvivorUsed, 0L));
+        sysActuator.setMemoryG1OldUsed(toLong(memoryG1OldUsed, 0L));
+
+        // 非堆内存
+        sysActuator.setMemoryMetaspaceUsed(toLong(memoryMetaspaceUsed, 0L));
+        sysActuator.setMemoryMetaspaceMax(toLong(memoryMetaspaceMax, 0L));
+        sysActuator.setMemoryCodeCacheUsed(toLong(memoryCodeCacheUsed, 0L));
+        sysActuator.setMemoryCodeCacheMax(toLong(memoryCodeCacheMax, 0L));
+        sysActuator.setMemoryCompressClassSpaceUsed(toLong(memoryCompressClassSpaceUsed, 0L));
+        sysActuator.setMemoryCompressClassSpaceMax(toLong(memoryCompressClassSpaceMax, 0L));
+
+        // 聚合内存指标
         sysActuator.setMemoryNoheapMax(calculatedNoheapMax);
         sysActuator.setMemoryNoheapUsed(calculatedNoheapUsed);
-        sysActuator.setMemoryMetaspaceMax(memoryMetaspaceMax != null ? memoryMetaspaceMax.longValue() : null);
         sysActuator.setMemoryUsed(totalMemoryUsed);
         sysActuator.setMemoryMax(totalMemoryMax);
 
-        // 8. 整体健康状态
+        // ========== 7. 健康状态 ==========
         HealthComponent health = healthEndpoint.health();
         sysActuator.setHealth(health.getStatus().getCode());
-
-        // 9. 各组件健康状态（使用 healthForPath 直接获取，更准确）
+        
         sysActuator.setHealthDb(getComponentStatus("db"));
         sysActuator.setHealthRedis(getComponentStatus("redis"));
-//        sysActuator.setHealthMail(getComponentStatus("mail"));
         sysActuator.setHealthRabbit(getComponentStatus("rabbit"));
         sysActuator.setHealthSsl(getComponentStatus("ssl"));
         sysActuator.setHealthDiskSpace(getComponentStatus("diskSpace"));
@@ -177,5 +150,47 @@ public class ActuatorMetric {
             log.error("获取指标 {} 失败", metricName, e);
         }
         return null;
+    }
+
+    /**
+     * 求和非空的Double值
+     */
+    private Double sumNonNull(Double... values) {
+        double sum = 0;
+        boolean hasNonNull = false;
+        for (Double value : values) {
+            if (value != null) {
+                sum += value;
+                hasNonNull = true;
+            }
+        }
+        return hasNonNull ? sum : null;
+    }
+
+    /**
+     * 求和非空的Double值并转换为Long
+     */
+    private Long sumNonNullToLong(Double... values) {
+        long sum = 0;
+        for (Double value : values) {
+            if (value != null) {
+                sum += value.longValue();
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * Double转Integer，空值返回默认值
+     */
+    private Integer toInt(Double value, int defaultValue) {
+        return value != null ? value.intValue() : defaultValue;
+    }
+
+    /**
+     * Double转Long，空值返回默认值
+     */
+    private Long toLong(Double value, Long defaultValue) {
+        return value != null ? value.longValue() : defaultValue;
     }
 }

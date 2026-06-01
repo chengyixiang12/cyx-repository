@@ -114,7 +114,7 @@
       <el-card shadow="hover" :body-style="{ padding: '20px' }">
         <template #header>
           <div class="card-header">
-            <span>系统启动时间</span>
+            <span>系统运行时长</span>
             <el-tag v-if="loading" size="small">加载中...</el-tag>
           </div>
         </template>

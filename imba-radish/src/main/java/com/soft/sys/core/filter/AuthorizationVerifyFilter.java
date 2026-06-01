@@ -4,6 +4,7 @@ import com.soft.sys.constants.HttpConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.TokenConstant;
 import com.soft.sys.enums.ResultEnum;
+import com.soft.sys.exception.GlobalException;
 import com.soft.sys.model.dto.UserDto;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.utils.ResponseUtil;
@@ -71,7 +72,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            ResponseUtil.writeMsg(response,  HttpConstant.SERVER_ERROR, R.fail(ResultEnum.FAIL_NORMAL.getCode(), ResultEnum.FAIL_NORMAL.getMessage()));
+            throw new GlobalException(e);
         } finally {
             // 清除安全上下文
             SecurityContextHolder.clearContext();

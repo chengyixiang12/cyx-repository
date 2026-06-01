@@ -113,6 +113,8 @@ permit:
     - /error
     - /favicon.ico
     - /user/validUserInfoForRegister
+    - /webjars/**
+    - /v3/**
 # 限流
 rate-limit:
   # 是否开启限流
