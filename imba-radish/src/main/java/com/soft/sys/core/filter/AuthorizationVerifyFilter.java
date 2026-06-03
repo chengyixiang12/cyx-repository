@@ -1,6 +1,5 @@
 package com.soft.sys.core.filter;
 
-import com.soft.sys.constants.HttpConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.TokenConstant;
 import com.soft.sys.enums.ResultEnum;
@@ -17,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -52,7 +52,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             }
             if (!token.startsWith(TokenConstant.TOKEN_PREFIX)) {
                 log.info("非法鉴权：{}", token);
-                ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.NOT_AUTHENTICATION.getCode(), ResultEnum.NOT_AUTHENTICATION.getMessage()));
+                ResponseUtil.writeMsg(response, HttpStatus.UNAUTHORIZED.value(), R.fail(ResultEnum.NOT_AUTHENTICATION));
                 return;
             }
             // 去除token前缀
@@ -60,7 +60,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
             if (StringUtils.isEmpty(username)) {
                 log.info("{}，鉴权过期", token);
-                ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.fail(ResultEnum.AUTHENTICATION_FAIL.getCode(), ResultEnum.AUTHENTICATION_FAIL.getMessage()));
+                ResponseUtil.writeMsg(response, HttpStatus.UNAUTHORIZED.value(), R.fail(ResultEnum.AUTHENTICATION_FAIL));
                 return;
             }
             UserDto user = (UserDto) this.userDetailsService.loadUserByUsername(username);

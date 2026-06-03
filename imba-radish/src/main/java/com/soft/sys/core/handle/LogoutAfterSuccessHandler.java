@@ -1,6 +1,5 @@
 package com.soft.sys.core.handle;
 
-import com.soft.sys.constants.HttpConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.TokenConstant;
 import com.soft.sys.enums.ResultEnum;
@@ -13,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -61,6 +61,6 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
         // 移除用户websocket会话
         WebSocketSessionManager.removeSession(id);
 
-        ResponseUtil.writeMsg(response, HttpConstant.SUCCESS, R.ok(ResultEnum.SUCCESS.getCode(), "注销成功"));
+        ResponseUtil.writeMsg(response, HttpStatus.OK.value(), R.ok(ResultEnum.SUCCESS.getCode(), "注销成功"));
     }
 }

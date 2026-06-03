@@ -50,6 +50,10 @@ public class R<T> {
         return setR(code, msg, null);
     }
 
+    public static <T> R<T> fail(ResultEnum resultEnum) {
+        return setR(resultEnum.getCode(), resultEnum.getMessage(), null);
+    }
+
     public static <T> R<T> fail() {
         return setR(ResultEnum.FAIL_NORMAL.getCode(), ResultEnum.FAIL_NORMAL.getMessage(), null);
     }

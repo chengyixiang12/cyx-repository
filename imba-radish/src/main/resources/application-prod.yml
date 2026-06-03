@@ -78,9 +78,9 @@ spring:
 # 启用api文档
 springdoc:
   api-docs:
-    enabled: true
+    enabled: false
   swagger-ui:
-    enabled: true
+    enabled: false
 # 日志
 logging:
   level:

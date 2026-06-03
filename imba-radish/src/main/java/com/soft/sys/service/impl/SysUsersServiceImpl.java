@@ -13,6 +13,7 @@ import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
 import com.soft.sys.enums.SecretKeyEnum;
 import com.soft.sys.enums.WebSocketOrderEnum;
+import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysUsersMapper;
 import com.soft.sys.model.dto.GetUsersDto;
 import com.soft.sys.model.request.EditUserRequest;
@@ -120,7 +121,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
             sysUsersMapper.updateById(sysUser);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GlobalException(e);
         }
     }
 
@@ -254,7 +255,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
             sysUser.setUsername(request.getUsername());
             sysUsersMapper.updateById(sysUser);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new GlobalException(e);
         }
     }
 
