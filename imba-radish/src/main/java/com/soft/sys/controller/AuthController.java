@@ -1,6 +1,7 @@
 package com.soft.sys.controller;
 
-import com.google.code.kaptcha.impl.DefaultKaptcha;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.LineCaptcha;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.RegexConstant;
@@ -29,8 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +48,6 @@ public class AuthController {
     private final AuthService authService;
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    private final DefaultKaptcha captchaProducer;
 
     private final SysUsersService sysUsersService;
 
@@ -135,14 +132,17 @@ public class AuthController {
     public ResponseEntity<Object> getGraphicCaptcha(@RequestParam(value = "uuid", required = false) @NotNull(message = "唯一标识不能为空") String uuid) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Pragma", "No-cache");
+        headers.set("Cache-Control", "no-cache");
 
-        String text = captchaProducer.createText();
+        // 创建验证码对象（宽150，高50，验证码位数4，干扰线数量20）
+        LineCaptcha captcha = CaptchaUtil.createLineCaptcha(150, 50, 4, 20);
+        String code = captcha.getCode();
 
-        redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + uuid, text, radishProperty.getGraphics().getExpireTime(), TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + uuid, code, radishProperty.getGraphics().getExpireTime(), TimeUnit.SECONDS);
 
-        BufferedImage image = captchaProducer.createImage(text);
         ByteArrayOutputStream bis = new ByteArrayOutputStream();
-        ImageIO.write(image, BaseConstant.GRAPHICS_CAPTCHA_TYPE, bis);
+        captcha.write(bis);
         byte[] byteArray = bis.toByteArray();
 
         headers.setContentType(MediaType.IMAGE_PNG);

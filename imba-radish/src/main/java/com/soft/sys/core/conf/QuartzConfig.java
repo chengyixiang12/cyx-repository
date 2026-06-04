@@ -1,6 +1,7 @@
 package com.soft.sys.core.conf;
 
-import org.jetbrains.annotations.NotNull;
+import io.micrometer.context.NonNullApi;
+import org.jspecify.annotations.NonNull;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -40,9 +41,8 @@ public class QuartzConfig {
             this.beanFactory = applicationContext.getAutowireCapableBeanFactory();
         }
 
-        @NotNull
         @Override
-        protected Object createJobInstance(@NotNull TriggerFiredBundle bundle) throws Exception {
+        protected Object createJobInstance(@NonNull TriggerFiredBundle bundle) throws Exception {
             Object job = super.createJobInstance(bundle);
             beanFactory.autowireBean(job); // 注入 Spring Bean
             return job;

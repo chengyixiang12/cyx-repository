@@ -36,7 +36,7 @@ public class JacksonConfig {
         mapper.registerModule(timeModule);
 
         // 忽略null值
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
 
         // 如果日期字符串为空字符串，设置为null
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);

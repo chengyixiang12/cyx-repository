@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>3.5.14</version>
         <relativePath/>
     </parent>
 
@@ -20,23 +20,26 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mysql.version>8.0.31</mysql.version>
-        <minio.version>8.5.2</minio.version>
+        <mysql.version>9.3.0</mysql.version>
+        <minio.version>8.6.0</minio.version>
         <mybatisplus.version>3.5.9</mybatisplus.version>
         <mybaitsplusdynamic.version>4.3.1</mybaitsplusdynamic.version>
-        <jwt.version>0.9.1</jwt.version>
         <knife4j.version>4.6.0</knife4j.version>
         <hutool.version>5.8.43</hutool.version>
         <fastjson.version>2.0.53</fastjson.version>
         <javax.version>2.3.1</javax.version>
         <agent.version>1.21</agent.version>
-        <tika.version>3.0.0</tika.version>
+        <tika.version>3.2.3</tika.version>
         <kaptcha.vesion>2.3.2</kaptcha.vesion>
         <jansi.version>2.4.0</jansi.version>
         <spring.ai.version>1.1.0</spring.ai.version>
         <flowable.version>7.2.0</flowable.version>
-        <postgresql.version>42.3.8</postgresql.version>
+        <postgresql.version>42.7.10</postgresql.version>
         <modulith.version>1.4.9</modulith.version>
+        <easyexcel.version>4.0.3</easyexcel.version>
+        <poi-ooxml.version>5.4.1</poi-ooxml.version>
+        <compress.version>1.28.0</compress.version>
+        <okhttp.version>4.12.0</okhttp.version>
     </properties>
 
     <dependencyManagement>
@@ -287,12 +290,6 @@
             <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
             <version>${mybaitsplusdynamic.version}</version>
         </dependency>
-        <!--已弃用-->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>${jwt.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.github.xingfudeshi</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
@@ -306,6 +303,11 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-cache</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-captcha</artifactId>
             <version>${hutool.version}</version>
         </dependency>
         <dependency>
@@ -323,11 +325,11 @@
             <artifactId>tika-core</artifactId>
             <version>${tika.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.penggle</groupId>
-            <artifactId>kaptcha</artifactId>
-            <version>${kaptcha.vesion}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.penggle</groupId>-->
+<!--            <artifactId>kaptcha</artifactId>-->
+<!--            <version>${kaptcha.vesion}</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
@@ -336,7 +338,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>easyexcel</artifactId>
-            <version>4.0.3</version>
+            <version>${easyexcel.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
@@ -355,12 +357,17 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.2.3</version>
+            <version>${poi-ooxml.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
-            <version>1.26.2</version>
+            <version>${compress.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
         </dependency>
     </dependencies>
 
