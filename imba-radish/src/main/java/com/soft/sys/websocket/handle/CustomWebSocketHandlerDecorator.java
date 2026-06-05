@@ -5,6 +5,7 @@ import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.model.dto.UserDto;
 import com.soft.sys.websocket.WebSocketSessionManager;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
@@ -41,7 +42,7 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+    public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus closeStatus) {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         // 移除用户缓存
         redisTemplate.delete(RedisConstant.WS_USER_SESSION + userDto.getId());

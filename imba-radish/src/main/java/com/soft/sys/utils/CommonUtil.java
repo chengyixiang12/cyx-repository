@@ -93,28 +93,6 @@ public class CommonUtil {
     }
 
     /**
-     * 获取文件hash
-     * @param is
-     * @return
-     */
-    public static String generateFileHash(InputStream is) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance(BaseConstant.TYPE_ALGORITHM);
-            try (DigestInputStream dis = new DigestInputStream(is, digest)) {
-                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
-                int length = BaseConstant.BUFFER_SIZE;
-                while (length != BaseConstant.FILE_OVER_SIGN) {
-                    length = dis.read(buffer);
-                }
-            }
-            byte[] hashBytes = digest.digest();
-            return new BigInteger(BaseConstant.SIGN_NUM_POSITIVE, hashBytes).toString(BaseConstant.SCALE_SIXTEEN);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            throw new GlobalException(e);
-        }
-    }
-
-    /**
      * 获取客户端ip
      * @param request
      * @return

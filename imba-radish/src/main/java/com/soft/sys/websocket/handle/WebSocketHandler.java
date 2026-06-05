@@ -9,6 +9,7 @@ import com.soft.sys.websocket.receive.RecParam;
 import com.soft.sys.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.NonNull;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -26,7 +27,7 @@ import java.nio.ByteBuffer;
 public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) throws Exception {
         // 获取消息体
         String payload = message.getPayload();
         AbstractRecParam abstractRecParam = JSON.parseObject(payload, RecParam.class);
@@ -35,7 +36,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
             sendParams.setMsg("websocket连接异常，指令为空");
-            log.info("websocket连接异常，指令为空");
+            log.warn("websocket连接异常，指令为空");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
@@ -43,7 +44,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             SendParams sendParams = new SendParams();
             sendParams.setStatus(false);
             sendParams.setMsg("无效的指令");
-            log.info("无效的指令");
+            log.warn("无效的指令");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
@@ -55,7 +56,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
+    protected void handleBinaryMessage(@NonNull WebSocketSession session, @NonNull BinaryMessage message) {
         try {
             log.info("received file, start process...");
             @SuppressWarnings("unchecked")

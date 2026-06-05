@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -132,7 +133,7 @@ public class AuthController {
     @GetMapping(value = "/getGraphicCaptcha")
     @Operation(summary = "获取图形验证码")
     @Parameter(name = "uuid", description = "唯一标识", required = true, in = ParameterIn.QUERY)
-    public ResponseEntity<Object> getGraphicCaptcha(@RequestParam(value = "uuid", required = false) @NotNull(message = "唯一标识不能为空") String uuid) throws IOException {
+    public ResponseEntity<Object> getGraphicCaptcha(@RequestParam(value = "uuid", required = false) @NotNull(message = "唯一标识不能为空") @Size(min = 15, max = 20, message = "唯一标识长度不符合") String uuid) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Pragma", "No-cache");
