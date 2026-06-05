@@ -7,18 +7,16 @@ import com.soft.sys.core.handle.CustomAccessDeniedHandler;
 import com.soft.sys.core.handle.LogoutAfterSuccessHandler;
 import com.soft.sys.properties.AuthorizationIgnoreProperty;
 import com.soft.sys.properties.RateLimitProperty;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,114 +26,91 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 
+/**
+ * Spring Security 核心配置
+ *
+ * <p>过滤器链顺序：RateLimitFilter → AuthorizationVerifyFilter → 业务处理</p>
+ * <p>认证方式：无状态 JWT（从 Redis 校验 token → 用户名映射）</p>
+ *
+ * @author cyx
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final AuthenticationHandler authenticationHandler;
-
     private final LogoutAfterSuccessHandler logoutAfterSuccessHandler;
-
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-
     private final UserDetailsService userDetailsService;
-
     private final RedisTemplate<String, Object> redisTemplate;
-
     private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
-
     private final RateLimitProperty rateLimitProperty;
 
-    @Autowired
-    public SecurityConfig(AuthenticationHandler authenticationHandler,
-                          LogoutAfterSuccessHandler logoutAfterSuccessHandler,
-                          UserDetailsService userDetailsService,
-                          RedisTemplate<String, Object> redisTemplate,
-                          CustomAccessDeniedHandler customAccessDeniedHandler,
-                          AuthorizationIgnoreProperty authorizationIgnoreProperty,
-                          RateLimitProperty rateLimitProperty) {
-        this.authenticationHandler = authenticationHandler;
-        this.logoutAfterSuccessHandler = logoutAfterSuccessHandler;
-        this.userDetailsService = userDetailsService;
-        this.redisTemplate = redisTemplate;
-        this.customAccessDeniedHandler = customAccessDeniedHandler;
-        this.authorizationIgnoreProperty = authorizationIgnoreProperty;
-        this.rateLimitProperty = rateLimitProperty;
-    }
-
     /**
-     * 获取鉴权过滤器实例
-     * @return
-     */
-    private AuthorizationVerifyFilter getAuthorizationVerifyFilter() {
-        return new AuthorizationVerifyFilter(userDetailsService,redisTemplate);
-    }
-
-    /**
-     * 获取限流过滤器实例
-     * @return
-     */
-    private RateLimitFilter getRateLimitFilter() {
-        return new RateLimitFilter(redisTemplate, rateLimitProperty);
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                // 禁用表单登录
-                .formLogin(AbstractHttpConfigurer::disable)
-                // 禁用csrf
-                .csrf(CsrfConfigurer::disable)
-                // 禁用http basic认证
-                .httpBasic(AbstractHttpConfigurer::disable)
-                // 将SpringSecurity的安全上下文存储到http请求属性中
-                .securityContext(context -> context
-                        .securityContextRepository(new RequestAttributeSecurityContextRepository()))
-                // 允许iframe嵌套
-                .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
-                        .xssProtection(Customizer.withDefaults())
-                        .cacheControl(Customizer.withDefaults()))
-                // 会话无状态
-                .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // 忽略不鉴权的路由
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(authorizationIgnoreProperty.getUrls().toArray(new String[0])).permitAll()
-                        .anyRequest().authenticated())
-                .logout(item -> item.logoutUrl("/logout")
-                        .logoutSuccessHandler(logoutAfterSuccessHandler))
-                // 认证失败处理类
-                .exceptionHandling(exc -> exc
-                                        // 用于处理未认证的请求（如未登录用户访问受保护的资源）
-                                        .authenticationEntryPoint(authenticationHandler)
-                                        // 用于处理已认证但没有权限访问资源的请求
-                                        .accessDeniedHandler(customAccessDeniedHandler)
-                )
-                // 鉴权过滤器
-                .addFilterBefore(getAuthorizationVerifyFilter(), UsernamePasswordAuthenticationFilter.class)
-                // 限流过滤器
-                .addFilterBefore(getRateLimitFilter(), AuthorizationVerifyFilter.class);
-        return http.build();
-    }
-
-    /**
-     * 强哈希算法 BCrypt 进行密码加密
-     * @return
+     * BCrypt 强哈希密码编码器
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // 配置 AuthenticationManager
+    /**
+     * AuthenticationManager，由 {@link AuthenticationConfiguration} 自动装配
+     * {@link UserDetailsService} 和 {@link PasswordEncoder}
+     */
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        // 使用 AuthenticationManagerBuilder 来配置 AuthenticationManager
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService) // 配置 UserDetailsService
-                .passwordEncoder(passwordEncoder()); // 配置密码编码器
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
-        return authenticationManagerBuilder.build(); // 返回 AuthenticationManager 实例
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                // 前后端分离：禁用表单登录、HTTP Basic、CSRF
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // 无状态会话 — JWT 鉴权，服务端不维护 HttpSession
+                .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 安全上下文存入 Request 属性（匹配无状态模式）
+                .securityContext(context -> context
+                        .securityContextRepository(new RequestAttributeSecurityContextRepository()))
+
+                // 响应头
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)  // 允许 iframe
+                )
+
+                // 权限规则：白名单放行，其余全部认证
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(authorizationIgnoreProperty.getUrls().toArray(String[]::new)).permitAll()
+                        .anyRequest().authenticated()
+                )
+
+                // 异常处理
+                .exceptionHandling(exc -> exc
+                        .authenticationEntryPoint(authenticationHandler)          // 未认证
+                        .accessDeniedHandler(customAccessDeniedHandler)           // 无权限
+                )
+
+                // 登出
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler(logoutAfterSuccessHandler)
+                )
+
+                // 过滤器链（顺序敏感）
+                .addFilterBefore(
+                        new AuthorizationVerifyFilter(userDetailsService, redisTemplate),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        new RateLimitFilter(redisTemplate, rateLimitProperty),
+                        AuthorizationVerifyFilter.class);
+
+        return http.build();
     }
 }

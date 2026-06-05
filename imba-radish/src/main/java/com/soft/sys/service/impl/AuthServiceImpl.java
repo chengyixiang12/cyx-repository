@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -50,8 +48,6 @@ public class AuthServiceImpl implements AuthService {
     private final RedisTemplate<String,Object> redisTemplate;
 
     private final SecretKeyService secretKeyService;
-
-    private final StringRedisTemplate stringRedisTemplate;
 
     private final SysDeptService sysDeptService;
 
@@ -92,42 +88,40 @@ public class AuthServiceImpl implements AuthService {
         Long id;
         try {
             switch (request.getLoginMethod()) {
-                case BaseConstant.LOGIN_METHOD_PASSWORD: {
+                case BaseConstant.LOGIN_METHOD_PASSWORD -> {
                     String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername()
-                            , rsaUtil.decrypt(request.getPassword(), privateKey)));
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                            request.getUsername(), rsaUtil.decrypt(request.getPassword(), privateKey)));
                     id = sysUsersService.getPrimaryKeyByUsername(request.getUsername());
-                    break;
                 }
-                case BaseConstant.LOGIN_METHOD_EMAIL: {
+                case BaseConstant.LOGIN_METHOD_EMAIL -> {
                     SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
                     id = sysUser.getId();
                     request.setUsername(sysUser.getUsername());
-                    String emailCaptCha = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail());
-                    if (!request.getEmailCaptcha().equals(emailCaptCha)) {
+                    String emailCaptcha = (String) redisTemplate.opsForValue()
+                            .get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail());
+                    if (!request.getEmailCaptcha().equals(emailCaptcha)) {
                         throw new BadCredentialsException("验证码错误");
                     }
                     redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail());
-                    break;
                 }
-                default: {
-                    throw new GlobalException("无效的登录方式");
-                }
+                default -> throw new GlobalException("无效的登录方式");
             }
 
             // 清空错误登录次数
-            redisTemplate.delete(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());
+            String errorKey = RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername();
+            redisTemplate.delete(errorKey);
 
             // 同一个用户只能有一个客户端登录
             WebSocketSession session = WebSocketSessionManager.getSession(id);
             if (session != null) {
-                ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-                ForceOfflineRecParam forceOfflineParam = new ForceOfflineRecParam();
-                forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-                forceOfflineParam.setReceiver(id);
-                forceOfflineParam.setMsg("该账号已在其他地方登录");
-                TextMessage textMessage = new TextMessage(forceOfflineParam.toJsonString());
-                concreteHandler.handle(session, textMessage);
+                ForceOfflineHandler handler = (ForceOfflineHandler) WebSocketConcreteHolder
+                        .getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+                ForceOfflineRecParam param = new ForceOfflineRecParam();
+                param.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
+                param.setReceiver(id);
+                param.setMsg("该账号已在其他地方登录");
+                handler.handle(session, new TextMessage(param.toJsonString()));
             }
 
             // 客户端指纹
@@ -136,36 +130,41 @@ public class AuthServiceImpl implements AuthService {
                 redisTemplate.opsForValue().set(RedisConstant.FINGERPRINT + request.getUsername(), fingerprint);
             }
 
+            // 生成 token
             LoginVo loginVo = new LoginVo();
             String token = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, request.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token,
+                    request.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
             loginVo.setToken(token);
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (BadCredentialsException e) {
-            Long errorTime;
-            try {
-                errorTime = Long.parseLong(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername())));
-                if (BaseConstant.LONG_INIT_VAL.equals(errorTime)) {
-                    sysUsersService.lockUser(request.getUsername());
-                    throw new LockedException("登录次数用完，您的账号已锁定");
-                }
-                errorTime = redisTemplate.opsForValue().decrement(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername());
-            } catch (NullPointerException en) {
-                errorTime = BaseConstant.MAX_LOGIN_ERROR_TIME;
-                redisTemplate.opsForValue().set(RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername(), BaseConstant.MAX_LOGIN_ERROR_TIME);
-            }
-            throw new BadCredentialsException(e.getMessage() + "，您还有" + errorTime + "次登录机会");
-        } catch (DisabledException e) {
-            throw new DisabledException(e.getMessage());
-        } catch (LockedException e) {
-            throw new LockedException(e.getMessage());
-        } catch (CredentialsExpiredException e) {
-            throw new CredentialsExpiredException(e.getMessage());
-        } catch (AccountExpiredException e) {
-            throw new AccountExpiredException(e.getMessage());
-        } catch (GlobalException | IOException e) {
-            throw new GlobalException(e.getMessage());
+            throw handleBadCredentials(request, e);
+        } catch (IOException e) {
+            throw new GlobalException(e);
         }
+    }
+
+    /**
+     * 处理密码错误：递减错误次数，达到上限后锁定用户
+     */
+    private BadCredentialsException handleBadCredentials(LoginRequest request, BadCredentialsException e) {
+        String errorKey = RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername();
+        Object cached = redisTemplate.opsForValue().get(errorKey);
+        Long remaining;
+
+        if (cached == null) {
+            // 首次错误，初始化计数器
+            remaining = BaseConstant.MAX_LOGIN_ERROR_TIME;
+            redisTemplate.opsForValue().set(errorKey, BaseConstant.MAX_LOGIN_ERROR_TIME);
+        } else {
+            long current = Long.parseLong(cached.toString());
+            if (BaseConstant.LONG_INIT_VAL.equals(current)) {
+                sysUsersService.lockUser(request.getUsername());
+                throw new LockedException("登录次数用完，您的账号已锁定");
+            }
+            remaining = redisTemplate.opsForValue().decrement(errorKey);
+        }
+        return new BadCredentialsException(e.getMessage() + "，您还有" + remaining + "次登录机会");
     }
 }

@@ -8,8 +8,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
+import java.util.Optional;
 
-
+/**
+ * MinIO 对象存储客户端配置
+ *
+ * @author cyx
+ * @date 2025-05-29
+ */
 @Configuration
 @RequiredArgsConstructor
 public class MinioConfig {
@@ -18,12 +24,12 @@ public class MinioConfig {
 
     @Bean
     public MinioClient minioClient() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        return MinioClient
-                .builder()
+        return MinioClient.builder()
                 .endpoint(minioProperty.getUrl())
                 .credentials(minioProperty.getAccessKey(), minioProperty.getSecretKey())
-                .httpClient(builder.callTimeout(Duration.ofMillis(minioProperty.getConnectTimeout())).build())
+                .httpClient(new OkHttpClient.Builder()
+                        .callTimeout(Duration.ofMillis(minioProperty.getConnectTimeout()))
+                        .build())
                 .build();
     }
 }

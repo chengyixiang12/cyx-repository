@@ -54,6 +54,6 @@ public class MinioProperty {
     /**
      * 连接超时；单位：毫秒
      */
-    private Integer connectTimeout;
+    private Long connectTimeout = 5000L;
 
 }

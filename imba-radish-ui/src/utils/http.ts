@@ -6,7 +6,7 @@ import { showMessage } from './message';
 
 const instance = axios.create({
   baseURL: '/api',
-  timeout: 30000, // 延长超时时间
+  timeout: 60000, // 延长超时时间
   headers: {
     'Content-Type': 'application/json' // 设置默认请求头
   }
