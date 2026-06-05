@@ -32,6 +32,7 @@ public class LoginRequest {
     @Schema(description = "验证码")
     private String emailCaptcha;
 
-    @Schema(description = "指纹")
+    @Schema(description = "设备指纹")
+    @NotBlank(message = "设备指纹不能为空")
     private String fingerprint;
 }

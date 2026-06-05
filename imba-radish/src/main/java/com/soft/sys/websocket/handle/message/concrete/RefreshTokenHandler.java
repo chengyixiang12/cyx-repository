@@ -51,7 +51,7 @@ public class RefreshTokenHandler implements WebSocketConcreteHandler<String> {
         String fingerprintCache = (String) redisTemplate.opsForValue().get(RedisConstant.FINGERPRINT + userDto.getUsername());
         if (StringUtils.isBlank(fingerprintCache) || !fingerprintCache.equals(fingerprint)) {
             refreshTokenSendParam.setMsg("token刷新失败");
-            log.info("token refresh fail");
+            log.warn("token refresh fail");
             session.sendMessage(new TextMessage(refreshTokenSendParam.toJsonString()));
             return;
         }
