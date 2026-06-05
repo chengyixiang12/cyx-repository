@@ -79,6 +79,11 @@ public class BaseConstant {
      */
     public final static Integer LOGIN_CAPTCHA_LENGTH = 6;
 
+    /**
+     * 图形验证码类型
+     */
+    public static final String GRAPHICS_CAPTCHA_TYPE = "PNG";
+
     public static class Role {
         /**
          * 固定角色标识

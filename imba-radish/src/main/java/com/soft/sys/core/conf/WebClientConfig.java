@@ -26,7 +26,7 @@ public class WebClientConfig {
 
     @Bean
     public WebClient.Builder webClient() {
-        ConnectionProvider connectionProvider = ConnectionProvider.builder("radish-http-pool")
+        ConnectionProvider connectionProvider = ConnectionProvider.builder("radish-web-client-pool")
                 .maxConnections(webClientProperty.getPool().getMaxConnection())
                 .pendingAcquireTimeout(Duration.ofSeconds(webClientProperty.getPool().getPendingAcquireTimeout()))
                 .maxIdleTime(Duration.ofSeconds(webClientProperty.getPool().getMaxIdleTime()))

@@ -17,6 +17,7 @@
     </parent>
 
     <properties>
+        <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -305,11 +306,6 @@
             <version>${hutool.version}</version>
         </dependency>
         <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-captcha</artifactId>
-            <version>${hutool.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
             <version>${fastjson.version}</version>
@@ -324,11 +320,11 @@
             <artifactId>tika-core</artifactId>
             <version>${tika.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.github.penggle</groupId>-->
-<!--            <artifactId>kaptcha</artifactId>-->
-<!--            <version>${kaptcha.vesion}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>${kaptcha.vesion}</version>
+        </dependency>
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>

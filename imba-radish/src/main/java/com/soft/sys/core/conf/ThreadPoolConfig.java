@@ -3,6 +3,7 @@ package com.soft.sys.core.conf;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.ThreadPoolExecutor;
@@ -18,22 +19,22 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ThreadPoolConfig {
 
     /**
-     * I/O密集型
+     * flowable线程池
      * @return
      */
     @Bean(name = "applicationTaskExecutor")
-    public ThreadPoolTaskExecutor applicationTaskExecutor() {
+    public AsyncTaskExecutor applicationTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         int cpuCores = Runtime.getRuntime().availableProcessors();
 
         // 设置核心线程数
-        executor.setCorePoolSize(cpuCores);
+        executor.setCorePoolSize(Math.max(4, cpuCores * 2));
 
         // 设置最大线程数
-        executor.setMaxPoolSize(cpuCores * 2);
+        executor.setMaxPoolSize(Math.max(8, cpuCores * 4));
 
         // 设置队列容量
-        executor.setQueueCapacity(100);
+        executor.setQueueCapacity(200);
 
         // 设置线程池名称前缀
         executor.setThreadNamePrefix("application-task-");
@@ -42,7 +43,7 @@ public class ThreadPoolConfig {
         executor.setKeepAliveSeconds(60);
 
         // 设置拒绝策略
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 
         // 是否允许核心线程超时
         executor.setAllowCoreThreadTimeOut(true);

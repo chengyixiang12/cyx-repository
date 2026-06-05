@@ -125,7 +125,7 @@ storage:
     location: /opt/project/tmp
 # 启用knife4j文档
 knife4j:
-  enable: true
+  enable: false
 # 性能监控配置
 management:
   health:

@@ -1,14 +1,15 @@
 package com.soft.sys.core.conf;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.support.TaskExecutorAdapter;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @Author: cyx
@@ -20,19 +21,14 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
-
-    @Autowired
-    public AsyncConfig(@Qualifier(value = "radishTaskExecutor") ThreadPoolTaskExecutor threadPoolTaskExecutor) {
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
-    }
-
     /**
      * 异步指定线程池
      * @return
      */
     @Override
     public Executor getAsyncExecutor() {
-        return new DelegatingSecurityContextAsyncTaskExecutor(threadPoolTaskExecutor); // 让异步线程池具备上下文传递的能力
+        ExecutorService virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
+        AsyncTaskExecutor adaptedExecutor = new TaskExecutorAdapter(virtualThreadExecutor);
+        return new DelegatingSecurityContextAsyncTaskExecutor(adaptedExecutor); // 让异步线程具备上下文传递的能力
     }
 }
