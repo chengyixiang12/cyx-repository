@@ -18,7 +18,7 @@ export interface FilesRequest {
     keyword: string;
 }
 
-export interface UploadAvatarVo {
-    id: string;
-    uri: string | null;
+export interface ChunkProgressVo {
+    uploadedIndices: number[];
+    uploadedCount: number;
 }

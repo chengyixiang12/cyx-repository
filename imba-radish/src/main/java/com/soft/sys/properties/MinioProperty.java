@@ -37,11 +37,6 @@ public class MinioProperty {
     private String defaultBucket;
 
     /**
-     * 用户头像桶名
-     */
-    private String avatarBucket;
-
-    /**
      * 文件url过期时间
      */
     private Integer expire;

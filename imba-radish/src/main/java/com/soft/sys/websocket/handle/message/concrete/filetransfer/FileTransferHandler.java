@@ -62,7 +62,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         }
         int byteIndex = BaseConstant.INTEGER_INIT_VAL;
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
-            while (byteIndex < payload.array().length) {
+            while (byteIndex < payload.remaining()) {
                 os.write(payload.array(), byteIndex, BaseConstant.BUFFER_SIZE);
                 byteIndex += BaseConstant.BUFFER_SIZE;
             }

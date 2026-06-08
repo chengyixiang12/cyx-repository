@@ -27,7 +27,7 @@ public class R<T> {
     private Map<String, Object> extra;
 
     public static <T> R<T> ok() {
-        return setR(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage(), null);
+        return setR(ResultEnum.SUCCESS.getCode(), null, null);
     }
 
     public static <T> R<T> ok(Integer code, String message) {

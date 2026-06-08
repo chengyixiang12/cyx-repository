@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { uploadChunkApi, uploadFileApi, mergeChunkApi, getFileByMd5Api } from '@/api/file'
+import { uploadChunkApi, uploadFileApi, mergeChunkApi, getFileByMd5Api, getUploadProgressApi } from '@/api/file'
 import { showMessage } from '@/utils/message'
 import { calculateFileMd5, chunkSize } from '@/utils/filemd5';
 
@@ -76,17 +76,24 @@ const customChunkUpload = async (options: any) => {
   } else if (file.size <= maxChunkSize) {
     uploadDialogVisible.value = true
     try {
+      // 获取上传进度
+      const progressRes = await getUploadProgressApi(fileMd5)
+      const uploadedIndices = progressRes.uploadedIndices || []
+      
       uploadProgress.value = 0
       const fileName = file.name
 
       const totalChunks = Math.ceil(file.size / chunkSize)
 
       for (let i = 0; i < totalChunks; i++) {
+        uploadProgress.value = Math.round((i + 1) / totalChunks * 100)
+        if (uploadedIndices.includes(i)) {
+          continue
+        }
         const start = i * chunkSize;
         const end = Math.min(start + chunkSize, file.size)
         const chunk = file.slice(start, end)
         await uploadSingleChunk(chunk, i, fileMd5)
-        uploadProgress.value = Math.round((i + 1) / totalChunks * 100)
       }
 
       await mergeChunks(fileMd5, fileName, totalChunks)

@@ -67,7 +67,7 @@ function handleResponseError(error: any) {
 
 // 错误码处理
 function handleErrorCode(data: ApiResponse) {
-  const authErrorCodes = [5002, 5004, 5005];
+  const authErrorCodes = [10003, 10005, 10006];
   if (authErrorCodes.includes(data.code)) {
     clearCache();
     router.push('/login');
@@ -119,7 +119,7 @@ async function request<T = any>(
 
     // 5. JSON 响应处理（保留你的原有逻辑）
     const res = response.data as ApiResponse<T>;
-    if (res.code && res.code !== 2001) throw new Error(res.msg);
+    if (res.code && res.code !== 10000) throw new Error(res.msg);
     return res;
 
   } catch (error) {
@@ -216,7 +216,7 @@ export async function postBlob<Blob>(
  * @param {number} code 状态码
  */
 function showCustomMessage(message: string, code: number) {
-  showMessage(message, code === 2001 ? 'success' : 'error')
+  showMessage(message, code === 10000 ? 'success' : 'error')
 }
 
 export default instance;

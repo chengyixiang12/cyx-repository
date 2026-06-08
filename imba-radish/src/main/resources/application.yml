@@ -126,6 +126,5 @@ minio:
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
   default-bucket: ${MINIO_DEFAULT_BUCKET}
-  avatar-bucket: ${MINIO_AVATAR_BUCKET}
   expire: 3600
   connect-timeout: 10000

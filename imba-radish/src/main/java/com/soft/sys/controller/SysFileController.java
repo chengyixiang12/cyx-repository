@@ -10,8 +10,8 @@ import com.soft.sys.model.dto.FileDetailDto;
 import com.soft.sys.model.request.FilesRequest;
 import com.soft.sys.model.vo.FilesVo;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.UploadAvatarVo;
 import com.soft.sys.model.vo.UploadFileVo;
+import com.soft.sys.model.vo.ChunkProgressVo;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysFileService;
 import com.soft.sys.utils.MinioUtil;
@@ -24,6 +24,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +42,9 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -143,18 +146,41 @@ public class SysFileController {
         return R.ok("删除成功", null);
     }
 
+    @SysLog(value = "取消分片上传", module = LogModuleEnum.FILE)
+    @DeleteMapping(value = "/cancelChunk")
+    @Operation(summary = "取消分片上传")
+    @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
+    public R<Object> cancelChunk(
+            @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5) {
+
+        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+
+        if (!chunkDir.exists()) {
+            return R.ok("分片已清空", null);
+        }
+
+        File[] files = chunkDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (!file.delete()) {
+                    log.warn("分片删除失败：{}", file.getAbsolutePath());
+                }
+            }
+        }
+
+        if (!chunkDir.delete()) {
+            log.warn("分片目录删除失败：{}", chunkDir.getAbsolutePath());
+            return R.fail("分片删除失败");
+        }
+
+        return R.ok("分片已清空", null);
+    }
+
     @PostMapping(value = "/getFiles")
     @Operation(summary = "获取文件列表")
     public R<PageVO<FilesVo>> getFiles(@RequestBody FilesRequest request) {
         PageVO<FilesVo> pageVo = sysFileService.getFiles(request);
         return R.ok(pageVo);
-    }
-
-    @PostMapping(value = "/uploadAvatar")
-    @Operation(summary = "上传用户头像")
-    public R<UploadAvatarVo> uploadAvatar(@RequestPart(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile) {
-        UploadAvatarVo uploadAvatarVo = sysFileService.uploadAvatar(multipartFile);
-        return R.ok(uploadAvatarVo);
     }
 
     @PostMapping(value = "/getMyFiles")
@@ -194,8 +220,58 @@ public class SysFileController {
         }
 
         File chunkFile = new File(chunkDir, chunkIndex.toString());
+
+        // 幂等：分片已存在且有效则跳过
+        if (chunkFile.exists() && chunkFile.length() > 0) {
+            log.debug("分片已存在，跳过：fileMd5={}, chunkIndex={}", fileMd5, chunkIndex);
+            return R.ok();
+        }
+
         chunk.transferTo(chunkFile);
         return R.ok();
+    }
+
+    @GetMapping(value = "/getUploadProgress")
+    @Operation(summary = "查询分片上传进度")
+    @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
+    public R<ChunkProgressVo> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5) {
+
+        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+        ChunkProgressVo vo = new ChunkProgressVo();
+
+        if (!chunkDir.exists() || !chunkDir.isDirectory()) {
+            vo.setUploadedIndices(new ArrayList<>());
+            return R.ok(vo);
+        }
+
+        List<Integer> indices = getIndices(chunkDir);
+
+        vo.setUploadedIndices(indices);
+        return R.ok(vo);
+    }
+
+    /**
+     * 获取已上传的分片索引
+     * @param chunkDir
+     * @return
+     */
+    private static @NonNull List<Integer> getIndices(File chunkDir) {
+        File[] files = chunkDir.listFiles();
+        List<Integer> indices = new ArrayList<>();
+
+        if (files != null) {
+            for (File file : files) {
+                // 只统计有效分片：是文件、大小>0、文件名为纯数字
+                if (file.isFile() && file.length() > 0) {
+                    try {
+                        indices.add(Integer.parseInt(file.getName()));
+                    } catch (NumberFormatException ignored) {
+                        // 跳过非数字文件名（如合并产生的临时文件）
+                    }
+                }
+            }
+        }
+        return indices;
     }
 
     @GetMapping(value = "/mergeChunk")
@@ -204,14 +280,23 @@ public class SysFileController {
                                 @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName,
                                 @RequestParam(value = "total", required = false) @NotNull(message = "分片总数不能为空") Integer total) {
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
-        File[] chunks = chunkDir.listFiles();
+        File[] allFiles = chunkDir.listFiles();
 
-        if (chunks == null) {
+        if (allFiles == null || allFiles.length == 0) {
             return R.fail("分片未找到");
         }
 
-        if (total == null || !total.equals(chunks.length)) {
-            return R.fail("分片数量错误");
+        // 只取纯数字文件名的有效分片，排除非分片文件（如之前合并产生的临时文件）
+        Map<String, File> chunkMap = Arrays.stream(allFiles)
+                .filter(f -> f.isFile() && f.getName().matches("\\d+"))
+                .collect(Collectors.toMap(File::getName, Function.identity()));
+
+        // 逐一校验：每个索引对应的分片都存在且非空
+        for (int i = 0; i < total; i++) {
+            File chunk = chunkMap.get(String.valueOf(i));
+            if (chunk == null || !chunk.exists() || chunk.length() <= 0) {
+                return R.fail("分片缺失，缺少索引：" + i);
+            }
         }
 
         File fileTemp = new File(chunkDir, fileName);
@@ -223,7 +308,6 @@ public class SysFileController {
                     return R.fail("文件缓存创建失败");
                 }
             }
-            Map<String, File> chunkMap = Arrays.stream(chunks).collect(Collectors.toMap(File::getName, Function.identity()));
             for (int i = 0; i < total; i++) {
                 File chunk = chunkMap.get(String.valueOf(i));
                 try (FileInputStream is = new FileInputStream(chunk);

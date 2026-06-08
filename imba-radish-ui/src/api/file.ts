@@ -1,5 +1,5 @@
 import { post, get, del, getBlob } from '@/utils/http';
-import { FilesRequest, FilesVo, UploadAvatarVo, UploadFileVo } from '@/types/file';
+import { ChunkProgressVo, FilesRequest, FilesVo, UploadFileVo } from '@/types/file';
 import { PaginatedData } from '@/types/api';
 
 /**
@@ -60,16 +60,6 @@ export async function downloadFileApi(id: string): Promise<Blob> {
 }
 
 /**
- * 上传用户头像
- * @param data 
- * @returns 
- */
-export async function uploadAvatarApi(data: FormData): Promise<UploadAvatarVo> {
-  const res = await post<UploadAvatarVo>('/file/uploadAvatar', data, { flag: true, headers: { 'Content-Type': 'multipart/form-data'} });
-  return res.data;
-}
-
-/**
  * 上传分片
  * @param fileMd5 
  * @param chunkIndex 
@@ -121,5 +111,15 @@ export async function getFileByMd5Api(fileMd5: string, fileName: string): Promis
  */
 export async function existFileApi(fileMd5: string, fileName: string): Promise<boolean> {
   const res = await get<boolean>('/file/existFile', { flag: true, params: { fileMd5, fileName }});
+  return res.data;
+}
+
+/**
+ * 获取上传进度
+ * @param fileMd5 
+ * @returns 
+ */
+export async function getUploadProgressApi(fileMd5: string): Promise<ChunkProgressVo> {
+  const res = await get<ChunkProgressVo>('/file/getUploadProgress', { flag: true, params: { fileMd5 }});
   return res.data;
 }

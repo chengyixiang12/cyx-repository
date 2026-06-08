@@ -65,18 +65,6 @@ public class MinioUtil {
     }
 
     /**
-     * 上传
-     *
-     * @param is       输入流
-     * @param bucket   桶名
-     * @param fileSize 文件大小 B
-     * @throws GlobalException
-     */
-    public void upload(InputStream is, String bucket, Long fileSize, String objectKey) {
-        putObject(is, bucket, fileSize, objectKey);
-    }
-
-    /**
      * 调用minio的上传
      * @param is
      * @param bucket

@@ -7,7 +7,6 @@ import com.soft.sys.model.dto.SelectDeletedFileDto;
 import com.soft.sys.model.request.FilesRequest;
 import com.soft.sys.model.vo.FilesVo;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.UploadAvatarVo;
 import com.soft.sys.model.vo.UploadFileVo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,8 +27,6 @@ public interface SysFileService extends IService<SysFile> {
     void deleteFile(Long id);
 
     PageVO<FilesVo> getFiles(FilesRequest request);
-
-    UploadAvatarVo uploadAvatar(MultipartFile multipartFile);
 
     List<SelectDeletedFileDto> selectDeletedFiles();
 
