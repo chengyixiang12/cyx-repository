@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.async.FileUploadAsync;
 import com.soft.sys.constants.BaseConstant;
+import com.soft.sys.constants.DictConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.entity.SysFile;
 import com.soft.sys.exception.GlobalException;
@@ -32,9 +33,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author cyq
@@ -117,7 +121,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
 
-        Map<String, String> fileStorageLocation = sysDictDataService.getDictDataMap(1984484774405574660L);
+        Map<String, String> fileStorageLocation = sysDictDataService.getDictDataMap(DictConstant.FILE_STORAGE_LOCATION);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
@@ -138,7 +142,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         Long userId = securityUtil.getUserInfo().getId();
         page = sysFileMapper.getMyFiles(page, request, userId);
 
-        Map<String, String> fileStorageLocation = sysDictDataService.getDictDataMap(1984484774405574660L);
+        Map<String, String> fileStorageLocation = sysDictDataService.getDictDataMap(DictConstant.FILE_STORAGE_LOCATION);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
@@ -170,8 +174,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             if ("1".equals(isInline)) {
                 Map<String, String> headerMap = new HashMap<>();
                 String value = sysFile.getFileSuffix().toLowerCase().replaceFirst("\\.", "");
-                final Long parentId = 2001266854774767618L;
-                String label = sysDictDataService.getDictDataByValue(value, parentId);
+                String label = sysDictDataService.getDictDataByValue(value, DictConstant.INLINE_FILE_TYPE);
                 headerMap.put("response-content-type", label);
                 headerMap.put("response-content-disposition", "inline");
                 url = minioUtil.generateUrl(sysFile.getBucket(), sysFile.getObjectKey(), headerMap);
@@ -179,11 +182,25 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
                 url = minioUtil.generateUrl(sysFile.getBucket(), sysFile.getObjectKey());
             }
 
-            redisTemplate.opsForValue().set(redisKey, url);
             // 减5是为了防止minio签名过期，redis未过期，导致获取失败
-            redisTemplate.expire(redisKey, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
+            redisTemplate.opsForValue().set(redisKey, url, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
         }
-        return url.replaceFirst(minioProperty.getUrl(), "/download");
+        return replaceMinioUrlWithProxy(url);
+    }
+
+    /**
+     * 将MinIO原始URL替换为nginx代理前缀 /download
+     * 使用URI替换更安全，避免字符串误替换
+     */
+    private String replaceMinioUrlWithProxy(String minioUrl) {
+        try {
+            URI uri = new URI(minioUrl);
+            // 只替换 scheme + authority（主机:端口），保留路径和查询参数
+            return "/download" + uri.getRawPath() + (uri.getRawQuery() != null ? "?" + uri.getRawQuery() : "");
+        } catch (URISyntaxException e) {
+            // 降级处理：如果URL格式异常，回退到原逻辑，但使用正则确保只替换前缀
+            return minioUrl.replaceFirst("^" + Pattern.quote(minioProperty.getUrl()), "/download");
+        }
     }
 
     @Override

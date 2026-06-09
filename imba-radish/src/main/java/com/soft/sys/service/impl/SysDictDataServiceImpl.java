@@ -128,20 +128,20 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public List<DictDataDto> getByDictType(Long parentId) {
-        return sysDictDataMapper.getByDictType(parentId, BaseConstant.Status.STATUS_ENABLE);
+    public List<DictDataDto> getByDictType(String dictType) {
+        return sysDictDataMapper.getByDictType(dictType);
     }
 
     @Override
-    @Cacheable(key = "#parentId", unless = "#result.size() == 0")
-    public Map<String, String> getDictDataMap(Long parentId) {
-        List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(parentId, BaseConstant.Status.STATUS_ENABLE);
+    @Cacheable(key = "#dictType", unless = "#result.size() == 0")
+    public Map<String, String> getDictDataMap(String dictType) {
+        List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(dictType);
         return sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel, (a, b) -> a));
     }
 
     @Override
-    public String getDictDataByValue(String value, Long parentId) {
-        return sysDictDataMapper.getDictDataByValue(value, parentId);
+    public String getDictDataByValue(String value, String dictType) {
+        return sysDictDataMapper.getDictDataByValue(value, dictType);
     }
 
     /**

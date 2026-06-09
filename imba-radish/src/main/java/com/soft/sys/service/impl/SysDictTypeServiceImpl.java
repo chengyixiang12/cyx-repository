@@ -12,6 +12,7 @@ import com.soft.sys.model.vo.DictTypeVo;
 import com.soft.sys.model.vo.DictTypesVo;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDictTypeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,17 +27,13 @@ import java.util.List;
 */
 @Service
 @CacheConfig(cacheNames = "radish:dict")
+@RequiredArgsConstructor
 public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDictType>
     implements SysDictTypeService{
 
     private final SysDictTypeMapper sysDictTypeMapper;
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    public SysDictTypeServiceImpl(SysDictTypeMapper sysDictTypeMapper, RedisTemplate<String, Object> redisTemplate) {
-        this.sysDictTypeMapper = sysDictTypeMapper;
-        this.redisTemplate = redisTemplate;
-    }
 
     @Override
     public PageVO<DictTypesVo> getdictTypes(GetDictTypesRequest request) {

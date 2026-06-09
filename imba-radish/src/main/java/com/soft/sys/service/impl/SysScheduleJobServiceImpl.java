@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.constants.BaseConstant;
+import com.soft.sys.constants.DictConstant;
 import com.soft.sys.entity.SysScheduleJob;
 import com.soft.sys.enums.QuartzIntervalEnum;
 import com.soft.sys.exception.GlobalException;
@@ -74,10 +75,7 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
 
-        // 调度类型id
-        final Long scheduleTypeId = 1984484774405574661L;
-
-        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType(scheduleTypeId);
+        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType(DictConstant.SCHEDULE_TYPE);
         Map<String, String> scheduleTypeMap = sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel));
 
         pageVo.getRecords().forEach(item -> item.setScheduleType(scheduleTypeMap.get(item.getScheduleType())));

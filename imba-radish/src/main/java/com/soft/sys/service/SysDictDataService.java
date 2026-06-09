@@ -42,9 +42,9 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void setDefaultData(Long id, Long parentId);
 
-    List<DictDataDto> getByDictType(Long parentId);
+    List<DictDataDto> getByDictType(String dictType);
 
-    Map<String, String> getDictDataMap(Long parentId);
+    Map<String, String> getDictDataMap(String dictType);
 
-    String getDictDataByValue(String value, Long parentId);
+    String getDictDataByValue(String value, String dictType);
 }

@@ -23,8 +23,6 @@ public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
 
     DictTypeVo getDictType(@Param("id") Long id);
 
-    void deleteDictTypeBatch(@Param("ids") List<Long> ids);
-
     void enableDictType(@Param("id") Long id);
 
     void forbiddenDictType(@Param("id") Long id);

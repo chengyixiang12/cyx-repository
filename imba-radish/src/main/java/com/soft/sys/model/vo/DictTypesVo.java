@@ -20,6 +20,9 @@ public class DictTypesVo {
     @Schema(description = "字典名称")
     private String dictName;
 
+    @Schema(description = "字典类型")
+    private String dictType;
+
     @Schema(description = "状态；1：启用；0：禁用")
     private Integer status;
 

@@ -1,0 +1,2 @@
+ALTER TABLE radish_master.sys_dict_type ADD dict_type varchar(20) NULL COMMENT '字典类型';
+ALTER TABLE radish_master.sys_dict_type CHANGE dict_type dict_type varchar(20) NULL COMMENT '字典类型' AFTER dict_name;
