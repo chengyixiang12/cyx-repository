@@ -16,11 +16,6 @@
             <result property="content" column="content" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <sql id="Base_Column_List">
-        id,parent_id,create_by,
-        create_time,update_by,update_time,
-        del_flag,tag,content
-    </sql>
     <select id="getRecentContext" parameterType="java.lang.Long" resultType="GetRecentContentDto">
         SELECT
             sdd.tag,

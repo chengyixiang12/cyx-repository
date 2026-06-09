@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.util.PathMatcher;
 
 /**
  * Spring Security 核心配置
@@ -47,6 +48,7 @@ public class SecurityConfig {
     private final RedisTemplate<String, Object> redisTemplate;
     private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
     private final RateLimitProperty rateLimitProperty;
+    private final PathMatcher pathMatcher;
 
     /**
      * BCrypt 强哈希密码编码器
@@ -87,7 +89,7 @@ public class SecurityConfig {
 
                 // 权限规则：白名单放行，其余全部认证
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(authorizationIgnoreProperty.getUrls().toArray(String[]::new)).permitAll()
+                        .requestMatchers(authorizationIgnoreProperty.getUrl().toArray(String[]::new)).permitAll()
                         .anyRequest().authenticated()
                 )
 
@@ -108,7 +110,7 @@ public class SecurityConfig {
                         new AuthorizationVerifyFilter(userDetailsService, redisTemplate),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(
-                        new RateLimitFilter(redisTemplate, rateLimitProperty),
+                        new RateLimitFilter(redisTemplate, rateLimitProperty, pathMatcher),
                         AuthorizationVerifyFilter.class);
 
         return http.build();

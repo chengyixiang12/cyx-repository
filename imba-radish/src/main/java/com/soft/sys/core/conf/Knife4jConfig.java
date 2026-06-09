@@ -77,7 +77,7 @@ public class Knife4jConfig {
      * @return true 表示免鉴权
      */
     private boolean isPermitUrl(String uri) {
-        List<String> permitUrls = authorizationIgnoreProperty.getUrls();
+        List<String> permitUrls = authorizationIgnoreProperty.getUrl();
         if (permitUrls == null || permitUrls.isEmpty()) {
             return false;
         }

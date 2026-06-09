@@ -4,6 +4,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.RegexConstant;
+import com.soft.sys.core.annotation.AccessControl;
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.model.request.LoginRequest;
@@ -132,8 +133,9 @@ public class AuthController {
 
     @GetMapping(value = "/getGraphicCaptcha")
     @Operation(summary = "获取图形验证码")
+    @AccessControl(interval = 2, key = "graphic-captcha")
     @Parameter(name = "uuid", description = "唯一标识", required = true, in = ParameterIn.QUERY)
-    public ResponseEntity<Object> getGraphicCaptcha(@RequestParam(value = "uuid", required = false) @NotNull(message = "唯一标识不能为空") @Size(min = 15, max = 20, message = "唯一标识长度不符合") String uuid) throws IOException {
+    public ResponseEntity<Object> getGraphicCaptcha(@RequestParam(value = "uuid", required = false) @NotNull(message = "唯一标识不能为空") @Size(min = 15, max = 20, message = "唯一标识范围异常") String uuid) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Pragma", "No-cache");

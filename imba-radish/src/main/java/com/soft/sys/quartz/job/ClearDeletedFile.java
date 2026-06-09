@@ -37,7 +37,7 @@ public class ClearDeletedFile implements Job {
     }
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         List<SelectDeletedFileDto> selectDeletedFileDtoList = sysFileService.selectDeletedFiles();
         log.info("本次共计清理{}个文件", selectDeletedFileDtoList.size());
         selectDeletedFileDtoList.forEach(item -> {

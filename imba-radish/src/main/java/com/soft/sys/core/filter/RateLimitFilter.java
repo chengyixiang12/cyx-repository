@@ -10,10 +10,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -26,17 +28,14 @@ import java.util.concurrent.TimeUnit;
  **/
 
 @Slf4j
+@RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final RateLimitProperty rateLimitProperty;
 
-    public RateLimitFilter(RedisTemplate<String, Object> redisTemplate,
-                           RateLimitProperty rateLimitProperty) {
-        this.redisTemplate = redisTemplate;
-        this.rateLimitProperty = rateLimitProperty;
-    }
+    private final PathMatcher pathMatcher;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
@@ -47,7 +46,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // 放行的接口不限流
-        if (rateLimitProperty.getPermit().getUrls().contains(requestURI)) {
+        if (rateLimitProperty.getPermit().getUrl().stream().anyMatch(pattern -> pathMatcher.match(pattern, requestURI))) {
             filterChain.doFilter(request, response);
             return;
         }

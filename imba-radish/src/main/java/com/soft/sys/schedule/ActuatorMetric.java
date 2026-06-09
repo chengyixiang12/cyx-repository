@@ -25,11 +25,9 @@ public class ActuatorMetric {
     private final SysActuatorService sysActuatorService;
     private final HealthEndpoint healthEndpoint;
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void run() {
         SysActuator sysActuator = new SysActuator();
-
-        Double test = getGaugeValue("jvm.memory.max", Tags.of("area", "heap"));
 
         // ========== 1. 基础系统指标 ==========
         Double cpuUsage = getGaugeValue("system.cpu.usage");

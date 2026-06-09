@@ -32,7 +32,7 @@ public class AccessControlAspect {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public AccessControlAspect(RedisTemplate<String, Object> redisTemplate, HttpServletRequest request) {
+    public AccessControlAspect(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
@@ -48,10 +48,10 @@ public class AccessControlAspect {
             key = CommonUtil.getIp(servletRequest);
         }
 
-        Integer curTimes = (Integer) redisTemplate.opsForValue().get(RedisConstant.ACCESS_CONTROL + key);
-        if (curTimes == null || curTimes < times) {
-            redisTemplate.opsForValue().setIfAbsent(RedisConstant.ACCESS_CONTROL + key, times, interval, unit);
-            redisTemplate.opsForValue().increment(RedisConstant.ACCESS_CONTROL + key);
+        String redisKey = RedisConstant.ACCESS_CONTROL + key;
+        redisTemplate.opsForValue().setIfAbsent(redisKey, 0, interval, unit);
+        Long curTimes = redisTemplate.opsForValue().increment(redisKey);
+        if (curTimes != null && curTimes <= times) {
             return joinPoint.proceed();
         } else {
             throw new GlobalException("已达访问上限，请稍候再试");

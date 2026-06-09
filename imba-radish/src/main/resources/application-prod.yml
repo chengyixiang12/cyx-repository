@@ -74,6 +74,19 @@ spring:
         quartz:
           threadPool:
             threadCount: 5
+  security:
+    permit:
+      # 不鉴权url
+      url:
+        - /auth/**
+        - /doc.html
+        - /message/sendRegistCaptcha
+        - /message/sendLoginCaptcha
+        - /ws/**
+        - /secretKey/getPublicKey
+        - /error
+        - /favicon.ico
+        - /user/validUserInfoForRegister
 
 # 启用api文档
 springdoc:
@@ -96,18 +109,6 @@ logging:
 # 临时文件存储路径
 tmp:
   path: /opt/project/tmp
-# 不鉴权url
-permit:
-  urls:
-    - /auth/**
-    - /doc.html
-    - /message/sendRegistCaptcha
-    - /message/sendLoginCaptcha
-    - /ws/**
-    - /secretKey/getPublicKey
-    - /error
-    - /favicon.ico
-    - /user/validUserInfoForRegister
 # 限流
 rate-limit:
   # 是否开启限流
@@ -117,7 +118,7 @@ rate-limit:
   # 窗口大小；单位：秒
   window-size: 1
   permit:
-    urls:
+    url:
       - /file/uploadChunk
 # 大文件存储路径
 storage:

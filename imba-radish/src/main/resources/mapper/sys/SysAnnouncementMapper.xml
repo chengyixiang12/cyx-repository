@@ -4,10 +4,4 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.sys.mapper.SysAnnouncementMapper">
 
-    <sql id="Base_Column_List">
-        id,sort_order,create_by,
-        create_time,update_by,update_time,
-        del_flag,title,publish_time,
-        context,status
-    </sql>
 </mapper>

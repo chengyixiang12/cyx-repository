@@ -35,5 +35,5 @@ public @interface AccessControl {
      * 唯一标识
      * @return
      */
-    String key() default "";
+    String key();
 }

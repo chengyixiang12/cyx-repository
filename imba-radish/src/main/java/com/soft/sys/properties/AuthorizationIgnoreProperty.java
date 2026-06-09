@@ -8,8 +8,8 @@ import java.util.List;
 
 @Component
 @Data
-@ConfigurationProperties(prefix = "permit")
+@ConfigurationProperties(prefix = "spring.security.permit")
 public class AuthorizationIgnoreProperty {
 
-    List<String> urls;
+    List<String> url;
 }

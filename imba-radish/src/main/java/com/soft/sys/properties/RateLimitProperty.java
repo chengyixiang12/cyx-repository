@@ -28,6 +28,6 @@ public class RateLimitProperty {
     @Data
     public static class Permit {
 
-        private List<String> urls;
+        private List<String> url;
     }
 }
