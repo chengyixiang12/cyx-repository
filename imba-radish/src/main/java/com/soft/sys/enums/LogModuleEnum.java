@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public enum LogModuleEnum {
 
-    DEFAULT(""),
+    DEFAULT("默认"),
     AUTHORIZATION("鉴权"),
     MESSAGE_QUEUE("消息队列"),
     DEPT("部门"),

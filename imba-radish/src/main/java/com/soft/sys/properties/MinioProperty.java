@@ -46,9 +46,4 @@ public class MinioProperty {
      */
     private TimeUnit timeUnit;
 
-    /**
-     * 连接超时；单位：毫秒
-     */
-    private Long connectTimeout = 5000L;
-
 }

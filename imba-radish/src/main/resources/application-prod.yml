@@ -141,6 +141,10 @@ management:
     health:
       # 显示详细信息
       show-details: always
+# websocket允许连接源
+websocket:
+  allowed-origins:
+    - imba-radish.top
 # flowable
 flowable:
   database-schema-update: true

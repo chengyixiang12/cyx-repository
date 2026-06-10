@@ -127,4 +127,3 @@ minio:
   secretKey: ${MINIO_SECRET_KEY}
   default-bucket: ${MINIO_DEFAULT_BUCKET}
   expire: 3600
-  connect-timeout: 10000

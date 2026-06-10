@@ -2,7 +2,7 @@ package com.soft.sys.core.annotation;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.FIELD, ElementType.TYPE, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface LogIgnore {

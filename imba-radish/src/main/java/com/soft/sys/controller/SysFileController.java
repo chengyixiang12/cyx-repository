@@ -76,6 +76,7 @@ public class SysFileController {
 
     @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
+    @SysLog(value = "上传文件", module = LogModuleEnum.FILE)
     public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile,
                                       @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "fileMd5不能为空") String fileMd5) {
         UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile, fileMd5);

@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
-import { base_url } from './src/common/global-config'
 
 const srcPath = path.resolve(__dirname, './src')
 
@@ -12,9 +11,14 @@ export default defineConfig({
     port: 8090,
     proxy: {
       '/api': {
-        target: base_url, // 设置代理目标
+        target: 'http://127.0.0.1:8081', // 设置代理目标
         changeOrigin: true, // 是否改变请求源地址
         rewrite: (path) => path.replace(/^\/api/, '') // 将 /api 替换为空字符串
+      },
+      '/ws': {
+        target: 'ws://127.0.0.1:8081', // 设置代理目标
+        changeOrigin: true, // 是否改变请求源地址
+        rewrite: (path) => path.replace(/^\/ws/, '') // 将 /ws 替换为空字符串
       }
     }
   },

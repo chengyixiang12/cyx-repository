@@ -27,9 +27,6 @@ public class MinioConfig {
         return MinioClient.builder()
                 .endpoint(minioProperty.getUrl())
                 .credentials(minioProperty.getAccessKey(), minioProperty.getSecretKey())
-                .httpClient(new OkHttpClient.Builder()
-                        .callTimeout(Duration.ofMillis(minioProperty.getConnectTimeout()))
-                        .build())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.soft.sys.core.conf;
 
+import com.soft.sys.properties.WebSocketProperty;
 import com.soft.sys.websocket.WebSocketInterceptor;
 import com.soft.sys.websocket.handle.CustomWebSocketHandlerDecorator;
 import com.soft.sys.websocket.handle.WebSocketHandler;
@@ -24,6 +25,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private final UserDetailsService userDetailsService;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final WebSocketProperty webSocketProperty;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -31,6 +33,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
                         new CustomWebSocketHandlerDecorator(new WebSocketHandler(), redisTemplate),
                         "/ws")
                 .addInterceptors(new WebSocketInterceptor(userDetailsService, redisTemplate))
-                .setAllowedOrigins("*");
+                .setAllowedOrigins(webSocketProperty.getAllowedOrigins().toArray(String[]::new));
     }
 }
