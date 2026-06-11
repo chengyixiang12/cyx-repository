@@ -1,10 +1,9 @@
-package com.soft.sys.websocket.handler;
+package com.soft.sys.websocket.registry;
 
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.api.WebSocketConcreteHolder;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class WebSocketConcreteRegistry {
 
     private final List<WebSocketConcreteHandler<?>> webSocketConcreteHandlers;
 
-    @Autowired
     public WebSocketConcreteRegistry(List<WebSocketConcreteHandler<?>> webSocketConcreteHandlers) {
         this.webSocketConcreteHandlers = webSocketConcreteHandlers;
     }
@@ -33,9 +31,8 @@ public class WebSocketConcreteRegistry {
     public void init() {
         log.info("开始注入websocket消息处理器");
         for (WebSocketConcreteHandler<?> c : webSocketConcreteHandlers) {
-            String order = c.getOrder().toString();
-            WebSocketConcreteHolder.addConcreteHandler(order, c);
-            log.debug("{}处理器注入成功", order);
+            WebSocketConcreteHolder.addConcreteHandler(c.getOrder().toString(), c);
+            log.debug("{}处理器注入成功", c.getOrder());
         }
     }
 }
