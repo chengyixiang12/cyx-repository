@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysRoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysRole">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="sortOrder" column="sort_order" jdbcType="INTEGER"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+            <result property="code" column="code" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="isDefault" column="is_default" jdbcType="TINYINT"/>
+            <result property="fixRole" column="fix_role" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,sort_order,create_by,
+        create_time,update_by,update_time,
+        del_flag,code,name,
+        description,status,is_default,
+        fix_role
+    </sql>
+
+    <select id="getRole" parameterType="java.lang.Long" resultType="SysRoleVo">
+        SELECT
+        sr.id,
+        sr.sort_order AS "sortOrder",
+        sr.`code`,
+        sr.`name`,
+        sr.description,
+        sr.`status`,
+        sr.is_default,
+        sr.fix_role
+        FROM
+        sys_role sr
+        WHERE
+        sr.del_flag = '0'
+        AND sr.id = #{id}
+    </select>
+    <select id="getRoles" parameterType="GetRolesRequest" resultType="SysRolesVo">
+        SELECT
+        sr.id,
+        sr.sort_order,
+        sr.`code`,
+        sr.`name`,
+        sr.description,
+        sr.`status`,
+        sr.is_default,
+        sr.fix_role
+        FROM
+        sys_role sr
+        WHERE
+        sr.del_flag = '0'
+        <if test="request.keyword != null and request.keyword != ''">
+            AND sr.`name` = #{request.keyword}
+        </if>
+        <if test="request.status != null">
+            AND sr.status = #{request.status}
+        </if>
+        <choose>
+            <when test="request.startTime != null and request.endTime != null">
+                AND ( sr.create_time BETWEEN #{request.startTime} AND #{request.endTime} )
+            </when>
+            <when test="request.startTime != null">
+                AND sr.create_time <![CDATA[>=]]> #{request.startTime}
+            </when>
+            <when test="request.endTime != null">
+                AND sr.create_time <![CDATA[<=]]> #{request.endTime}
+            </when>
+        </choose>
+        ORDER BY sr.sort_order
+    </select>
+    <update id="enableRole" parameterType="java.lang.Long">
+        UPDATE sys_role
+        SET `status` = 1
+        WHERE
+        id = #{id}
+    </update>
+    <update id="forbiddenRole" parameterType="java.lang.Long">
+        UPDATE sys_role
+        SET `status` = 0
+        WHERE
+        id = #{id}
+    </update>
+    <update id="setDefaultRole" parameterType="java.lang.Long">
+        UPDATE sys_role
+        SET is_default = 1
+        WHERE
+        id = #{id}
+    </update>
+    <update id="cancelDefaultRole">
+        UPDATE sys_role
+        SET is_default = 0
+        WHERE
+        is_default = 1
+    </update>
+    <select id="getRoleCodeByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+        sr.`code` AS "roleCode"
+        FROM
+        sys_role sr
+        JOIN sys_user_role sur ON sr.id = sur.role_id
+        WHERE
+        sr.del_flag = '0'
+        AND sur.user_id = #{userId}
+    </select>
+    <select id="fixRolesFlag" parameterType="java.util.List" resultType="FixRolesDto">
+        SELECT
+        sr.`name`,
+        sr.fix_role AS "fixRole",
+        sr.is_default AS "isDefault"
+        FROM
+        sys_role sr
+        WHERE
+        sr.del_flag = '0'
+        AND sr.id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <insert id="setMenus" parameterType="SetMenusRequest">
+        INSERT INTO sys_role_menu ( role_id, menu_id )
+        <foreach collection="request.menuIds" item="item" open="VALUES" separator="," close="">
+            (#{request.roleId},#{item})
+        </foreach>
+    </insert>
+    <delete id="deleteRoleMenus" parameterType="java.lang.Long">
+        DELETE
+        FROM
+        sys_role_menu
+        WHERE
+        role_id = #{roleId}
+    </delete>
+    <delete id="deleteRolePermissions" parameterType="SetPermissionsRequest">
+        DELETE
+        FROM
+        sys_role_permission
+        WHERE
+        role_id = #{request.roleId}
+        <if test="request.getPermissionIds() != null and request.getPermissionIds().size > 0">
+            AND permission_id IN
+            <foreach collection="request.permissionIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+    <insert id="setPermissions" parameterType="SetPermissionsRequest">
+        INSERT INTO sys_role_permission ( role_id, permission_id )
+        <foreach collection="request.permissionIds" item="item" open="VALUES" separator="," close="">
+            (#{request.roleId},#{item})
+        </foreach>
+    </insert>
+    <select id="getUserRole" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+        sr.id
+        FROM
+        sys_role sr
+        JOIN sys_user_role sur ON sr.id = sur.role_id
+        WHERE
+        sr.del_flag = '0'
+        AND sur.user_id = #{userId}
+    </select>
+    <select id="getRoleCodesByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+        sr.`code`
+        FROM
+        `sys_role` sr
+        JOIN `sys_user_role` sur ON sr.`id` = sur.role_id
+        WHERE
+        sr.del_flag = '0'
+        AND sur.user_id = #{userId}
+    </select>
+    <select id="getDefaultRole" parameterType="java.lang.Integer" resultType="java.lang.Long">
+        SELECT
+            sr.`id`
+        FROM
+            `sys_role` sr
+        WHERE
+            sr.is_default = #{defaultRoleFlag}
+    </select>
+    <update id="setFixRole" parameterType="java.lang.Long">
+        UPDATE
+            sys_role
+        SET
+            fix_role = 1
+        WHERE
+            del_flag = '0'
+          AND id = #{id}
+    </update>
+    <update id="cancelFixRole" parameterType="java.lang.Long">
+        UPDATE
+            sys_role
+        SET
+            fix_role = 0
+        WHERE
+            del_flag = '0'
+          AND id = #{id}
+    </update>
+    <select id="getRoleSelect" resultType="GetRoleSelectVo">
+        SELECT
+            sr.id,
+            sr.name
+        FROM
+            sys_role sr
+        WHERE
+            sr.del_flag = '0'
+          AND sr.status = 1
+    </select>
+</mapper>

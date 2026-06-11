@@ -4,17 +4,18 @@ server:
     context-path: /
   tomcat:
     # 连接超时（毫秒）
-    connection-timeout: 30000
-    # 保持连接时长（秒）
-    keep-alive-timeout: 60
-    # 最大连接数
-    max-connections: 1024
+    connection-timeout: 60000
+    # 保持连接时长（毫秒）
+    keep-alive-timeout: 30000
     remoteip:
       # 明确指定解析真实 IP 的头
       remote-ip-header: X-Forwarded-For
   forward-headers-strategy: native
 
 spring:
+  threads:
+    virtual:
+      enabled: true
   ai:
     deepseek:
       api-key: ${DEEPSEEK_API_KEY}
@@ -44,11 +45,6 @@ spring:
         max-interval: 10000
     # 每次询问最多保留上下文数量
     max-context-num: 7
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
-    serialization:
-      write-dates-as-timestamps: false
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 #  config:
@@ -56,9 +52,6 @@ spring:
 #    location: classpath:/application.yml
 #    #指定额外配置文件（会覆盖掉相同的配置，额外配置优先级最高）
 #    import: classpath:application-dev.yml
-  mvc:
-    async:
-      request-timeout: 150000
   application:
     name: radish
   servlet:
@@ -81,7 +74,7 @@ spring:
 
 # mybatis配置
 mybatis-plus:
-  mapper-locations: classpath:/mapper/*.xml
+  mapper-locations: classpath:/mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
@@ -91,7 +84,7 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
       logic-delete-field: delFlag
-  type-aliases-package: com.soft.base.entity, com.soft.base.model.request, com.soft.base.model.vo, com.soft.base.model.dto
+  type-aliases-package: com.soft.sys.entity, com.soft.sys.model.request, com.soft.sys.model.vo, com.soft.sys.model.dto
 
 # springdoc-openapi项目配置
 springdoc:
@@ -116,13 +109,6 @@ knife4j:
     language: zh_cn
     swagger-model-name: 实体列表
 
-# jwt；已弃用
-jwt:
-  # 密钥
-  secret-key: abcdefghijklmnopq123456789
-  # 单位秒；1小时过期
-  expire: 3600000
-
 # webclient配置
 web-client:
   response-timeout: 5
@@ -134,14 +120,10 @@ web-client:
     max-life-time: 300
     evict-in-background: 120
 
-
 # minio对象存储
 minio:
   url: ${MINIO_URL}
   accessKey: ${MINIO_ACCESS_KEY}
   secretKey: ${MINIO_SECRET_KEY}
   default-bucket: ${MINIO_DEFAULT_BUCKET}
-  avatar-bucket: ${MINIO_AVATAR_BUCKET}
   expire: 3600
-  time-unit: seconds
-  connect-timeout: 10000

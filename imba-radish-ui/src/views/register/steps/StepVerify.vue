@@ -22,7 +22,7 @@ import { computed, ref, onUnmounted } from 'vue'
 import { registerApi, sendRegistCaptchaApi } from '@/api/register'
 import type { FormInstance, FormRules } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa'
-import { getPublicKey } from '@/api/auth'
+import { getPublicKeyApi } from '@/api/auth'
 
 const props = defineProps<{ modelValue: RegisterRequest }>()
 const emit = defineEmits<{
@@ -70,7 +70,7 @@ const complete = async () => {
   try {
     const valid = await formRef.value?.validate()
     if (valid) {
-      const publicKey = await getPublicKey(0)
+      const publicKey = await getPublicKeyApi()
       formData.value.password = RSAUtil.encrypt(formData.value.password, publicKey)
       await registerApi(formData.value)
       emit('next')

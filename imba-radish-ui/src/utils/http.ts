@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
+import axios, { AxiosResponse, Method } from 'axios';
 import { ApiResponse, ApiError, RequestConfig } from '@/types/method';
 import router from '@/router/routers';
 import { clearCache } from '@/utils/clearCache';
@@ -6,7 +6,7 @@ import { showMessage } from './message';
 
 const instance = axios.create({
   baseURL: '/api',
-  timeout: 30000, // 延长超时时间
+  timeout: 60000, // 延长超时时间
   headers: {
     'Content-Type': 'application/json' // 设置默认请求头
   }
@@ -67,12 +67,10 @@ function handleResponseError(error: any) {
 
 // 错误码处理
 function handleErrorCode(data: ApiResponse) {
-  const authErrorCodes = [5002, 5004, 5005];
+  const authErrorCodes = [10003, 10005, 10006];
   if (authErrorCodes.includes(data.code)) {
     clearCache();
     router.push('/login');
-  } else if (data.code === 5003) {
-    router.push('/403');
   }
   showCustomMessage(data.msg, data.code)
 }
@@ -121,7 +119,7 @@ async function request<T = any>(
 
     // 5. JSON 响应处理（保留你的原有逻辑）
     const res = response.data as ApiResponse<T>;
-    if (res.code && res.code !== 2001) throw new Error(res.msg);
+    if (res.code && res.code !== 10000) throw new Error(res.msg);
     return res;
 
   } catch (error) {
@@ -212,20 +210,13 @@ export async function postBlob<Blob>(
   }
 }
 
-// Actuator专用请求方法
-export async function getActuator<Metrics>(endpoint: string): Promise<Metrics> {
-  endpoint = `/actuator${endpoint}`
-  const response = await instance.get<Metrics>(endpoint)
-  return response.data;
-}
-
 /**
  * 自定义位置和颜色的消息提示
  * @param {string} message 提示消息内容
  * @param {number} code 状态码
  */
 function showCustomMessage(message: string, code: number) {
-  showMessage(message, code === 2001 ? 'success' : 'error')
+  showMessage(message, code === 10000 ? 'success' : 'error')
 }
 
 export default instance;

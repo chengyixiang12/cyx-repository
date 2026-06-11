@@ -25,7 +25,7 @@ export async function getDeptsApi(data: GetDeptsRequest): Promise<PaginatedData<
  * 删除部门
  * @param id 
  */
-export async function deleteDeptApi(id: number) {
+export async function deleteDeptApi(id: string) {
   await del('/dept', null, { flag: true, params: { id } })
 }
 

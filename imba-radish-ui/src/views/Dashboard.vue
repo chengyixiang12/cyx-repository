@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <!-- 上部欢迎卡片 - 高度缩小 -->
+    <!-- 上部欢迎卡片 -->
     <el-card shadow="hover" class="welcome-card">
       <div class="welcome-message">
         <h2>欢迎回来，{{ nickname }}！</h2>
@@ -12,13 +12,20 @@
     <el-row :gutter="20" class="content-row">
       <!-- 公告板 -->
       <el-col :span="12">
-        <el-card shadow="hover">
+        <el-card shadow="hover" v-loading="loading">
           <template #header>
             <div class="card-header">
               <span>系统公告</span>
+              <el-button type="text" size="small" class="view-all-btn">查看全部</el-button>
             </div>
           </template>
-          <div class="content-list">
+          <div v-if="announcements.length === 0" class="empty-state">
+            <el-icon size="48" class="empty-icon">
+              <Bell />
+            </el-icon>
+            <p>暂无公告</p>
+          </div>
+          <div v-else class="content-list">
             <div v-for="item in announcements" :key="item.id" class="content-item"
               @click="showAnnouncementDetail(item)">
               <div class="content-title">{{ item.title }}</div>
@@ -30,13 +37,20 @@
 
       <!-- 待办事项 -->
       <el-col :span="12">
-        <el-card shadow="hover">
+        <el-card shadow="hover" v-loading="loading">
           <template #header>
             <div class="card-header">
               <span>我的待办</span>
+              <el-button type="text" size="small" class="view-all-btn">查看全部</el-button>
             </div>
           </template>
-          <div class="content-list">
+          <div v-if="todos.length === 0" class="empty-state">
+            <el-icon size="48" class="empty-icon">
+              <CircleCheck />
+            </el-icon>
+            <p>暂无待办</p>
+          </div>
+          <div v-else class="content-list">
             <div v-for="item in todos" :key="item.id" class="content-item" @click="showTodoDetail(item)">
               <div class="content-title">
                 <el-tag :type="item.status === '已完成' ? 'success' : 'warning'" size="small">
@@ -51,23 +65,62 @@
       </el-col>
     </el-row>
 
-    <!-- 对话框部分保持不变 -->
-    <!-- ... -->
+    <!-- 公告详情对话框 -->
+    <el-dialog title="公告详情" :visible.sync="announcementDetailVisible" width="500px">
+      <div class="detail-info">
+        <h3>{{ currentAnnouncement.title }}</h3>
+        <div class="detail-time">发布时间：{{ formatTime(currentAnnouncement.publishTime) }}</div>
+        <div class="detail-content">{{ currentAnnouncement.content }}</div>
+      </div>
+    </el-dialog>
+
+    <!-- 待办详情对话框 -->
+    <el-dialog title="待办详情" :visible.sync="todoDetailVisible" width="500px">
+      <div class="detail-info">
+        <div class="detail-header">
+          <h3>{{ currentTodo.title }}</h3>
+          <el-tag :type="currentTodo.status === '已完成' ? 'success' : 'warning'">
+            {{ currentTodo.status }}
+          </el-tag>
+        </div>
+        <div class="detail-time">截止时间：{{ formatTime(currentTodo.deadline) }}</div>
+        <div class="detail-content">{{ currentTodo.description }}</div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="todoDetailVisible = false">关闭</el-button>
+        <el-button type="primary" v-if="currentTodo.status !== '已完成'" @click="markTodoComplete">
+          标记完成
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { UserInfoVo } from '@/types/login';
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, reactive } from 'vue'
 import dayjs from 'dayjs'
+import { User, Files, Bell, Clock } from '@element-plus/icons-vue'
+import { showMessage } from '@/utils/message';
 
 // 用户信息
 const nickname = ref('');
+
+// 加载状态
+const loading = ref(false);
 
 // 日期显示
 const currentDate = computed(() => {
   return dayjs().format('YYYY年MM月DD日 dddd')
 })
+
+// 统计数据
+const stats = reactive({
+  totalUsers: 128,
+  totalFiles: 567,
+  totalAnnouncements: 3,
+  pendingTodos: 2
+});
 
 // 公告相关
 const announcements = ref([
@@ -102,8 +155,13 @@ const currentTodo = ref({
 
 // 方法
 const getNickname = () => {
-  const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
-  nickname.value = userInfo.nickname ?? '';
+  try {
+    const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
+    nickname.value = userInfo.nickname ?? '用户';
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+    nickname.value = '用户';
+  }
 }
 
 const formatTime = (time: string) => {
@@ -120,8 +178,36 @@ const showTodoDetail = (item: any) => {
   todoDetailVisible.value = true
 }
 
+const markTodoComplete = () => {
+  const todo = todos.value.find(t => t.id === currentTodo.value.id);
+  if (todo) {
+    todo.status = '已完成';
+    currentTodo.value.status = '已完成';
+    stats.pendingTodos = todos.value.filter(t => t.status !== '已完成').length;
+    showMessage('已标记为完成', 'success');
+  }
+}
+
+// 模拟加载数据
+const loadData = async () => {
+  loading.value = true;
+  try {
+    // 这里可以替换为真实的 API 调用
+    // await fetchAnnouncements();
+    // await fetchTodos();
+    // await fetchStats();
+    await new Promise(resolve => setTimeout(resolve, 500));
+  } catch (error) {
+    console.error('加载数据失败:', error);
+    showMessage('加载数据失败', 'error');
+  } finally {
+    loading.value = false;
+  }
+}
+
 onMounted(() => {
   getNickname();
+  loadData();
 })
 </script>
 
@@ -130,14 +216,78 @@ onMounted(() => {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  height: 50%;
+  min-height: calc(100vh - 120px);
 }
 
-/* 上部欢迎卡片样式调整 */
+/* 统计卡片区域 */
+.stats-row {
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.stat-icon.bg-blue {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon.bg-green {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-icon.bg-purple {
+  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+}
+
+.stat-icon.bg-orange {
+  background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #909399;
+  margin-top: 4px;
+}
+
+/* 上部欢迎卡片样式 */
 .welcome-card {
   margin-bottom: 16px;
   padding: 16px 0;
-  min-height: 200px;
+  min-height: 120px;
 }
 
 .welcome-message {
@@ -156,34 +306,40 @@ onMounted(() => {
   font-size: 14px;
 }
 
-/* 内容区域调整 */
+/* 内容区域 */
 .content-row {
   flex: 1;
   min-height: 0;
-  /* 防止内容溢出 */
 }
 
 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 8px 0;
+}
+
+.view-all-btn {
+  color: #409eff;
 }
 
 .content-list {
   padding: 8px;
-  height: calc(100% - 56px);
-  /* 减去标题栏高度 */
+  max-height: 300px;
   overflow-y: auto;
 }
 
 .content-item {
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
 }
 
 .content-item:hover {
   background-color: #f5f7fa;
+  padding-left: 8px;
 }
 
 .content-title {
@@ -192,11 +348,44 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #303133;
 }
 
 .content-time {
   font-size: 12px;
   color: #909399;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #909399;
+}
+
+.empty-icon {
+  margin-bottom: 12px;
+  color: #c0c4cc;
+}
+
+/* 详情对话框样式 */
+.detail-info {
+  padding: 8px 0;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.detail-header h3 {
+  margin: 0;
+  font-size: 16px;
 }
 
 .detail-time {
@@ -206,11 +395,46 @@ onMounted(() => {
 }
 
 .detail-content {
-  line-height: 1.6;
+  line-height: 1.8;
   white-space: pre-line;
+  color: #606266;
 }
 
-.detail-info p {
-  margin-bottom: 12px;
+.dialog-footer {
+  text-align: right;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+  .stats-row {
+    margin-bottom: 12px;
+  }
+
+  .stat-card {
+    padding: 12px;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    margin-right: 12px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .welcome-card {
+    min-height: 100px;
+  }
+
+  .welcome-message h2 {
+    font-size: 16px;
+  }
+
+  .content-list {
+    max-height: 250px;
+  }
 }
 </style>

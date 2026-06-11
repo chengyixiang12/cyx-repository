@@ -1,0 +1,18 @@
+ALTER TABLE radish_master.sys_actuator CHANGE memery_used memory_used BIGINT NULL COMMENT '内存使用量';
+ALTER TABLE radish_master.sys_actuator CHANGE memery_max memory_max BIGINT NULL COMMENT '最大内存容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_heap_max BIGINT NULL COMMENT '堆内存最大容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_heap_used BIGINT NULL COMMENT '堆内存使用量';
+ALTER TABLE radish_master.sys_actuator ADD memory_noheap_max BIGINT NULL COMMENT '非堆内存最大容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_noheap_used BIGINT NULL COMMENT '非堆内存使用量';
+ALTER TABLE radish_master.sys_actuator ADD memory_g1_eden_max BIGINT NULL COMMENT 'G1的eden区最大内存容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_g1_eden_used BIGINT NULL COMMENT 'G1的eden区内存使用量';
+ALTER TABLE radish_master.sys_actuator ADD memory_g1_survivor_max BIGINT NULL COMMENT 'G1的survivor区最大内存容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_g1_survivor_used BIGINT NULL COMMENT 'G1的survivor区内存使用量';
+ALTER TABLE radish_master.sys_actuator ADD memory_g1_old_used BIGINT NULL COMMENT 'G1的老年代内存使用量';
+ALTER TABLE radish_master.sys_actuator ADD memory_g1_old_max BIGINT NULL COMMENT 'G1的老年代最大内存容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_code_cache_max BIGINT NULL COMMENT '代码缓存最大内存容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_code_cache_used BIGINT NULL COMMENT '代码缓存内存使用量';
+ALTER TABLE radish_master.sys_actuator ADD memory_metaspace_max BIGINT NULL COMMENT '元空间最大内存容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_metaspace_used BIGINT NULL COMMENT '元空间内存使用量';
+ALTER TABLE radish_master.sys_actuator ADD memory_compress_class_space_used BIGINT NULL COMMENT '压缩类空间内存使用容量';
+ALTER TABLE radish_master.sys_actuator ADD memory_compress_class_space_max BIGINT NULL COMMENT '压缩类空间最大内存容量';

@@ -1,9 +1,8 @@
 <template>
-    <div class="main-container">
+    <el-container class="page-container">
         <!-- 顶部导航栏 -->
-        <el-header class="main-header">
+        <el-header class="page-header">
             <div class="header-left">
-                <!-- 添加菜单收缩按钮 -->
                 <el-icon class="collapse-icon" @click="toggleCollapse">
                     <Expand v-if="isCollapsed" />
                     <Fold v-else />
@@ -12,14 +11,12 @@
                 <img src="../assets/dashboard.png" class="logo" alt="Logo">
             </div>
             <div class="header-right">
-                <!-- 消息图标 -->
                 <div class="message-icon-wrapper">
                     <el-icon class="message-icon" @click="handleMessageClick">
                         <Bell />
                         <span v-if="unreadCount > 0" class="message-dot"></span>
                     </el-icon>
                 </div>
-                <!-- 新增带提示的首页图标 -->
                 <el-tooltip content="首页" placement="bottom" effect="light">
                     <el-icon class="home-icon" @click="goHome">
                         <HomeFilled />
@@ -37,7 +34,7 @@
                                     <User />
                                 </el-icon> 个人中心
                             </el-dropdown-item>
-                            <el-dropdown-item divided @click="logout">
+                            <el-dropdown-item divided @click="handleLogout">
                                 <el-icon>
                                     <SwitchButton />
                                 </el-icon> 退出登录
@@ -48,9 +45,10 @@
             </div>
         </el-header>
 
-        <div class="main-body">
+        <!-- 主体内容区：左侧菜单 + 右侧内容（main + footer） -->
+        <el-container class="page-body">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '5vw' : '15vw'" class="main-left">
+            <el-aside :width="isCollapsed ? '64px' : '160px'" class="main-left">
                 <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
                     text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
                     :collapse-transition="false">
@@ -80,22 +78,32 @@
                 </el-menu>
             </el-aside>
 
-            <!-- 右侧内容区 -->
-            <el-main class="main-right">
-                <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
-                    @close-other="closeOtherTabs" @close-all="closeAllTabs" />
-                <div class="router-view-wrapper">
-                    <router-view v-slot="{ Component }">
-                        <div v-if="Component">
-                            <transition name="fade">
-                                <component :is="Component" />
+            <!-- 右侧内容区：main + footer 垂直排列 -->
+            <el-container class="main-right-wrapper">
+                <!-- 主内容区 -->
+                <el-main class="main-right">
+                    <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
+                        @close-other="closeOtherTabs" @close-all="closeAllTabs" />
+                    <div class="router-view-wrapper">
+                        <router-view v-slot="{ Component }">
+                            <transition name="fade" mode="out-in">
+                                <div>
+                                    <component :is="Component" :key="Component" />
+                                </div>
                             </transition>
-                        </div>
-                    </router-view>
-                </div>
-            </el-main>
-        </div>
-    </div>
+                        </router-view>
+                    </div>
+                </el-main>
+
+                <!-- 底部页脚 -->
+                <el-footer class="page-footer">
+                    <div class="footer-content">
+                        <span>© 2024 萝卜系统 - 后台管理系统</span>
+                    </div>
+                </el-footer>
+            </el-container>
+        </el-container>
+    </el-container>
 </template>
 
 <script lang="ts" setup>
@@ -112,7 +120,7 @@ import {
 import { clearCache } from '../utils/clearCache'
 import { UserInfoVo } from '@/types/login'
 import { logouted } from '@/api/login'
-import { ElTooltip } from 'element-plus'
+import { ElTooltip, ElMessageBox } from 'element-plus'
 import type { MenuItem } from '@/types/menu'
 import { getMessageNumApi } from '@/api/message'
 import { getLeftMenusApi } from '@/api/dashboard'
@@ -219,6 +227,25 @@ const logout = () => {
     });
 }
 
+// 退出登录确认
+const handleLogout = async () => {
+    try {
+        await ElMessageBox.confirm(
+            '确定要退出登录吗？',
+            '提示',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                buttonSize: 'small'
+            }
+        )
+        logout()
+    } catch {
+        // 用户取消退出
+    }
+}
+
 // 首页
 const goHome = () => {
     router.push('/');
@@ -296,16 +323,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.main-container {
+.page-container {
     height: 100vh;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
 }
 
-.main-header {
-    height: 8vh;
-    background: #b3b9bf;
+.page-header {
+    height: 64px;
+    background: #858ea1;
     color: white;
     display: flex;
     justify-content: space-between;
@@ -315,22 +340,25 @@ onMounted(() => {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.main-body {
+.page-body {
     flex: 1;
-    display: flex;
-    flex-direction: row;
-    margin: 5px 0 5px 5px;
+    /* margin: 5px 0 5px 5px; */
     min-height: 0;
 }
 
 .main-left {
-    background: #b3b9bf;
-    border-radius: 4px;
-    margin-right: 5px;
-    margin-top: 4px;
+    background: #dadbdd;
     overflow: hidden;
     overflow-y: auto;
-    flex-shrink: 0;
+    scrollbar-gutter: stable;
+}
+
+.main-right-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .main-right {
@@ -339,7 +367,6 @@ onMounted(() => {
     flex-direction: column;
     overflow: hidden;
     padding: 0;
-    margin-right: 5px;
     min-height: 0;
 }
 
@@ -348,6 +375,26 @@ onMounted(() => {
     padding: 5px;
     overflow: hidden;
     min-height: 0;
+}
+
+.router-view {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.page-footer {
+    height: 40px;
+    background: #dadbdd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+    text-align: center;
 }
 
 :deep(.el-tabs__header) {

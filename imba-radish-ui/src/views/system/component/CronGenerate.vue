@@ -165,6 +165,10 @@ const handleTimeUnitChange = () => {
 
   if (currentValue === '*' || currentValue === '?') {
     configType.value = getDefaultConfigType(activeTimeUnit.value);
+    rangeStart.value = minValue.value;
+    rangeEnd.value = maxValue.value;
+    intervalStart.value = minValue.value;
+    intervalStep.value = 1;
   } else if (currentValue.includes('/')) {
     const [start, step] = currentValue.split('/').map(Number);
     intervalStart.value = start;
@@ -188,7 +192,19 @@ const handleTimeUnitChange = () => {
     }
   }
   
-  // 设置默认勾选值
+  if (rangeEnd.value > maxValue.value) {
+    rangeEnd.value = maxValue.value;
+  }
+  if (rangeStart.value > maxValue.value) {
+    rangeStart.value = maxValue.value;
+  }
+  if (intervalStart.value > maxValue.value) {
+    intervalStart.value = maxValue.value;
+  }
+  if (intervalStep.value > maxValue.value) {
+    intervalStep.value = maxValue.value;
+  }
+  
   if (['second', 'minute', 'hour'].includes(activeTimeUnit.value) && 
       configType.value === 'specific' && 
       checkedValues.value.length === 0) {

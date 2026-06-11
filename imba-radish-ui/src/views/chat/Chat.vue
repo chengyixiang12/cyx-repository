@@ -1,11 +1,27 @@
 <template>
   <div class="page-container">
+    <!-- 工具栏 -->
+    <!-- <div class="chat-toolbar">
+      <el-button size="small" @click="clearChat" :disabled="messages.length === 0">
+        <el-icon><Delete /></el-icon> 清空聊天
+      </el-button>
+    </div> -->
+
     <!-- 消息展示区 -->
     <div class="chat-box" ref="chatBox">
+      <!-- 空状态 -->
+      <div v-if="messages.length === 0" class="empty-state">
+        <el-empty description="暂无消息，开始对话吧" />
+      </div>
+
       <div v-for="msg in messages" :key="msg.id" class="message-row" :class="msg.role">
         <el-tag :type="msg.role === 'user' ? 'success' : 'info'">
           {{ msg.role === 'user' ? '你' : 'AI' }}
         </el-tag>
+        <div v-if="msg.status === 'error'" class="error-tip">
+          <el-icon><WarningFilled /></el-icon>
+          <span @click="retryMessage(msg)">重发</span>
+        </div>
         <div class="message-bubble markdown-body">
           <VueMarkdownIt :source="msg.content" />
         </div>
@@ -14,15 +30,20 @@
 
     <!-- 输入框和发送按钮 -->
     <div class="textarea-wrapper">
-      <el-input v-model="input" type="textarea" placeholder="请输入消息" @keyup.enter="sendMessage"
-        :autosize="{ minRows: 4, maxRows: 6 }" class="custom-textarea" />
-      <el-button type="primary" class="send-btn" @click="sendMessage">发送</el-button>
+      <el-input v-model="input" type="textarea" placeholder="请输入消息，按 Enter 发送" @keyup.enter="sendMessage"
+        :autosize="{ minRows: 4, maxRows: 6 }" class="custom-textarea" :disabled="isLoading" />
+      <el-button type="primary" class="send-btn" @click="sendMessage" :disabled="isLoading || !input.trim()">
+        <span v-if="isLoading">发送中...</span>
+        <span v-else>发送</span>
+      </el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, nextTick } from 'vue'
+import { ElMessage } from 'element-plus'
+import { Delete, WarningFilled } from '@element-plus/icons-vue'
 import { getWebSocketInstance } from '@/utils/websocket'
 import VueMarkdownIt from 'vue3-markdown-it'
 import { saveDialogueApi } from '@/api/dialogueHistory'
@@ -33,6 +54,7 @@ interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
+  status?: 'sending' | 'error' | 'done'
 }
 
 const input = ref('')
@@ -45,46 +67,74 @@ const dialogue = ref<SaveDialogueRequest>({
 const dialogueId = ref<number | null>(null)
 const isLoading = ref(false)
 
-wsInstance.aiAnwser = (message: WebsocketMessage) => {
-  const last = messages.value[messages.value.length - 1]
-
-  if (isLoading.value && last && last.role === 'assistant' && last.content === 'AI 正在输入中...') {
-    last.content = ''
-  }
-
-  if (!last || last.role !== 'assistant') {
-    messages.value.push({ id: generateMessageId(), role: 'assistant', content: '' })
-  }
-  messages.value[messages.value.length - 1].content += message.answer
-  scrollToBottom()
-}
-
 // 生成唯一消息ID
 const generateMessageId = () => {
   return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }
 
-const scrollToBottom = async () => {
+const scrollToBottom = () => {
   nextTick(() => {
     chatBox.value?.scrollTo({ top: chatBox.value.scrollHeight, behavior: 'smooth' })
   })
 }
 
-const sendMessage = async () => {
-  if (!dialogueId.value || dialogueId.value == null) {
-    await saveDialogue();
+// 清空聊天
+const clearChat = () => {
+  messages.value = []
+  dialogueId.value = null
+  dialogue.value.title = null
+  ElMessage.success('已清空聊天记录')
+}
+
+// 重发消息
+const retryMessage = async (msg: Message) => {
+  if (msg.role !== 'user' || msg.status !== 'error') return
+  
+  msg.status = 'sending'
+  messages.value.push({ id: generateMessageId(), role: 'assistant', content: 'AI 正在输入中...', status: 'sending' })
+  isLoading.value = true
+  scrollToBottom()
+
+  try {
+    wsInstance.send({ order: 'AI', question: msg.content, dialogueId: dialogueId.value })
+  } catch {
+    isLoading.value = false
   }
+}
+
+const sendMessage = async () => {
   const content = input.value.trim()
-  if (!content) return
-  messages.value.push({ id: generateMessageId(), role: 'user', content })
+  if (!content || isLoading.value) return
+
+  if (!dialogueId.value) {
+    try {
+      await saveDialogue();
+    } catch (error) {
+      ElMessage.error('创建对话失败，请重试')
+      return
+    }
+  }
+
+  const userMsg: Message = { id: generateMessageId(), role: 'user', content, status: 'done' }
+  messages.value.push(userMsg)
   input.value = ''
 
   // 添加"AI 正在输入..."提示
-  messages.value.push({ id: generateMessageId(), role: 'assistant', content: 'AI 正在输入中...' })
+  const aiMsg: Message = { id: generateMessageId(), role: 'assistant', content: 'AI 正在输入中...', status: 'sending' }
+  messages.value.push(aiMsg)
   isLoading.value = true
 
-  await scrollToBottom()
-  wsInstance.send({ order: 'AI', question: content, dialogueId: dialogueId.value })
+  scrollToBottom()
+
+  try {
+    wsInstance.send({ order: 'AI', question: content, dialogueId: dialogueId.value })
+  } catch (error) {
+    isLoading.value = false
+    userMsg.status = 'error'
+    aiMsg.content = '发送失败，请检查网络后重试'
+    aiMsg.status = 'error'
+    ElMessage.error('发送消息失败')
+  }
 }
 
 // 新增对话
@@ -93,8 +143,32 @@ const saveDialogue = async () => {
   dialogueId.value = await saveDialogueApi(dialogue.value)
 }
 
-onMounted(() => {
-})
+// 监听 WebSocket 错误
+wsInstance.onError = () => {
+  isLoading.value = false
+  const last = messages.value[messages.value.length - 1]
+  if (last && last.role === 'assistant' && last.status === 'sending') {
+    last.content = '连接失败，请检查网络'
+    last.status = 'error'
+  }
+  ElMessage.error('WebSocket 连接错误')
+}
+
+wsInstance.aiAnwser = (message: WebsocketMessage) => {
+  const last = messages.value[messages.value.length - 1]
+
+  if (isLoading.value && last && last.role === 'assistant' && last.content === 'AI 正在输入中...') {
+    last.content = ''
+    last.status = 'done'
+  }
+
+  if (!last || last.role !== 'assistant') {
+    messages.value.push({ id: generateMessageId(), role: 'assistant', content: '', status: 'done' })
+  }
+  messages.value[messages.value.length - 1].content += message.answer
+  isLoading.value = false
+  scrollToBottom()
+}
 </script>
 
 <style scoped>
@@ -104,20 +178,36 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  min-height: 83vh;
+  min-height: calc(100vh - 160px);
+  max-height: calc(100vh - 160px);
   box-sizing: border-box;
   background-color: #f5f7fa;
+  overflow: hidden;
+}
+
+.chat-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
 }
 
 .chat-box {
   flex-grow: 1;
-  height: 60vh;
   overflow-y: auto;
   margin-bottom: 1rem;
   padding: 1rem;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+  min-height: 0;
 }
 
 .chat-box::-webkit-scrollbar {
@@ -183,6 +273,24 @@ onMounted(() => {
 .message-row.assistant .message-bubble {
   background-color: #ecf5ff;
   border-bottom-left-radius: 4px;
+}
+
+.error-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #f56c6c;
+  cursor: pointer;
+}
+
+.error-tip:hover {
+  text-decoration: underline;
+}
+
+.error-tip .el-icon {
+  font-size: 14px;
 }
 
 .textarea-wrapper {

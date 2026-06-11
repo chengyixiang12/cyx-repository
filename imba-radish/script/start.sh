@@ -1,35 +1,37 @@
 #!/bin/bash
-JVM_OPTS="-Xms384m \
-          -Xmx384m \
+
+PID_FILE="app.pid"
+
+JVM_OPTS="-Xms256m \
+          -Xmx256m \
+          -XX:MaxMetaspaceSize=256m \
+          -XX:CompressedClassSpaceSize=64m \
+          -XX:ReservedCodeCacheSize=128m \
+          -XX:MaxDirectMemorySize=64m \
+          -Xss256k \
+          -XX:+UseG1GC \
           -XX:+HeapDumpOnOutOfMemoryError \
           -XX:HeapDumpPath=./heapdump.hprof \
           -Dspring.profiles.active=prod"
 
-if [ $# -eq 0 ]; then
-    echo "请传入 Jar 包文件名（示例：sh start.sh your-app.jar）"
-    exit 1
-fi
+[ $# -eq 0 ] && { echo "请传入 Jar 包文件名"; exit 1; }
 
 JAR_PATH="$1"
-if [ ! -f "$JAR_PATH" ]; then
-    echo "错误：Jar包 $JAR_PATH 不存在！"
-    exit 1
-fi
+[ ! -f "$JAR_PATH" ] && { echo "错误：Jar包 $JAR_PATH 不存在！"; exit 1; }
 
-# 获取jar包名称（不含路径）
 JAR_NAME=$(basename "$JAR_PATH")
 
-# 停止已存在的进程
-echo "检查并停止已存在的 $JAR_NAME 进程..."
+# 查找进程
+find_pid() {
+    ps -ef | grep "java.*$JAR_NAME" | grep -v grep | awk '{print $2}'
+}
 
-# 查找正在运行的进程PID
-PID=$(ps -ef | grep "$JAR_NAME" | grep -v grep | awk '{print $2}')
-
+# 停止旧进程
+PID=$(find_pid)
 if [ -n "$PID" ]; then
-    echo "发现已运行的进程 PID: $PID，正在停止..."
-    kill -15 $PID  # 先尝试优雅关闭
+    echo "发现已运行进程 PID: $PID，正在停止..."
+    kill -15 $PID
 
-    # 等待最多30秒让进程正常退出
     for i in {1..30}; do
         if ! ps -p $PID > /dev/null 2>&1; then
             echo "进程已成功停止"
@@ -38,31 +40,24 @@ if [ -n "$PID" ]; then
         sleep 1
     done
 
-    # 如果进程还在，强制杀死
     if ps -p $PID > /dev/null 2>&1; then
-        echo "进程未响应，强制停止..."
+        echo "强制停止..."
         kill -9 $PID
-        sleep 1
     fi
-
-    echo "进程已停止"
 else
-    echo "未发现运行中的 $JAR_NAME 进程"
+    echo "未发现运行中的进程"
 fi
 
-# 启动新进程
+# 启动应用
 echo "正在启动应用..."
-java $JVM_OPTS -jar "$JAR_PATH" > /dev/null 2>&1 &
-
-# 检查启动是否成功
+nohup java $JVM_OPTS -jar "$JAR_PATH" > /dev/null 2>&1 &
 NEW_PID=$!
+echo $NEW_PID > "$PID_FILE"
+
 sleep 2
 if ps -p $NEW_PID > /dev/null 2>&1; then
-    echo "应用已后台启动，新进程 PID: $NEW_PID"
-    echo "查看进程：ps -ef | grep $JAR_NAME"
-    echo "查看端口：ss -tulnp | grep 8081"
-    echo "查看日志：tail -f logs/radish.log"
+    echo "应用启动成功 PID: $NEW_PID"
 else
-    echo "应用启动失败，请检查日志"
+    echo "应用启动失败"
     exit 1
 fi

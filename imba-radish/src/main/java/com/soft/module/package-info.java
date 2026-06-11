@@ -1,9 +1,10 @@
 @ApplicationModule(
         allowedDependencies = {
-                "base::exception",
-                "base::utils",
-                "base::service",
-                "base::entity"
+                "sys::exception",
+                "sys::utils",
+                "sys::service",
+                "sys::entity",
+                "sys::websocket"
         }
 )
 package com.soft.module;

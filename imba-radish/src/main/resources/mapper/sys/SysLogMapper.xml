@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysLog">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+            <result property="logLevel" column="log_level" jdbcType="VARCHAR"/>
+            <result property="ipAddress" column="ip_address" jdbcType="VARCHAR"/>
+            <result property="requestUrl" column="request_url" jdbcType="VARCHAR"/>
+            <result property="requestMethod" column="request_method" jdbcType="VARCHAR"/>
+            <result property="requestParams" column="request_params" jdbcType="VARCHAR"/>
+            <result property="responseResult" column="response_result" jdbcType="VARCHAR"/>
+            <result property="operationDesc" column="operation_desc" jdbcType="VARCHAR"/>
+            <result property="source" column="source" jdbcType="VARCHAR"/>
+            <result property="executionTime" column="execution_time" jdbcType="BIGINT"/>
+            <result property="moduleName" column="module_name" jdbcType="VARCHAR"/>
+            <result property="statusCode" column="status_code" jdbcType="INTEGER"/>
+            <result property="exceptionInfo" column="exception_info" jdbcType="VARCHAR"/>
+            <result property="osBrowserInfo" column="os_browser_info" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,create_by,create_time,
+        del_flag,log_level,ip_address,
+        request_url,request_method,request_params,
+        response_result,operation_desc,source,
+        execution_time,module_name,status_code,
+        exception_info,os_browser_info,type
+    </sql>
+
+    <select id="getLogs" parameterType="LogsRequest" resultType="LogsVo">
+        SELECT
+        sl.id,
+        su.nickname,
+        sl.create_time,
+        sl.module_name,
+        sl.request_method,
+        sl.status_code,
+        sl.execution_time,
+        sl.operation_desc,
+        sl.log_level
+        FROM
+        sys_log sl
+        JOIN sys_user su
+        ON sl.create_by = su.id
+        WHERE
+        sl.del_flag = '0'
+        <if test="request.requestMethod != null and request.requestMethod != ''">
+            AND sl.request_method = #{request.requestMethod}
+        </if>
+        <if test="request.keyword != null and request.keyword != ''">
+            AND sl.module_name LIKE concat( '%', #{request.keyword}, '%' )
+        </if>
+        <if test="request.statusCode != null and request.statusCode != ''">
+            AND sl.status_code = #{request.statusCode}
+        </if>
+        <if test="request.logLevel != null and request.logLevel != ''">
+            AND sl.log_level = #{request.logLevel}
+        </if>
+        <if test="request.startTime != null and request.endTime != null">
+            AND (
+            sl.create_time BETWEEN #{request.startTime}
+            AND #{request.endTime})
+        </if>
+        ORDER BY sl.create_time DESC
+    </select>
+    <select id="getLog" parameterType="java.lang.Long" resultType="GetLogVo">
+        SELECT
+            sl.id,
+            sl.create_time,
+            su.nickname,
+            sl.log_level,
+            sl.ip_address,
+            sl.request_url,
+            sl.request_method,
+            sl.request_params,
+            sl.response_result,
+            sl.operation_desc,
+            sl.execution_time,
+            sl.module_name,
+            sl.status_code,
+            sl.exception_info,
+            sl.os_browser_info
+        FROM
+            sys_log sl
+                JOIN sys_user su ON
+                sl.create_by = su.id
+        WHERE
+            sl.del_flag = '0'
+          AND sl.id = #{id}
+    </select>
+</mapper>

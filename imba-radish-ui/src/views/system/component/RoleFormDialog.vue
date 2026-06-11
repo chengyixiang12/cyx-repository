@@ -29,8 +29,8 @@
             inactive-color="#ff4949" />
         </el-form-item>
 
-        <el-form-item label="排序" prop="fixRole">
-          <el-input v-model="formData.sortOrder" type="text" @input="handleSortInput" placeholder="请填写序号" />
+        <el-form-item label="排序" prop="sortOrder">
+          <el-input v-model="formData.sortOrder" type="number" @input="handleSortInput" placeholder="请填写序号" />
         </el-form-item>
 
         <el-form-item label="备注" prop="description">

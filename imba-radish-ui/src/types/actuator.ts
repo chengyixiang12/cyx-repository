@@ -23,8 +23,8 @@ export interface ListActuatorVO {
     createTime?: string;
     cpuUsage?: number;
     cpuCount?: number;
-    memeryUsed?: number;
-    memeryMax?: number;
+    memoryUsed?: number;
+    memoryMax?: number;
     uptime?: number;
     diskFree?: number;
     diskTotal?: number;
@@ -43,4 +43,19 @@ export interface ListActuatorPageRequest {
     pageSize: number;
     startTime?: string;
     endTime?: string;
+}
+
+export interface GetLatestActuatorMetricVO {
+    cpuCount: number;
+    cpuUsage: number;
+    memoryUsed: number;
+    memoryMax: number;
+    uptime: number;
+    diskFree: number;
+    diskTotal: number;
+}
+
+export interface ListUsageTrendVO {
+    createTime: string;
+    usageRate: number;
 }

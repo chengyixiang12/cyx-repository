@@ -2,7 +2,7 @@
   <el-dialog :title="isAdd ? '新增任务' : '编辑任务'" v-model="visible" width="50vw" :close-on-click-modal="false"
     :before-close="handleClose">
     <div class="dialog-body-wrapper">
-      <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px" label-position="right"
+      <el-form ref="formRef" :model="formData" :rules="rules" label-width="6vw" label-position="right"
         class="scrollable-form">
         <!-- 任务名称 -->
         <el-form-item label="任务名称" prop="jobName">
@@ -96,8 +96,10 @@
     </div>
 
     <template #footer>
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="submitForm">确定</el-button>
+      <div class="dialog-footer">
+        <el-button @click="visible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
+      </div>
     </template>
   </el-dialog>
 
@@ -108,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import CronGenerate from './CronGenerate.vue'
 import { Calendar } from '@element-plus/icons-vue'
@@ -180,7 +182,7 @@ interface FatherParam {
 const props = withDefaults(defineProps<FatherParam>(), {
   visible: false,
   isAdd: false,
-  roleId: null,
+  jobId: null,
 })
 
 const emit = defineEmits(['update:visible', 'submit'])
@@ -245,52 +247,20 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.dialog-body-wrapper {
-  flex: 1;
-  overflow-y: auto;
-  max-height: 60vh;
-  padding-right: 10px;
-}
-
-.scrollable-form {
-  padding: 25px;
-}
-
-.el-form-item {
-  margin-bottom: 20px;
-}
-
 .cron-wrapper {
-  padding: 12px;
-  background-color: #f5f7fa;
-  border-radius: 6px;
-  min-height: 80px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .cron-generator-btn {
-  background-color: #409eff;
-  border-color: #409eff;
-  padding: 12px 20px;
-  font-size: 14px;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.cron-generator-btn:hover {
-  background-color: #66b1ff;
-  border-color: #66b1ff;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+  flex-shrink: 0;
 }
 
 .cron-preview {
-  margin-top: 12px;
-  padding: 8px 12px;
-  background-color: #f0f9eb;
-  border: 1px solid #e1f3d8;
-  border-radius: 4px;
-  color: #67c23a;
   font-size: 13px;
+  color: #909399;
 }
 
 .json-input-wrapper {
@@ -298,14 +268,9 @@ onMounted(() => {
   width: 100%;
 }
 
-.json-input-wrapper :deep(.el-textarea) {
-  width: 100%;
-}
-
 .format-btn {
   position: absolute;
-  bottom: 8px;
   right: 8px;
-  z-index: 1;
+  bottom: 8px;
 }
 </style>

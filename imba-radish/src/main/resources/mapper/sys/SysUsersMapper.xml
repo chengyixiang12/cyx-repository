@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysUsersMapper">
+
+    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysUser">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="enabled" column="enabled" jdbcType="TINYINT"/>
+        <result property="accountNonLocked" column="account_non_locked" jdbcType="TINYINT"/>
+        <result property="credentialsNonExpired" column="credentials_non_expired" jdbcType="TINYINT"/>
+        <result property="accountNonExpired" column="account_non_expired" jdbcType="TINYINT"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="deptId" column="dept_id" jdbcType="BIGINT"/>
+        <result property="avatar" column="avatar" jdbcType="BIGINT"/>
+    </resultMap>
+
+<!--    <select id="getByUserName" parameterType="java.lang.String" resultType="java.lang.String">-->
+<!--        SELECT-->
+<!--        u.`password`-->
+<!--        FROM-->
+<!--        sysUser u-->
+<!--        WHERE-->
+<!--        u.del_flag = '0'-->
+<!--        AND u.enabled = 1-->
+<!--        AND u.account_non_locked = 1-->
+<!--        AND u.credentials_non_expired = 1-->
+<!--        AND u.account_non_expired = 1-->
+<!--        AND u.username = #{username}-->
+<!--    </select>-->
+
+    <select id="getUsers" parameterType="GetUsersDto" resultType="UsersVo">
+        SELECT
+        u.id,
+        u.username,
+        u.phone,
+        u.email,
+        u.nickname,
+        u.enabled,
+        u.account_non_locked,
+        sd.name as deptName
+        FROM
+        `sys_user` u
+        JOIN sys_dept sd
+        ON u.dept_id = sd.id
+        WHERE
+        u.del_flag = '0'
+        <if test="getUsersDto.deptIds != null and getUsersDto.deptIds.size > 0">
+            AND u.dept_id IN
+            <foreach collection="getUsersDto.deptIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="getUsersDto.nameLikeQry != null and getUsersDto.nameLikeQry != ''">
+            AND ( u.username LIKE CONCAT('%', #{getUsersDto.nameLikeQry}, '%')
+            OR u.nickname LIKE CONCAT('%', #{getUsersDto.nameLikeQry}, '%') )
+        </if>
+        <if test="getUsersDto.enabled != null">
+            AND u.enabled = #{getUsersDto.enabled}
+        </if>
+        <if test="getUsersDto.accountNonLocked != null">
+            AND u.account_non_locked = #{getUsersDto.accountNonLocked}
+        </if>
+    </select>
+    <select id="getUser" parameterType="java.lang.Long" resultType="GetUserVo">
+        SELECT
+        su.id,
+        su.username,
+        su.nickname,
+        su.email,
+        su.phone,
+        su.dept_id,
+        su.avatar
+        FROM
+        sys_user su
+        WHERE
+        su.del_flag = '0'
+        AND su.id = #{id}
+    </select>
+    <update id="lockUser" parameterType="java.lang.String">
+        UPDATE `sys_user`
+        SET account_non_locked = 0
+        WHERE
+        del_flag = '0'
+        AND username = #{username}
+    </update>
+    <update id="unlockUser" parameterType="java.lang.String">
+        UPDATE `sys_user`
+        SET account_non_locked = 1
+        WHERE
+        del_flag = '0'
+        AND username = #{username}
+    </update>
+    <select id="existsEmail" resultType="java.lang.Boolean">
+        SELECT
+        COUNT( * )
+        FROM
+        `sys_user` su
+        WHERE
+        su.del_flag = '0'
+        AND su.`id` <![CDATA[<>]]> #{id}
+        AND su.email = #{email}
+    </select>
+    <select id="getUsername" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT
+        su.username
+        FROM
+        `sys_user` su
+        WHERE
+        su.id = #{id}
+    </select>
+    <select id="loadUser" parameterType="java.lang.String" resultType="SysUser">
+        SELECT
+            su.id,
+            su.username,
+            su.password,
+            su.dept_id,
+            su.enabled,
+            su.account_non_locked,
+            su.credentials_non_expired,
+            su.account_non_expired,
+            su.email,
+            su.phone,
+            su.nickname
+        FROM
+            sys_user su
+        WHERE
+                    su.del_flag = '0'
+                AND su.username = #{param}
+           OR su.email = #{param}
+    </select>
+    <update id="enableUser" parameterType="java.lang.String">
+        UPDATE
+            sys_user
+        SET
+            enabled = 1
+        WHERE
+            del_flag = '0'
+          AND username = #{username}
+    </update>
+    <update id="forbiddenUser" parameterType="java.lang.String">
+        UPDATE
+            sys_user
+        SET
+            enabled = 0
+        WHERE
+            del_flag = '0'
+          AND username = #{username}
+    </update>
+    <select id="getUserByEmail" parameterType="java.lang.String" resultType="SysUser">
+        SELECT
+            *
+        FROM
+            sys_user su
+        WHERE
+            su.del_flag = '0'
+          AND su.email = #{email}
+    </select>
+    <select id="getPrimaryKeyByUsername" parameterType="java.lang.String" resultType="java.lang.Long">
+        select t1.id
+        from sys_user t1
+        where t1.del_flag = '0'
+          and t1.username = #{username}
+    </select>
+</mapper>

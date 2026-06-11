@@ -1,11 +1,9 @@
 import { LoginRequest, LoginVo } from '../types/login';
 import { post, get, getBlob } from '@/utils/http';
-import { v4 as uuidv4 } from 'uuid';
+import { generateShortUuid } from '@/utils/uuid';
 
 export async function getGraphicCaptcha(uuid?: string): Promise<{ blob: Blob; uuid: string }> {
-  // 生成或使用传入的唯一标识
-  const finalUKey = uuid || uuidv4();
-  // 调用method.ts的get方法（明确指定responseType为'blob'）
+  const finalUKey = uuid || generateShortUuid();
   const blob = await getBlob<Blob>(
     '/auth/getGraphicCaptcha', { flag: false, params: { uuid: finalUKey }}
   );

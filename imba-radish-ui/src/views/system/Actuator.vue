@@ -11,23 +11,12 @@
           <el-option label="当天" :value="'today'" />
         </el-select>
         <span class="time-separator">-</span>
-        <el-date-picker 
-          v-model="startTime" 
-          type="datetime" 
-          placeholder="开始时间" 
-          class="time-picker"
-          :max="endTime ? dayjs(endTime).subtract(1, 'minute').toDate() : undefined"
-        />
+        <el-date-picker v-model="startTime" type="datetime" placeholder="开始时间" class="time-picker"
+          :max="endTime ? dayjs(endTime).subtract(1, 'minute').toDate() : undefined" />
         <span class="time-separator">至</span>
-        <el-date-picker 
-          v-model="endTime" 
-          type="datetime" 
-          placeholder="结束时间" 
-          class="time-picker"
-          :min="startTime ? dayjs(startTime).add(1, 'minute').toDate() : undefined"
-          :max="dayjs().toDate()"
-        />
-        <el-button type="primary" size="small" @click="refreshChartData">
+        <el-date-picker v-model="endTime" type="datetime" placeholder="结束时间" class="time-picker"
+          :min="startTime ? dayjs(startTime).add(1, 'minute').toDate() : undefined" :max="dayjs().toDate()" />
+        <el-button type="primary" size="small" @click="queryData">
           查询
         </el-button>
       </div>
@@ -46,20 +35,22 @@
         <template #header>
           <div class="card-header">
             <span>CPU监控</span>
-            <el-tag v-if="cpuLoading" size="small">加载中...</el-tag>
+            <el-tag v-if="loading" size="small">加载中...</el-tag>
           </div>
         </template>
-        <div class="cpu-info">
-          <div class="info-item">
-            <span class="label">CPU核数：</span>
-            <span class="value">{{ cpuCoreCount }}</span>
+        <div class="metric-content">
+          <el-progress type="circle" :percentage="Math.round(latestActuatorMetric.cpuUsage * 100)"
+            :color="getProgressColor(latestActuatorMetric.cpuUsage * 100)" :width="100" />
+          <div class="metric-info">
+            <div class="info-item">
+              <span class="label">CPU核数：</span>
+              <span class="value">{{ latestActuatorMetric.cpuCount }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">CPU使用率：</span>
+              <span class="value">{{ (latestActuatorMetric.cpuUsage * 100).toFixed(2) }}%</span>
+            </div>
           </div>
-          <div class="info-item">
-            <span class="label">CPU使用率：</span>
-            <span class="value">{{ (cpuUsage * 100).toFixed(2) }}%</span>
-          </div>
-          <el-progress :percentage="Math.round((cpuUsage * 100))" :color="getProgressColor(cpuUsage)"
-            :stroke-width="15" />
         </div>
       </el-card>
 
@@ -68,24 +59,26 @@
         <template #header>
           <div class="card-header">
             <span>内存监控</span>
-            <el-tag v-if="memoryLoading" size="small">加载中...</el-tag>
+            <el-tag v-if="loading" size="small">加载中...</el-tag>
           </div>
         </template>
-        <div class="memory-info">
-          <div class="info-item">
-            <span class="label">已用内存：</span>
-            <span class="value">{{ formatMemory(memoryUsed) }}</span>
+        <div class="metric-content">
+          <el-progress type="circle" :percentage="Math.round(memoryUsage)" :color="getProgressColor(memoryUsage)"
+            :width="100" />
+          <div class="metric-info">
+            <div class="info-item">
+              <span class="label">已用内存：</span>
+              <span class="value">{{ formatMemory(latestActuatorMetric.memoryUsed) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">总内存：</span>
+              <span class="value">{{ formatMemory(latestActuatorMetric.memoryMax) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">内存使用率：</span>
+              <span class="value">{{ memoryUsage.toFixed(2) }}%</span>
+            </div>
           </div>
-          <div class="info-item">
-            <span class="label">总内存：</span>
-            <span class="value">{{ formatMemory(memoryTotal) }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">内存使用率：</span>
-            <span class="value">{{ memoryUsagePercentage.toFixed(2) }}%</span>
-          </div>
-          <el-progress :percentage="Math.round(memoryUsagePercentage)"
-            :color="getProgressColor(memoryUsagePercentage / 100)" :stroke-width="15" />
         </div>
       </el-card>
 
@@ -94,68 +87,64 @@
         <template #header>
           <div class="card-header">
             <span>磁盘监控</span>
-            <el-tag v-if="diskLoading" size="small">加载中...</el-tag>
+            <el-tag v-if="loading" size="small">加载中...</el-tag>
           </div>
         </template>
-        <div class="disk-info">
-          <div class="info-item">
-            <span class="label">可用磁盘：</span>
-            <span class="value">{{ formatDisk(diskFree) }}</span>
+        <div class="metric-content">
+          <el-progress type="circle" :percentage="Math.round(diskUsage)" :color="getProgressColor(diskUsage)"
+            :width="100" />
+          <div class="metric-info">
+            <div class="info-item">
+              <span class="label">可用磁盘：</span>
+              <span class="value">{{ formatDisk(latestActuatorMetric.diskFree) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">总磁盘：</span>
+              <span class="value">{{ formatDisk(latestActuatorMetric.diskTotal) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">磁盘使用率：</span>
+              <span class="value">{{ diskUsage.toFixed(2) }}%</span>
+            </div>
           </div>
-          <div class="info-item">
-            <span class="label">总磁盘：</span>
-            <span class="value">{{ formatDisk(diskTotal) }}</span>
+        </div>
+      </el-card>
+
+      <!-- 系统启动时间 -->
+      <el-card shadow="hover" :body-style="{ padding: '20px' }">
+        <template #header>
+          <div class="card-header">
+            <span>系统运行时长</span>
+            <el-tag v-if="loading" size="small">加载中...</el-tag>
           </div>
-          <div class="info-item">
-            <span class="label">磁盘使用率：</span>
-            <span class="value">{{ diskUsagePercentage.toFixed(2) }}%</span>
-          </div>
-          <el-progress :percentage="Math.round(diskUsagePercentage)"
-            :color="getProgressColor(diskUsagePercentage / 100)" :stroke-width="15" />
+        </template>
+        <div class="uptime-content">
+          <div class="uptime-value">{{ uptimeFormatted }}</div>
         </div>
       </el-card>
     </div>
 
-    <!-- 折线图监控 -->
-    <div class="charts-grid">
-      <!-- CPU使用率折线图 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>CPU使用率趋势</span>
-          </div>
-        </template>
-        <div ref="cpuChartRef" class="chart-container"></div>
-      </el-card>
-
-      <!-- 内存使用率折线图 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>内存使用率趋势</span>
-          </div>
-        </template>
-        <div ref="memoryChartRef" class="chart-container"></div>
-      </el-card>
-    </div>
+    <!-- 趋势图监控 -->
+    <el-card shadow="hover" :body-style="{ padding: '20px' }" class="trend-card">
+      <el-tabs v-model="activeTrendTab" type="border-card" @tab-change="handleTrendTabChange">
+        <el-tab-pane label="CPU使用率趋势" name="cpu">
+          <template #default>
+            <div ref="cpuChartRef" class="chart-container"></div>
+          </template>
+        </el-tab-pane>
+        <el-tab-pane label="内存使用率趋势" name="memory">
+          <template #default>
+            <div ref="memoryChartRef" class="chart-container"></div>
+          </template>
+        </el-tab-pane>
+      </el-tabs>
+    </el-card>
 
     <!-- 组件状态 -->
     <div class="status-card">
       <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>服务状态</span>
-            <el-tag :type="healthStatus === 'UP' ? 'success' : 'danger'">
-              {{ healthStatus === 'UP' ? '正常' : '异常' }}
-            </el-tag>
-          </div>
-        </template>
+        
         <div class="status-info">
-          <div class="info-item">
-            <span class="label">系统启动时间：</span>
-            <span class="value">{{ uptimeFormatted }}</span>
-          </div>
-
           <div class="components-status">
             <h3>组件状态</h3>
             <div class="components-table-wrapper">
@@ -163,6 +152,13 @@
                 <el-table-column prop="createTime" label="时间" min-width="180" align="center">
                   <template #default="scope">
                     {{ formatTableTime(scope.row.createTime) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="health" label="服务器" min-width="100" align="center">
+                  <template #default="scope">
+                    <el-tag :type="scope.row.health === 'UP' ? 'success' : 'danger'" size="small">
+                      {{ scope.row.health === 'UP' ? '正常' : '异常' }}
+                    </el-tag>
                   </template>
                 </el-table-column>
                 <el-table-column prop="healthDb" label="数据库" min-width="100" align="center">
@@ -210,15 +206,9 @@
               </el-table>
             </div>
             <div class="pagination-wrapper">
-              <el-pagination
-                :current-page="pagination.current"
-                :page-size="pagination.size"
-                :total="pagination.total"
-                :page-sizes="[10, 20, 50, 100]"
-                layout="total, sizes, prev, pager, next, jumper"
-                @current-change="handlePageChange"
-                @size-change="handleSizeChange"
-              />
+              <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
+                :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
+                @current-change="handlePageChange" @size-change="handleSizeChange" />
             </div>
           </div>
         </div>
@@ -228,39 +218,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, nextTick, reactive } from 'vue';
 import * as echarts from 'echarts';
 import dayjs from 'dayjs';
 import {
-  listActuatorApi,
-  listActuatorPageApi
+  listActuatorPageApi,
+  getLatestActuatorMetricApi,
+  listCpuTrendApi,
+  listMemoryTrendApi,
+  listHeapMemoryTrendApi,
+  listMetaspaceMemoryTrendApi
 } from '@/api/actuator';
 import { Refresh } from '@element-plus/icons-vue';
-import type { ListActuatorVO } from '@/types/actuator';
+import type { GetLatestActuatorMetricVO, ListActuatorVO } from '@/types/actuator';
 import { showMessage } from '@/utils/message';
 
 // 状态变量
 const loading = ref(false);
-const healthStatus = ref('UP');
-const uptime = ref(0);
-const cpuCoreCount = ref(0);
-const cpuUsage = ref(0);
-const memoryUsed = ref(0);
-const memoryTotal = ref(0);
-const diskFree = ref(0);
-const diskTotal = ref(0);
 const lastRefreshTime = ref('');
+const latestActuatorMetric = reactive<GetLatestActuatorMetricVO>({
+  cpuCount: 0,
+  cpuUsage: 0,
+  memoryUsed: 0,
+  memoryMax: 0,
+  uptime: 0,
+  diskFree: 0,
+  diskTotal: 0
+});
 
-// 模块加载状态
-const cpuLoading = ref(false);
-const memoryLoading = ref(false);
-const diskLoading = ref(false);
+const diskUsage = computed<number>(() => {
+  if (latestActuatorMetric.diskTotal === latestActuatorMetric.diskFree) return 0;
+  return Number((((latestActuatorMetric.diskTotal - latestActuatorMetric.diskFree) / latestActuatorMetric.diskTotal) * 100).toFixed(2));
+});
 
 // 图表相关
 const cpuChartRef = ref<HTMLElement | null>(null);
 const memoryChartRef = ref<HTMLElement | null>(null);
 let cpuChart: echarts.ECharts | null = null;
 let memoryChart: echarts.ECharts | null = null;
+const activeTrendTab = ref('cpu');
 
 // 时间范围选择（仅作用于图表）
 const startTime = ref<Date | null>(null);
@@ -282,7 +278,7 @@ const tableLoading = ref(false);
 
 // 计算属性
 const uptimeFormatted = computed(() => {
-  const seconds = uptime.value;
+  const seconds = latestActuatorMetric.uptime;
   const days = Math.floor(seconds / (24 * 60 * 60));
   const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
   const minutes = Math.floor((seconds % (60 * 60)) / 60);
@@ -290,21 +286,15 @@ const uptimeFormatted = computed(() => {
   return `${days}天 ${hours}小时 ${minutes}分钟 ${secs}秒`;
 });
 
-const memoryUsagePercentage = computed<number>(() => {
-  if (memoryTotal.value === 0) return 0;
-  return Number(((memoryUsed.value / memoryTotal.value) * 100).toFixed(2));
-});
-
-const diskUsagePercentage = computed<number>(() => {
-  if (diskTotal.value === 0) return 0;
-  const used = diskTotal.value - diskFree.value;
-  return Number(((used / diskTotal.value) * 100).toFixed(2));
+const memoryUsage = computed<number>(() => {
+  if (latestActuatorMetric.memoryMax === 0) return 0;
+  return Number(((latestActuatorMetric.memoryUsed / latestActuatorMetric.memoryMax) * 100).toFixed(2));
 });
 
 // 方法
 const getProgressColor = (percentage: number) => {
-  if (percentage < 0.6) return '#67C23A';
-  if (percentage < 0.8) return '#E6A23C';
+  if (percentage < 60) return '#67C23A';
+  if (percentage < 80) return '#E6A23C';
   return '#F56C6C';
 };
 
@@ -320,20 +310,101 @@ const formatDisk = (bytes: number) => {
   return formatMemory(bytes);
 };
 
-// 初始化图表
-const initCharts = () => {
-  if (cpuChartRef.value) {
-    cpuChart = echarts.init(cpuChartRef.value);
-    updateCpuChart([], []);
+// 格式化时间为时分秒（HH:mm:ss）
+const formatTimeShort = (timeStr: string): string => {
+  try {
+    const date = new Date(timeStr);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  } catch {
+    return timeStr;
   }
-  if (memoryChartRef.value) {
-    memoryChart = echarts.init(memoryChartRef.value);
-    updateMemoryChart([], []);
+};
+
+// 加载最新指标数据（使用getLatestActuatorMetricApi）
+const loadLatestMetrics = async () => {
+  try {
+    const metrics: GetLatestActuatorMetricVO = await getLatestActuatorMetricApi();
+    Object.assign(latestActuatorMetric, metrics);
+  } catch (error) {
+    console.error('获取最新指标数据失败:', error);
+  }
+};
+
+/**
+ * 加载cpu趋势数据
+ */
+const loadCpuTrend = async () => {
+  if (!startTime.value || !endTime.value) return;
+  const cpuTrend = await listCpuTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
+  // 更新图表数据（使用时分秒格式）
+  updateCpuChart(cpuTrend.map(item => formatTimeShort(item.createTime)), cpuTrend.map(item => Number((item.usageRate * 100).toFixed(2))));
+};
+
+/**
+ * 加载内存趋势数据
+ */
+const loadMemoryTrend = async () => {
+  if (!startTime.value || !endTime.value) return;
+  const memoryTrend = await listMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
+  
+  // 堆内存数据接口
+  const heapTrend = await listHeapMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
+  
+  // 元空间内存数据接口
+  const metaspaceTrend = await listMetaspaceMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
+  
+  // 更新图表数据（使用时分秒格式）
+  updateMemoryChart(
+    memoryTrend.map(item => formatTimeShort(item.createTime)),
+    memoryTrend.map(item => Number((item.usageRate * 100).toFixed(2))),
+    heapTrend.map(item => Number((item.usageRate * 100).toFixed(2))),
+    metaspaceTrend.map(item => Number((item.usageRate * 100).toFixed(2)))
+  );
+};
+
+// tab切换时卸载当前图表并加载目标图表
+const handleTrendTabChange = async (tabName: string) => {
+  // 等待DOM渲染完成
+  await nextTick();
+
+  if (tabName === 'memory') {
+    // 卸载CPU图表
+    if (cpuChart) {
+      cpuChart.dispose();
+      cpuChart = null;
+    }
+    // 加载内存图表
+    if (!memoryChart && memoryChartRef.value) {
+      memoryChart = echarts.init(memoryChartRef.value);
+      await loadMemoryTrend();
+      // 确保图表正确适应容器尺寸
+      setTimeout(() => {
+        memoryChart?.resize();
+      }, 100);
+    }
+  } else if (tabName === 'cpu') {
+    // 卸载内存图表
+    if (memoryChart) {
+      memoryChart.dispose();
+      memoryChart = null;
+    }
+    // 加载CPU图表
+    if (!cpuChart && cpuChartRef.value) {
+      cpuChart = echarts.init(cpuChartRef.value);
+      await loadCpuTrend();
+      // 确保图表正确适应容器尺寸
+      setTimeout(() => {
+        cpuChart?.resize();
+      }, 100);
+    }
   }
 };
 
 // 更新CPU图表
-const updateCpuChart = (times: string[], data: number[]) => {
+const updateCpuChart = async (times: string[], data: number[]) => {
   if (!cpuChart) return;
 
   const option = {
@@ -352,7 +423,7 @@ const updateCpuChart = (times: string[], data: number[]) => {
       type: 'category',
       data: times,
       axisLabel: {
-        rotate: 45
+        interval: Math.floor(times.length / 6)
       }
     },
     yAxis: {
@@ -381,12 +452,6 @@ const updateCpuChart = (times: string[], data: number[]) => {
       lineStyle: {
         color: '#409EFF'
       },
-      areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(64, 158, 255, 0.3)' },
-          { offset: 1, color: 'rgba(64, 158, 255, 0.1)' }
-        ])
-      },
       symbol: 'circle',
       symbolSize: 6
     }]
@@ -395,28 +460,83 @@ const updateCpuChart = (times: string[], data: number[]) => {
   cpuChart.setOption(option);
 };
 
-// 更新内存图表
-const updateMemoryChart = (times: string[], data: number[]) => {
+// 更新内存图表（支持内存使用率、堆内存和元空间内存三条折线）
+const updateMemoryChart = async (times: string[], memoryData: number[], heapData?: number[], metaspaceData?: number[]) => {
   if (!memoryChart) return;
+
+  const series = [
+    {
+      name: '内存使用率',
+      data: memoryData,
+      type: 'line',
+      smooth: true,
+      lineStyle: { color: '#67C23A' },
+      symbol: 'circle',
+      symbolSize: 6
+    }
+  ];
+
+  // 如果有堆内存数据，添加堆内存折线
+  if (heapData && heapData.length > 0) {
+    series.push({
+      name: '堆内存',
+      data: heapData,
+      type: 'line',
+      smooth: true,
+      lineStyle: { color: '#E6A23C' },
+      symbol: 'circle',
+      symbolSize: 6
+    });
+  }
+
+  // 如果有元空间内存数据，添加元空间内存折线
+  if (metaspaceData && metaspaceData.length > 0) {
+    series.push({
+      name: '元空间',
+      data: metaspaceData,
+      type: 'line',
+      smooth: true,
+      lineStyle: { color: '#F56C6C' },
+      symbol: 'circle',
+      symbolSize: 6
+    });
+  }
+
+  const hasHeapData = heapData && heapData.length > 0;
+  const hasMetaspaceData = metaspaceData && metaspaceData.length > 0;
+  
+  const legendData: string[] = ['内存使用率'];
+  if (hasHeapData) legendData.push('堆内存');
+  if (hasMetaspaceData) legendData.push('元空间');
 
   const option = {
     tooltip: {
       trigger: 'axis',
-      formatter: '{b}: {c}%'
+      formatter: (params: any) => {
+        let result = params[0].name + '<br/>';
+        params.forEach((item: any) => {
+          result += `${item.marker} ${item.seriesName}: ${item.value}%<br/>`;
+        });
+        return result;
+      }
+    },
+    legend: {
+      data: legendData,
+      top: 0,
+      right: 10
     },
     grid: {
       left: '3%',
       right: '4%',
       bottom: '15%',
-      top: '8%',
+      top: hasHeapData || hasMetaspaceData ? '12%' : '8%',
       containLabel: true
     },
     xAxis: {
       type: 'category',
       data: times,
       axisLabel: {
-        rotate: 45,
-        interval: 2
+        interval: Math.floor(times.length / 6)
       }
     },
     yAxis: {
@@ -425,170 +545,30 @@ const updateMemoryChart = (times: string[], data: number[]) => {
       max: 100,
       interval: 20,
       axisLabel: {
-        formatter: '{value}%'
+        formatter: '{value}%',
+        margin: 10
       },
       splitNumber: 5,
       axisTick: {
         interval: 20
+      },
+      splitLine: {
+        lineStyle: {
+          width: 1
+        }
       }
     },
-    series: [{
-      data: data,
-      type: 'line',
-      smooth: true,
-      lineStyle: {
-        color: '#67C23A'
-      },
-      areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(103, 194, 58, 0.3)' },
-          { offset: 1, color: 'rgba(103, 194, 58, 0.1)' }
-        ])
-      },
-      symbol: 'circle',
-      symbolSize: 6
-    }]
+    series
   };
 
   memoryChart.setOption(option);
-};
-
-// 异步加载所有监控数据（使用listActuatorApi）
-const loadChartData = async () => {
-  try {
-    let queryStartTime: string;
-    let queryEndTime: string;
-
-    if (startTime.value == null || endTime.value == null) {
-      const now = new Date();
-      const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-
-      endTime.value = now;
-      startTime.value = oneHourAgo;
-    }
-
-    // 使用 Date 对象格式化
-    queryStartTime = formatDateTime(startTime.value);
-    queryEndTime = formatDateTime(endTime.value);
-
-    const actuatorList = await listActuatorApi(queryStartTime, queryEndTime);
-
-    if (actuatorList.length > 0) {
-      // 获取第一个元素（最新数据，因为返回的数据是按 createTime 倒序的）
-      const latestData = actuatorList[0];
-
-      // 更新CPU监控数据（保持为小数形式，用于进度条显示）
-      if (latestData.cpuUsage !== undefined) {
-        cpuUsage.value = latestData.cpuUsage;
-      }
-      if (latestData.cpuCount !== undefined) {
-        cpuCoreCount.value = latestData.cpuCount;
-      }
-
-      // 更新内存监控数据
-      if (latestData.memeryUsed !== undefined) {
-        memoryUsed.value = latestData.memeryUsed;
-      }
-      if (latestData.memeryMax !== undefined) {
-        memoryTotal.value = latestData.memeryMax;
-      }
-
-      // 更新磁盘监控数据
-      if (latestData.diskFree !== undefined) {
-        diskFree.value = latestData.diskFree;
-      }
-      if (latestData.diskTotal !== undefined) {
-        diskTotal.value = latestData.diskTotal;
-      }
-
-      // 更新服务状态数据
-      if (latestData.health !== undefined) {
-        healthStatus.value = latestData.health;
-      }
-      if (latestData.uptime !== undefined) {
-        uptime.value = latestData.uptime;
-      }
-
-      // 从服务端获取数据，构建图表数据和组件状态历史（不使用本地存储）
-      const times: string[] = [];
-      const cpuData: number[] = [];
-      const memoryData: number[] = [];
-
-      // 图表数据需要时间正序（从左到右递增），所以反转数组
-      const reversedList = [...actuatorList].reverse();
-      
-      // 数据采样函数：保留首尾，中间等间隔采样（最多显示15个点）
-      const sampleData = (data: ListActuatorVO[], maxPoints: number = 15): ListActuatorVO[] => {
-        if (data.length <= maxPoints) {
-          return data;
-        }
-        
-        const result: ListActuatorVO[] = [];
-        const step = Math.floor((data.length - 2) / (maxPoints - 2));
-        
-        // 保留第一个（开始时间）
-        result.push(data[0]);
-        
-        // 中间采样
-        for (let i = step; i < data.length - 1; i += step) {
-          result.push(data[i]);
-        }
-        
-        // 保留最后一个（结束时间）
-        result.push(data[data.length - 1]);
-        
-        return result;
-      };
-      
-      // 对数据进行采样
-      const sampledList = sampleData(reversedList, 15);
-      
-      sampledList.forEach((item: ListActuatorVO) => {
-        if (item.createTime) {
-          times.push(formatTime(item.createTime));
-          // CPU使用率保留两位小数
-          cpuData.push(Number(((item.cpuUsage || 0) * 100).toFixed(2)));
-          if (item.memeryUsed !== undefined && memoryTotal.value > 0) {
-            // 内存使用率保留两位小数
-            memoryData.push(Number(((item.memeryUsed / memoryTotal.value) * 100).toFixed(2)));
-          } else {
-            memoryData.push(0);
-          }
-        }
-      });
-
-      // 保持最多显示20个数据点（取最新的20个）
-      const maxPoints = 15;
-      if (times.length > maxPoints) {
-        const startIndex = times.length - maxPoints;
-        times.splice(0, startIndex);
-        cpuData.splice(0, startIndex);
-        memoryData.splice(0, startIndex);
-      }
-
-      // 更新图表（直接传入服务端获取的数据）
-      updateCpuChart(times, cpuData);
-      updateMemoryChart(times, memoryData);
-    }
-  } catch (error) {
-    console.error('获取监控数据失败:', error);
-  }
-};
-
-// 格式化时间（使用 dayjs）
-const formatTime = (timeStr: string): string => {
-  try {
-    return dayjs(timeStr).format('HH:mm:ss');
-  } catch {
-    return timeStr;
-  }
 };
 
 // 快捷时间范围选择处理
 const handleQuickTimeRangeChange = (value: number | string) => {
   const now = new Date();
   let start: Date;
-  
+
   if (value === 'today') {
     // 当天：从今天0点到现在
     start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -596,29 +576,27 @@ const handleQuickTimeRangeChange = (value: number | string) => {
     // 分钟数：从当前时间往前推
     start = new Date(now.getTime() - Number(value) * 60 * 1000);
   }
-  
+
   startTime.value = start;
   endTime.value = now;
-  
-  // 自动刷新图表
-  refreshChartData();
 };
 
 // 仅刷新图表数据（使用用户选择的时间范围）
-const refreshChartData = async () => {
+const queryData = async () => {
   if (!startTime.value || !endTime.value) {
     showMessage('请选择开始时间和结束时间', 'warning');
     return;
   }
-  
-  // 检查时间范围是否超过一天
-  const diffDays = dayjs(endTime.value).diff(dayjs(startTime.value), 'day');
-  if (diffDays > 1 || (diffDays === 1 && dayjs(endTime.value).hour() > 0)) {
-    showMessage('时间范围不能超过一天', 'warning');
-    return;
+
+  loadLatestMetrics();
+
+  // 强制重新加载当前激活的图表数据
+  if (activeTrendTab.value === 'cpu') {
+    await loadCpuTrend();
+  } else {
+    await loadMemoryTrend();
   }
-  
-  await loadChartData();
+
   // 同时刷新表格数据
   pagination.value.current = 1;
   loadTableData();
@@ -634,8 +612,14 @@ const refreshData = async () => {
     endTime.value = now;
     quickTimeRange.value = 7;
 
-    // 加载图表数据
-    await loadChartData();
+    // 加载最新指标数据（CPU、内存、磁盘、启动时间）
+    loadLatestMetrics();
+    // 强制重新加载当前激活的图表数据
+    if (activeTrendTab.value === 'cpu') {
+      await loadCpuTrend();
+    } else {
+      await loadMemoryTrend();
+    }
 
     // 更新最后刷新时间
     lastRefreshTime.value = new Date().toLocaleString();
@@ -649,15 +633,8 @@ const refreshData = async () => {
   }
 };
 
-// 窗口大小变化时调整图表
-const handleResize = () => {
-  cpuChart?.resize();
-  memoryChart?.resize();
-};
-
-
 // 设置默认时间范围为最近7分钟
-const setDefaultTimeRange = () => {
+const setDefaultTimeRange = async () => {
   const now = new Date();
   const sevenMinAgo = new Date(now.getTime() - 7 * 60 * 1000);
 
@@ -723,27 +700,17 @@ const handleSizeChange = (size: number) => {
   loadTableData();
 };
 
-onMounted(() => {
-  // 设置默认时间范围
-  setDefaultTimeRange();
-  // 先初始化图表，确保图表实例存在
-  setTimeout(() => {
-    initCharts();
-    // 图表初始化完成后再加载数据
-    refreshData();
-    // 加载表格数据
-    loadTableData();
-  }, 100);
-  // 监听窗口大小变化
-  window.addEventListener('resize', handleResize);
+onMounted(async () => {
+  await setDefaultTimeRange();
+  handleTrendTabChange(activeTrendTab.value);
+  refreshData();
+  loadTableData();
 });
 
 onUnmounted(() => {
   // 清除图表实例
   cpuChart?.dispose();
   memoryChart?.dispose();
-  // 移除事件监听
-  window.removeEventListener('resize', handleResize);
 });
 </script>
 
@@ -771,16 +738,47 @@ h2 {
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 10px;
   margin: 0 10px;
 }
 
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 10px;
+.metric-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.metric-info {
+  flex: 1;
+}
+
+.info-item {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.uptime-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.uptime-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #303133;
+}
+
+.trend-card {
   margin: 10px;
+  flex-shrink: 0;
+}
+
+.trend-card :deep(.el-tabs__content) {
+  padding: 0;
 }
 
 .card-header {
@@ -789,17 +787,8 @@ h2 {
   align-items: center;
 }
 
-.status-info,
-.cpu-info,
-.memory-info,
-.disk-info {
+.status-info {
   margin-top: 15px;
-}
-
-.info-item {
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
 }
 
 .label {

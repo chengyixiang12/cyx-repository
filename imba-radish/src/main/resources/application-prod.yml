@@ -1,8 +1,8 @@
 spring:
   servlet:
     multipart:
-      location: /opt/docker/project/tmp
-      max-file-size: 5MB
+      location: /opt/project/tmp
+      max-file-size: 10MB
       max-request-size: 10MB
       file-size-threshold: 1MB
   datasource:
@@ -74,13 +74,26 @@ spring:
         quartz:
           threadPool:
             threadCount: 5
+  security:
+    permit:
+      # 不鉴权url
+      url:
+        - /auth/**
+        - /doc.html
+        - /message/sendRegistCaptcha
+        - /message/sendLoginCaptcha
+        - /ws/**
+        - /secretKey/getPublicKey
+        - /error
+        - /favicon.ico
+        - /user/validUserInfoForRegister
 
 # 启用api文档
 springdoc:
   api-docs:
-    enabled: true
+    enabled: false
   swagger-ui:
-    enabled: true
+    enabled: false
 # 日志
 logging:
   level:
@@ -95,19 +108,7 @@ logging:
   config: classpath:logback-spring.xml
 # 临时文件存储路径
 tmp:
-  path: /opt/docker/project/tmp
-# 不鉴权url
-permit:
-  urls:
-    - /auth/**
-    - /doc.html
-    - /message/sendRegistCaptcha
-    - /message/sendLoginCaptcha
-    - /ws/**
-    - /secretKey/getPublicKey
-    - /error
-    - /favicon.ico
-    - /user/validUserInfoForRegister
+  path: /opt/project/tmp
 # 限流
 rate-limit:
   # 是否开启限流
@@ -117,15 +118,15 @@ rate-limit:
   # 窗口大小；单位：秒
   window-size: 1
   permit:
-    urls:
+    url:
       - /file/uploadChunk
 # 大文件存储路径
 storage:
   big-file:
-    location: /opt/docker/project/tmp
+    location: /opt/project/tmp
 # 启用knife4j文档
 knife4j:
-  enable: true
+  enable: false
 # 性能监控配置
 management:
   health:
@@ -140,6 +141,10 @@ management:
     health:
       # 显示详细信息
       show-details: always
+# websocket允许连接源
+websocket:
+  allowed-origins:
+    - imba-radish.top
 # flowable
 flowable:
   database-schema-update: true

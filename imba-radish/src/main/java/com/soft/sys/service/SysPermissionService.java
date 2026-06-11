@@ -1,0 +1,43 @@
+package com.soft.sys.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.soft.sys.entity.SysPermission;
+import com.soft.sys.model.request.EditPermissionRequest;
+import com.soft.sys.model.request.PermissionsRequest;
+import com.soft.sys.model.request.SavePermissionRequest;
+import com.soft.sys.model.vo.*;
+
+import java.util.List;
+
+/**
+* @author cyq
+* @description 针对表【sys_permission】的数据库操作Service
+* @createDate 2024-11-19 09:36:53
+*/
+public interface SysPermissionService extends IService<SysPermission> {
+
+    PageVO<PermissionsVo> getPermissions(PermissionsRequest request);
+
+
+    void savePermission(SavePermissionRequest request);
+
+    List<String> getPermissionsByRoleCodes(List<String> roleCodes);
+
+    boolean existCode(String code);
+
+    List<GetAllPermissionVo> getAllPermission();
+
+    List<GetAssignPerVo> getAssignPer(Long roleId);
+
+    void editPermission(EditPermissionRequest request);
+
+    void deletePermission(Long id);
+
+    void enablePermission(Long id);
+
+    void forbiddenPermission(Long id);
+
+    boolean existEnableCode(String[] permissions);
+
+    GetPermissionVo getPermission(Long id);
+}

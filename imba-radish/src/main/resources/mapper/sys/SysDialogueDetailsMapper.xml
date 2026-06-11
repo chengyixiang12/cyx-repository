@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysDialogueDetailsMapper">
+
+    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysDialogueDetails">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+            <result property="createBy" column="create_by" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="BIGINT"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
+            <result property="tag" column="tag" jdbcType="TINYINT"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getRecentContext" parameterType="java.lang.Long" resultType="GetRecentContentDto">
+        SELECT
+            sdd.tag,
+            sdd.content
+        FROM
+            sys_dialogue_details sdd
+        WHERE
+            sdd.del_flag = '0'
+          AND sdd.parent_id = #{dialogueId}
+        ORDER BY
+            sdd.create_time ASC
+        LIMIT #{maxContextNum}
+    </select>
+</mapper>
