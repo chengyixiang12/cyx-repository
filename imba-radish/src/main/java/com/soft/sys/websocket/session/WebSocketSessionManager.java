@@ -1,4 +1,4 @@
-package com.soft.sys.websocket;
+package com.soft.sys.websocket.session;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;

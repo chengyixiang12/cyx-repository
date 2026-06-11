@@ -1,6 +1,4 @@
-package com.soft.sys.websocket;
-
-import com.soft.sys.websocket.handle.message.WebSocketConcreteHandler;
+package com.soft.sys.websocket.api;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketConcreteHolder {
 
     private final static Map<String, WebSocketConcreteHandler<?>> CONCRETE_HANDLER_MAP = new ConcurrentHashMap<>();
+
     /**
      * 获取具体逻辑处理器
      * @param order

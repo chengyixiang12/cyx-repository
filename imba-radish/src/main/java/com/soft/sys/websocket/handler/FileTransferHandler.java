@@ -1,11 +1,11 @@
-package com.soft.sys.websocket.handle.message.concrete.filetransfer;
+package com.soft.sys.websocket.handler;
 
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDto;
-import com.soft.sys.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.send.SendParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

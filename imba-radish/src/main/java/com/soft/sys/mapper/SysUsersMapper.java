@@ -19,8 +19,6 @@ public interface SysUsersMapper extends BaseMapper<SysUser> {
     Page<UsersVo> getUsers(@Param("page") IPage<UsersVo> page,
                            @Param("getUsersDto") GetUsersDto getUsersDto);
 
-    Long getManager(@Param("roleCode") String managerRoleCode);
-
     GetUserVo getUser(@Param("id") Long id);
 
     void lockUser(@Param("username") String username);

@@ -1,6 +1,6 @@
 package com.soft.sys.core.listener;
 
-import com.soft.sys.websocket.WebSocketSessionManager;
+import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationListener;

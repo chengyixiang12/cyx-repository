@@ -12,10 +12,10 @@ import com.soft.sys.model.vo.LoginVo;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.service.*;
 import com.soft.sys.utils.RSAUtil;
-import com.soft.sys.websocket.WebSocketConcreteHolder;
-import com.soft.sys.websocket.WebSocketSessionManager;
-import com.soft.sys.websocket.handle.message.concrete.ForceOfflineHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHolder;
+import com.soft.sys.websocket.handler.ForceOfflineHandler;
 import com.soft.sys.websocket.receive.ForceOfflineRecParam;
+import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -58,9 +58,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void register(SysUser sysUser) {
         try {
-            Long userId = sysUsersService.getManager(BaseConstant.Role.MANAGER_ROLE_CODE);
-            sysUser.setCreateBy(userId);
-            sysUser.setUpdateBy(userId);
             // 解密密码
             String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
             String decrypt = rsaUtil.decrypt(sysUser.getPassword(), privateKey);
@@ -161,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
             long current = Long.parseLong(cached.toString());
             if (BaseConstant.LONG_INIT_VAL.equals(current)) {
                 sysUsersService.lockUser(request.getUsername());
-                throw new LockedException("登录次数用完，您的账号已锁定");
+                throw new LockedException("账号已锁定");
             }
             remaining = redisTemplate.opsForValue().decrement(errorKey);
         }

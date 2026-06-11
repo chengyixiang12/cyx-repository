@@ -1,4 +1,4 @@
-package com.soft.sys.websocket.handle.message;
+package com.soft.sys.websocket.api;
 
 import com.soft.sys.enums.WebSocketOrderEnum;
 import org.springframework.web.socket.AbstractWebSocketMessage;

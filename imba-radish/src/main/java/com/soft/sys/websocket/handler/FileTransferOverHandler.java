@@ -1,4 +1,4 @@
-package com.soft.sys.websocket.handle.message.concrete.filetransfer;
+package com.soft.sys.websocket.handler;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
@@ -10,7 +10,7 @@ import com.soft.sys.entity.SysFile;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDto;
 import com.soft.sys.service.SysFileService;
-import com.soft.sys.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.receive.FileTransferOverRecParam;
 import com.soft.sys.websocket.send.SendParams;
 import lombok.RequiredArgsConstructor;

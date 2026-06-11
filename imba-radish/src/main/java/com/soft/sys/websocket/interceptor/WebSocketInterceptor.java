@@ -1,4 +1,4 @@
-package com.soft.sys.websocket;
+package com.soft.sys.websocket.interceptor;
 
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;

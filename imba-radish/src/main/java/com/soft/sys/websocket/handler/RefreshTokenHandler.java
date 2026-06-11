@@ -1,11 +1,11 @@
-package com.soft.sys.websocket.handle.message.concrete;
+package com.soft.sys.websocket.handler;
 
 import com.alibaba.fastjson2.JSON;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDto;
-import com.soft.sys.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.receive.RefreshTokenRecParm;
 import com.soft.sys.websocket.send.RefreshTokenSendParam;
 import lombok.RequiredArgsConstructor;

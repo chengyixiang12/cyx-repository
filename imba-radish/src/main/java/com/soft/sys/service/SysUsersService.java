@@ -28,8 +28,6 @@ public interface SysUsersService extends IService<SysUser> {
 
     GetUserVo getUser(Long id);
 
-    Long getManager(String managerRoleCode);
-
     void lockUser(String username);
 
     void unlockUser(String username);

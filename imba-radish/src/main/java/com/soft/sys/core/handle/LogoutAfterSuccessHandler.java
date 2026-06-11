@@ -6,7 +6,7 @@ import com.soft.sys.enums.ResultEnum;
 import com.soft.sys.model.dto.UserDto;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.utils.ResponseUtil;
-import com.soft.sys.websocket.WebSocketSessionManager;
+import com.soft.sys.websocket.session.WebSocketSessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

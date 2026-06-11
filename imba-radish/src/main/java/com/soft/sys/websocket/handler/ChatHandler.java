@@ -1,4 +1,4 @@
-package com.soft.sys.websocket.handle.message.concrete;
+package com.soft.sys.websocket.handler;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
@@ -10,7 +10,7 @@ import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.GetRecentContentDto;
 import com.soft.sys.model.dto.UserDto;
 import com.soft.sys.service.SysDialogueDetailsService;
-import com.soft.sys.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.receive.ChatRecParam;
 import com.soft.sys.websocket.send.ChatSendParams;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * @Author: cyx
- * @Description: 
+ * @Description:
  * @DateTime: 2025/5/28 17:37
  **/
 @Component

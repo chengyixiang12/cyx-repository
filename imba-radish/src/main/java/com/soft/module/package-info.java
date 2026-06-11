@@ -3,7 +3,8 @@
                 "sys::exception",
                 "sys::utils",
                 "sys::service",
-                "sys::entity"
+                "sys::entity",
+                "sys::websocket"
         }
 )
 package com.soft.module;

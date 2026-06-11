@@ -70,19 +70,6 @@
             AND u.account_non_locked = #{getUsersDto.accountNonLocked}
         </if>
     </select>
-    <select id="getManager" parameterType="java.lang.String" resultType="java.lang.Long">
-        SELECT
-        su.id
-        FROM
-        sys_role sr
-        JOIN sys_user_role sur ON sr.id = sur.role_id
-        JOIN sys_user su ON sur.user_id = su.id
-        WHERE
-        sr.`code` = #{roleCode}
-        ORDER BY
-        su.create_by
-        LIMIT 1
-    </select>
     <select id="getUser" parameterType="java.lang.Long" resultType="GetUserVo">
         SELECT
         su.id,

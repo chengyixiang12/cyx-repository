@@ -1,6 +1,7 @@
-package com.soft.sys.websocket;
+package com.soft.sys.websocket.handler;
 
-import com.soft.sys.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHolder;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

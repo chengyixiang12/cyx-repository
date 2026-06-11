@@ -1,9 +1,9 @@
-package com.soft.sys.websocket.handle;
+package com.soft.sys.websocket.handler;
 
 import com.alibaba.fastjson2.JSON;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.websocket.WebSocketConcreteHolder;
-import com.soft.sys.websocket.handle.message.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHolder;
 import com.soft.sys.websocket.receive.AbstractRecParam;
 import com.soft.sys.websocket.receive.RecParam;
 import com.soft.sys.websocket.send.SendParams;

@@ -27,10 +27,10 @@ import com.soft.sys.rabbitmq.producer.EmailProduce;
 import com.soft.sys.service.*;
 import com.soft.sys.utils.CommonUtil;
 import com.soft.sys.utils.RSAUtil;
-import com.soft.sys.websocket.WebSocketConcreteHolder;
-import com.soft.sys.websocket.WebSocketSessionManager;
-import com.soft.sys.websocket.handle.message.concrete.ForceOfflineHandler;
+import com.soft.sys.websocket.api.WebSocketConcreteHolder;
+import com.soft.sys.websocket.handler.ForceOfflineHandler;
 import com.soft.sys.websocket.receive.ForceOfflineRecParam;
+import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -224,11 +224,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         GetUserVo getUserVo = sysUsersMapper.getUser(id);
         getUserVo.setRoleIds(sysRoleService.getUserRole(id));
         return getUserVo;
-    }
-
-    @Override
-    public Long getManager(String managerRoleCode) {
-        return sysUsersMapper.getManager(managerRoleCode);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package com.soft.sys.core.conf;
 
 import com.soft.sys.properties.WebSocketProperty;
-import com.soft.sys.websocket.WebSocketInterceptor;
-import com.soft.sys.websocket.handle.CustomWebSocketHandlerDecorator;
-import com.soft.sys.websocket.handle.WebSocketHandler;
+import com.soft.sys.websocket.handler.CustomWebSocketHandlerDecorator;
+import com.soft.sys.websocket.handler.WebSocketHandler;
+import com.soft.sys.websocket.interceptor.WebSocketInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;

@@ -39,7 +39,7 @@ public class R<T> {
     }
 
     public static <T> R<T> ok(T data) {
-        return setR(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage(), data);
+        return setR(ResultEnum.SUCCESS.getCode(), null, data);
     }
 
     public static <T> R<T> fail(String msg) {
