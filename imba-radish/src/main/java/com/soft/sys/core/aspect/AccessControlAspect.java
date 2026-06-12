@@ -6,7 +6,6 @@ import com.soft.sys.exception.GlobalException;
 import com.soft.sys.utils.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -41,14 +40,11 @@ public class AccessControlAspect {
         int interval = accessControl.interval();
         int times = accessControl.times();
         TimeUnit unit = accessControl.unit();
+        HttpServletRequest servletRequest = ((ServletRequestAttributes)(Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))).getRequest();
+        String ip = CommonUtil.getIp(servletRequest);
         String key = accessControl.key();
 
-        if (StringUtils.isBlank(key)) {
-            HttpServletRequest servletRequest = ((ServletRequestAttributes)(Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))).getRequest();
-            key = CommonUtil.getIp(servletRequest);
-        }
-
-        String redisKey = RedisConstant.ACCESS_CONTROL + key;
+        String redisKey = RedisConstant.ACCESS_CONTROL + ip + key;
         redisTemplate.opsForValue().setIfAbsent(redisKey, 0, interval, unit);
         Long curTimes = redisTemplate.opsForValue().increment(redisKey);
         if (curTimes != null && curTimes <= times) {

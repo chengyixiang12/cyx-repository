@@ -16,17 +16,21 @@
             <span v-if="uploadProgress > 0" class="progress-text">{{ uploadProgress }}%</span>
           </template>
         </el-progress>
-        <p class="progress-desc">请等待上传完成，请勿关闭此窗口</p>
+        <p class="progress-desc">请等待上传完成</p>
       </div>
+      <template #footer>
+        <el-button type="danger" @click="cancelUpload">取消上传</el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { uploadChunkApi, uploadFileApi, mergeChunkApi, getFileByMd5Api, getUploadProgressApi } from '@/api/file'
+import { uploadChunkApi, uploadFileApi, mergeChunkApi, getFileByMd5Api, getUploadProgressApi, cancelChunkApi } from '@/api/file'
 import { showMessage } from '@/utils/message'
 import { calculateFileMd5, chunkSize } from '@/utils/filemd5';
+import { delay } from '@/utils/delay';
 
 const emit = defineEmits(['upload-success'])
 
@@ -35,6 +39,7 @@ const uploadRef = ref();
 const uploadProgress = ref<number>(0);
 const maxChunkSize = 5 * 100 * 1024 * 1024;
 const uploadDialogVisible = ref(false);
+const isCancelled = ref(false);
 
 /**
  * 上传单个分片
@@ -58,6 +63,13 @@ const mergeChunks = async (fileMd5: string, fileName: string, totalChunks: numbe
   await mergeChunkApi(fileMd5, fileName, totalChunks);
 };
 
+/**
+ * 取消上传
+ */
+const cancelUpload = async () => {
+  isCancelled.value = true;
+};
+
 const customChunkUpload = async (options: any) => {
   const { file } = options;
   const fileMd5 = await calculateFileMd5(file)
@@ -75,35 +87,47 @@ const customChunkUpload = async (options: any) => {
     await uploadFileApi(formData)
   } else if (file.size <= maxChunkSize) {
     uploadDialogVisible.value = true
-    try {
-      // 获取上传进度
-      const progressRes = await getUploadProgressApi(fileMd5)
-      const uploadedIndices = progressRes.uploadedIndices || []
-      
-      uploadProgress.value = 0
-      const fileName = file.name
+      isCancelled.value = false
+      try {
+        const progressRes = await getUploadProgressApi(fileMd5)
+        const uploadedIndices = progressRes.uploadedIndices || []
+        
+        uploadProgress.value = 0
+        const fileName = file.name
 
-      const totalChunks = Math.ceil(file.size / chunkSize)
+        const totalChunks = Math.ceil(file.size / chunkSize)
 
-      for (let i = 0; i < totalChunks; i++) {
-        uploadProgress.value = Math.round((i + 1) / totalChunks * 100)
-        if (uploadedIndices.includes(i)) {
-          continue
+        for (let i = 0; i < totalChunks; i++) {
+          if (isCancelled.value) {
+            break
+          }
+          uploadProgress.value = Math.round((i + 1) / totalChunks * 100)
+          if (uploadedIndices.includes(i)) {
+            continue
+          }
+          const start = i * chunkSize;
+          const end = Math.min(start + chunkSize, file.size)
+          const chunk = file.slice(start, end)
+          await uploadSingleChunk(chunk, i, fileMd5)
         }
-        const start = i * chunkSize;
-        const end = Math.min(start + chunkSize, file.size)
-        const chunk = file.slice(start, end)
-        await uploadSingleChunk(chunk, i, fileMd5)
-      }
 
-      await mergeChunks(fileMd5, fileName, totalChunks)
-    } catch (error) {
-      uploadProgress.value = 0
-      uploadDialogVisible.value = false
-    } finally {
-      uploadProgress.value = 0
-      uploadDialogVisible.value = false
-    }
+        await delay(2000)
+
+        if (!isCancelled.value) {
+          await mergeChunks(fileMd5, fileName, totalChunks)
+          showMessage("上传成功", 'success')
+        } else {
+          await cancelChunkApi(fileMd5)
+          showMessage("上传已取消", 'info')
+        }
+      } catch (error) {
+        uploadProgress.value = 0
+        uploadDialogVisible.value = false
+      } finally {
+        uploadProgress.value = 0
+        uploadDialogVisible.value = false
+        isCancelled.value = false
+      }
   } else {
     showMessage("文件限制500MB", 'warning')
   }

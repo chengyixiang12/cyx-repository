@@ -1,5 +1,7 @@
 package com.soft.sys.core.annotation;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
@@ -35,5 +37,6 @@ public @interface AccessControl {
      * 唯一标识
      * @return
      */
+    @NotBlank
     String key();
 }

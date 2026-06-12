@@ -123,3 +123,11 @@ export async function getUploadProgressApi(fileMd5: string): Promise<ChunkProgre
   const res = await get<ChunkProgressVo>('/file/getUploadProgress', { flag: true, params: { fileMd5 }});
   return res.data;
 }
+
+/**
+ * 取消分片上传
+ * @param fileMd5  
+ */
+export async function cancelChunkApi(fileMd5: string): Promise<void> {
+  await del('/file/cancelChunk', null, { params: { fileMd5 }, flag: true })
+}
