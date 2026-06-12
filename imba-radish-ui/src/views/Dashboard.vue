@@ -16,7 +16,7 @@
           <template #header>
             <div class="card-header">
               <span>系统公告</span>
-              <el-button type="text" size="small" class="view-all-btn">查看全部</el-button>
+              <el-button type="primary" size="small">查看全部</el-button>
             </div>
           </template>
           <div v-if="announcements.length === 0" class="empty-state">
@@ -41,7 +41,7 @@
           <template #header>
             <div class="card-header">
               <span>我的待办</span>
-              <el-button type="text" size="small" class="view-all-btn">查看全部</el-button>
+              <el-button type="primary" size="small">查看全部</el-button>
             </div>
           </template>
           <div v-if="todos.length === 0" class="empty-state">
@@ -318,10 +318,6 @@ onMounted(() => {
   align-items: center;
   font-weight: 500;
   padding: 8px 0;
-}
-
-.view-all-btn {
-  color: #409eff;
 }
 
 .content-list {

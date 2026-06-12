@@ -104,14 +104,26 @@ springdoc:
 # 日志
 logging:
   level:
+    # 根日志级别（所有 logger 的默认级别）
+    root: info
+
+    # Spring 框架
     org.springframework.boot: info
+
+    # 开发环境调试认证/授权问题
+    org.springframework.security: debug
+    # 开发环境调试请求映射和参数绑定
+    org.springframework.web: debug
+
+    # MyBatis / MyBatis-Plus 框架日志
     com.baomidou.mybatisplus: info
     org.mybatis: info
-    com.soft.base.mapper: debug
-    com.soft.module.mapper: info
-    org.springframework.boot.actuate: info
+    # Mapper SQL 日志（打印 SQL 语句，方便调试）
+    com.soft.sys.mapper: debug
+    com.soft.module.mapper: debug
+
+    # Flowable 工作流引擎
     org.flowable.job.service.impl.asyncexecutor: info
-    root: info
   config: classpath:logback-spring.xml
 # 临时文件存储路径
 tmp:
