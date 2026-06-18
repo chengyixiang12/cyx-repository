@@ -61,6 +61,7 @@ public class SysPermissionController {
     }
 
     @PutMapping(value = "/editPermission")
+    @PreAuthorize(value = "@cps.hasPermission('sys_pms_edit')")
     @Operation(summary = "编辑权限")
     public R<Object> editPermission(@RequestBody EditPermissionRequest request) {
         if (sysPermissionService.existCode(request.getCode())) {
@@ -87,6 +88,7 @@ public class SysPermissionController {
 
     @DeleteMapping
     @Operation(summary = "删除权限")
+    @PreAuthorize(value = "@cps.hasPermission('sys_pms_delete')")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deletePermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysPermissionService.deletePermission(id);
@@ -95,6 +97,7 @@ public class SysPermissionController {
 
     @GetMapping(value = "/enablePermission")
     @Operation(summary = "启用权限")
+    @PreAuthorize(value = "@cps.hasPermission('enable_permission')")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enablePermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysPermissionService.enablePermission(id);
@@ -103,6 +106,7 @@ public class SysPermissionController {
 
     @GetMapping(value = "/forbiddenPermission")
     @Operation(summary = "禁用权限")
+    @PreAuthorize(value = "@cps.hasPermission('forbidden_permission')")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> forbiddenPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysPermissionService.forbiddenPermission(id);

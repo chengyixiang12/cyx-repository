@@ -59,11 +59,17 @@ public class R<T> {
     }
 
     public R<T> setExtra(String key, Object value) {
+        if (this.extra == null) {
+            this.extra = new HashMap<>();
+        }
         this.extra.put(key, value);
         return this;
     }
 
     public R<T> setExtra(Map<String, Object> extra) {
+        if (this.extra == null) {
+            this.extra = new HashMap<>();
+        }
         this.extra.putAll(extra);
         return this;
     }
@@ -74,7 +80,6 @@ public class R<T> {
         result.msg = msg;
         result.data = data;
         result.timestamp = System.currentTimeMillis();
-        result.extra = new HashMap<>();
         return result;
     }
 

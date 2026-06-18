@@ -54,7 +54,6 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
         String token = (String) receiveSession.getAttributes().get(WebSocketConstant.AUTHORIZATION);
         WebSocketSessionManager.removeSession(userDto.getId());
         Set<String> keySet = new HashSet<>(4);
-        keySet.add(RedisConstant.WS_USER_SESSION + userDto.getId());
         keySet.add(RedisConstant.AUTHORIZATION_USERNAME + token);
         keySet.add(RedisConstant.USER_INFO + username);
         keySet.add(RedisConstant.FINGERPRINT + username);

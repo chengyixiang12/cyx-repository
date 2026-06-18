@@ -20,13 +20,13 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx
- * @Description: 心跳检测处理类，客户端每隔30秒调用一次
+ * @Description: 心跳接收处理类
  * @DateTime: 2024/11/22 17:17
  **/
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
+public class PongHandler implements WebSocketConcreteHandler<String> {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -35,18 +35,17 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
         try {
             UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
-            // 重新设置用户在线状态
-            redisTemplate.opsForValue().set(RedisConstant.WS_USER_SESSION + userDto.getId(), userDto.getUsername(), RedisConstant.WS_USER_SESSION_EXPIRE, TimeUnit.SECONDS);
             WebSocketSessionManager.addSession(userDto.getId(), session);
 
             String token = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);
+
             // 校验token是否过期，实现token无感刷新
             Long expire = redisTemplate.getExpire(RedisConstant.AUTHORIZATION_USERNAME + token);
             HeartBeatSendParams heartBeatSendParams = new HeartBeatSendParams();
             if (expire < 60) {
                 heartBeatSendParams.setRefreshFlag(true);
             }
-            heartBeatSendParams.setOrder(WebSocketOrderEnum.HEART_BEAT.toString());
+            heartBeatSendParams.setOrder(WebSocketOrderEnum.PONG.toString());
             session.sendMessage(new TextMessage(heartBeatSendParams.toJsonString()));
 
         } catch (Exception e) {
@@ -57,6 +56,6 @@ public class HeartbeatHandler implements WebSocketConcreteHandler<String> {
 
     @Override
     public WebSocketOrderEnum getOrder() {
-        return WebSocketOrderEnum.HEART_BEAT;
+        return WebSocketOrderEnum.PONG;
     }
 }

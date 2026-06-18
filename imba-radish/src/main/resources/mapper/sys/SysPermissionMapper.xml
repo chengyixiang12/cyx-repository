@@ -42,6 +42,10 @@
         <if test="request.status != null and request.status != ''">
             and sp.status = #{request.status}
         </if>
+        <if test="request.keyword != null and request.keyword != ''">
+            <bind name="keywordLike" value="'%' + request.keyword + '%'"/>
+            and (sp.`name` like #{keywordLike} or sp.`code` like #{keywordLike})
+        </if>
         order by sp.create_time desc
     </select>
     <select id="getPermissionsByRoleCodes" parameterType="java.util.List" resultType="java.lang.String">

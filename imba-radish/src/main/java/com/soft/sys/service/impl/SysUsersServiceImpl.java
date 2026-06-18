@@ -96,7 +96,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         Page<UsersVo> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
         PageVO<UsersVo> pageVo = new PageVO<>();
         allUsers.getRecords().forEach(item -> {
-            item.setIsOnline(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId()) ? 1 : 0);
+            item.setIsOnline(WebSocketSessionManager.getSession(Long.parseLong(item.getId())) != null ? 1 : 0);
             if (StringUtils.isNotBlank(item.getPhone())) {
                 item.setPhone(item.getPhone().replaceAll(RegexConstant.PHONE_HIDDEN_REGEX, RegexConstant.PHONE_HIDDEN_EXP));
             }

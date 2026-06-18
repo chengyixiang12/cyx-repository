@@ -1,7 +1,7 @@
 package com.soft.sys.core.conf;
 
 import com.soft.sys.properties.WebSocketProperty;
-import com.soft.sys.websocket.handler.CustomWebSocketHandlerDecorator;
+import com.soft.sys.websocket.decorator.CustomWebSocketHandlerDecorator;
 import com.soft.sys.websocket.handler.WebSocketHandler;
 import com.soft.sys.websocket.interceptor.WebSocketInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(
-                        new CustomWebSocketHandlerDecorator(new WebSocketHandler(), redisTemplate),
+                        new CustomWebSocketHandlerDecorator(new WebSocketHandler()),
                         "/ws")
                 .addInterceptors(new WebSocketInterceptor(userDetailsService, redisTemplate))
                 .setAllowedOrigins(webSocketProperty.getAllowedOrigins().toArray(String[]::new));

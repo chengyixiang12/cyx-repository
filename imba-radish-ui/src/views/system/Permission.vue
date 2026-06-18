@@ -48,6 +48,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="name" align="center" label="名称" show-overflow-tooltip />
+        <el-table-column prop="code" align="center" label="编码" show-overflow-tooltip />
         <el-table-column prop="type" align="center" label="类型" show-overflow-tooltip>
           <template #default="scope">
             {{ scope.row.type === '1' ? '菜单' : '按钮' }}

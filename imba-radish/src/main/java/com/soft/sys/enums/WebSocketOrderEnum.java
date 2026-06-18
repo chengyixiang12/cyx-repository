@@ -19,9 +19,14 @@ public enum WebSocketOrderEnum {
     PUSH_MESSAGE,
 
     /**
-     * 心跳检测
+     * 心跳发起
      */
-    HEART_BEAT,
+    PING,
+
+    /**
+     * 心跳接收
+     */
+    PONG,
 
     /**
      * 文件传输开始

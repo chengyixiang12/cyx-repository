@@ -134,6 +134,7 @@ public class SysRoleController {
 
     @GetMapping(value = "/getRole")
     @Operation(summary = "获取角色详情")
+    @PreAuthorize(value = "@cps.hasPermission('sys_role_get_role')")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<SysRoleVo> getRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         SysRoleVo sysRoleVo = sysRoleService.getRole(id);
@@ -142,6 +143,7 @@ public class SysRoleController {
 
     @PostMapping(value = "/getRoles")
     @Operation(summary = "获取角色列表")
+    @PreAuthorize(value = "@cps.hasPermission('sys_role_get_roles')")
     public R<PageVO<SysRolesVo>> getRoles(@RequestBody GetRolesRequest request) {
         PageVO<SysRolesVo> resultPage = sysRoleService.getRoles(request);
         return R.ok(resultPage);
