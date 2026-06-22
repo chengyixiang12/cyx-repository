@@ -86,4 +86,9 @@ public class RedisConstant {
      * 接口访问控制
      */
     public static final String ACCESS_CONTROL = "radish:access-control:";
+
+    /**
+     * ping的状态，如果客户端回复，则删除该缓存；如果客户端没有回复，则在下一次心跳时，将其关闭
+     */
+    public static final String PING_STATUS = "radish:ping-status:";
 }

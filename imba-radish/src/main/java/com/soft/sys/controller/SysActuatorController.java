@@ -121,7 +121,7 @@ public class SysActuatorController {
 
         int dataSize = data.size();
         List<ListUsageTrendVO> sampled = new ArrayList<>(maxPoints);
-        sampled.add(data.get(0));  // 首点必选
+        sampled.add(data.getFirst());  // 首点必选
 
         // 将中间数据分入 (maxPoints - 2) 个桶
         double bucketSize = (double) (dataSize - 2) / (maxPoints - 2);

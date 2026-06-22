@@ -22,7 +22,7 @@ public class WebSocketHeardHeatTimer {
     private final SendPingAsync sendPingAsync;
 
     @Scheduled(cron = "*/30 * * * * *")
-    public void run() {
+    public void heartBeat() {
         Set<String> keys = WebSocketSessionManager.getKeys();
         if (keys.isEmpty()) return;
         keys.forEach(sendPingAsync::send);

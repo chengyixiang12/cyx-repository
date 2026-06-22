@@ -35,6 +35,8 @@ public class PongHandler implements WebSocketConcreteHandler<String> {
         try {
             UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
+            redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
+
             WebSocketSessionManager.addSession(userDto.getId(), session);
 
             String token = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);

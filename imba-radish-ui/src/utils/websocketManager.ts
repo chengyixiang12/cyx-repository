@@ -13,23 +13,17 @@ export enum ConnectionStatus {
 }
 
 export interface WebsocketConfig {
-  heartbeatInterval?: number
-  heartbeatTimeoutLimit?: number
   reconnectInterval?: number
   maxReconnectAttempts?: number
 }
 
 export class WebsocketManager {
   private socket: WebSocket | null = null
-  private heartbeatTimer: number | null = null
   private reconnectTimer: number | null = null
 
-  private readonly HEARTBEAT_INTERVAL: number
-  private readonly HEARTBEAT_TIMEOUT_LIMIT: number
   private readonly RECONNECT_INTERVAL: number
   private readonly MAX_RECONNECT_ATTEMPTS: number
 
-  private missedHeartbeats = 0
   private reconnectAttempts = 0
 
   private url = ''
@@ -41,7 +35,6 @@ export class WebsocketManager {
   public onMessage: ((data: WebsocketMessage) => void) | null = null
   public onForceLogout: ((data: WebsocketMessage) => void) | null = null
   public aiAnwser: ((data: WebsocketMessage) => void) | null = null
-  public heartbeat: ((data: WebsocketMessage) => void) | null = null
   public refreshToken: ((data: WebsocketMessage) => void) | null = null
 
   public onOpen: (() => void) | null = null
@@ -51,8 +44,6 @@ export class WebsocketManager {
 
   constructor(url: string, config?: WebsocketConfig) {
     this.url = url
-    this.HEARTBEAT_INTERVAL = config?.heartbeatInterval ?? 30000
-    this.HEARTBEAT_TIMEOUT_LIMIT = config?.heartbeatTimeoutLimit ?? 3
     this.RECONNECT_INTERVAL = config?.reconnectInterval ?? 30000
     this.MAX_RECONNECT_ATTEMPTS = config?.maxReconnectAttempts ?? 5
   }
@@ -75,12 +66,10 @@ export class WebsocketManager {
 
     this.socket.onopen = () => {
       console.log('[WebSocket] 连接成功')
-      this.missedHeartbeats = 0
       this.reconnectAttempts = 0
       this.isActive = false
       this.setStatus(ConnectionStatus.OPEN)
       this.onOpen?.()
-      this.startHeartbeat()
       this.flushMessageQueue()
     }
 
@@ -94,7 +83,6 @@ export class WebsocketManager {
               const fingerprint = sessionStorage.getItem('fingerprint');
               this.send({ order: 'REFRESH_TOKEN', fingerprint })
             }
-            this.missedHeartbeats = 0
             break
           }
           case 'FORCE_OFFLINE': {
@@ -111,7 +99,6 @@ export class WebsocketManager {
             break
           }
           case 'PING': {
-            this.missedHeartbeats = 0
             this.send({ order: 'PONG' })
             break
           }
@@ -126,7 +113,6 @@ export class WebsocketManager {
     }
 
     this.socket.onclose = (event: CloseEvent) => {
-      this.stopHeartbeat()
       this.setStatus(ConnectionStatus.CLOSED)
       this.onClose?.(event.code, event.reason)
 
@@ -138,26 +124,6 @@ export class WebsocketManager {
     this.socket.onerror = (error: Event) => {
       console.error('[WebSocket] 连接错误', error)
       this.onError?.(error)
-    }
-  }
-
-  private startHeartbeat() {
-    this.stopHeartbeat()
-    this.heartbeatTimer = window.setInterval(() => {
-      if (this.socket?.readyState !== WebSocket.OPEN) return
-
-      this.missedHeartbeats++
-      if (this.missedHeartbeats >= this.HEARTBEAT_TIMEOUT_LIMIT) {
-        console.error('[WebSocket] 心跳超时，关闭连接')
-        this.socket?.close()
-      }
-    }, this.HEARTBEAT_INTERVAL)
-  }
-
-  private stopHeartbeat() {
-    if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer)
-      this.heartbeatTimer = null
     }
   }
 
@@ -229,7 +195,6 @@ export class WebsocketManager {
       this.socket = null
     }
 
-    this.stopHeartbeat()
     this.messageQueue = []
   }
 
