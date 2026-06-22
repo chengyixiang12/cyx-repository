@@ -11,6 +11,7 @@ import com.soft.sys.model.vo.ListUsageTrendVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +40,8 @@ public interface SysActuatorMapper extends BaseMapper<SysActuator> {
 
     List<ListUsageTrendVO> listMetaspaceMemoryTrend(@Param("startTime") LocalDateTime startTime,
                                                     @Param("endTime") LocalDateTime endTime);
+
+    void deleteOneMonthAgo(@Param("date") Date date);
 }
 
 

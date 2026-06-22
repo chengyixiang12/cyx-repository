@@ -9,6 +9,7 @@ import com.soft.sys.model.vo.ListUsageTrendVO;
 import com.soft.sys.model.vo.PageVO;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,4 +32,6 @@ public interface SysActuatorService extends IService<SysActuator> {
     List<ListUsageTrendVO> listHeapMemoryTrend(LocalDateTime startTime, LocalDateTime endTime);
 
     List<ListUsageTrendVO> listMetaspaceMemoryTrend(LocalDateTime startTime, LocalDateTime endTime);
+
+    void deleteOneMonthAgo(Date date);
 }

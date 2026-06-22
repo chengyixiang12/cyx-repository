@@ -13,7 +13,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
  * @DateTime: 2024/11/21 19:46
  **/
 @Slf4j
-public class WebSocketHandler extends TextWebSocketHandler {
+public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     protected void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) throws Exception {

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,6 +68,11 @@ public class SysActuatorServiceImpl extends ServiceImpl<SysActuatorMapper, SysAc
     @Override
     public List<ListUsageTrendVO> listMetaspaceMemoryTrend(LocalDateTime startTime, LocalDateTime endTime) {
         return sysActuatorMapper.listMetaspaceMemoryTrend(startTime, endTime);
+    }
+
+    @Override
+    public void deleteOneMonthAgo(Date date) {
+        sysActuatorMapper.deleteOneMonthAgo(date);
     }
 }
 

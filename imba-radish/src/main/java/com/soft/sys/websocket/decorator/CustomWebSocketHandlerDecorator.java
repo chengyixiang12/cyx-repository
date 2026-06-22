@@ -1,10 +1,12 @@
 package com.soft.sys.websocket.decorator;
 
+import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.model.dto.UserDto;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
@@ -18,13 +20,18 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 @Slf4j
 public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
-    public CustomWebSocketHandlerDecorator(WebSocketHandler delegate) {
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    public CustomWebSocketHandlerDecorator(WebSocketHandler delegate, RedisTemplate<String, Object> redisTemplate) {
         super(delegate);
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        // 删除上一次连接的ping状态
+        redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
         // 添加用户会话
         if (WebSocketSessionManager.getSession(userDto.getId()) == null) {
             WebSocketSessionManager.addSession(userDto.getId(), session);
@@ -37,6 +44,8 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         // 移除用户会话
         WebSocketSessionManager.removeSession(userDto.getId());
+        // 删除遗留的ping状态
+        redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
         log.info("{} connect closed...", userDto.getUsername());
     }
 

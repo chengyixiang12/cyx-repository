@@ -1,5 +1,7 @@
 package com.soft.sys.schedule;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.soft.sys.entity.SysActuator;
 import com.soft.sys.service.SysActuatorService;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -10,6 +12,8 @@ import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * @author cyx
@@ -113,6 +117,15 @@ public class ActuatorMetric {
 
         // 存入数据库
         sysActuatorService.save(sysActuator);
+    }
+
+    /**
+     * 每天0点清理一个月之前的监控记录
+     */
+    @Scheduled(cron = "* * 0 * * *")
+    public void clear() {
+        DateTime dateTime = DateUtil.offsetMonth(new Date(), -1);
+        sysActuatorService.deleteOneMonthAgo(dateTime);
     }
 
     /**

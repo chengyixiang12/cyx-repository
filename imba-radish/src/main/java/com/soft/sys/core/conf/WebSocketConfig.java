@@ -30,7 +30,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(
-                        new CustomWebSocketHandlerDecorator(new WebSocketHandler()),
+                        new CustomWebSocketHandlerDecorator(new WebSocketHandler(), redisTemplate),
                         "/ws")
                 .addInterceptors(new WebSocketInterceptor(userDetailsService, redisTemplate))
                 .setAllowedOrigins(webSocketProperty.getAllowedOrigins().toArray(String[]::new));

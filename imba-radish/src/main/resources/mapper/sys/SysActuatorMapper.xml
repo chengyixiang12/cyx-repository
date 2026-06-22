@@ -91,4 +91,7 @@
         </if>
         order by t1.create_time
     </select>
+    <delete id="deleteOneMonthAgo" parameterType="java.util.Date">
+        delete from sys_actuator where create_time <![CDATA[<]]> #{date}
+    </delete>
 </mapper>
