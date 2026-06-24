@@ -241,8 +241,12 @@ public class BaseConstant {
     public static class Actuator {
 
         /**
-         * 使用率趋势最大点数
+         * 使用率趋势降采样最小点数（动态计算的实际范围：20～200）
+         *
+         * @deprecated 降采样点数现已根据时间范围动态计算，见
+         * {@link com.soft.sys.service.impl.SysActuatorServiceImpl#calculateMaxPoints}
          */
+        @Deprecated
         public static final Integer MAX_POINTS = 20;
     }
 }

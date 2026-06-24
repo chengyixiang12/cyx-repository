@@ -117,7 +117,7 @@ export class WebsocketManager {
       this.onClose?.(event.code, event.reason)
 
       if (!this.isActive) {
-        this.tryReconnect()
+        this.tryReconnect(event.code)
       }
     }
 
@@ -127,7 +127,14 @@ export class WebsocketManager {
     }
   }
 
-  private tryReconnect() {
+  private tryReconnect(closeCode?: number) {
+    if (this.reconnectAttempts >= 1 && closeCode === 1006) {
+      console.warn('[WebSocket] 重连被拒(1006)，token 可能已失效，停止重连')
+      this.close()
+      this.onForceLogout?.({ status: false, order: 'FORCE_OFFLINE', msg: '登录状态已过期，请重新登录' })
+      return
+    }
+
     if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
       console.error('[WebSocket] 达到最大重连次数，放弃')
       return
@@ -143,13 +150,18 @@ export class WebsocketManager {
     }
 
     this.setStatus(ConnectionStatus.RECONNECTING)
-    console.log(`[WebSocket] ${this.RECONNECT_INTERVAL / 1000}s 后尝试重连 (${this.reconnectAttempts + 1}/${this.MAX_RECONNECT_ATTEMPTS})`)
+    this.reconnectAttempts++
 
-    this.reconnectTimer = window.setTimeout(() => {
-      this.reconnectAttempts++
+    if (this.reconnectAttempts === 1) {
+      console.log(`[WebSocket] 立即重连 (${this.reconnectAttempts}/${this.MAX_RECONNECT_ATTEMPTS})`)
       this.connect(token)
-      this.reconnectTimer = null
-    }, this.RECONNECT_INTERVAL)
+    } else {
+      console.log(`[WebSocket] ${this.RECONNECT_INTERVAL / 1000}s 后尝试重连 (${this.reconnectAttempts}/${this.MAX_RECONNECT_ATTEMPTS})`)
+      this.reconnectTimer = window.setTimeout(() => {
+        this.connect(token)
+        this.reconnectTimer = null
+      }, this.RECONNECT_INTERVAL)
+    }
   }
 
   private flushMessageQueue() {
