@@ -1,6 +1,6 @@
 # Cyx Repository - imba-radish
 
-一个基于 Spring Boot 3 + Vue 3 构建的现代化后台管理系统，提供完整的用户管理、权限控制、系统监控等功能。
+基于 **Spring Boot 3 + Java 21 (虚拟线程) + Vue 3** 的全栈后台管理系统，集成权限控制、WebSocket 实时通信、系统监控（LTTB 自适应降采样）、消息队列、AI 对话等企业级功能。
 
 ## 🌐 项目地址
 
@@ -11,17 +11,21 @@
 ### 后端技术栈
 | 技术 | 版本 | 说明 |
 | :--- | :--- | :--- |
-| Java | 17 | 编程语言 |
-| Spring Boot | 3.4.6 | 应用框架 |
-| Spring Security | 6.x | 安全框架 |
+| Java | 21 | 编程语言（支持虚拟线程） |
+| Spring Boot | 3.5.14 | 应用框架 |
+| Spring Modulith | 1.4.9 | 模块化架构 |
+| Spring Security | 6.x | 安全框架（JWT 无状态认证） |
 | MyBatis Plus | 3.5.9 | ORM 框架 |
-| MySQL | 8.0.31 | 关系型数据库 |
-| Redis | - | 缓存数据库 |
-| MinIO | 8.5.2 | 对象存储 |
-| RabbitMQ | - | 消息队列 |
-| Spring AI | 1.1.0 | AI 集成 |
+| MySQL | 8.0+ | 主库 |
+| PostgreSQL | 16+ | 从库（动态数据源） |
+| Redis | 7.x | 缓存、Token 存储、速率限制 |
+| RabbitMQ | 3.13+ | 消息队列 |
+| MinIO | 8.5.2+ | 对象存储 |
+| Flyway | 10.x | 数据库版本迁移 |
+| Spring AI | 1.1.0+ | AI 集成（DeepSeek） |
 | Flowable | 7.2.0 | 工作流引擎 |
-| Quartz | - | 定时任务 |
+| Quartz | - | 定时任务（单机模式） |
+| ECharts | - | 趋势图表（LTTB 降采样） |
 
 ### 前端技术栈
 | 技术 | 版本 | 说明 |
@@ -45,60 +49,97 @@
 
 ### 数据管理
 - **字典管理**：字典类型和字典数据管理
-- **文件管理**：文件上传、下载、预览、删除
+- **文件管理**：文件上传、下载、预览、删除（MinIO）
 - **在线磁盘**：个人文件存储空间
 
 ### 系统监控
-- **操作日志**：记录所有操作行为
-- **系统监控**：Actuator 健康检查指标
+- **实时指标**：CPU、内存（堆/非堆）、磁盘、运行时间
+- **趋势图表**：LTTB 自适应降采样（时间范围越大点数越多，1 小时→20 点 ~ 7 天→200 点）
+- **组件健康**：数据库、Redis、RabbitMQ、SSL、磁盘空间等状态监控
+- **操作日志**：AOP 自动记录所有操作行为
 - **定时任务**：Quartz 任务管理和执行记录
 
 ### 消息通信
 - **实时聊天**：WebSocket 即时通讯
 - **消息推送**：系统通知推送
+- **文件传输**：WebSocket 在线文件传输
+- **心跳保活**：虚拟线程异步 PING（每 30 秒）
 
 ### AI 功能
-- **AI 对话**：集成 DeepSeek 模型的智能问答
+- **AI 对话**：集成 DeepSeek 模型的智能问答（Spring AI）
 - **对话历史**：记录和管理对话记录
+
+### 安全特性
+- JWT 无状态令牌认证（Redis 存储）
+- RSA 非对称加密传输
+- 接口访问频率限制（Redis 滑动窗口）
+- 并发登录控制（WebSocket 强制下线）
+- 细粒度权限控制
+- AOP 操作审计日志
 
 ## 📁 项目结构
 
 ```
 cyx-repository/
-├── imba-radish/                    # 后端 Spring Boot 项目
+├── imba-radish/                          # 后端 Spring Boot 项目
 │   ├── src/main/java/com/soft/
-│   │   ├── base/                   # 基础模块
-│   │   │   ├── controller/         # REST API 控制器
-│   │   │   ├── service/            # 业务逻辑层
-│   │   │   ├── mapper/             # 数据访问层
-│   │   │   ├── entity/             # 实体类
-│   │   │   ├── core/               # 核心配置
-│   │   │   ├── websocket/          # WebSocket 通信
-│   │   │   └── utils/              # 工具类
-│   │   └── module/                 # 业务模块
-│   ├── src/main/resources/         # 配置文件
-│   └── pom.xml                     # Maven 依赖管理
-├── imba-radish-ui/                 # 前端 Vue 项目
+│   │   ├── sys/
+│   │   │   ├── controller/               # REST API 控制器
+│   │   │   ├── service/impl/             # 业务逻辑层
+│   │   │   ├── mapper/                   # MyBatis Plus 映射器
+│   │   │   ├── entity/                   # 实体类（继承 BaseEntity）
+│   │   │   ├── constants/                # 常量定义
+│   │   │   ├── enums/                    # 枚举
+│   │   │   ├── model/dto/               # 传输对象
+│   │   │   ├── model/vo/                # 视图对象
+│   │   │   ├── model/request/           # 请求体
+│   │   │   ├── core/
+│   │   │   │   ├── conf/                 # 配置类（Security/Redis/RabbitMQ 等 14 个）
+│   │   │   │   ├── filter/               # 过滤器（速率限制 → JWT 鉴权）
+│   │   │   │   ├── aspect/               # AOP（审计日志、分布式锁）
+│   │   │   │   └── handle/               # 异常/认证处理器
+│   │   │   ├── websocket/                # WebSocket 子系统（注册模式）
+│   │   │   ├── rabbitmq/                 # RabbitMQ 生产者/消费者
+│   │   │   ├── quartz/                   # Quartz 定时任务
+│   │   │   ├── async/                    # 异步操作（虚拟线程）
+│   │   │   ├── schedule/                 # 定时调度任务
+│   │   │   ├── resultapi/                # 统一响应 R<T>
+│   │   │   ├── properties/               # 配置属性绑定
+│   │   │   └── utils/                    # 工具类（AES/RSA、MinIO 等）
+│   │   └── module/                       # Spring Modulith 扩展模块
+│   ├── src/main/resources/
+│   │   ├── mapper/sys/                   # MyBatis XML 映射
+│   │   ├── db/migration/                 # Flyway 迁移脚本
+│   │   └── application.yml              # 配置文件
+│   ├── .env                              # 敏感配置（已 gitignore）
+│   └── pom.xml                           # Maven 依赖管理
+│
+├── imba-radish-ui/                       # 前端 Vue 项目
 │   ├── src/
-│   │   ├── api/                    # API 接口定义
-│   │   ├── components/             # 公共组件
-│   │   ├── views/                  # 页面视图
-│   │   ├── router/                 # 路由配置
-│   │   ├── utils/                  # 工具函数
-│   │   └── types/                  # TypeScript 类型定义
-│   └── package.json                # npm 依赖管理
-└── README.md                       # 项目说明文档
+│   │   ├── api/                          # API 接口定义
+│   │   ├── components/                   # 公共组件
+│   │   ├── views/                        # 页面视图
+│   │   ├── router/                       # 路由配置
+│   │   ├── utils/                        # 工具函数
+│   │   └── types/                        # TypeScript 类型定义
+│   └── package.json                      # npm 依赖管理
+│
+├── .env.example                          # 环境变量示例
+├── CLAUDE.md                             # AI 辅助开发指南
+├── Dockerfile                            # 容器化构建
+└── README.md                             # 项目说明文档
 ```
 
 ## 🚀 快速开始
 
 ### 环境要求
-- JDK 17+
+- JDK 21+
 - Node.js 20+
 - MySQL 8.0+
-- Redis 6.0+
+- PostgreSQL 16+（可选，从库）
+- Redis 7.x
 - MinIO 8.0+（可选）
-- RabbitMQ 3.9+（可选）
+- RabbitMQ 3.13+（可选）
 
 ### 后端启动
 
@@ -107,29 +148,30 @@ cyx-repository/
 cd imba-radish
 ```
 
-2. **配置数据库**
+2. **配置环境变量**
 
-修改 `src/main/resources/application.yml` 配置数据库连接信息：
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/example_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    username: your_username
-    password: your_password
+在项目根目录创建 `.env` 文件（参考 `.env.example`），配置数据库、Redis、RabbitMQ 等外部服务连接信息：
+```env
+DATASOURCE_MASTER_URL=jdbc:mysql://localhost:3306/radish?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+DATASOURCE_MASTER_USERNAME=root
+DATASOURCE_MASTER_PASSWORD=your_password
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
 3. **运行项目**
-
-使用 Maven 运行：
 ```bash
-mvn spring-boot:run
-```
-
-或打包后运行：
-```bash
+# 编译（默认跳过测试）
 mvn clean package
-java -jar target/imba-radish-1.0-SNAPSHOT.jar
+
+# 开发模式启动
+mvn spring-boot:run
+
+# 生产模式启动
+java -jar target/imba-radish-1.0-SNAPSHOT.jar --spring.profiles.active=prod
 ```
+
+后端默认绑定端口 **8081**。
 
 ### 前端启动
 
@@ -155,41 +197,92 @@ npm run build
 
 ### 访问地址
 - 前端页面: `http://localhost:5173`
-- 后端 API: `http://localhost:8080`
-- Swagger 文档: `http://localhost:8080/doc.html`
+- 后端 API: `http://localhost:8081`
+- Knife4j 接口文档: `http://localhost:8081/doc.html`（仅开发环境）
 
 ## 🔧 配置说明
 
-### 后端配置文件
-主要配置项位于 `src/main/resources/application.yml`：
+### 配置分层
 
-| 配置项 | 说明 | 默认值 |
+| 配置来源 | 说明 | 优先级 |
 | :--- | :--- | :--- |
-| server.port | 服务端口 | 8080 |
-| spring.datasource | 数据库连接 | - |
-| spring.redis | Redis 连接 | localhost:6379 |
-| spring.ai | AI 模型配置 | - |
-| minio | 对象存储配置 | - |
+| `.env` | 敏感配置（数据库密码、API Key 等）| 最高 |
+| `application.yml` | 应用框架配置 | 中 |
+| `application-dev.yml` | 开发环境覆盖 | 开发时使用 |
+| `application-prod.yml` | 生产环境覆盖 | 生产时使用 |
 
-### 前端配置文件
-前端配置位于 `src/utils/http.ts` 和 `src/common/global-config.ts`。
+### 关键配置项
 
-## 🔐 安全特性
+| 前缀 | 说明 |
+| :--- | :--- |
+| `radish.*` | 验证码、Token、分布式锁、日志设置 |
+| `websocket.*` | WebSocket 允许的来源域名 |
+| `rate-limit.*` | 接口速率限制（Redis 滑动窗口） |
+| `minio.*` | 对象存储连接 |
+| `spring.security.permit.*` | 白名单 URL |
 
-- JWT 令牌认证
-- RSA 非对称加密
-- 接口访问频率限制
-- 细粒度权限控制
-- 操作日志记录
+### 环境差异
+
+| 配置项 | 开发环境 | 生产环境 |
+| :--- | :--- | :--- |
+| 数据库从库 | 无 | 无 |
+| Redis DB | 15 | 14 |
+| Knife4j/Swagger | 启用 | 禁用 |
+| WebSocket 来源 | 宽松 | 限制 |
+| 日志级别 | DEBUG | INFO |
+
+## 🐳 Docker 部署
+
+```bash
+docker build -t imba-radish .
+# 需准备 config/application.yml 和 config/application-prod.yml
+```
+
+镜像基于 `eclipse-temurin:21-jre-jammy`，G1GC 堆内存 256m，暴露 8081 端口。另有 `script/start.sh` 提供优雅启停管理。
+
+## 🔌 WebSocket 架构
+
+采用**注册模式**实现命令分发，新增命令无需修改路由代码：
+
+```
+WebSocketInterceptor (握手鉴权)
+  → WebSocketHandler (路由分发)
+    → WebSocketConcreteRegistry (@PostConstruct 自动扫描)
+      → WebSocketConcreteHolder (命令→处理器映射)
+        → WebSocketConcreteHandler<T> (具体业务处理)
+```
+
+**扩展方式**：实现 `WebSocketConcreteHandler<T>` → 注册 `WebSocketOrderEnum` → 自动发现。
+
+### 心跳机制
+- `WebSocketHeardHeatTimer` 每 30 秒调度一次
+- 通过 `@Async` + 虚拟线程并发发送 PING
+- `AsyncConfig` 配置 `newVirtualThreadPerTaskExecutor()` 作为异步执行器
+
+## 📊 监控趋势降采样
+
+CPU/内存趋势数据每 30 秒采集一次，通过 **LTTB (Largest-Triangle-Three-Buckets)** 算法降采样后返回前端。
+
+| 时间范围 | 降采样点数 | 压缩比 |
+| :--- | :--- | :--- |
+| 15 分钟 | 20 | 3:1 |
+| 1 小时 | 20 | 6:1 |
+| 6 小时 | ~83 | ~9:1 |
+| 1 天 | ~131 | ~22:1 |
+| 7 天 | ~200 | ~101:1 |
+
+- 采用**对数函数**动态计算点数：短时间保留细节，长时间保证真实度
+- Controller 直接调用 `sysActuatorService.listXxxTrend(startTime, endTime)`，降采样在 Service 层透明完成
 
 ## 📝 开发规范
 
 ### 后端规范
 - 使用 Spring Boot 标准分层架构
 - 遵循 RESTful API 设计原则
-- 使用 MyBatis Plus 进行数据库操作
+- 使用 MyBatis Plus 进行数据库操作，Flyway 管理迁移
 - 使用 Lombok 简化代码
-- 统一异常处理和响应格式
+- 统一异常处理和响应格式 `R<T>`
+- 数据库版本变更必须通过 Flyway 迁移脚本
 
 ### 前端规范
 - 使用 Vue 3 Composition API
@@ -226,4 +319,4 @@ npm run build
 
 ---
 
-**Powered by Spring Boot 3 & Vue 3** 🚀
+**Powered by Spring Boot 3.5 + Java 21 Virtual Threads + Vue 3** 🚀

@@ -38,7 +38,7 @@ The application binds to port `8081` by default.
 |---|---|
 | `com.soft.ImbaRadishApplication` | Entry point. Uses `EnvLoaderHandler` initializer to load `.env` → Spring Environment. Annotated `@EnableCaching` + `@EnableScheduling`. |
 | `com.soft.sys.controller` | REST controllers (18 classes). One per domain entity. Modeled as a typical admin-CRUD system (users, roles, menus, permissions, depts, dicts, logs, files, announcements, dialogs, scheduler). |
-| `com.soft.sys.service` / `impl` | Business logic via interface + `*ServiceImpl` extending MyBatis Plus `ServiceImpl<M, E>`. Includes `UsersDetailServiceImpl` for Spring Security user details. |
+| `com.soft.sys.service` / `impl` | Business logic via interface + `*ServiceImpl` extending MyBatis Plus `ServiceImpl<M, E>`. Includes `UsersDetailServiceImpl` for Spring Security user details. `SysActuatorServiceImpl` implements LTTB trend downsampling (see below). |
 | `com.soft.sys.mapper` | MyBatis Plus mappers (18 interfaces), backed by `.xml` files under `src/main/resources/mapper/sys/`. |
 | `com.soft.sys.entity` | DB entities (18 classes), all extend `BaseEntity` (provides `id`, `createBy/Time`, `updateBy/Time`, `delFlag` with auto-fill). Logic delete via MyBatis Plus `delFlag` column. |
 | `com.soft.sys.constants` | Centralized constants: `BaseConstant`, `DictConstant`, `RabbitmqConstant`, `RedisConstant`, `RegexConstant`, `TokenConstant`, `WebSocketConstant`. |
@@ -56,8 +56,8 @@ The application binds to port `8081` by default.
 | `com.soft.sys.websocket` | WebSocket subsystem with registry pattern (see below). Sub-packages: `api/`, `handler/`, `interceptor/`, `receive/`, `registry/`, `send/`, `session/`. |
 | `com.soft.sys.rabbitmq` | RabbitMQ producers (`EmailProduce`, `SysLogProduce`) and consumer (`MessageConsume`). |
 | `com.soft.sys.quartz` | Quartz jobs (`ClearDeletedFile`, `NmapScanScheduler`, `UpdatePrimaryKey`) and listeners (`LoggingJobListener`, `QuartzAppender`). |
-| `com.soft.sys.async` | Async operations: `FileUploadAsync` (background file upload processing). |
-| `com.soft.sys.schedule` | Scheduled metrics: `ActuatorMetric` (system health data collection). |
+| `com.soft.sys.async` | Async operations: `FileUploadAsync` (background file upload processing), `SendPingAsync` (WebSocket PING via virtual threads). |
+| `com.soft.sys.schedule` | Scheduled tasks: `ActuatorMetric` (system health data collection every 30s), `WebSocketHeardHeatTimer` (PING heartbeat every 30s via virtual threads). |
 | `com.soft.sys.resultapi.R<T>` | Unified REST response: `{timestamp, code, msg, data, extra}`. Factory methods: `R.ok(data)`, `R.fail(msg)`. |
 | `com.soft.sys.properties` | `@ConfigurationProperties` classes bound to structured YAML config under `radish.*`, `websocket.*` (`WebSocketProperty`), `rate-limit.*`, `minio.*`, `web-client.*`, `spring.security.permit.*`. |
 | `com.soft.sys.utils` | AES/RSA encryption, Minio file ops, HTTP/Security/Response helpers. |
@@ -104,6 +104,15 @@ WebSocketInterceptor (handshake)
 - **Flyway** migrations at `src/main/resources/db/migration/` (`V1__init_database.sql` through `V12__mod_202606091630.sql`). Latest migrations: V10 adds `memory_metaspace_max` to `sys_actuator`, V11 drops `memory_g1_old_max`, V12 adds `dict_type` column to `sys_dict_type`.
 - MyBatis Plus with logic delete (`delFlag` = 0/1), auto-fill timestamps, and `@TableId(assign_id)`.
 - Schema changes use Flyway for version-controlled migrations; no JPA/Hibernate DDL auto-generation.
+
+### Actuator Trend Downsampling
+
+CPU/内存趋势数据（30秒采集一次）通过 **LTTB (Largest-Triangle-Three-Buckets)** 算法降采样后返回前端。
+
+- **动态点数** — 根据时间范围对数增长：1小时→20点，7天→~200点（`SysActuatorServiceImpl.calculateMaxPoints`）
+- **下限 20 / 上限 200** — 兼顾短时间精度和长时间真实度
+- **降采样在 Service 层完成** — Controller 直接调用 `sysActuatorService.listXxxTrend(startTime, endTime)`，无需关心底层实现
+- 算法逻辑位于 `SysActuatorServiceImpl` 的私有方法 `downsample()` + `triangleArea()`
 
 ### Configuration Patterns
 

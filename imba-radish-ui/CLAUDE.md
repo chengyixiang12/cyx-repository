@@ -20,6 +20,7 @@ npm run typecheck  # 运行 vue-tsc 类型检查 (无此命令，需自行添加
 - **HTTP**: Axios (封装于 `src/utils/http.ts`)
 - **WebSocket**: 自定义 `WebsocketManager` (自动重连, 消息队列, PING/PONG 心跳)
 - **样式**: SCSS + Element Plus + CSS变量
+- **图表**: ECharts 6 (趋势图使用 LTTB 降采样数据, `showSymbol: false` 鼠标悬停才显示数据点)
 
 ## 项目架构
 
@@ -45,7 +46,17 @@ src/
 │   ├── login/    # 登录页 (密码登录/邮箱验证码登录)
 │   ├── register/ # 注册 (多步骤表单: StepPassword/StepVerify/StepUserInfo/StepSuccess)
 │   ├── chat/     # AI 对话页面 (WebSocket 流式输出)
-│   ├── system/   # 系统管理模块 (User, Role, Menu, Dept, Permission, Dict, Quartz, File, Log, Actuator)
+│   ├── system/   # 系统管理模块
+│   │   ├── User.vue       # 用户管理
+│   │   ├── Role.vue       # 角色管理
+│   │   ├── Menu.vue       # 菜单管理
+│   │   ├── Dept.vue       # 部门管理
+│   │   ├── Permission.vue # 权限管理
+│   │   ├── Dict.vue       # 字典管理
+│   │   ├── Quartz.vue     # 定时任务
+│   │   ├── File.vue       # 文件管理
+│   │   ├── Log.vue        # 操作日志
+│   │   └── Actuator.vue   # 系统监控 (CPU/内存/磁盘指标 + ECharts 趋势图 + 组件健康状态)
 │   └── error/    # 404 页面
 ├── layouts/      # 布局组件
 │   ├── MainLayout.vue     # 主布局 (侧边栏 + 顶栏 + 多标签页)
@@ -121,7 +132,23 @@ interface ApiResponse<T> {
 - **数据存储**: sessionStorage (非 localStorage)
 - **指纹识别**: 使用 `@fingerprintjs/fingerprintjs`
 
-#### 6. UI 布局
+#### 6. 系统监控页面 (Actuator.vue)
+
+监控页面实时展示服务器 CPU/内存/磁盘指标及组件健康状态，核心设计：
+
+- **顶部指标卡片**: 4 个 el-card 分别展示 CPU、内存、磁盘使用率（环形进度条）和系统运行时长
+- **趋势图表**: 使用 ECharts，CPU 使用率和内存使用率两个 Tab，切换时懒加载/销毁图表实例
+  - 时间范围选择器: 预设快捷选项 (15分钟/30分钟/1小时/6小时/1天/7天) + 自定义 datetime 范围
+  - 随用户选择的时间范围，后端动态返回 20~200 个降采样点
+  - `showSymbol: false` — 默认只显示曲线，鼠标悬停到数据点时显示圆点
+- **组件健康状态**: el-table 分页展示数据库、Redis、RabbitMQ、SSL 等组件的 UP/DOWN 状态
+- API 调用 (`src/api/actuator.ts`):
+  - `listCpuTrend(startTime, endTime)` — CPU 使用率趋势
+  - `listMemoryTrend(startTime, endTime)` — 总内存使用率趋势
+  - `listHeapMemoryTrend(startTime, endTime)` — 堆内存使用率趋势
+  - `listMetaspaceMemoryTrend(startTime, endTime)` — 元空间使用率趋势
+
+#### 7. UI 布局
 
 - 顶栏: 系统名 + 消息图标 + 首页按钮 + 用户头像/下拉菜单
 - 侧边栏: 可折叠菜单 (ElMenu)
