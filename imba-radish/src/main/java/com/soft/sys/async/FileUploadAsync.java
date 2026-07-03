@@ -31,8 +31,8 @@ public class FileUploadAsync {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         } finally {
-            fileTemp.delete();
-            fileTemp.getParentFile().delete();
+            if (!fileTemp.delete()) log.warn("{} 临时文件未被删除", fileTemp.getName());
+            if (!fileTemp.getParentFile().delete()) log.warn("{} 临时文件夹未被删除", fileTemp.getPath());
         }
     }
 }

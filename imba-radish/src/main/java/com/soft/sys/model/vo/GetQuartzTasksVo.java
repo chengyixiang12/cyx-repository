@@ -34,4 +34,13 @@ public class GetQuartzTasksVo {
 
     @Schema(description = "调度类型；0：简单调度；1：cron表达式调度")
     private String scheduleType;
+
+    @Schema(description = "执行成功数量")
+    private Integer successNum;
+
+    @Schema(description = "执行失败数量")
+    private Integer failNum;
+
+    @Schema(description = "执行中数量")
+    private Integer executingNum;
 }
