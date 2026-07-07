@@ -4,7 +4,8 @@
                 "sys::utils",
                 "sys::service",
                 "sys::entity",
-                "sys::websocket"
+                "sys::websocket",
+                "sys::resultapi"
         }
 )
 package com.soft.module;
