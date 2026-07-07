@@ -166,14 +166,24 @@ const handleEdit = (row: PermissionsVo) => {
 
 // 提交新增菜单
 const handleAddSubmit = async (formData: SavePermissionRequest) => {
-  await savePermissionApi(formData)
-  loadPermissions()
+  try {
+    await savePermissionApi(formData)
+    addDialogVisible.value = false
+    loadPermissions()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑菜单
 const handleEditSubmit = async (formData: EditPermissionRequest) => {
-  await editPermissionApi(formData);
-  loadPermissions();
+  try {
+    await editPermissionApi(formData);
+    editDialogVisible.value = false
+    loadPermissions();
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 改变权限状态

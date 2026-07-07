@@ -69,7 +69,7 @@
 
     <template #footer>
       <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="submitForm">确定</el-button>
+      <el-button type="primary" :loading="submitLoading" :disabled="submitLoading" @click="submitForm">确定</el-button>
     </template>
   </el-dialog>
 </template>
@@ -120,6 +120,7 @@ const props = withDefaults(defineProps<FatherParam>(), {
 const emit = defineEmits(['update:visible', 'submit'])
 
 const formRef = ref<FormInstance>()
+const submitLoading = ref(false)
 const formData = ref<GetMenuVo>({
   id: '',
   parentId: '',
@@ -195,10 +196,14 @@ const handleTypeChange = () => {
 }
 
 const submitForm = async () => {
+  if (submitLoading.value) return
   const valid = await formRef.value?.validate()
-  if (valid) {
+  if (!valid) return
+  submitLoading.value = true
+  try {
     emit('submit', formData.value)
-    emit('update:visible', false)
+  } finally {
+    submitLoading.value = false
   }
 }
 

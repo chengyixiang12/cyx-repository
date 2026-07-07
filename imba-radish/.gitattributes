@@ -1,1 +1,55 @@
-text eol=crlf
+# 自动检测文本文件（Git 自动判断 text vs binary）
+* text=auto
+
+# Shell 脚本必须使用 LF，否则 Linux 下会执行失败
+*.sh text eol=lf
+
+# Windows 批处理脚本使用 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Java / Maven 项目常用文本文件
+*.java text diff=java
+*.xml text
+*.yml text
+*.yaml text
+*.properties text
+*.sql text
+*.json text
+*.md text diff=markdown
+*.gradle text
+
+# 明确标记为二进制（禁止换行符转换）
+*.ico binary
+*.jar binary
+*.class binary
+*.gz binary
+*.zip binary
+*.tar binary
+*.7z binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.bmp binary
+*.webp binary
+*.svg binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.mp4 binary
+*.avi binary
+*.mov binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary

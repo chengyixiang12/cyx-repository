@@ -139,19 +139,29 @@ const editData = async (row: DictDatasVo) => {
 
 // 新增数据提交
 const handleAddSubmit = async (formdata: SaveDictDataRequest) => {
-  formdata.parentId = parentId.value;
-  await saveDictDataApi(formdata);
-  await handleSearch();
+  try {
+    formdata.parentId = parentId.value;
+    await saveDictDataApi(formdata);
+    addDialogVisible.value = false
+    await handleSearch();
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 编辑数据提交
 const handleEditSubmit = async (formdata: SaveDictDataRequest) => {
-  formdata.parentId = parentId.value;
-  await editDictDataApi({
-    ...formdata,
-    id: dictDataId.value
-  });
-  await handleSearch();
+  try {
+    formdata.parentId = parentId.value;
+    await editDictDataApi({
+      ...formdata,
+      id: dictDataId.value
+    });
+    editDialogVisible.value = false
+    await handleSearch();
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 删除

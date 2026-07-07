@@ -186,14 +186,24 @@ const handleEdit = (row: PageMenuTreeVO) => {
 
 // 提交新增菜单
 const handleAddSubmit = async (formData: SaveMenuRequest) => {
-  await addMenuStatusApi(formData)
-  await loadMenus()
+  try {
+    await addMenuStatusApi(formData)
+    addDialogVisible.value = false
+    await loadMenus()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑菜单
 const handleEditSubmit = async (formData: EditMenuRequest) => {
-  await updateMenuStatusApi(formData)
-  await loadMenus()
+  try {
+    await updateMenuStatusApi(formData)
+    editDialogVisible.value = false
+    await loadMenus()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 删除菜单

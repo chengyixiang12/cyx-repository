@@ -161,14 +161,23 @@ const loadRoles = async () => {
 
 // 保存被赋予的权限
 const handleAssignPermissionSubmit = async (request: SetPermissionsRequest) => {
-  await updateRolePermissionsApi(request)
+  try {
+    await updateRolePermissionsApi(request)
+    assignPermissionVisible.value = false
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 保存被赋予的菜单
 const handleAssignMenuSubmit = async (data: { roleId: string, menuIds: string[] }) => {
-  await updateRoleMenusApi(data)
-  assignMenuVisible.value = false
-  await loadRoles()
+  try {
+    await updateRoleMenusApi(data)
+    assignMenuVisible.value = false
+    await loadRoles()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 新增角色
@@ -184,14 +193,24 @@ const handleEdit = (id: string) => {
 
 // 提交新增角色
 const handleAddSubmit = async (formData: SaveRoleRequest) => {
-  await addRoleApi(formData)
-  await loadRoles()
+  try {
+    await addRoleApi(formData)
+    addDialogVisible.value = false
+    await loadRoles()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑角色
 const handleEditSubmit = async (formData: EditRoleRequest) => {
-  await updateRoleApi(formData)
-  await loadRoles()
+  try {
+    await updateRoleApi(formData)
+    editDialogVisible.value = false
+    await loadRoles()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 删除角色

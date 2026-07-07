@@ -154,14 +154,24 @@ const handleEdit = (id: number) => {
 
 // 提交新增任务
 const handleAddSubmit = async (formData: SaveJobRequest) => {
-  await createJobApi(formData);
-  await loadJobs();
+  try {
+    await createJobApi(formData);
+    addDialogVisible.value = false
+    await loadJobs();
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑任务
 const handleEditSubmit = async (formData: EditJobRequest) => {
-  await editJobApi(formData)
-  await loadJobs()
+  try {
+    await editJobApi(formData)
+    editDialogVisible.value = false
+    await loadJobs()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 删除任务

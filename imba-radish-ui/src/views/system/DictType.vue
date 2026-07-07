@@ -146,16 +146,26 @@ const changeStatus = async (row: DictTypesVo) => {
 }
 // 新增提交
 const handleAddSubmit = async (formData: SaveDictTypeRequest) => {
-  await saveDictTypeApi(formData)
-  await handleSearch()
+  try {
+    await saveDictTypeApi(formData)
+    addDialogVisible.value = false
+    await handleSearch()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 // 编辑提交
 const handleEditSubmit = async (formData: SaveDictTypeRequest) => {
-  await editDictTypeApi({
-    ...formData,
-    id: dictTypeId.value,
-  })
-  await handleSearch()
+  try {
+    await editDictTypeApi({
+      ...formData,
+      id: dictTypeId.value,
+    })
+    editDialogVisible.value = false
+    await handleSearch()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 const resetSearch = () => {
