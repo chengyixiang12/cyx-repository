@@ -11,7 +11,7 @@ import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.RegexConstant;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
-import com.soft.sys.enums.SecretKeyEnum;
+import com.soft.sys.enums.KeyTypeEnum;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysUsersMapper;
@@ -112,7 +112,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         try {
             sendWebsocket(id);
 
-            String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+            String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
             String encode = passwordEncoder.encode(rsaUtil.decrypt(targetPass, privateKey));
 
             SysUser sysUser = new SysUser();
@@ -151,7 +151,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveUser(SaveUserRequest request) {
-        String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+        String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
         request.setPassword(passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey)));
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(request, sysUser);

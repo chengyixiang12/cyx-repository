@@ -73,7 +73,6 @@ public class LoggingJobListener implements JobListener {
         MDC.put("fireTime", String.valueOf(fireTime.getTime()));
         MDC.put("recordId", String.valueOf(sysScheduleRecord.getId()));
 
-        // 任务开始的日志也会被收集
         log.info("{}-{}任务开始执行", group, name);
     }
 

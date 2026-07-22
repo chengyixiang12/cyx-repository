@@ -4,7 +4,7 @@ import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
-import com.soft.sys.enums.SecretKeyEnum;
+import com.soft.sys.enums.KeyTypeEnum;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.model.request.LoginRequest;
@@ -20,7 +20,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -59,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
     public void register(SysUser sysUser) {
         try {
             // 解密密码
-            String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+            String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
             String decrypt = rsaUtil.decrypt(sysUser.getPassword(), privateKey);
             // 使用BCrypt 算法加密密码
             String encode = passwordEncoder.encode(decrypt);
@@ -86,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             switch (request.getLoginMethod()) {
                 case BaseConstant.LOGIN_METHOD_PASSWORD -> {
-                    String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+                    String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                             request.getUsername(), rsaUtil.decrypt(request.getPassword(), privateKey)));
                     id = sysUsersService.getPrimaryKeyByUsername(request.getUsername());

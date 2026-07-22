@@ -3,7 +3,11 @@ package com.soft.sys.controller;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
+import com.soft.sys.model.request.GenerateKeyRequest;
+import com.soft.sys.model.request.GetSecretKeyListRequest;
+import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.model.vo.PublicKeyVo;
+import com.soft.sys.model.vo.SysSecretKeyVo;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SecretKeyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,9 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @Author: cyx
@@ -37,10 +45,17 @@ public class SysSecretKeyController {
         this.secretKeyService = secretKeyService;
     }
 
+    @PostMapping(value = "/list")
+    @Operation(summary = "获取密钥列表")
+    public R<PageVO<SysSecretKeyVo>> list(@RequestBody GetSecretKeyListRequest request) {
+        PageVO<SysSecretKeyVo> pageVo = secretKeyService.getSecretKeyList(request);
+        return R.ok(pageVo);
+    }
+
     @GetMapping(value = "/getPublicKey")
     @Operation(summary = "获取登录密码加密公钥")
     public R<PublicKeyVo> getPublicKey() {
-        String publicKey = secretKeyService.getPublicKey(BaseConstant.SecretKey.LOGIN_PASSWORD_ENCRYPT);
+        String publicKey = secretKeyService.getPublicKey(BaseConstant.KeyType.LOGIN_PASSWORD_ENCRYPT);
         PublicKeyVo publicKeyVo = new PublicKeyVo();
         publicKeyVo.setPublicKey(publicKey);
         return R.ok(publicKeyVo);
@@ -48,11 +63,11 @@ public class SysSecretKeyController {
 
     @PreAuthorize(value = "@cps.hasPermission('sys_secret_key_generate')")
     @SysLog(value = "生成密钥对", module = LogModuleEnum.SECRET_KEY)
-    @GetMapping(value = "/generateKey")
+    @PostMapping(value = "/generateKey")
     @Operation(summary = "生成密钥对")
     @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY)
-    public R<Object> generateKey(@RequestParam(value = "type", required = false) @NotBlank(message = "密钥类型不能为空") String type) {
-        secretKeyService.generateKey(type);
+    public R<Object> generateKey(@RequestBody GenerateKeyRequest request) throws NoSuchAlgorithmException {
+        secretKeyService.generateKey(request);
         return R.ok("密钥对生成成功");
     }
 }

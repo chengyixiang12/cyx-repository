@@ -1,11 +1,11 @@
 package com.soft.sys.controller;
 
+import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RegexConstant;
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.enums.SecretKeyEnum;
 import com.soft.sys.model.dto.UserDto;
 import com.soft.sys.model.request.*;
 import com.soft.sys.model.vo.GetUserVo;
@@ -67,7 +67,7 @@ public class SysUserController {
     @PutMapping(value = "/editPassword")
     @Operation(summary = "修改密码")
     public R<Object> editPassword(@RequestBody @Valid EditPasswordRequest request) {
-        String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+        String privateKey = secretKeyService.getPrivateKey(BaseConstant.KeyType.LOGIN_PASSWORD_ENCRYPT);
         String originalDecrypt = rsaUtil.decrypt(request.getOriginalPass(), privateKey);
         String password = securityUtil.getUserInfo().getPassword();
         if (!passwordEncoder.matches(originalDecrypt, password)) {

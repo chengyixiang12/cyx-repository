@@ -9,7 +9,7 @@ import lombok.Getter;
  **/
 
 @Getter
-public enum SecretKeyEnum {
+public enum KeyTypeEnum {
 
     USER_PASSWORD_KEY(0,"用户密码密钥"),
     ;
@@ -18,7 +18,7 @@ public enum SecretKeyEnum {
 
     private final String name;
 
-    SecretKeyEnum(Integer type, String name) {
+    KeyTypeEnum(Integer type, String name) {
         this.type = type;
         this.name = name;
     }

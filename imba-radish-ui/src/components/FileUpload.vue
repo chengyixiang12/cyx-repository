@@ -115,7 +115,6 @@ const customChunkUpload = async (options: any) => {
 
         if (!isCancelled.value) {
           await mergeChunks(fileMd5, fileName, totalChunks)
-          showMessage("上传成功", 'success')
         } else {
           await cancelChunkApi(fileMd5)
           showMessage("上传已取消", 'info')

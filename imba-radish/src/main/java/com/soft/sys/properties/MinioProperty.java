@@ -41,9 +41,4 @@ public class MinioProperty {
      */
     private Integer expire;
 
-    /**
-     * 时间单位
-     */
-    private TimeUnit timeUnit;
-
 }

@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -186,7 +187,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             }
 
             // 减5是为了防止minio签名过期，redis未过期，导致获取失败
-            redisTemplate.opsForValue().set(redisKey, url, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
+            redisTemplate.opsForValue().set(redisKey, url, minioProperty.getExpire() - 5, TimeUnit.SECONDS);
         }
         return replaceMinioUrlWithProxy(url);
     }

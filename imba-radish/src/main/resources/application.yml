@@ -99,7 +99,10 @@ springdoc:
   group-configs:
     - group: 'system'
       paths-to-match: '/**'
-      packages-to-scan: com.soft.base.controller
+      packages-to-scan: com.soft.sys.controller
+    - group: 'module'
+      paths-to-match: '/**'
+      packages-to-scan: com.soft.module.controller
 
 # knife4j的增强配置
 knife4j:

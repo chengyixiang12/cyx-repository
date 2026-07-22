@@ -1,1 +1,0 @@
-ALTER TABLE radish_master.sys_menu CHANGE order_num sort int NULL COMMENT '排序号，数字越小，排序越靠前';

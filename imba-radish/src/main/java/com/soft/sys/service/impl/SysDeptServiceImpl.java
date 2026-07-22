@@ -8,7 +8,6 @@ import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.entity.SysDept;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysDeptMapper;
-import com.soft.sys.mapper.SysUsersMapper;
 import com.soft.sys.model.dto.ExportDeptDto;
 import com.soft.sys.model.request.EditDeptRequest;
 import com.soft.sys.model.request.ExportDeptRequest;
@@ -19,8 +18,8 @@ import com.soft.sys.model.vo.DeptVo;
 import com.soft.sys.model.vo.GetDeptsVo;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDeptService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,19 +33,11 @@ import java.util.Map;
 * @createDate 2024-10-26 09:06:18
 */
 @Service
+@RequiredArgsConstructor
 public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     implements SysDeptService{
 
     private final SysDeptMapper sysDeptMapper;
-
-    private final SysUsersMapper sysUsersMapper;
-
-    @Autowired
-    public SysDeptServiceImpl(SysDeptMapper sysDeptMapper,
-                              SysUsersMapper sysUsersMapper) {
-        this.sysDeptMapper = sysDeptMapper;
-        this.sysUsersMapper = sysUsersMapper;
-    }
 
     @Override
     public List<DeptTreeVo> getDeptTree(Long id) {

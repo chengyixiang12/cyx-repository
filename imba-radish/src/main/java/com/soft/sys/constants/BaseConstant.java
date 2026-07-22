@@ -227,12 +227,12 @@ public class BaseConstant {
     /**
      * 密钥
      */
-    public static class SecretKey {
+    public static class KeyType {
 
         /**
          * 加密登录密码的密钥
          */
-        public static final String LOGIN_PASSWORD_ENCRYPT = "0";
+        public static final Integer LOGIN_PASSWORD_ENCRYPT = 0;
     }
 
     /**
@@ -244,9 +244,25 @@ public class BaseConstant {
          * 使用率趋势降采样最小点数（动态计算的实际范围：20～200）
          *
          * @deprecated 降采样点数现已根据时间范围动态计算，见
-         * {@link com.soft.sys.service.impl.SysActuatorServiceImpl#calculateMaxPoints}
+         *
          */
         @Deprecated
         public static final Integer MAX_POINTS = 20;
+    }
+
+    /**
+     * 密钥类型
+     */
+    public static class SecretType {
+
+        /**
+         * AES加密
+         */
+        public static final String SECRET_TYPE_AES = "1";
+
+        /**
+         * RSA加密
+         */
+        public static final String SECRET_TYPE_RSA = "2";
     }
 }

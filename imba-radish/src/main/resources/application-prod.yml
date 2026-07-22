@@ -54,9 +54,9 @@ spring:
           max-wait: 5000
   flyway:
     # 启用flyway
-    enabled: true
+    enabled: false
     # 自动生成flyway_schema_history表
-    baseline-on-migrate: true
+    baseline-on-migrate: false
     locations: classpath:db/migration
   rabbitmq:
     host: ${RABBIT_MQ_HOST}

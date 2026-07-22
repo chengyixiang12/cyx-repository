@@ -29,7 +29,7 @@ public class ActuatorMetric {
     private final SysActuatorService sysActuatorService;
     private final HealthEndpoint healthEndpoint;
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "*/15 * * * * *")
     public void run() {
         SysActuator sysActuator = new SysActuator();
 
