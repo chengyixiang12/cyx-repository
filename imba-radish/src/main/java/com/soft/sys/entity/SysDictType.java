@@ -17,8 +17,8 @@ public class SysDictType extends BaseEntity {
     /**
      * 排序字段
      */
-    @TableField(value = "sort_order")
-    private Integer sortOrder;
+    @TableField(value = "sort")
+    private Integer sort;
 
     /**
      * 字典名称

@@ -1,16 +1,8 @@
 package com.soft.sys.utils;
 
-import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.exception.GlobalException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;

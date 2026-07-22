@@ -21,8 +21,14 @@ public class SysSecretKeyVO {
     @Schema(description = "类型")
     private Integer type;
 
+    @Schema(description = "密钥类型")
+    private String secretType;
+
     @Schema(description = "公钥（脱敏显示）")
     private String publicKey;
+
+    @Schema(description = "私钥（脱敏显示）")
+    private String privateKey;
 
     @Schema(description = "描述")
     private String description;

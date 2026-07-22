@@ -16,7 +16,7 @@
         sf.del_flag = '0'
         AND sf.id = #{id}
     </select>
-    <select id="getFiles" parameterType="FilesRequest" resultType="FilesVo">
+    <select id="getFiles" parameterType="FilesDTO" resultType="FilesVO">
         SELECT
         sf.id,
         sf.location,
@@ -61,7 +61,7 @@
         from sys_file t1
         where t1.del_flag = '1'
     </select>
-    <select id="getMyFiles" resultType="FilesVo">
+    <select id="getMyFiles" resultType="FilesVO">
         SELECT
         sf.id,
         sf.location,

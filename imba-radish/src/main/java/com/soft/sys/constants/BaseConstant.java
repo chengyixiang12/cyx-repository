@@ -256,13 +256,13 @@ public class BaseConstant {
     public static class SecretType {
 
         /**
-         * AES加密
-         */
-        public static final String SECRET_TYPE_AES = "1";
-
-        /**
          * RSA加密
          */
-        public static final String SECRET_TYPE_RSA = "2";
+        public static final String SECRET_TYPE_RSA = "1";
+
+        /**
+         * AES加密
+         */
+        public static final String SECRET_TYPE_AES = "2";
     }
 }

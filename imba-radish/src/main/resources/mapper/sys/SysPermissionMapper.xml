@@ -24,7 +24,7 @@
         name,code,type,
         status,description
     </sql>
-    <select id="getPermissions" parameterType="PermissionsRequest" resultType="PermissionsVo">
+    <select id="getPermissions" parameterType="PermissionsDTO" resultType="PermissionsVO">
         SELECT
         sp.id,
         sp.`code`,
@@ -63,7 +63,7 @@
             #{item}
         </foreach>
     </select>
-    <select id="getAllPermission" parameterType="java.lang.Long" resultType="GetAllPermissionVo">
+    <select id="getAllPermission" parameterType="java.lang.Long" resultType="GetAllPermissionVO">
         SELECT
         sp.id ,
         sp.name
@@ -72,7 +72,7 @@
         WHERE
         sp.del_flag = '0'
     </select>
-    <select id="getAssignPer" parameterType="java.lang.Long" resultType="GetAssignPerVo">
+    <select id="getAssignPer" parameterType="java.lang.Long" resultType="GetAssignPerVO">
         SELECT sp.id,
                sp.name
         FROM sys_permission sp

@@ -27,7 +27,7 @@ public class DictTypeVO {
     private Integer status;
 
     @Schema(description = "排序")
-    private Integer sortOrder;
+    private Integer sort;
 
     @Schema(description = "备注")
     private String remark;

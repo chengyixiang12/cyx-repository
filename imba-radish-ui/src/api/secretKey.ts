@@ -1,6 +1,6 @@
 import { PaginatedData } from '@/types/api';
-import { GetSecretKeyListRequest, SysSecretKeyVo } from '@/types/secretKey';
-import { get, post } from '@/utils/http'
+import { GetSecretKeyListRequest, GenerateKeyRequest, SysSecretKeyVo } from '@/types/secretKey';
+import { post } from '@/utils/http'
 
 /**
  * 获取密钥列表
@@ -12,8 +12,8 @@ export async function getSecretKeyListApi(data: GetSecretKeyListRequest): Promis
 
 /**
  * 生成密钥对
- * @param type 密钥类型
+ * @param params 生成密钥参数（type=用途类型, secretType=算法类型）
  */
-export async function generateKeyApi(type: number): Promise<void> {
-  await get('/secretKey/generateKey', { flag: true, params: { type } });
+export async function generateKeyApi(params: GenerateKeyRequest): Promise<void> {
+  await post('/secretKey/generateKey', params, { flag: true });
 }

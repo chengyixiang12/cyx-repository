@@ -3,6 +3,7 @@ package com.soft.sys.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.entity.SysSecretKey;
 import com.soft.sys.exception.GlobalException;
@@ -64,14 +65,15 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
         String privateKey = null;
         String publicKey = null;
         switch (request.getSecretType()) {
-            case "1": {
+            case BaseConstant.SecretType.SECRET_TYPE_RSA: {
                 Map<String, String> generate = rsaUtil.generate();
                 privateKey = generate.get("privateKey");
                 publicKey = generate.get("publicKey");
             }
             break;
-            case "2": {
-                publicKey = aesUtil.generate();
+            case BaseConstant.SecretType.SECRET_TYPE_AES: {
+                privateKey = aesUtil.generate();
+                // AES 无需公钥，publicKey 保持 null
             }
             break;
             default:
@@ -111,6 +113,10 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
             // 公钥脱敏：只显示前后20个字符
             if (entity.getPublicKey() != null && entity.getPublicKey().length() > 40) {
                 vo.setPublicKey(entity.getPublicKey().substring(0, 20) + "..." + entity.getPublicKey().substring(entity.getPublicKey().length() - 20));
+            }
+            // 私钥脱敏（AES 密钥存储在私钥字段）
+            if (entity.getPrivateKey() != null && entity.getPrivateKey().length() > 40) {
+                vo.setPrivateKey(entity.getPrivateKey().substring(0, 20) + "..." + entity.getPrivateKey().substring(entity.getPrivateKey().length() - 20));
             }
             return vo;
         }).collect(Collectors.toList()));

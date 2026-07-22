@@ -28,7 +28,7 @@
         AND sd.id = #{parentId}
         ORDER BY sd.sort_order
     </select>
-    <select id="getAllDept" resultType="DeptTreeVo">
+    <select id="getAllDept" resultType="DeptTreeVO">
         SELECT
         sd.id,
         sd.`name`,
@@ -40,7 +40,7 @@
         sd.del_flag = '0'
         ORDER BY sd.create_time DESC
     </select>
-    <select id="getDept" parameterType="java.lang.Long" resultType="DeptVo">
+    <select id="getDept" parameterType="java.lang.Long" resultType="DeptVO">
         SELECT sd.id,
                sd.sort_order AS "sortOrder",
                sd.`code`,
@@ -72,7 +72,7 @@
             #{item}
         </foreach>
     </select>
-    <select id="getDepts" parameterType="GetDeptsRequest" resultType="GetDeptsVo">
+    <select id="getDepts" parameterType="GetDeptsDTO" resultType="GetDeptsVO">
         SELECT
             sd.`id`,
             sd.`code`,

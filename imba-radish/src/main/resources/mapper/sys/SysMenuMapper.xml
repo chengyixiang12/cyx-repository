@@ -23,7 +23,7 @@
             <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
     </resultMap>
 
-    <select id="getMenuRoute" parameterType="java.util.List" resultType="MenusVo">
+    <select id="getMenuRoute" parameterType="java.util.List" resultType="MenusVO">
         SELECT
         sm.id,
         sm.`name`,
@@ -45,7 +45,7 @@
         AND sm.type IN ('0', '1')
         ORDER BY sm.sort
     </select>
-    <select id="getMenuList" parameterType="GetMenuListRequest" resultType="GetMenuListVo">
+    <select id="getMenuList" parameterType="GetMenuListDTO" resultType="GetMenuListVO">
         SELECT
             sm.`id`,
             sm.`name`,
@@ -77,7 +77,7 @@
         </if>
         ORDER BY sm.create_time DESC
     </select>
-    <select id="getMenu" parameterType="java.lang.Long" resultType="GetMenuVo">
+    <select id="getMenu" parameterType="java.lang.Long" resultType="GetMenuVO">
         SELECT
             sm.id,
             sm.parent_id,
@@ -120,7 +120,7 @@
         WHERE del_flag = '0'
           AND id = #{id}
     </update>
-    <select id="getSelectMenu" parameterType="java.lang.String" resultType="GetSelectMenuVo">
+    <select id="getSelectMenu" parameterType="java.lang.String" resultType="GetSelectMenuVO">
         SELECT
             sm.id,
             sm.`name`
@@ -130,7 +130,7 @@
             sm.del_flag = '0'
         AND sm.type = #{type}
     </select>
-    <select id="getMenuTree" resultType="GetMenuTreeVo">
+    <select id="getMenuTree" resultType="GetMenuTreeVO">
         SELECT
             sm.id,
             sm.name,
@@ -142,7 +142,7 @@
           AND sm.status = 1
           AND sm.type IN ('0','1')
     </select>
-    <select id="getAssignedMenu" parameterType="java.lang.Long" resultType="GetAssignedMenuVo">
+    <select id="getAssignedMenu" parameterType="java.lang.Long" resultType="GetAssignedMenuVO">
         SELECT srm.menu_id AS id
         FROM sys_role_menu srm
                  JOIN sys_menu sm ON
@@ -168,7 +168,7 @@
             del_flag = '0'
           AND id = #{id}
     </update>
-    <select id="getLeftMenus" parameterType="java.lang.Long" resultType="MenusVo">
+    <select id="getLeftMenus" parameterType="java.lang.Long" resultType="MenusVO">
         SELECT
             sm.id,
             sm.`name`,

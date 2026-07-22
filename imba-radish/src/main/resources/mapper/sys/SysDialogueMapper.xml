@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.sys.mapper.SysDialogueMapper">
 
-    <select id="getDialogues" resultType="GetDialoguesVo">
+    <select id="getDialogues" resultType="GetDialoguesVO">
         select
         sd.id,
         su.nickname as createBy,

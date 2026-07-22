@@ -4,13 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.sys.mapper.SysDictTypeMapper">
 
-    <select id="getdictTypes" resultType="DictTypesVo">
+    <select id="getdictTypes" resultType="DictTypesVO">
         SELECT
         sdt.id,
         sdt.dict_name,
         sdt.dict_type,
         sdt.`status`,
-        sdt.sort_order
+        sdt.sort
         FROM
         sys_dict_type sdt
         WHERE
@@ -21,14 +21,14 @@
         <if test="request.status != null">
             AND sdt.status = #{request.status}
         </if>
-        order by sdt.sort_order desc
+        order by sdt.sort desc
     </select>
-    <select id="getDictType" parameterType="java.lang.Long" resultType="DictTypeVo">
+    <select id="getDictType" parameterType="java.lang.Long" resultType="DictTypeVO">
         SELECT
         sdt.id,
         sdt.dict_name,
         sdt.dict_type,
-        sdt.sort_order,
+        sdt.sort,
         sdt.status,
         sdt.remark
         FROM

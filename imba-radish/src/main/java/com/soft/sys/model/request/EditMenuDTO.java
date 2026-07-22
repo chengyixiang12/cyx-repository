@@ -41,7 +41,7 @@ public class EditMenuDTO {
     private String type;
 
     @Schema(description = "排序号，数字越小，排序越靠前")
-    private Integer orderNum;
+    private Integer sort;
 
     @Schema(description = "是否显示：0-隐藏，1-显示")
     private Integer visible;

@@ -2,6 +2,7 @@ package com.soft.sys.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -13,7 +14,7 @@ import lombok.Data;
 @Schema(description = "生成密钥")
 public class GenerateKeyDTO {
 
-    @NotBlank(message = "类型不能为空")
+    @NotNull(message = "类型不能为空")
     @Schema(description = "类型")
     private Integer type;
 

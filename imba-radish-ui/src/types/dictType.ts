@@ -19,20 +19,20 @@ export interface DictTypeVo {
     dictType: string;
     status: number;
     remark: string;
-    sortOrder: number | null;
+    sort: number | null;
 }
 
 export interface SaveDictTypeRequest {
     dictName: string;
     dictType: string;
-    sortOrder: number | null;
+    sort: number | null;
     status: number;
     remark: string;
 }
 
 export interface EditDictTypeRequest {
     id: string | null;
-    sortOrder: number | null;
+    sort: number | null;
     dictName: string;
     dictType: string;
     status: number;

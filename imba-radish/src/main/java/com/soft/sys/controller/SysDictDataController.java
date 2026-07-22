@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: cyx
@@ -135,5 +137,13 @@ public class SysDictDataController {
                                     @RequestParam(value = "parentId", required = false) @NotNull(message = "字典类型id不能为空") Long parentId) {
         sysDictDataService.setDefaultData(id, parentId);
         return R.ok("设置成功", null);
+    }
+
+    @GetMapping(value = "/getDictMap")
+    @Operation(summary = "根据字典类型获取字典数据")
+    @Parameter(name = "dictType", description = "字典类型", required = true, in = ParameterIn.QUERY)
+    public R<Map<String, String>> getDictMap(@RequestParam(value = "dictType") @NotBlank(message = "字典类型") String dictType) {
+        Map<String, String> dictDataMap = sysDictDataService.getDictDataMap(dictType);
+        return R.ok(dictDataMap);
     }
 }
