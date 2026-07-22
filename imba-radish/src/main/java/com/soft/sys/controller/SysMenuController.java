@@ -2,10 +2,10 @@ package com.soft.sys.controller;
 
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.request.EditMenuRequest;
-import com.soft.sys.model.request.GetMenuListRequest;
-import com.soft.sys.model.request.PageMenuTreeRequest;
-import com.soft.sys.model.request.SaveMenuRequest;
+import com.soft.sys.model.request.EditMenuDTO;
+import com.soft.sys.model.request.GetMenuListDTO;
+import com.soft.sys.model.request.PageMenuTreeDTO;
+import com.soft.sys.model.request.SaveMenuDTO;
 import com.soft.sys.model.vo.*;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysMenuService;
@@ -41,16 +41,16 @@ public class SysMenuController {
 
     @GetMapping(value = "/getMenuRoute")
     @Operation(summary = "获取菜单路由")
-    public R<List<MenusVo>> getMenuRoute() {
-        List<MenusVo> pageVo = sysMenuService.getMenuRoute();
+    public R<List<MenusVO>> getMenuRoute() {
+        List<MenusVO> pageVo = sysMenuService.getMenuRoute();
         return R.ok(pageVo);
     }
 
     @GetMapping(value = "/getSelectMenu")
     @Operation(summary = "获取下拉菜单结构")
     @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY)
-    public R<List<GetSelectMenuVo>> getSelectMenu(@RequestParam(value = "type", required = false) @NotBlank(message = "类型不能为空") String type) {
-        List<GetSelectMenuVo> pageVo = sysMenuService.getSelectMenu(type);
+    public R<List<GetSelectMenuVO>> getSelectMenu(@RequestParam(value = "type", required = false) @NotBlank(message = "类型不能为空") String type) {
+        List<GetSelectMenuVO> pageVo = sysMenuService.getSelectMenu(type);
         return R.ok(pageVo);
     }
 
@@ -58,7 +58,7 @@ public class SysMenuController {
     @PreAuthorize(value = "@cps.hasPermission('sys_menu_add')")
     @PostMapping
     @Operation(summary = "添加菜单")
-    public R<Object> saveMenu(@RequestBody @Valid SaveMenuRequest request) {
+    public R<Object> saveMenu(@RequestBody @Valid SaveMenuDTO request) {
         sysMenuService.saveMenu(request);
         return R.ok("添加成功", null);
     }
@@ -67,7 +67,7 @@ public class SysMenuController {
     @PreAuthorize(value = "@cps.hasPermission('sys_menu_edit')")
     @PutMapping
     @Operation(summary = "编辑菜单")
-    public R<Object> editMenu(@RequestBody @Valid EditMenuRequest request) {
+    public R<Object> editMenu(@RequestBody @Valid EditMenuDTO request) {
         sysMenuService.editMenu(request);
         return R.ok("修改成功", null);
     }
@@ -84,16 +84,16 @@ public class SysMenuController {
 
     @PostMapping(value = "/getMenuList")
     @Operation(summary = "获取菜单列表")
-    public R<PageVO<GetMenuListVo>> getMenuList(@RequestBody GetMenuListRequest request) {
-        PageVO<GetMenuListVo> pageVo = sysMenuService.getMenuList(request);
+    public R<PageVO<GetMenuListVO>> getMenuList(@RequestBody GetMenuListDTO request) {
+        PageVO<GetMenuListVO> pageVo = sysMenuService.getMenuList(request);
         return R.ok(pageVo);
     }
 
     @GetMapping(value = "/getMenu")
     @Operation(summary = "获取菜单详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<GetMenuVo> getMenu(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        GetMenuVo getMenuVo = sysMenuService.getMenu(id);
+    public R<GetMenuVO> getMenu(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        GetMenuVO getMenuVo = sysMenuService.getMenu(id);
         return R.ok(getMenuVo);
     }
 
@@ -117,16 +117,16 @@ public class SysMenuController {
 
     @GetMapping(value = "/getMenuTree")
     @Operation(summary = "获取菜单树")
-    public R<List<GetMenuTreeVo>> getMenuTree() {
-        List<GetMenuTreeVo> menuTreeVos = sysMenuService.getMenuTree();
+    public R<List<GetMenuTreeVO>> getMenuTree() {
+        List<GetMenuTreeVO> menuTreeVos = sysMenuService.getMenuTree();
         return R.ok(menuTreeVos);
     }
 
     @GetMapping(value = "/getAssignedMenu")
     @Operation(summary = "获取已分配的菜单")
     @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
-    public R<List<GetAssignedMenuVo>> getAssignedMenu(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
-        List<GetAssignedMenuVo> menuIds = sysMenuService.getAssignedMenu(roleId);
+    public R<List<GetAssignedMenuVO>> getAssignedMenu(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
+        List<GetAssignedMenuVO> menuIds = sysMenuService.getAssignedMenu(roleId);
         return R.ok(menuIds);
     }
 
@@ -148,14 +148,14 @@ public class SysMenuController {
 
     @GetMapping(value = "/getLeftMenus")
     @Operation(summary = "获取左侧菜单")
-    public R<List<MenusVo>> getLeftMenus() {
-        List<MenusVo> menusVos = sysMenuService.getLeftMenus();
+    public R<List<MenusVO>> getLeftMenus() {
+        List<MenusVO> menusVos = sysMenuService.getLeftMenus();
         return R.ok(menusVos);
     }
 
     @PostMapping(value = "/pageMenuTree")
     @Operation(summary = "获取树形结构的菜单分页列表")
-    public R<PageVO<PageMenuTreeVO>> pageMenuTree(@RequestBody PageMenuTreeRequest request) {
+    public R<PageVO<PageMenuTreeVO>> pageMenuTree(@RequestBody PageMenuTreeDTO request) {
         PageVO<PageMenuTreeVO> page = sysMenuService.pageMenuTree(request);
         return R.ok(page);
     }

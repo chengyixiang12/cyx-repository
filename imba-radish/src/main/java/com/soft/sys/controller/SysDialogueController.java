@@ -1,10 +1,10 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.model.request.GetDialoguesRequest;
-import com.soft.sys.model.request.RenameRequest;
-import com.soft.sys.model.request.SaveDialogueRequest;
-import com.soft.sys.model.vo.GetDialoguesVo;
-import com.soft.sys.model.vo.GetTitleVo;
+import com.soft.sys.model.request.GetDialoguesDTO;
+import com.soft.sys.model.request.RenameDTO;
+import com.soft.sys.model.request.SaveDialogueDTO;
+import com.soft.sys.model.vo.GetDialoguesVO;
+import com.soft.sys.model.vo.GetTitleVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysDialogueService;
@@ -41,14 +41,14 @@ public class SysDialogueController {
 
     @PostMapping(value = "/getDialogues")
     @Operation(summary = "获取历史对话列表")
-    public R<PageVO<GetDialoguesVo>> getDialogues(@RequestBody GetDialoguesRequest request) {
-        PageVO<GetDialoguesVo> pageVo = sysDialogueService.getDialogues(request);
+    public R<PageVO<GetDialoguesVO>> getDialogues(@RequestBody GetDialoguesDTO request) {
+        PageVO<GetDialoguesVO> pageVo = sysDialogueService.getDialogues(request);
         return R.ok(pageVo);
     }
 
     @PostMapping(value = "/saveDialogue")
     @Operation(summary = "新增对话")
-    public R<String> saveDialogue(@RequestBody SaveDialogueRequest request) {
+    public R<String> saveDialogue(@RequestBody SaveDialogueDTO request) {
         Long id = sysDialogueService.saveDialogue(request);
         return R.ok(String.valueOf(id));
     }
@@ -63,15 +63,15 @@ public class SysDialogueController {
 
     @PutMapping(value = "/rename")
     @Operation(summary = "重命名")
-    public R<Object> rename(@RequestBody @Valid RenameRequest request) {
+    public R<Object> rename(@RequestBody @Valid RenameDTO request) {
         sysDialogueService.rename(request);
         return R.ok("重命名成功");
     }
 
     @GetMapping(value = "/getTitle")
     @Operation(summary = "获取标题")
-    public R<GetTitleVo> getTitle(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        GetTitleVo getTitleVo = sysDialogueService.getTitle(id);
+    public R<GetTitleVO> getTitle(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        GetTitleVO getTitleVo = sysDialogueService.getTitle(id);
         return R.ok(getTitleVo);
     }
 }

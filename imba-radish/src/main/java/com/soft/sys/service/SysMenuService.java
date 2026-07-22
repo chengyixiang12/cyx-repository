@@ -2,10 +2,10 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysMenu;
-import com.soft.sys.model.request.EditMenuRequest;
-import com.soft.sys.model.request.GetMenuListRequest;
-import com.soft.sys.model.request.PageMenuTreeRequest;
-import com.soft.sys.model.request.SaveMenuRequest;
+import com.soft.sys.model.request.EditMenuDTO;
+import com.soft.sys.model.request.GetMenuListDTO;
+import com.soft.sys.model.request.PageMenuTreeDTO;
+import com.soft.sys.model.request.SaveMenuDTO;
 import com.soft.sys.model.vo.*;
 
 import java.util.List;
@@ -17,15 +17,15 @@ import java.util.List;
 */
 public interface SysMenuService extends IService<SysMenu> {
 
-    List<GetSelectMenuVo> getSelectMenu(String type);
+    List<GetSelectMenuVO> getSelectMenu(String type);
 
-    void saveMenu(SaveMenuRequest request);
+    void saveMenu(SaveMenuDTO request);
 
-    void editMenu(EditMenuRequest request);
+    void editMenu(EditMenuDTO request);
 
-    PageVO<GetMenuListVo> getMenuList(GetMenuListRequest request);
+    PageVO<GetMenuListVO> getMenuList(GetMenuListDTO request);
 
-    GetMenuVo getMenu(Long id);
+    GetMenuVO getMenu(Long id);
 
     void deleteMenu(Long id);
 
@@ -33,17 +33,17 @@ public interface SysMenuService extends IService<SysMenu> {
 
     void disableMenu(Long id);
 
-    List<MenusVo> getMenuRoute();
+    List<MenusVO> getMenuRoute();
 
-    List<GetMenuTreeVo> getMenuTree();
+    List<GetMenuTreeVO> getMenuTree();
 
-    List<GetAssignedMenuVo> getAssignedMenu(Long roleId);
+    List<GetAssignedMenuVO> getAssignedMenu(Long roleId);
 
     void menuShow(Long id);
 
     void menuHide(Long id);
 
-    List<MenusVo> getLeftMenus();
+    List<MenusVO> getLeftMenus();
 
-    PageVO<PageMenuTreeVO> pageMenuTree(PageMenuTreeRequest request);
+    PageVO<PageMenuTreeVO> pageMenuTree(PageMenuTreeDTO request);
 }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "密钥列表响应参数")
-public class SysSecretKeyVo {
+public class SysSecretKeyVO {
 
     @Schema(description = "主键")
     private Long id;

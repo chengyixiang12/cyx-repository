@@ -10,7 +10,7 @@ import lombok.Data;
  **/
 @Data
 @Schema(description = "获取权限列表响应参数")
-public class PermissionsVo {
+public class PermissionsVO {
 
     @Schema(description = "主键")
     private String id;

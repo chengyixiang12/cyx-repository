@@ -6,10 +6,10 @@ import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.receive.FileTransferStartRecParam;
-import com.soft.sys.websocket.send.SendParams;
+import com.soft.sys.websocket.receive.FileTransferStartRequest;
+import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,15 +44,15 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
-        FileTransferStartRecParam fileTransferStartRecParam = JSON.parseObject(message.getPayload(), FileTransferStartRecParam.class);
+        FileTransferStartRequest fileTransferStartRecParam = JSON.parseObject(message.getPayload(), FileTransferStartRequest.class);
         String fileKey = IdUtil.fastSimpleUUID();
         log.info("fileKey: {}", fileKey);
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey;
         File file = new File(filePath);
         boolean isCreate = file.mkdirs();
-        SendParams sendParams = new SendParams();
+        WebSocketResponse sendParams = new WebSocketResponse();
         if (!isCreate) {
 
             sendParams.setStatus(false);

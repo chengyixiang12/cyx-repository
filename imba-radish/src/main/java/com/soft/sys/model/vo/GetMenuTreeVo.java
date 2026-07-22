@@ -18,8 +18,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Schema(description = "获取菜单树响应参数")
-@Alias(value = "GetMenuTreeVo")
-public class GetMenuTreeVo implements MenuTree<GetMenuTreeVo> {
+@Alias(value = "GetMenuTreeVO")
+public class GetMenuTreeVO implements MenuTree<GetMenuTreeVO> {
 
     @Schema(description = "主键")
     private String id;
@@ -31,5 +31,5 @@ public class GetMenuTreeVo implements MenuTree<GetMenuTreeVo> {
     private String parentId;
 
     @Schema(description = "子集")
-    private List<GetMenuTreeVo> children = new ArrayList<>();
+    private List<GetMenuTreeVO> children = new ArrayList<>();
 }

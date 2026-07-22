@@ -11,8 +11,8 @@ import org.apache.ibatis.type.Alias;
  */
 @Data
 @Schema(description = "获取定时任务列表响应参数")
-@Alias(value = "GetQuartzTasksVo")
-public class GetQuartzTasksVo {
+@Alias(value = "GetQuartzTasksVO")
+public class GetQuartzTasksVO {
 
     @Schema(description = "主键")
     private String id;

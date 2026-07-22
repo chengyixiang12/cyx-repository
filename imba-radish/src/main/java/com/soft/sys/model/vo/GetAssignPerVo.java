@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取被赋予的权限响应参数")
-@Alias(value = "GetAssignPerVo")
-public class GetAssignPerVo {
+@Alias(value = "GetAssignPerVO")
+public class GetAssignPerVO {
 
     @Schema(description = "权限id")
     private String id;

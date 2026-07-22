@@ -2,8 +2,8 @@ package com.soft.sys.rabbitmq.consumer;
 
 import com.rabbitmq.client.Channel;
 import com.soft.sys.constants.RabbitmqConstant;
-import com.soft.sys.model.dto.LogDto;
-import com.soft.sys.model.dto.rabbitmq.EmailDto;
+import com.soft.sys.model.dto.LogDTO;
+import com.soft.sys.model.dto.rabbitmq.EmailDTO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.service.SysLogService;
 import jakarta.mail.internet.MimeMessage;
@@ -43,7 +43,7 @@ public class MessageConsume {
      * @param emailDto
      */
     @RabbitListener(queues = RabbitmqConstant.Topic.QUEUE_SEND_EMAIL)
-    public void sendCaptcha(EmailDto emailDto, Channel channel,
+    public void sendCaptcha(EmailDTO emailDto, Channel channel,
                             @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -67,7 +67,7 @@ public class MessageConsume {
      * @param logDto
      */
     @RabbitListener(queues = RabbitmqConstant.Direct.QUEUE_ONE)
-    public void saveSysLog(LogDto logDto, Channel channel,
+    public void saveSysLog(LogDTO logDto, Channel channel,
                            @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
         try {
             sysLogService.saveLog(logDto);

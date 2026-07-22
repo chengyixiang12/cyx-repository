@@ -5,7 +5,7 @@ import com.soft.sys.core.annotation.LogIgnore;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogLevelEnum;
 import com.soft.sys.exception.GlobalException;
-import com.soft.sys.model.dto.LogDto;
+import com.soft.sys.model.dto.LogDTO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.rabbitmq.producer.SysLogProduce;
 import com.soft.sys.resultapi.R;
@@ -59,7 +59,7 @@ public class SysLogAspect {
         }
 
         long start = System.currentTimeMillis();
-        LogDto logDto = new LogDto();
+        LogDTO logDto = new LogDTO();
         try {
             Object result = joinPoint.proceed();
             populateLogDto(joinPoint, sysLog, logDto, result, null);
@@ -73,7 +73,7 @@ public class SysLogAspect {
         }
     }
 
-    private void populateLogDto(ProceedingJoinPoint joinPoint, SysLog sysLog, LogDto logDto, Object result, Throwable throwable) {
+    private void populateLogDto(ProceedingJoinPoint joinPoint, SysLog sysLog, LogDTO logDto, Object result, Throwable throwable) {
         logDto.setModuleName(sysLog.module().getName());
         logDto.setOperationDesc(sysLog.value());
         logDto.setType(sysLog.type().getCode());
@@ -107,7 +107,7 @@ public class SysLogAspect {
         }
     }
 
-    private void handleResponseResult(Object result, LogDto logDto, boolean responseFlag) {
+    private void handleResponseResult(Object result, LogDTO logDto, boolean responseFlag) {
         if (result == null) {
             return;
         }
@@ -163,7 +163,7 @@ public class SysLogAspect {
         return request.getRemoteAddr();
     }
 
-    private void setBrowserInfo(LogDto logDto, String userAgentString) {
+    private void setBrowserInfo(LogDTO logDto, String userAgentString) {
         if (userAgentString == null || userAgentString.isBlank()) {
             logDto.setOsBrowserInfo("Unknown");
             return;

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -64,7 +64,7 @@ public class MybatisPlusConfig implements MetaObjectHandler {
             if (authentication.getPrincipal() instanceof String) {
                 return null;
             }
-            UserDto userDetails = (UserDto) authentication.getPrincipal();
+            UserDTO userDetails = (UserDTO) authentication.getPrincipal();
             return userDetails.getId(); // 返回当前用户的用户名
         }
         return null; // 或者返回一个默认值

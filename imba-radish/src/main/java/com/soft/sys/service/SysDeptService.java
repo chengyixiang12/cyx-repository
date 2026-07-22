@@ -2,14 +2,14 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysDept;
-import com.soft.sys.model.dto.ExportDeptDto;
-import com.soft.sys.model.request.EditDeptRequest;
-import com.soft.sys.model.request.ExportDeptRequest;
-import com.soft.sys.model.request.GetDeptsRequest;
-import com.soft.sys.model.request.SaveDeptRequest;
-import com.soft.sys.model.vo.DeptTreeVo;
-import com.soft.sys.model.vo.DeptVo;
-import com.soft.sys.model.vo.GetDeptsVo;
+import com.soft.sys.model.dto.ExportDeptExcelDTO;
+import com.soft.sys.model.request.EditDeptDTO;
+import com.soft.sys.model.request.ExportDeptDTO;
+import com.soft.sys.model.request.GetDeptsDTO;
+import com.soft.sys.model.request.SaveDeptDTO;
+import com.soft.sys.model.vo.DeptTreeVO;
+import com.soft.sys.model.vo.DeptVO;
+import com.soft.sys.model.vo.GetDeptsVO;
 import com.soft.sys.model.vo.PageVO;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 */
 public interface SysDeptService extends IService<SysDept> {
 
-    List<DeptTreeVo> getDeptTree(Long id);
+    List<DeptTreeVO> getDeptTree(Long id);
 
     Boolean existCode(String code);
 
@@ -29,15 +29,15 @@ public interface SysDeptService extends IService<SysDept> {
 
     Boolean isNotEmpty();
 
-    void saveDept(SaveDeptRequest request);
+    void saveDept(SaveDeptDTO request);
 
-    void editDept(EditDeptRequest request);
+    void editDept(EditDeptDTO request);
 
-    DeptVo getDept(Long id);
+    DeptVO getDept(Long id);
 
-    List<ExportDeptDto> exportDept(ExportDeptRequest request);
+    List<ExportDeptExcelDTO> exportDept(ExportDeptDTO request);
 
-    PageVO<GetDeptsVo> getDepts(GetDeptsRequest request);
+    PageVO<GetDeptsVO> getDepts(GetDeptsDTO request);
 
     List<Long> getChildDeptIds(List<Long> deptIds);
 

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  **/
 @Data
 @Schema(description = "获取文件列表响应参数")
-public class FilesVo {
+public class FilesVO {
 
     @Schema(description = "主键")
     private String id;

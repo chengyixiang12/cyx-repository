@@ -4,9 +4,9 @@ import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.send.SendParams;
+import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +42,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<ByteBuffer> message) throws IOException {
         ByteBuffer payload = message.getPayload();
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
         // 分片文件key
         String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
@@ -50,7 +50,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         Integer index = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
-        SendParams sendParams = new SendParams();
+        WebSocketResponse sendParams = new WebSocketResponse();
         sendParams.setOrder(WebSocketOrderEnum.FILE_TRANSFER.toString());
         if (!file.exists() && !file.createNewFile()) {
             log.info("文件创建失败，{}", file.getName());

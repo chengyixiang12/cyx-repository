@@ -3,11 +3,11 @@ package com.soft.sys.controller;
 import cn.hutool.core.util.StrUtil;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.entity.SysScheduleJob;
-import com.soft.sys.model.request.CreateJobRequest;
-import com.soft.sys.model.request.EditJobRequest;
-import com.soft.sys.model.request.GetQuartzTasksRequest;
-import com.soft.sys.model.vo.GetJobVo;
-import com.soft.sys.model.vo.GetQuartzTasksVo;
+import com.soft.sys.model.request.CreateJobDTO;
+import com.soft.sys.model.request.EditJobDTO;
+import com.soft.sys.model.request.GetQuartzTasksDTO;
+import com.soft.sys.model.vo.GetJobVO;
+import com.soft.sys.model.vo.GetQuartzTasksVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysScheduleJobService;
@@ -56,7 +56,7 @@ public class SysScheduleJobController {
 
     @PostMapping(value = "/createJob")
     @Operation(summary = "创建定时任务")
-    public R<Object> createJob(@RequestBody @Valid CreateJobRequest request) {
+    public R<Object> createJob(@RequestBody @Valid CreateJobDTO request) {
         if (sysScheduleJobService.existJobType(request.getJobType(), request.getJobGroup())) {
             return R.fail(StrUtil.format("“{}”任务类型已存在于“{}”组中", request.getJobType(), request.getJobGroup()));
         }
@@ -66,8 +66,8 @@ public class SysScheduleJobController {
 
     @PostMapping(value = "/getQuartzTasks")
     @Operation(summary = "获取定时任务列表")
-    public R<PageVO<GetQuartzTasksVo>> getQuartzTasks(@RequestBody @Valid GetQuartzTasksRequest request) {
-        PageVO<GetQuartzTasksVo> pageVo = sysScheduleJobService.getQuartzTasks(request);
+    public R<PageVO<GetQuartzTasksVO>> getQuartzTasks(@RequestBody @Valid GetQuartzTasksDTO request) {
+        PageVO<GetQuartzTasksVO> pageVo = sysScheduleJobService.getQuartzTasks(request);
         return R.ok(pageVo);
     }
 
@@ -110,14 +110,14 @@ public class SysScheduleJobController {
 
     @GetMapping(value = "/getJob")
     @Operation(summary = "获取job详情")
-    public R<GetJobVo> getJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        GetJobVo getJobVo = sysScheduleJobService.getJob(id);
+    public R<GetJobVO> getJob(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        GetJobVO getJobVo = sysScheduleJobService.getJob(id);
         return R.ok(getJobVo);
     }
 
     @PutMapping(value = "/editJob")
     @Operation(summary = "修改job")
-    public R<Object> editJob(@RequestBody @Valid EditJobRequest request) {
+    public R<Object> editJob(@RequestBody @Valid EditJobDTO request) {
         sysScheduleJobService.editJob(request);
         return R.ok("修改成功", null);
     }

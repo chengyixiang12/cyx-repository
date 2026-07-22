@@ -2,7 +2,7 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysDialogueDetails;
-import com.soft.sys.model.dto.GetRecentContentDto;
+import com.soft.sys.model.dto.GetRecentContentDTO;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ import java.util.List;
 */
 public interface SysDialogueDetailsService extends IService<SysDialogueDetails> {
 
-    List<GetRecentContentDto> getRecentContext(Long dialogueId, Long maxContextNum);
+    List<GetRecentContentDTO> getRecentContext(Long dialogueId, Long maxContextNum);
 }

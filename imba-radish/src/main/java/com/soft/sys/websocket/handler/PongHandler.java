@@ -3,9 +3,9 @@ package com.soft.sys.websocket.handler;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.send.HeartBeatSendParams;
+import com.soft.sys.websocket.send.HeartBeatResponse;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class PongHandler implements WebSocketConcreteHandler<String> {
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         try {
-            UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+            UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
             redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
 
@@ -43,7 +43,7 @@ public class PongHandler implements WebSocketConcreteHandler<String> {
 
             // 校验token是否过期，实现token无感刷新
             Long expire = redisTemplate.getExpire(RedisConstant.AUTHORIZATION_USERNAME + token);
-            HeartBeatSendParams heartBeatSendParams = new HeartBeatSendParams();
+            HeartBeatResponse heartBeatSendParams = new HeartBeatResponse();
             if (expire < 60) {
                 heartBeatSendParams.setRefreshFlag(true);
             }

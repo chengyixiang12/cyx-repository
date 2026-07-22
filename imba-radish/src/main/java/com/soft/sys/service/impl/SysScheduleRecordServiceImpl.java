@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.entity.SysScheduleRecord;
 import com.soft.sys.mapper.SysScheduleRecordMapper;
-import com.soft.sys.model.request.GetQuartzRecordListRequest;
-import com.soft.sys.model.vo.GetQuartzRecordListVo;
+import com.soft.sys.model.request.GetQuartzRecordListDTO;
+import com.soft.sys.model.vo.GetQuartzRecordListVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysScheduleRecordService;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,10 @@ public class SysScheduleRecordServiceImpl extends ServiceImpl<SysScheduleRecordM
     private final SysScheduleRecordMapper sysScheduleRecordMapper;
 
     @Override
-    public PageVO<GetQuartzRecordListVo> getQuartzRecordList(GetQuartzRecordListRequest request) {
-        IPage<GetQuartzRecordListVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<GetQuartzRecordListVO> getQuartzRecordList(GetQuartzRecordListDTO request) {
+        IPage<GetQuartzRecordListVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysScheduleRecordMapper.getQuartzRecordList(page, request.getKeyword(), request.getJobId(), request.getStartTime(), request.getEndTime());
-        PageVO<GetQuartzRecordListVo> pageVo = new PageVO<>();
+        PageVO<GetQuartzRecordListVO> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;

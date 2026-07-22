@@ -5,14 +5,14 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.dto.ExportDeptDto;
-import com.soft.sys.model.request.EditDeptRequest;
-import com.soft.sys.model.request.ExportDeptRequest;
-import com.soft.sys.model.request.GetDeptsRequest;
-import com.soft.sys.model.request.SaveDeptRequest;
-import com.soft.sys.model.vo.DeptTreeVo;
-import com.soft.sys.model.vo.DeptVo;
-import com.soft.sys.model.vo.GetDeptsVo;
+import com.soft.sys.model.dto.ExportDeptExcelDTO;
+import com.soft.sys.model.request.EditDeptDTO;
+import com.soft.sys.model.request.ExportDeptDTO;
+import com.soft.sys.model.request.GetDeptsDTO;
+import com.soft.sys.model.request.SaveDeptDTO;
+import com.soft.sys.model.vo.DeptTreeVO;
+import com.soft.sys.model.vo.DeptVO;
+import com.soft.sys.model.vo.GetDeptsVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysDeptService;
@@ -60,9 +60,9 @@ public class SysDeptController {
 
     @GetMapping(value = "/getDeptTree")
     @Operation(summary = "获取组织架构")
-    public R<List<DeptTreeVo>> getDeptTree(@RequestParam(value = "id", required = false) Long id) {
+    public R<List<DeptTreeVO>> getDeptTree(@RequestParam(value = "id", required = false) Long id) {
         try {
-            List<DeptTreeVo> deptTreeVos = sysDeptService.getDeptTree(id);
+            List<DeptTreeVO> deptTreeVos = sysDeptService.getDeptTree(id);
             return R.ok(deptTreeVos);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -75,7 +75,7 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_add')")
     @PostMapping
     @Operation(summary = "添加部门")
-    public R<Object> saveDept(@RequestBody @Valid SaveDeptRequest request) {
+    public R<Object> saveDept(@RequestBody @Valid SaveDeptDTO request) {
         if (sysDeptService.existCode(request.getCode())) {
             return R.fail("部门编码已存在");
         }
@@ -97,7 +97,7 @@ public class SysDeptController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dept_edit')")
     @PutMapping
     @Operation(summary = "编辑部门")
-    public R<Object> editDept(@RequestBody @Valid EditDeptRequest request) {
+    public R<Object> editDept(@RequestBody @Valid EditDeptDTO request) {
         if (sysDeptService.existCode(request.getCode(), request.getId())) {
             return R.fail("部门编码已存在");
         }
@@ -118,26 +118,26 @@ public class SysDeptController {
     @GetMapping
     @Operation(summary = "获取部门详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<DeptVo> getDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        DeptVo deptVo = sysDeptService.getDept(id);
+    public R<DeptVO> getDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        DeptVO deptVo = sysDeptService.getDept(id);
         return R.ok(deptVo);
     }
 
     @PostMapping(value = "/exportDept")
     @Operation(summary = "导出部门")
-    public ResponseEntity<byte[]> exportDept(@RequestBody @Valid ExportDeptRequest request) {
+    public ResponseEntity<byte[]> exportDept(@RequestBody @Valid ExportDeptDTO request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         String fileName = request.getFileName();
         if (StringUtils.isBlank(fileName)) {
             request.setFileName("部门.xlsx");
         }
-        List<ExportDeptDto> exportDeptDtos = sysDeptService.exportDept(request);
+        List<ExportDeptExcelDTO> exportDeptDtos = sysDeptService.exportDept(request);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         // 使用 EasyExcel 写入数据
-        EasyExcel.write(outputStream, ExportDeptDto.class)
+        EasyExcel.write(outputStream, ExportDeptExcelDTO.class)
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) // 自动列宽
                 .sheet("部门信息") // sheet名称
                 .doWrite(exportDeptDtos);
@@ -158,8 +158,8 @@ public class SysDeptController {
 
     @PostMapping(value = "/getDepts")
     @Operation(summary = "获取部门列表")
-    public R<PageVO<GetDeptsVo>> getDepts(@RequestBody GetDeptsRequest request) {
-        PageVO<GetDeptsVo> pageVo = sysDeptService.getDepts(request);
+    public R<PageVO<GetDeptsVO>> getDepts(@RequestBody GetDeptsDTO request) {
+        PageVO<GetDeptsVO> pageVo = sysDeptService.getDepts(request);
         return R.ok(pageVo);
     }
 }

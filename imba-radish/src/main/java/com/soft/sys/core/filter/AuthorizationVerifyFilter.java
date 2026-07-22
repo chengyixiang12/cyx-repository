@@ -4,7 +4,7 @@ import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.TokenConstant;
 import com.soft.sys.enums.ResultEnum;
 import com.soft.sys.exception.GlobalException;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.utils.ResponseUtil;
 import jakarta.servlet.FilterChain;
@@ -63,7 +63,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
                 ResponseUtil.writeMsg(response, HttpStatus.UNAUTHORIZED.value(), R.fail(ResultEnum.AUTHENTICATION_FAIL));
                 return;
             }
-            UserDto user = (UserDto) this.userDetailsService.loadUserByUsername(username);
+            UserDTO user = (UserDTO) this.userDetailsService.loadUserByUsername(username);
             // 在 Spring Security 中设置用户身份
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                     new UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());

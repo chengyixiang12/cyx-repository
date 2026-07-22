@@ -10,9 +10,9 @@ import org.apache.ibatis.type.Alias;
  * @description
  */
 @Data
-@Alias(value = "SelectDeletedFileDto")
+@Alias(value = "SelectDeletedFileDTO")
 @Schema(description = "查询已删除的文件")
-public class SelectDeletedFileDto {
+public class SelectDeletedFileDTO {
 
     @Schema(description = "主键")
     private Long id;

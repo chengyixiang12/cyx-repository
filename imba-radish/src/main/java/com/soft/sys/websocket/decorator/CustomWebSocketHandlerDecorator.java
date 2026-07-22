@@ -2,7 +2,7 @@ package com.soft.sys.websocket.decorator;
 
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -29,7 +29,7 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         // 删除上一次连接的ping状态
         redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
         // 添加用户会话
@@ -41,7 +41,7 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus closeStatus) {
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         // 移除用户会话
         WebSocketSessionManager.removeSession(userDto.getId());
         // 删除遗留的ping状态

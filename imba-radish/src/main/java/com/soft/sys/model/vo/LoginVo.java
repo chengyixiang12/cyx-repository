@@ -6,8 +6,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "登录")
-@Alias(value = "LoginVo")
-public class LoginVo {
+@Alias(value = "LoginVO")
+public class LoginVO {
 
     @Schema(description = "用户认证")
     private String token;

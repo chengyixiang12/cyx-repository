@@ -3,11 +3,11 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysFile;
-import com.soft.sys.model.dto.FileDetailDto;
-import com.soft.sys.model.dto.FileHashDto;
-import com.soft.sys.model.dto.SelectDeletedFileDto;
-import com.soft.sys.model.request.FilesRequest;
-import com.soft.sys.model.vo.FilesVo;
+import com.soft.sys.model.dto.FileDetailDTO;
+import com.soft.sys.model.dto.FileHashDTO;
+import com.soft.sys.model.dto.SelectDeletedFileDTO;
+import com.soft.sys.model.request.FilesDTO;
+import com.soft.sys.model.vo.FilesVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -20,16 +20,16 @@ import java.util.List;
 */
 public interface SysFileMapper extends BaseMapper<SysFile> {
 
-    FileDetailDto getFileDetailById(@Param("id") Long id);
+    FileDetailDTO getFileDetailById(@Param("id") Long id);
 
-    IPage<FilesVo> getFiles(IPage<FilesVo> page, @Param("request") FilesRequest request);
+    IPage<FilesVO> getFiles(IPage<FilesVO> page, @Param("request") FilesDTO request);
 
-    FileHashDto getFileByHash(@Param("hashCode") String hashCode);
+    FileHashDTO getFileByHash(@Param("hashCode") String hashCode);
 
-    List<SelectDeletedFileDto> selectDeletedFiles();
+    List<SelectDeletedFileDTO> selectDeletedFiles();
 
-    IPage<FilesVo> getMyFiles(IPage<FilesVo> page,
-                               @Param("request") FilesRequest request,
+    IPage<FilesVO> getMyFiles(IPage<FilesVO> page,
+                               @Param("request") FilesDTO request,
                                @Param("userId") Long userId);
 
     void deleteRealByIds(@Param("ids") List<Long> ids);

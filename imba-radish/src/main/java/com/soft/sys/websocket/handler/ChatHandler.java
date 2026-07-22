@@ -7,12 +7,12 @@ import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.entity.SysDialogueDetails;
 import com.soft.sys.enums.ResultEnum;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.GetRecentContentDto;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.GetRecentContentDTO;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.service.SysDialogueDetailsService;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.receive.ChatRecParam;
-import com.soft.sys.websocket.send.ChatSendParams;
+import com.soft.sys.websocket.receive.ChatRequest;
+import com.soft.sys.websocket.send.ChatResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -50,8 +50,8 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        ChatRecParam chatRecParam = JSON.parseObject(message.getPayload(), ChatRecParam.class);
-        UserDto user = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        ChatRequest chatRecParam = JSON.parseObject(message.getPayload(), ChatRequest.class);
+        UserDTO user = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
         // 问题
         SysDialogueDetails question = new SysDialogueDetails();
@@ -61,7 +61,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         question.setTag(BaseConstant.CHAT_TAG_USER);
         question.setParentId(chatRecParam.getDialogueId());
         sysDialogueDetailsService.save(question);
-        List<GetRecentContentDto> recentContext = sysDialogueDetailsService.getRecentContext(chatRecParam.getDialogueId(), maxContextNum);
+        List<GetRecentContentDTO> recentContext = sysDialogueDetailsService.getRecentContext(chatRecParam.getDialogueId(), maxContextNum);
 
         List<Message> messages = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
                 .build());
 
         if (CollectionUtil.isNotEmpty(recentContext)) {
-            for (GetRecentContentDto getRecentContentDto : recentContext) {
+            for (GetRecentContentDTO getRecentContentDto : recentContext) {
                 Integer tag = getRecentContentDto.getTag();
                 String content = getRecentContentDto.getContent();
                 if (BaseConstant.CHAT_TAG_USER.equals(tag)) {
@@ -85,7 +85,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
 
         var prompt = new Prompt(messages);
 
-        ChatSendParams chatSendParams = new ChatSendParams();
+        ChatResponse chatSendParams = new ChatResponse();
         chatSendParams.setOrder(WebSocketOrderEnum.AI.toString());
         StringBuilder answerStr = new StringBuilder();
 

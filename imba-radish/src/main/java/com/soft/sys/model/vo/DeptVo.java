@@ -11,8 +11,8 @@ import org.apache.ibatis.type.Alias;
  **/
 @Schema(description = "部门")
 @Data
-@Alias(value = "DeptVo")
-public class DeptVo {
+@Alias(value = "DeptVO")
+public class DeptVO {
 
     @Schema(description = "主键")
     private String id;

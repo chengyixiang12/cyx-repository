@@ -10,9 +10,9 @@ import org.apache.ibatis.type.Alias;
  * @description
  */
 @Data
-@Alias(value = "DictDataDto")
+@Alias(value = "DictDataDTO")
 @Schema(description = "字典数据")
-public class DictDataDto {
+public class DictDataDTO {
 
     @Schema(description = "值")
     private String value;

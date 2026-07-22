@@ -1,7 +1,7 @@
 package com.soft.sys.quartz.job;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.soft.sys.model.dto.SelectDeletedFileDto;
+import com.soft.sys.model.dto.SelectDeletedFileDTO;
 import com.soft.sys.service.SysFileService;
 import com.soft.sys.utils.MinioUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class ClearDeletedFile implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
-        List<SelectDeletedFileDto> selectDeletedFileDtoList = sysFileService.selectDeletedFiles();
+        List<SelectDeletedFileDTO> selectDeletedFileDtoList = sysFileService.selectDeletedFiles();
         log.info("本次共计清理{}个文件", selectDeletedFileDtoList.size());
         selectDeletedFileDtoList.forEach(item -> {
             if (item.getRetain()) {
@@ -47,7 +47,7 @@ public class ClearDeletedFile implements Job {
             }
             minioUtil.delete(item.getBucket(), item.getObjectKey());
         });
-        List<Long> list = selectDeletedFileDtoList.stream().map(SelectDeletedFileDto::getId).toList();
+        List<Long> list = selectDeletedFileDtoList.stream().map(SelectDeletedFileDTO::getId).toList();
         if (CollectionUtil.isNotEmpty(list)) {
             sysFileService.deleteRealByIds(list);
             log.info("清理完毕");

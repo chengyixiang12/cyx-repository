@@ -1,0 +1,26 @@
+package com.soft.sys.model.request;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @Author: cyx
+ * @Description: 
+ * @DateTime: 2024/11/20 14:44
+ **/
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Schema(description = "获取权限列表请求参数")
+public class PermissionsDTO extends PageDTO {
+
+    @Schema(description = "关键词")
+    private String keyword;
+
+    @Schema(description = "状态")
+    private String status;
+
+    @Schema(description = "类型")
+    private String type;
+}

@@ -190,7 +190,7 @@
           AND sm.type IN ('0', '1')
         ORDER BY sm.sort
     </select>
-    <select id="pageMenuTree" parameterType="com.soft.sys.model.request.PageMenuTreeRequest" resultType="com.soft.sys.model.vo.PageMenuTreeVO">
+    <select id="pageMenuTree" parameterType="com.soft.sys.model.request.PageMenuTreeDTO" resultType="com.soft.sys.model.vo.PageMenuTreeVO">
         select
         t1.id,
         t1.name,

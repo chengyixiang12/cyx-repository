@@ -3,11 +3,11 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysDictData;
-import com.soft.sys.model.dto.DictDataDto;
-import com.soft.sys.model.request.DeleteRequest;
-import com.soft.sys.model.request.DictDatasRequest;
-import com.soft.sys.model.vo.DictDataVo;
-import com.soft.sys.model.vo.DictDatasVo;
+import com.soft.sys.model.dto.DictDataDTO;
+import com.soft.sys.model.request.DeleteDTO;
+import com.soft.sys.model.request.DictDatasDTO;
+import com.soft.sys.model.vo.DictDataVO;
+import com.soft.sys.model.vo.DictDatasVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -20,11 +20,11 @@ import java.util.List;
 */
 public interface SysDictDataMapper extends BaseMapper<SysDictData> {
 
-    IPage<DictDatasVo> getDictDatas(IPage<DictDatasVo> page, @Param("request") DictDatasRequest request);
+    IPage<DictDatasVO> getDictDatas(IPage<DictDatasVO> page, @Param("request") DictDatasDTO request);
 
-    DictDataVo getDictData(@Param("id") Long id);
+    DictDataVO getDictData(@Param("id") Long id);
 
-    void deleteDictDataBatch(@Param("request") DeleteRequest request);
+    void deleteDictDataBatch(@Param("request") DeleteDTO request);
 
     void enableDictData(@Param("id") Long id);
 
@@ -34,7 +34,7 @@ public interface SysDictDataMapper extends BaseMapper<SysDictData> {
 
     void setDefaultData(@Param("id") Long id);
 
-    List<DictDataDto> getByDictType(@Param("dictType") String dictType);
+    List<DictDataDTO> getByDictType(@Param("dictType") String dictType);
 
     String getDictDataByValue(@Param("value") String value,
                               @Param("dictType") String dictType);

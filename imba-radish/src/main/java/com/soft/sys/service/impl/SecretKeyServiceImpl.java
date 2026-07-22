@@ -7,10 +7,10 @@ import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.entity.SysSecretKey;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysSecretKeyMapper;
-import com.soft.sys.model.request.GenerateKeyRequest;
-import com.soft.sys.model.request.GetSecretKeyListRequest;
+import com.soft.sys.model.request.GenerateKeyDTO;
+import com.soft.sys.model.request.GetSecretKeyListDTO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.SysSecretKeyVo;
+import com.soft.sys.model.vo.SysSecretKeyVO;
 import com.soft.sys.service.SecretKeyService;
 import com.soft.sys.utils.AESUtil;
 import com.soft.sys.utils.RSAUtil;
@@ -60,7 +60,7 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
     }
 
     @Override
-    public void generateKey(GenerateKeyRequest request) throws NoSuchAlgorithmException {
+    public void generateKey(GenerateKeyDTO request) throws NoSuchAlgorithmException {
         String privateKey = null;
         String publicKey = null;
         switch (request.getSecretType()) {
@@ -94,7 +94,7 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
     }
 
     @Override
-    public PageVO<SysSecretKeyVo> getSecretKeyList(GetSecretKeyListRequest request) {
+    public PageVO<SysSecretKeyVO> getSecretKeyList(GetSecretKeyListDTO request) {
         Page<SysSecretKey> page = new Page<>(request.getPageNum(), request.getPageSize());
 
         LambdaQueryWrapper<SysSecretKey> wrapper = new LambdaQueryWrapper<SysSecretKey>()
@@ -103,10 +103,10 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
         page = baseMapper.selectPage(page, wrapper);
 
-        PageVO<SysSecretKeyVo> pageVo = new PageVO<>();
+        PageVO<SysSecretKeyVO> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords().stream().map(entity -> {
-            SysSecretKeyVo vo = new SysSecretKeyVo();
+            SysSecretKeyVO vo = new SysSecretKeyVO();
             BeanUtils.copyProperties(entity, vo);
             // 公钥脱敏：只显示前后20个字符
             if (entity.getPublicKey() != null && entity.getPublicKey().length() > 40) {

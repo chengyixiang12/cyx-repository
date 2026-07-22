@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class EmailDto {
+public class EmailDTO {
 
     /**
      * 邮箱

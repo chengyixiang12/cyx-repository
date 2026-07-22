@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
  **/
 @Schema(description = "获取历史对话列表响应参数")
 @Data
-@Alias(value = "GetDialoguesVo")
-public class GetDialoguesVo {
+@Alias(value = "GetDialoguesVO")
+public class GetDialoguesVO {
 
     @Schema(description = "主键")
     private String id;

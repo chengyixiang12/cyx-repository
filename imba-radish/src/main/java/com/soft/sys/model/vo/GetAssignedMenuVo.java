@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取已分配的菜单响应参数")
-@Alias(value = "GetAssignedMenuVo")
-public class GetAssignedMenuVo {
+@Alias(value = "GetAssignedMenuVO")
+public class GetAssignedMenuVO {
 
     @Schema(description = "主键")
     private String id;

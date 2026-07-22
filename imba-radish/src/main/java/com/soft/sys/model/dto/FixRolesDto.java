@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "固定角色传输参数")
-public class FixRolesDto {
+public class FixRolesDTO {
 
     @Schema(description = "角色名称")
     private String name;

@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "用户角色传输参数")
-public class UserRoleDto {
+public class UserRoleDTO {
 
     @Schema(description = "用户id")
     private Long userId;

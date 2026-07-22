@@ -1,6 +1,6 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.model.request.ListActuatorPageRequest;
+import com.soft.sys.model.request.ListActuatorPageDTO;
 import com.soft.sys.model.vo.GetLatestActuatorMetricVO;
 import com.soft.sys.model.vo.ListActuatorVO;
 import com.soft.sys.model.vo.ListUsageTrendVO;
@@ -45,7 +45,7 @@ public class SysActuatorController {
 
     @PostMapping(value = "/listActuatorPage")
     @Operation(summary = "获取监控记录")
-    public R<PageVO<ListActuatorVO>> listActuatorPage(@RequestBody ListActuatorPageRequest request) {
+    public R<PageVO<ListActuatorVO>> listActuatorPage(@RequestBody ListActuatorPageDTO request) {
         return R.ok(sysActuatorService.listActuatorPage(request));
     }
 

@@ -3,7 +3,7 @@ package com.soft.sys.core.handle;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.TokenConstant;
 import com.soft.sys.enums.ResultEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.utils.ResponseUtil;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
@@ -47,7 +47,7 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
         String redisKeyAuth = RedisConstant.AUTHORIZATION_USERNAME + authorization;
         String username = (String) redisTemplate.opsForValue().get(redisKeyAuth);
 
-        UserDto userDto = (UserDto) userDetailsService.loadUserByUsername(username);
+        UserDTO userDto = (UserDTO) userDetailsService.loadUserByUsername(username);
         Long id = userDto.getId();
 
         Set<String> keys = new HashSet<>();

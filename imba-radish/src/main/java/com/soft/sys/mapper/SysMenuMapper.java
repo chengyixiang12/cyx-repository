@@ -3,8 +3,8 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysMenu;
-import com.soft.sys.model.request.GetMenuListRequest;
-import com.soft.sys.model.request.PageMenuTreeRequest;
+import com.soft.sys.model.request.GetMenuListDTO;
+import com.soft.sys.model.request.PageMenuTreeDTO;
 import com.soft.sys.model.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,12 +18,12 @@ import java.util.List;
 */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<MenusVo> getMenuRoute(@Param("userId") Long userId);
+    List<MenusVO> getMenuRoute(@Param("userId") Long userId);
 
-    IPage<GetMenuListVo> getMenuList(@Param("page") IPage<GetMenuListVo> page,
-                     @Param("request") GetMenuListRequest request);
+    IPage<GetMenuListVO> getMenuList(@Param("page") IPage<GetMenuListVO> page,
+                     @Param("request") GetMenuListDTO request);
 
-    GetMenuVo getMenu(@Param("id") Long id);
+    GetMenuVO getMenu(@Param("id") Long id);
 
     List<Long> getByIds(@Param("ids") List<Long> ids);
 
@@ -31,20 +31,20 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     void disableMenu(@Param("id") Long id);
 
-    List<GetSelectMenuVo> getSelectMenu(@Param("type") String type);
+    List<GetSelectMenuVO> getSelectMenu(@Param("type") String type);
 
-    List<GetMenuTreeVo> getMenuTree();
+    List<GetMenuTreeVO> getMenuTree();
 
-    List<GetAssignedMenuVo> getAssignedMenu(@Param("roleId") Long roleId);
+    List<GetAssignedMenuVO> getAssignedMenu(@Param("roleId") Long roleId);
 
     void menuShow(@Param("id") Long id);
 
     void menuHide(@Param("id") Long id);
 
-    List<MenusVo> getLeftMenus(@Param("userId") Long userId);
+    List<MenusVO> getLeftMenus(@Param("userId") Long userId);
 
     IPage<PageMenuTreeVO> pageMenuTree(IPage<PageMenuTreeVO> page,
-                                       @Param("request") PageMenuTreeRequest request);
+                                       @Param("request") PageMenuTreeDTO request);
 }
 
 

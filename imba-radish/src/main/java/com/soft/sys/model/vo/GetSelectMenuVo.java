@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取下拉菜单结构")
-@Alias(value = "GetSelectMenuVo")
-public class GetSelectMenuVo {
+@Alias(value = "GetSelectMenuVO")
+public class GetSelectMenuVO {
 
     @Schema(description = "菜单主键")
     private String id;

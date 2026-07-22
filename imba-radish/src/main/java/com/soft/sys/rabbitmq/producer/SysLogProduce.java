@@ -1,7 +1,7 @@
 package com.soft.sys.rabbitmq.producer;
 
 import com.soft.sys.constants.RabbitmqConstant;
-import com.soft.sys.model.dto.LogDto;
+import com.soft.sys.model.dto.LogDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class SysLogProduce {
      * 推送日志
      * @param logDto
      */
-    public void send(LogDto logDto) {
+    public void send(LogDTO logDto) {
         rabbitTemplate.convertAndSend(RabbitmqConstant.Direct.EXCHANGE, RabbitmqConstant.Direct.ROUTE_KEY_ONE, logDto);
     }
 }

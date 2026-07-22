@@ -4,11 +4,11 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.receive.RefreshTokenRecParm;
-import com.soft.sys.websocket.send.RefreshTokenSendParam;
+import com.soft.sys.websocket.receive.RefreshTokenRequest;
+import com.soft.sys.websocket.send.RefreshTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +39,12 @@ public class RefreshTokenHandler implements WebSocketConcreteHandler<String> {
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
 
-        RefreshTokenRecParm refreshTokenRecParm = JSON.parseObject(message.getPayload(), RefreshTokenRecParm.class);
+        RefreshTokenRequest refreshTokenRecParm = JSON.parseObject(message.getPayload(), RefreshTokenRequest.class);
         String fingerprint = refreshTokenRecParm.getFingerprint();
 
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
-        RefreshTokenSendParam refreshTokenSendParam = new RefreshTokenSendParam();
+        RefreshTokenResponse refreshTokenSendParam = new RefreshTokenResponse();
         refreshTokenSendParam.setOrder(WebSocketOrderEnum.REFRESH_TOKEN.toString());
 
         String fingerprintCache = (String) redisTemplate.opsForValue().get(RedisConstant.FINGERPRINT + userDto.getUsername());

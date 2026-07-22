@@ -3,9 +3,9 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.sys.entity.SysScheduleJob;
-import com.soft.sys.model.request.GetQuartzTasksRequest;
-import com.soft.sys.model.vo.GetJobVo;
-import com.soft.sys.model.vo.GetQuartzTasksVo;
+import com.soft.sys.model.request.GetQuartzTasksDTO;
+import com.soft.sys.model.vo.GetJobVO;
+import com.soft.sys.model.vo.GetQuartzTasksVO;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -16,8 +16,8 @@ import org.apache.ibatis.annotations.Param;
 */
 public interface SysScheduleJobMapper extends BaseMapper<SysScheduleJob> {
 
-    Page<GetQuartzTasksVo> getQuartzTasks(@Param("page") Page<GetQuartzTasksVo> page,
-                                          @Param("request") GetQuartzTasksRequest request);
+    Page<GetQuartzTasksVO> getQuartzTasks(@Param("page") Page<GetQuartzTasksVO> page,
+                                          @Param("request") GetQuartzTasksDTO request);
 
     boolean isStarted(@Param("id") Long id);
 
@@ -25,7 +25,7 @@ public interface SysScheduleJobMapper extends BaseMapper<SysScheduleJob> {
 
     void stopJob(@Param("id") Long id);
 
-    GetJobVo getJob(@Param("id") Long id);
+    GetJobVO getJob(@Param("id") Long id);
 }
 
 

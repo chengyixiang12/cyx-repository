@@ -2,9 +2,9 @@ package com.soft.sys.controller;
 
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.request.EditPermissionRequest;
-import com.soft.sys.model.request.PermissionsRequest;
-import com.soft.sys.model.request.SavePermissionRequest;
+import com.soft.sys.model.request.EditPermissionDTO;
+import com.soft.sys.model.request.PermissionsDTO;
+import com.soft.sys.model.request.SavePermissionDTO;
 import com.soft.sys.model.vo.*;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysPermissionService;
@@ -43,8 +43,8 @@ public class SysPermissionController {
 
     @PostMapping(value = "/getPermissions")
     @Operation(summary = "获取权限列表")
-    public R<PageVO<PermissionsVo>> getPermissions(@RequestBody PermissionsRequest request) {
-        PageVO<PermissionsVo> pageVo = sysPermissionService.getPermissions(request);
+    public R<PageVO<PermissionsVO>> getPermissions(@RequestBody PermissionsDTO request) {
+        PageVO<PermissionsVO> pageVo = sysPermissionService.getPermissions(request);
         return R.ok(pageVo);
     }
 
@@ -52,7 +52,7 @@ public class SysPermissionController {
     @PreAuthorize(value = "@cps.hasPermission('sys_pms_add')")
     @PostMapping
     @Operation(summary = "添加权限")
-    public R<Object> savePermission(@RequestBody SavePermissionRequest request) {
+    public R<Object> savePermission(@RequestBody SavePermissionDTO request) {
         if (sysPermissionService.existCode(request.getCode())) {
             R.fail("权限编码已存在");
         }
@@ -63,7 +63,7 @@ public class SysPermissionController {
     @PutMapping(value = "/editPermission")
     @PreAuthorize(value = "@cps.hasPermission('sys_pms_edit')")
     @Operation(summary = "编辑权限")
-    public R<Object> editPermission(@RequestBody EditPermissionRequest request) {
+    public R<Object> editPermission(@RequestBody EditPermissionDTO request) {
         if (sysPermissionService.existCode(request.getCode())) {
             R.fail("权限编码已存在");
         }
@@ -73,16 +73,16 @@ public class SysPermissionController {
 
     @GetMapping(value = "/getAllPermission")
     @Operation(summary = "获取所有权限")
-    public R<List<GetAllPermissionVo>> getAllPermission() {
-        List<GetAllPermissionVo> notAssignPerVos = sysPermissionService.getAllPermission();
+    public R<List<GetAllPermissionVO>> getAllPermission() {
+        List<GetAllPermissionVO> notAssignPerVos = sysPermissionService.getAllPermission();
         return R.ok(notAssignPerVos);
     }
 
     @GetMapping(value = "/getAssignPer")
     @Operation(summary = "获取被赋予的权限")
     @Parameter(name = "roleId", description = "角色id", required = true, in = ParameterIn.QUERY)
-    public R<List<GetAssignPerVo>> getAssignPer(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
-        List<GetAssignPerVo> notAssignPerVos = sysPermissionService.getAssignPer(roleId);
+    public R<List<GetAssignPerVO>> getAssignPer(@RequestParam(value = "roleId", required = false) @NotNull(message = "角色id不能为空") Long roleId) {
+        List<GetAssignPerVO> notAssignPerVos = sysPermissionService.getAssignPer(roleId);
         return R.ok(notAssignPerVos);
     }
 
@@ -115,8 +115,8 @@ public class SysPermissionController {
 
     @GetMapping(value = "/getPermission")
     @Operation(summary = "获取权限")
-    public R<GetPermissionVo> getPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        GetPermissionVo getPermissionVo =  sysPermissionService.getPermission(id);
+    public R<GetPermissionVO> getPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        GetPermissionVO getPermissionVo =  sysPermissionService.getPermission(id);
         return R.ok(getPermissionVo);
     }
 }

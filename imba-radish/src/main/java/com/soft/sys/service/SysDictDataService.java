@@ -2,12 +2,12 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysDictData;
-import com.soft.sys.model.dto.DictDataDto;
-import com.soft.sys.model.request.DictDatasRequest;
-import com.soft.sys.model.request.EditDictDataRequest;
-import com.soft.sys.model.request.SaveDictDataRequest;
-import com.soft.sys.model.vo.DictDataVo;
-import com.soft.sys.model.vo.DictDatasVo;
+import com.soft.sys.model.dto.DictDataDTO;
+import com.soft.sys.model.request.DictDatasDTO;
+import com.soft.sys.model.request.EditDictDataDTO;
+import com.soft.sys.model.request.SaveDictDataDTO;
+import com.soft.sys.model.vo.DictDataVO;
+import com.soft.sys.model.vo.DictDatasVO;
 import com.soft.sys.model.vo.PageVO;
 
 import java.util.List;
@@ -20,13 +20,13 @@ import java.util.Map;
 */
 public interface SysDictDataService extends IService<SysDictData> {
 
-    PageVO<DictDatasVo> getDictDatas(DictDatasRequest request);
+    PageVO<DictDatasVO> getDictDatas(DictDatasDTO request);
 
-    DictDataVo getDictData(Long id);
+    DictDataVO getDictData(Long id);
 
-    void saveDictData(SaveDictDataRequest request);
+    void saveDictData(SaveDictDataDTO request);
 
-    void editDictData(EditDictDataRequest request);
+    void editDictData(EditDictDataDTO request);
 
     void deleteDictData(Long id);
 
@@ -42,7 +42,7 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void setDefaultData(Long id, Long parentId);
 
-    List<DictDataDto> getByDictType(String dictType);
+    List<DictDataDTO> getByDictType(String dictType);
 
     Map<String, String> getDictDataMap(String dictType);
 

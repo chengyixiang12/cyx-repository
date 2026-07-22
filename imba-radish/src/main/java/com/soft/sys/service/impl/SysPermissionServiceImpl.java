@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.entity.SysPermission;
 import com.soft.sys.mapper.SysPermissionMapper;
-import com.soft.sys.model.request.EditPermissionRequest;
-import com.soft.sys.model.request.PermissionsRequest;
-import com.soft.sys.model.request.SavePermissionRequest;
+import com.soft.sys.model.request.EditPermissionDTO;
+import com.soft.sys.model.request.PermissionsDTO;
+import com.soft.sys.model.request.SavePermissionDTO;
 import com.soft.sys.model.vo.*;
 import com.soft.sys.service.SysPermissionService;
 import org.springframework.beans.BeanUtils;
@@ -36,17 +36,17 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     }
 
     @Override
-    public PageVO<PermissionsVo> getPermissions(PermissionsRequest request) {
-        IPage<PermissionsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<PermissionsVO> getPermissions(PermissionsDTO request) {
+        IPage<PermissionsVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysPermissionMapper.getPermissions(page, request);
-        PageVO<PermissionsVo> pageVo = new PageVO<>();
+        PageVO<PermissionsVO> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }
 
     @Override
-    public void savePermission(SavePermissionRequest request) {
+    public void savePermission(SavePermissionDTO request) {
         SysPermission sysPermission = new SysPermission();
         BeanUtils.copyProperties(request, sysPermission);
         sysPermissionMapper.insert(sysPermission);
@@ -63,17 +63,17 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     }
 
     @Override
-    public List<GetAllPermissionVo> getAllPermission() {
+    public List<GetAllPermissionVO> getAllPermission() {
         return sysPermissionMapper.getAllPermission();
     }
 
     @Override
-    public List<GetAssignPerVo> getAssignPer(Long roleId) {
+    public List<GetAssignPerVO> getAssignPer(Long roleId) {
         return sysPermissionMapper.getAssignPer(roleId);
     }
 
     @Override
-    public void editPermission(EditPermissionRequest request) {
+    public void editPermission(EditPermissionDTO request) {
         SysPermission sysPermission = new SysPermission();
         BeanUtils.copyProperties(request, sysPermission);
         sysPermissionMapper.updateById(sysPermission);
@@ -103,8 +103,8 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     }
 
     @Override
-    public GetPermissionVo getPermission(Long id) {
-        GetPermissionVo getPermissionVo = new GetPermissionVo();
+    public GetPermissionVO getPermission(Long id) {
+        GetPermissionVO getPermissionVo = new GetPermissionVO();
         SysPermission sysPermission = sysPermissionMapper.selectById(id);
         BeanUtils.copyProperties(sysPermission, getPermissionVo);
         return getPermissionVo;

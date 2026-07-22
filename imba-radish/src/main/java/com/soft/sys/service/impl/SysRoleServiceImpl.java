@@ -8,15 +8,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.entity.SysRole;
 import com.soft.sys.mapper.SysRoleMapper;
-import com.soft.sys.model.dto.FixRolesDto;
-import com.soft.sys.model.request.EditRoleRequest;
-import com.soft.sys.model.request.GetRolesRequest;
-import com.soft.sys.model.request.SetMenusRequest;
-import com.soft.sys.model.request.SetPermissionsRequest;
-import com.soft.sys.model.vo.GetRoleSelectVo;
+import com.soft.sys.model.dto.FixRolesDTO;
+import com.soft.sys.model.request.EditRoleDTO;
+import com.soft.sys.model.request.GetRolesDTO;
+import com.soft.sys.model.request.SetMenusDTO;
+import com.soft.sys.model.request.SetPermissionsDTO;
+import com.soft.sys.model.vo.GetRoleSelectVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.SysRoleVo;
-import com.soft.sys.model.vo.SysRolesVo;
+import com.soft.sys.model.vo.SysRoleVO;
+import com.soft.sys.model.vo.SysRolesVO;
 import com.soft.sys.service.SysRoleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,14 +62,14 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public SysRoleVo getRole(Long id) {
+    public SysRoleVO getRole(Long id) {
         return sysRoleMapper.getRole(id);
     }
 
     @Override
-    public PageVO<SysRolesVo> getRoles(GetRolesRequest request) {
-        PageVO<SysRolesVo> pageVo = new PageVO<>();
-        IPage<SysRolesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<SysRolesVO> getRoles(GetRolesDTO request) {
+        PageVO<SysRolesVO> pageVo = new PageVO<>();
+        IPage<SysRolesVO> page = new Page<>(request.getPageNum(), request.getPageSize());
 
         page = sysRoleMapper.getRoles(page, request);
 
@@ -96,13 +96,13 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public List<FixRolesDto> fixRolesFlag(List<Long> ids) {
+    public List<FixRolesDTO> fixRolesFlag(List<Long> ids) {
         return sysRoleMapper.fixRolesFlag(ids);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setMenus(SetMenusRequest request) {
+    public void setMenus(SetMenusDTO request) {
         sysRoleMapper.deleteRoleMenus(request.getRoleId());
         if (CollectionUtil.isEmpty(request.getMenuIds())) {
             return;
@@ -112,7 +112,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void setPermissions(SetPermissionsRequest request) {
+    public void setPermissions(SetPermissionsDTO request) {
         sysRoleMapper.deleteRolePermissions(request);
         if (CollectionUtil.isEmpty(request.getPermissionIds())) {
             return;
@@ -146,7 +146,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public void editRole(EditRoleRequest request) {
+    public void editRole(EditRoleDTO request) {
         if (BaseConstant.Role.DEFAULT_ROLE_FLAG.equals(request.getIsDefault())) {
             sysRoleMapper.cancelDefaultRole();
         }
@@ -156,7 +156,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public List<GetRoleSelectVo> getRoleSelect() {
+    public List<GetRoleSelectVO> getRoleSelect() {
         return sysRoleMapper.getRoleSelect();
     }
 }

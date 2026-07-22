@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.entity.SysDictType;
 import com.soft.sys.mapper.SysDictTypeMapper;
-import com.soft.sys.model.request.EditDictTypeRequest;
-import com.soft.sys.model.request.GetDictTypesRequest;
-import com.soft.sys.model.request.SaveDictTypeRequest;
-import com.soft.sys.model.vo.DictTypeVo;
-import com.soft.sys.model.vo.DictTypesVo;
+import com.soft.sys.model.request.EditDictTypeDTO;
+import com.soft.sys.model.request.GetDictTypesDTO;
+import com.soft.sys.model.request.SaveDictTypeDTO;
+import com.soft.sys.model.vo.DictTypeVO;
+import com.soft.sys.model.vo.DictTypesVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDictTypeService;
 import lombok.RequiredArgsConstructor;
@@ -36,31 +36,31 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public PageVO<DictTypesVo> getdictTypes(GetDictTypesRequest request) {
-        IPage<DictTypesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<DictTypesVO> getdictTypes(GetDictTypesDTO request) {
+        IPage<DictTypesVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysDictTypeMapper.getdictTypes(page, request);
-        PageVO<DictTypesVo> pageVo = new PageVO<>();
+        PageVO<DictTypesVO> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }
 
     @Override
-    public void saveDictType(SaveDictTypeRequest request) {
+    public void saveDictType(SaveDictTypeDTO request) {
         SysDictType sysDictType = new SysDictType();
         BeanUtils.copyProperties(request, sysDictType);
         sysDictTypeMapper.insert(sysDictType);
     }
 
     @Override
-    public void editDictType(EditDictTypeRequest request) {
+    public void editDictType(EditDictTypeDTO request) {
         SysDictType sysDictType = new SysDictType();
         BeanUtils.copyProperties(request, sysDictType);
         sysDictTypeMapper.updateById(sysDictType);
     }
 
     @Override
-    public DictTypeVo getDictType(Long id) {
+    public DictTypeVO getDictType(Long id) {
         return sysDictTypeMapper.getDictType(id);
     }
 

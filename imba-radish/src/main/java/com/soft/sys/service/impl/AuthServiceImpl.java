@@ -7,14 +7,14 @@ import com.soft.sys.entity.SysUserRole;
 import com.soft.sys.enums.KeyTypeEnum;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.exception.GlobalException;
-import com.soft.sys.model.request.LoginRequest;
-import com.soft.sys.model.vo.LoginVo;
+import com.soft.sys.model.request.LoginDTO;
+import com.soft.sys.model.vo.LoginVO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.service.*;
 import com.soft.sys.utils.RSAUtil;
 import com.soft.sys.websocket.api.WebSocketConcreteHolder;
 import com.soft.sys.websocket.handler.ForceOfflineHandler;
-import com.soft.sys.websocket.receive.ForceOfflineRecParam;
+import com.soft.sys.websocket.receive.ForceOfflineRequest;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginVo authenticate(LoginRequest request) {
+    public LoginVO authenticate(LoginDTO request) {
         Long id;
         try {
             switch (request.getLoginMethod()) {
@@ -117,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
             if (session != null) {
                 ForceOfflineHandler handler = (ForceOfflineHandler) WebSocketConcreteHolder
                         .getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-                ForceOfflineRecParam param = new ForceOfflineRecParam();
+                ForceOfflineRequest param = new ForceOfflineRequest();
                 param.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
                 param.setReceiver(id);
                 param.setMsg("该账号已在其他地方登录");
@@ -131,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
             }
 
             // 生成 token
-            LoginVo loginVo = new LoginVo();
+            LoginVO loginVo = new LoginVO();
             String token = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token,
                     request.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
@@ -148,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 处理密码错误：递减错误次数，达到上限后锁定用户
      */
-    private BadCredentialsException handleBadCredentials(LoginRequest request, BadCredentialsException e) {
+    private BadCredentialsException handleBadCredentials(LoginDTO request, BadCredentialsException e) {
         String errorKey = RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername();
         Object cached = redisTemplate.opsForValue().get(errorKey);
         Long remaining;

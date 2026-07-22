@@ -8,11 +8,11 @@ import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.entity.SysFile;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.service.SysFileService;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.receive.FileTransferOverRecParam;
-import com.soft.sys.websocket.send.SendParams;
+import com.soft.sys.websocket.receive.FileTransferOverRequest;
+import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +50,8 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        FileTransferOverRecParam fileTransferOverRecParam = JSON.parseObject(message.getPayload(), FileTransferOverRecParam.class);
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        FileTransferOverRequest fileTransferOverRecParam = JSON.parseObject(message.getPayload(), FileTransferOverRequest.class);
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         Long userId = userDto.getId();
         String username = userDto.getUsername();
         String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
@@ -66,7 +66,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         long size = BaseConstant.LONG_INIT_VAL;
         int index = BaseConstant.INTEGER_INIT_VAL;
 
-        SendParams sendParams = new SendParams();
+        WebSocketResponse sendParams = new WebSocketResponse();
         sendParams.setStatus(false);
         sendParams.setOrder(fileTransferOverRecParam.getOrder());
         Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);

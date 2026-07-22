@@ -16,7 +16,7 @@ import java.util.Collection;
  * @DateTime: 2024/11/21 22:15
  **/
 @Getter
-public class UserDto extends User implements Serializable {
+public class UserDTO extends User implements Serializable {
 
     /**
      * 用户id
@@ -47,7 +47,7 @@ public class UserDto extends User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonCreator
-    public UserDto(@JsonProperty("id") Long id, @JsonProperty("username") String username,
+    public UserDTO(@JsonProperty("id") Long id, @JsonProperty("username") String username,
                    @JsonProperty("deptId") Long deptId, @JsonProperty("phone") String phone,
                    @JsonProperty("nickname") String nickname, @JsonProperty("email") String email,
                    @JsonProperty("password") String password, @JsonProperty("enabled") boolean enabled,

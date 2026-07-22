@@ -2,7 +2,7 @@ package com.soft.sys.websocket.interceptor;
 
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
@@ -35,7 +35,7 @@ public record WebSocketInterceptor(UserDetailsService userDetailsService,
                 log.warn("token is expired...");
                 return false;
             }
-            UserDto user = (UserDto) userDetailsService.loadUserByUsername(username);
+            UserDTO user = (UserDTO) userDetailsService.loadUserByUsername(username);
             attributes.put(WebSocketConstant.WEBSOCKET_USER, user);
             attributes.put(WebSocketConstant.AUTHORIZATION, token);
         } else {

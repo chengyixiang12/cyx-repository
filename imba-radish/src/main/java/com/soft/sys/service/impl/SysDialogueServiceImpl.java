@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.entity.SysDialogue;
 import com.soft.sys.mapper.SysDialogueMapper;
-import com.soft.sys.model.request.GetDialoguesRequest;
-import com.soft.sys.model.request.RenameRequest;
-import com.soft.sys.model.request.SaveDialogueRequest;
-import com.soft.sys.model.vo.GetDialoguesVo;
-import com.soft.sys.model.vo.GetTitleVo;
+import com.soft.sys.model.request.GetDialoguesDTO;
+import com.soft.sys.model.request.RenameDTO;
+import com.soft.sys.model.request.SaveDialogueDTO;
+import com.soft.sys.model.vo.GetDialoguesVO;
+import com.soft.sys.model.vo.GetTitleVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDialogueService;
 import com.soft.sys.utils.SecurityUtil;
@@ -35,21 +35,21 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     }
 
     @Override
-    public PageVO<GetDialoguesVo> getDialogues(GetDialoguesRequest request) {
-        IPage<GetDialoguesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<GetDialoguesVO> getDialogues(GetDialoguesDTO request) {
+        IPage<GetDialoguesVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         Long userId = securityUtil.getUserInfo().getId();
         if (securityUtil.isAdmin()) {
             userId = null;
         }
         page = sysDialogueMapper.getDialogues(page, request.getKeyword(), userId);
-        PageVO<GetDialoguesVo> pageVo = new PageVO<>();
+        PageVO<GetDialoguesVO> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }
 
     @Override
-    public Long saveDialogue(SaveDialogueRequest request) {
+    public Long saveDialogue(SaveDialogueDTO request) {
         SysDialogue sysDialogue = new SysDialogue();
         BeanUtils.copyProperties(request, sysDialogue);
         sysDialogueMapper.insert(sysDialogue);
@@ -62,7 +62,7 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     }
 
     @Override
-    public void rename(RenameRequest request) {
+    public void rename(RenameDTO request) {
         SysDialogue sysDialogue = new SysDialogue();
         sysDialogue.setId(request.getId());
         sysDialogue.setTitle(request.getTitle());
@@ -70,8 +70,8 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     }
 
     @Override
-    public GetTitleVo getTitle(Long id) {
-        GetTitleVo getTitleVo = new GetTitleVo();
+    public GetTitleVO getTitle(Long id) {
+        GetTitleVO getTitleVo = new GetTitleVO();
         SysDialogue sysDialogue = sysDialogueMapper.selectById(id);
         getTitleVo.setId(String.valueOf(id));
         getTitleVo.setTitle(sysDialogue.getTitle());

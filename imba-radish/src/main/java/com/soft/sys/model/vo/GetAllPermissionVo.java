@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取未被赋予的权限响应参数")
-@Alias(value = "GetAllPermissionVo")
-public class GetAllPermissionVo {
+@Alias(value = "GetAllPermissionVO")
+public class GetAllPermissionVO {
 
     @Schema(description = "主键")
     private String id;

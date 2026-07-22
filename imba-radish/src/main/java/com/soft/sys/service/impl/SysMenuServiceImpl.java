@@ -9,10 +9,10 @@ import com.soft.sys.entity.SysMenu;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysMenuMapper;
 import com.soft.sys.model.ctf.MenuTree;
-import com.soft.sys.model.request.EditMenuRequest;
-import com.soft.sys.model.request.GetMenuListRequest;
-import com.soft.sys.model.request.PageMenuTreeRequest;
-import com.soft.sys.model.request.SaveMenuRequest;
+import com.soft.sys.model.request.EditMenuDTO;
+import com.soft.sys.model.request.GetMenuListDTO;
+import com.soft.sys.model.request.PageMenuTreeDTO;
+import com.soft.sys.model.request.SaveMenuDTO;
 import com.soft.sys.model.vo.*;
 import com.soft.sys.service.SysMenuService;
 import com.soft.sys.utils.SecurityUtil;
@@ -47,7 +47,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public List<GetSelectMenuVo> getSelectMenu(String type) {
+    public List<GetSelectMenuVO> getSelectMenu(String type) {
         switch (type) {
             case BaseConstant.MENU_TYPE_MENU: {
                 type = BaseConstant.MENU_TYPE_DIRECTORY;
@@ -66,31 +66,31 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public void saveMenu(SaveMenuRequest request) {
+    public void saveMenu(SaveMenuDTO request) {
         SysMenu sysMenu = new SysMenu();
         BeanUtils.copyProperties(request, sysMenu);
         sysMenuMapper.insert(sysMenu);
     }
 
     @Override
-    public void editMenu(EditMenuRequest request) {
+    public void editMenu(EditMenuDTO request) {
         SysMenu sysMenu = new SysMenu();
         BeanUtils.copyProperties(request, sysMenu);
         sysMenuMapper.updateById(sysMenu);
     }
 
     @Override
-    public PageVO<GetMenuListVo> getMenuList(GetMenuListRequest request) {
-        IPage<GetMenuListVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<GetMenuListVO> getMenuList(GetMenuListDTO request) {
+        IPage<GetMenuListVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         sysMenuMapper.getMenuList(page, request);
-        PageVO<GetMenuListVo> pageVo = new PageVO<>();
+        PageVO<GetMenuListVO> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }
 
     @Override
-    public GetMenuVo getMenu(Long id) {
+    public GetMenuVO getMenu(Long id) {
         return sysMenuMapper.getMenu(id);
     }
 
@@ -117,18 +117,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public List<MenusVo> getMenuRoute() {
+    public List<MenusVO> getMenuRoute() {
         Long userId = securityUtil.getUserInfo().getId();
         if (userId == null) {
             return new ArrayList<>();
         }
-        List<MenusVo> menus = sysMenuMapper.getMenuRoute(userId);
+        List<MenusVO> menus = sysMenuMapper.getMenuRoute(userId);
         return getMenusVos(menus);
     }
 
     @Override
-    public List<GetMenuTreeVo> getMenuTree() {
-        List<GetMenuTreeVo> menuTreeVos = sysMenuMapper.getMenuTree();
+    public List<GetMenuTreeVO> getMenuTree() {
+        List<GetMenuTreeVO> menuTreeVos = sysMenuMapper.getMenuTree();
         if (CollectionUtil.isNotEmpty(menuTreeVos)) {
             return buildTree(menuTreeVos);
         }
@@ -136,7 +136,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public List<GetAssignedMenuVo> getAssignedMenu(Long roleId) {
+    public List<GetAssignedMenuVO> getAssignedMenu(Long roleId) {
         return sysMenuMapper.getAssignedMenu(roleId);
     }
 
@@ -151,17 +151,17 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
-    public List<MenusVo> getLeftMenus() {
+    public List<MenusVO> getLeftMenus() {
         Long userId = securityUtil.getUserInfo().getId();
         if (userId == null) {
             return new ArrayList<>();
         }
-        List<MenusVo> menus = sysMenuMapper.getLeftMenus(userId);
+        List<MenusVO> menus = sysMenuMapper.getLeftMenus(userId);
         return getMenusVos(menus);
     }
 
     @Override
-    public PageVO<PageMenuTreeVO> pageMenuTree(PageMenuTreeRequest request) {
+    public PageVO<PageMenuTreeVO> pageMenuTree(PageMenuTreeDTO request) {
         IPage<PageMenuTreeVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysMenuMapper.pageMenuTree(page, request);
         return PageVO.<PageMenuTreeVO>builder().records(page.getRecords()).total(page.getTotal()).build();
@@ -174,12 +174,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
      * @return 处理后的菜单树结构，如果输入为空则返回原列表，否则返回构建好的树形结构
      */
     @Nullable
-    private List<MenusVo> getMenusVos(List<MenusVo> menus) {
+    private List<MenusVO> getMenusVos(List<MenusVO> menus) {
         if (CollectionUtil.isNotEmpty(menus)) {
             menus = buildTree(menus);
             // 移除没有子菜单的一级菜单项
             for (int i = 0; i < menus.size();) {
-                MenusVo menusVo = menus.get(i);
+                MenusVO menusVo = menus.get(i);
                 if (CollectionUtil.isEmpty(menusVo.getChildren())) {
                     menus.remove(i);
                 } else {

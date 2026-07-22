@@ -6,12 +6,12 @@ import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
 import com.soft.sys.exception.GlobalException;
-import com.soft.sys.model.dto.FileDetailDto;
-import com.soft.sys.model.request.FilesRequest;
-import com.soft.sys.model.vo.FilesVo;
+import com.soft.sys.model.dto.FileDetailDTO;
+import com.soft.sys.model.request.FilesDTO;
+import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.UploadFileVo;
-import com.soft.sys.model.vo.ChunkProgressVo;
+import com.soft.sys.model.vo.UploadFileVO;
+import com.soft.sys.model.vo.ChunkProgressVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysFileService;
 import com.soft.sys.utils.MinioUtil;
@@ -77,9 +77,9 @@ public class SysFileController {
     @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
     @SysLog(value = "上传文件", module = LogModuleEnum.FILE)
-    public R<UploadFileVo> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile,
+    public R<UploadFileVO> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile,
                                       @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "fileMd5不能为空") String fileMd5) {
-        UploadFileVo uploadFileVo = sysFileService.uploadFile(multipartFile, fileMd5);
+        UploadFileVO uploadFileVo = sysFileService.uploadFile(multipartFile, fileMd5);
         return R.ok("上传成功", uploadFileVo);
     }
 
@@ -89,7 +89,7 @@ public class SysFileController {
     public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         HttpHeaders headers = new HttpHeaders();
 
-        FileDetailDto fileDetail = sysFileService.getFileDetailById(id);
+        FileDetailDTO fileDetail = sysFileService.getFileDetailById(id);
         if (fileDetail == null) {
             throw new GlobalException("不存在的文件");
         }
@@ -179,15 +179,15 @@ public class SysFileController {
 
     @PostMapping(value = "/getFiles")
     @Operation(summary = "获取文件列表")
-    public R<PageVO<FilesVo>> getFiles(@RequestBody FilesRequest request) {
-        PageVO<FilesVo> pageVo = sysFileService.getFiles(request);
+    public R<PageVO<FilesVO>> getFiles(@RequestBody FilesDTO request) {
+        PageVO<FilesVO> pageVo = sysFileService.getFiles(request);
         return R.ok(pageVo);
     }
 
     @PostMapping(value = "/getMyFiles")
     @Operation(summary = "获取我的文件列表")
-    public R<PageVO<FilesVo>> getMyFiles(@RequestBody FilesRequest request) {
-        PageVO<FilesVo> pageVo = sysFileService.getMyFiles(request);
+    public R<PageVO<FilesVO>> getMyFiles(@RequestBody FilesDTO request) {
+        PageVO<FilesVO> pageVo = sysFileService.getMyFiles(request);
         return R.ok(pageVo);
     }
 
@@ -235,10 +235,10 @@ public class SysFileController {
     @GetMapping(value = "/getUploadProgress")
     @Operation(summary = "查询分片上传进度")
     @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
-    public R<ChunkProgressVo> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5) {
+    public R<ChunkProgressVO> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5) {
 
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
-        ChunkProgressVo vo = new ChunkProgressVo();
+        ChunkProgressVO vo = new ChunkProgressVO();
 
         if (!chunkDir.exists() || !chunkDir.isDirectory()) {
             vo.setUploadedIndices(new ArrayList<>());
@@ -321,7 +321,7 @@ public class SysFileController {
                 chunk.delete();
             }
 
-            UploadFileVo uploadFileVo = sysFileService.mergeChunk(fileTemp, fileMd5);
+            UploadFileVO uploadFileVo = sysFileService.mergeChunk(fileTemp, fileMd5);
 
             return R.ok("上传成功", uploadFileVo);
         } catch (IOException e) {

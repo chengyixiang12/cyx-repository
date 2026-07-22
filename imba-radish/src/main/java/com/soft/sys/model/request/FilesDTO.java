@@ -1,0 +1,19 @@
+package com.soft.sys.model.request;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @Author: cyx
+ * @Description: 
+ * @DateTime: 2024/11/20 16:45
+ **/
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Schema(description = "获取文件列表请求参数")
+public class FilesDTO extends PageDTO {
+
+    @Schema(description = "关键字")
+    private String keyword;
+}

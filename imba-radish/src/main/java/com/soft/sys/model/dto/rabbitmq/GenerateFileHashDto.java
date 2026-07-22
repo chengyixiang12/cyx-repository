@@ -8,7 +8,7 @@ import lombok.Data;
  * @description
  */
 @Data
-public class GenerateFileHashDto {
+public class GenerateFileHashDTO {
 
     private String id;
 }

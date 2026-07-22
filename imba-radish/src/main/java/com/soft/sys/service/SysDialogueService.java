@@ -2,11 +2,11 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysDialogue;
-import com.soft.sys.model.request.GetDialoguesRequest;
-import com.soft.sys.model.request.RenameRequest;
-import com.soft.sys.model.request.SaveDialogueRequest;
-import com.soft.sys.model.vo.GetDialoguesVo;
-import com.soft.sys.model.vo.GetTitleVo;
+import com.soft.sys.model.request.GetDialoguesDTO;
+import com.soft.sys.model.request.RenameDTO;
+import com.soft.sys.model.request.SaveDialogueDTO;
+import com.soft.sys.model.vo.GetDialoguesVO;
+import com.soft.sys.model.vo.GetTitleVO;
 import com.soft.sys.model.vo.PageVO;
 
 /**
@@ -16,13 +16,13 @@ import com.soft.sys.model.vo.PageVO;
 */
 public interface SysDialogueService extends IService<SysDialogue> {
 
-    PageVO<GetDialoguesVo> getDialogues(GetDialoguesRequest request);
+    PageVO<GetDialoguesVO> getDialogues(GetDialoguesDTO request);
 
-    Long saveDialogue(SaveDialogueRequest request);
+    Long saveDialogue(SaveDialogueDTO request);
 
     void deleteDialogue(Long id);
 
-    void rename(RenameRequest request);
+    void rename(RenameDTO request);
 
-    GetTitleVo getTitle(Long id);
+    GetTitleVO getTitle(Long id);
 }

@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.entity.SysLog;
 import com.soft.sys.mapper.SysLogMapper;
-import com.soft.sys.model.dto.LogDto;
-import com.soft.sys.model.request.LogsRequest;
-import com.soft.sys.model.vo.GetLogVo;
-import com.soft.sys.model.vo.LogsVo;
+import com.soft.sys.model.dto.LogDTO;
+import com.soft.sys.model.request.LogsDTO;
+import com.soft.sys.model.vo.GetLogVO;
+import com.soft.sys.model.vo.LogsVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysLogService;
 import org.springframework.beans.BeanUtils;
@@ -30,24 +30,24 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog>
     }
 
     @Override
-    public void saveLog(LogDto logDto) {
+    public void saveLog(LogDTO logDto) {
         SysLog sysLog = new SysLog();
         BeanUtils.copyProperties(logDto, sysLog);
         sysLogMapper.insert(sysLog);
     }
 
     @Override
-    public PageVO<LogsVo> getLogs(LogsRequest request) {
-        IPage<LogsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<LogsVO> getLogs(LogsDTO request) {
+        IPage<LogsVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysLogMapper.getLogs(page, request);
-        PageVO<LogsVo> pageVo = new PageVO<>();
+        PageVO<LogsVO> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
         return pageVo;
     }
 
     @Override
-    public GetLogVo getLog(Long id) {
+    public GetLogVO getLog(Long id) {
         return sysLogMapper.getLog(id);
     }
 

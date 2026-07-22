@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.entity.SysActuator;
 import com.soft.sys.mapper.SysActuatorMapper;
-import com.soft.sys.model.request.ListActuatorPageRequest;
+import com.soft.sys.model.request.ListActuatorPageDTO;
 import com.soft.sys.model.vo.GetLatestActuatorMetricVO;
 import com.soft.sys.model.vo.ListActuatorVO;
 import com.soft.sys.model.vo.ListUsageTrendVO;
@@ -38,7 +38,7 @@ public class SysActuatorServiceImpl extends ServiceImpl<SysActuatorMapper, SysAc
     }
 
     @Override
-    public PageVO<ListActuatorVO> listActuatorPage(ListActuatorPageRequest request) {
+    public PageVO<ListActuatorVO> listActuatorPage(ListActuatorPageDTO request) {
         IPage<ListActuatorVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         sysActuatorMapper.listActuatorPage(page, request);
         PageVO<ListActuatorVO> pageVO = new PageVO<>();

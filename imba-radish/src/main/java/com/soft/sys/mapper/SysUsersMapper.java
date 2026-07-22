@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.sys.entity.SysUser;
-import com.soft.sys.model.dto.GetUsersDto;
-import com.soft.sys.model.vo.GetUserVo;
-import com.soft.sys.model.vo.UsersVo;
+import com.soft.sys.model.dto.GetUsersQueryDTO;
+import com.soft.sys.model.vo.GetUserVO;
+import com.soft.sys.model.vo.UsersVO;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -16,10 +16,10 @@ import org.apache.ibatis.annotations.Param;
 * @Entity com.soft.entity.Users
 */
 public interface SysUsersMapper extends BaseMapper<SysUser> {
-    Page<UsersVo> getUsers(@Param("page") IPage<UsersVo> page,
-                           @Param("getUsersDto") GetUsersDto getUsersDto);
+    Page<UsersVO> getUsers(@Param("page") IPage<UsersVO> page,
+                           @Param("getUsersDto") GetUsersQueryDTO getUsersDto);
 
-    GetUserVo getUser(@Param("id") Long id);
+    GetUserVO getUser(@Param("id") Long id);
 
     void lockUser(@Param("username") String username);
 

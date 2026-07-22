@@ -3,11 +3,11 @@ package com.soft.sys.controller;
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.request.DictDatasRequest;
-import com.soft.sys.model.request.EditDictDataRequest;
-import com.soft.sys.model.request.SaveDictDataRequest;
-import com.soft.sys.model.vo.DictDataVo;
-import com.soft.sys.model.vo.DictDatasVo;
+import com.soft.sys.model.request.DictDatasDTO;
+import com.soft.sys.model.request.EditDictDataDTO;
+import com.soft.sys.model.request.SaveDictDataDTO;
+import com.soft.sys.model.vo.DictDataVO;
+import com.soft.sys.model.vo.DictDatasVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysDictDataService;
@@ -47,16 +47,16 @@ public class SysDictDataController {
 
     @PostMapping(value = "/getDictDatas")
     @Operation(summary = "获取字典数据列表")
-    public R<PageVO<DictDatasVo>> getDictDatas(@RequestBody DictDatasRequest request) {
-        PageVO<DictDatasVo> pageVo = sysDictDataService.getDictDatas(request);
+    public R<PageVO<DictDatasVO>> getDictDatas(@RequestBody DictDatasDTO request) {
+        PageVO<DictDatasVO> pageVo = sysDictDataService.getDictDatas(request);
         return R.ok(pageVo);
     }
 
     @GetMapping
     @Operation(summary = "获取字典数据详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<DictDataVo> getDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        DictDataVo dictDataVo = sysDictDataService.getDictData(id);
+    public R<DictDataVO> getDictData(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
+        DictDataVO dictDataVo = sysDictDataService.getDictData(id);
         return R.ok(dictDataVo);
     }
 
@@ -65,7 +65,7 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_add')")
     @PostMapping
     @Operation(summary = "添加字典数据")
-    public R<Object> saveDictData(@RequestBody @Valid SaveDictDataRequest request) {
+    public R<Object> saveDictData(@RequestBody @Valid SaveDictDataDTO request) {
         if (sysDictDataService.existValue(request.getParentId(), request.getValue())) {
             return R.fail("字典编码已存在");
         }
@@ -78,7 +78,7 @@ public class SysDictDataController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_data_edit')")
     @PutMapping
     @Operation(summary = "编辑字典数据")
-    public R<Object> editDictData(@RequestBody @Valid EditDictDataRequest request) {
+    public R<Object> editDictData(@RequestBody @Valid EditDictDataDTO request) {
         if (sysDictDataService.existCode(request.getParentId(), request.getValue(), request.getId())) {
             return R.fail("字典编码已存在");
         }

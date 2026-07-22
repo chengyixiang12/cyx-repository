@@ -7,9 +7,9 @@ import com.soft.sys.constants.RegexConstant;
 import com.soft.sys.core.annotation.AccessControl;
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.entity.SysUser;
-import com.soft.sys.model.request.LoginRequest;
-import com.soft.sys.model.request.RegisterRequest;
-import com.soft.sys.model.vo.LoginVo;
+import com.soft.sys.model.request.LoginDTO;
+import com.soft.sys.model.request.RegisterDTO;
+import com.soft.sys.model.vo.LoginVO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.AuthService;
@@ -58,7 +58,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "登录")
-    public R<LoginVo> authenticate(@RequestBody @Valid LoginRequest request) {
+    public R<LoginVO> authenticate(@RequestBody @Valid LoginDTO request) {
         if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
             if (StringUtils.isBlank(request.getGraphicsCaptcha())) {
                 return R.fail("图形验证码不能为空");
@@ -96,14 +96,14 @@ public class AuthController {
                 return R.fail("邮箱验证码已过期");
             }
         }
-        LoginVo loginVo = authService.authenticate(request);
+        LoginVO loginVo = authService.authenticate(request);
         return R.ok(loginVo);
     }
 
     @SysLock(name = "user")
     @PostMapping(value = "/register")
     @Operation(summary = "注册")
-    public R<Object> register(@RequestBody @Valid RegisterRequest request) {
+    public R<Object> register(@RequestBody @Valid RegisterDTO request) {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
         }

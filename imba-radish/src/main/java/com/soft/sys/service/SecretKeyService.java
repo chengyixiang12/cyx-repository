@@ -2,10 +2,10 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysSecretKey;
-import com.soft.sys.model.request.GenerateKeyRequest;
-import com.soft.sys.model.request.GetSecretKeyListRequest;
+import com.soft.sys.model.request.GenerateKeyDTO;
+import com.soft.sys.model.request.GetSecretKeyListDTO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.SysSecretKeyVo;
+import com.soft.sys.model.vo.SysSecretKeyVO;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -20,7 +20,7 @@ public interface SecretKeyService extends IService<SysSecretKey> {
 
     String getPrivateKey(Integer type);
 
-    void generateKey(GenerateKeyRequest request) throws NoSuchAlgorithmException;
+    void generateKey(GenerateKeyDTO request) throws NoSuchAlgorithmException;
 
-    PageVO<SysSecretKeyVo> getSecretKeyList(GetSecretKeyListRequest request);
+    PageVO<SysSecretKeyVO> getSecretKeyList(GetSecretKeyListDTO request);
 }

@@ -6,12 +6,12 @@ import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.model.request.*;
-import com.soft.sys.model.vo.GetUserVo;
+import com.soft.sys.model.vo.GetUserVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.UserInfoVo;
-import com.soft.sys.model.vo.UsersVo;
+import com.soft.sys.model.vo.UserInfoVO;
+import com.soft.sys.model.vo.UsersVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SecretKeyService;
 import com.soft.sys.service.SysPermissionService;
@@ -58,15 +58,15 @@ public class SysUserController {
     @PostMapping(value = "/getUsers")
     @Operation(summary = "获取用户列表")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_page')")
-    public R<PageVO<UsersVo>> getUsers(@RequestBody GetUsersRequest request) {
-        PageVO<UsersVo> allUsers = sysUsersService.getUsers(request);
+    public R<PageVO<UsersVO>> getUsers(@RequestBody GetUsersDTO request) {
+        PageVO<UsersVO> allUsers = sysUsersService.getUsers(request);
         return R.ok(allUsers);
     }
 
     @SysLog(value = "修改密码", module = LogModuleEnum.USER)
     @PutMapping(value = "/editPassword")
     @Operation(summary = "修改密码")
-    public R<Object> editPassword(@RequestBody @Valid EditPasswordRequest request) {
+    public R<Object> editPassword(@RequestBody @Valid EditPasswordDTO request) {
         String privateKey = secretKeyService.getPrivateKey(BaseConstant.KeyType.LOGIN_PASSWORD_ENCRYPT);
         String originalDecrypt = rsaUtil.decrypt(request.getOriginalPass(), privateKey);
         String password = securityUtil.getUserInfo().getPassword();
@@ -92,7 +92,7 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_add')")
     @PostMapping
     @Operation(summary = "添加用户")
-    public R<Object> saveUser(@RequestBody @Valid SaveUserRequest request) {
+    public R<Object> saveUser(@RequestBody @Valid SaveUserDTO request) {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
         }
@@ -108,7 +108,7 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_edit')")
     @PutMapping
     @Operation(summary = "编辑用户")
-    public R<Object> editUser(@RequestBody @Valid EditUserRequest request) {
+    public R<Object> editUser(@RequestBody @Valid EditUserDTO request) {
         if (StringUtils.isNotBlank(request.getEmail()) && sysUsersService.existsEmail(request.getId(), request.getEmail())) {
             return R.fail("邮箱已注册");
         }
@@ -119,10 +119,10 @@ public class SysUserController {
 
     @GetMapping(value = "/getUserInfo")
     @Operation(summary = "获取登录用户信息")
-    public R<UserInfoVo> getUserInfo() {
+    public R<UserInfoVO> getUserInfo() {
         try {
-            UserInfoVo userInfoVo = new UserInfoVo();
-            UserDto userInfo = securityUtil.getUserInfo();
+            UserInfoVO userInfoVo = new UserInfoVO();
+            UserDTO userInfo = securityUtil.getUserInfo();
             SysUser sysUser = sysUsersService.getById(userInfo.getId());
             userInfoVo.setId(String.valueOf(sysUser.getId()));
             userInfoVo.setUsername(sysUser.getUsername());
@@ -147,8 +147,8 @@ public class SysUserController {
     @PreAuthorize(value = "@cps.hasPermission('sys_user_get_user_info')")
     @Operation(summary = "获取用户详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<GetUserVo> getUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
-        GetUserVo getUserVo = sysUsersService.getUser(id);
+    public R<GetUserVO> getUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+        GetUserVO getUserVo = sysUsersService.getUser(id);
         return R.ok(getUserVo);
     }
 
@@ -179,7 +179,7 @@ public class SysUserController {
     @PutMapping(value = "/resetUsername")
     @PreAuthorize(value = "@cps.hasPermission('sys_user_reset_username')")
     @Operation(summary = "重置用户名")
-    public R<Object> resetUsername(@RequestBody @Valid ResetUsernameRequest request) {
+    public R<Object> resetUsername(@RequestBody @Valid ResetUsernameDTO request) {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
         }
@@ -226,7 +226,7 @@ public class SysUserController {
 
     @PutMapping(value = "/editSelf")
     @Operation(summary = "修改个人信息")
-    public R<Object> editSelf(@RequestBody EditSelfRequest request) {
+    public R<Object> editSelf(@RequestBody EditSelfDTO request) {
         Long id = securityUtil.getUserInfo().getId();
         SysUser sysUser = new SysUser();
         sysUser.setId(id);

@@ -3,11 +3,11 @@ package com.soft.sys.controller;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.request.GenerateKeyRequest;
-import com.soft.sys.model.request.GetSecretKeyListRequest;
+import com.soft.sys.model.request.GenerateKeyDTO;
+import com.soft.sys.model.request.GetSecretKeyListDTO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.PublicKeyVo;
-import com.soft.sys.model.vo.SysSecretKeyVo;
+import com.soft.sys.model.vo.PublicKeyVO;
+import com.soft.sys.model.vo.SysSecretKeyVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SecretKeyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,16 +47,16 @@ public class SysSecretKeyController {
 
     @PostMapping(value = "/list")
     @Operation(summary = "获取密钥列表")
-    public R<PageVO<SysSecretKeyVo>> list(@RequestBody GetSecretKeyListRequest request) {
-        PageVO<SysSecretKeyVo> pageVo = secretKeyService.getSecretKeyList(request);
+    public R<PageVO<SysSecretKeyVO>> list(@RequestBody GetSecretKeyListDTO request) {
+        PageVO<SysSecretKeyVO> pageVo = secretKeyService.getSecretKeyList(request);
         return R.ok(pageVo);
     }
 
     @GetMapping(value = "/getPublicKey")
     @Operation(summary = "获取登录密码加密公钥")
-    public R<PublicKeyVo> getPublicKey() {
+    public R<PublicKeyVO> getPublicKey() {
         String publicKey = secretKeyService.getPublicKey(BaseConstant.KeyType.LOGIN_PASSWORD_ENCRYPT);
-        PublicKeyVo publicKeyVo = new PublicKeyVo();
+        PublicKeyVO publicKeyVo = new PublicKeyVO();
         publicKeyVo.setPublicKey(publicKey);
         return R.ok(publicKeyVo);
     }
@@ -66,7 +66,7 @@ public class SysSecretKeyController {
     @PostMapping(value = "/generateKey")
     @Operation(summary = "生成密钥对")
     @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY)
-    public R<Object> generateKey(@RequestBody GenerateKeyRequest request) throws NoSuchAlgorithmException {
+    public R<Object> generateKey(@RequestBody GenerateKeyDTO request) throws NoSuchAlgorithmException {
         secretKeyService.generateKey(request);
         return R.ok("密钥对生成成功");
     }

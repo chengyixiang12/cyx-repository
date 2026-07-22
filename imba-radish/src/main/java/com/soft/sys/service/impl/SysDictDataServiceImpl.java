@@ -8,12 +8,12 @@ import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.entity.SysDictData;
 import com.soft.sys.mapper.SysDictDataMapper;
-import com.soft.sys.model.dto.DictDataDto;
-import com.soft.sys.model.request.DictDatasRequest;
-import com.soft.sys.model.request.EditDictDataRequest;
-import com.soft.sys.model.request.SaveDictDataRequest;
-import com.soft.sys.model.vo.DictDataVo;
-import com.soft.sys.model.vo.DictDatasVo;
+import com.soft.sys.model.dto.DictDataDTO;
+import com.soft.sys.model.request.DictDatasDTO;
+import com.soft.sys.model.request.EditDictDataDTO;
+import com.soft.sys.model.request.SaveDictDataDTO;
+import com.soft.sys.model.vo.DictDataVO;
+import com.soft.sys.model.vo.DictDatasVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDictDataService;
 import org.springframework.beans.BeanUtils;
@@ -51,22 +51,22 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public PageVO<DictDatasVo> getDictDatas(DictDatasRequest request) {
-        IPage<DictDatasVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<DictDatasVO> getDictDatas(DictDatasDTO request) {
+        IPage<DictDatasVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysDictDataMapper.getDictDatas(page, request);
-        PageVO<DictDatasVo> pageVo = new PageVO<>();
+        PageVO<DictDatasVO> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
     }
 
     @Override
-    public DictDataVo getDictData(Long id) {
+    public DictDataVO getDictData(Long id) {
         return sysDictDataMapper.getDictData(id);
     }
 
     @Override
-    public void saveDictData(SaveDictDataRequest request) {
+    public void saveDictData(SaveDictDataDTO request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
             sysDictDataMapper.setNotDefault(request.getParentId());
         }
@@ -77,7 +77,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     @Override
     @CacheEvict(key = "#request.parentId")
-    public void editDictData(EditDictDataRequest request) {
+    public void editDictData(EditDictDataDTO request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
             sysDictDataMapper.setNotDefault(request.getParentId());
         }
@@ -128,15 +128,15 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    public List<DictDataDto> getByDictType(String dictType) {
+    public List<DictDataDTO> getByDictType(String dictType) {
         return sysDictDataMapper.getByDictType(dictType);
     }
 
     @Override
     @Cacheable(key = "#dictType", unless = "#result.size() == 0")
     public Map<String, String> getDictDataMap(String dictType) {
-        List<DictDataDto> sysDictDataList = sysDictDataMapper.getByDictType(dictType);
-        return sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel, (a, b) -> a));
+        List<DictDataDTO> sysDictDataList = sysDictDataMapper.getByDictType(dictType);
+        return sysDictDataList.stream().collect(Collectors.toMap(DictDataDTO::getValue, DictDataDTO::getLabel, (a, b) -> a));
     }
 
     @Override

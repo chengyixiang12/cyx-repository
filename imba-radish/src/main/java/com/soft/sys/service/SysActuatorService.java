@@ -2,7 +2,7 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysActuator;
-import com.soft.sys.model.request.ListActuatorPageRequest;
+import com.soft.sys.model.request.ListActuatorPageDTO;
 import com.soft.sys.model.vo.GetLatestActuatorMetricVO;
 import com.soft.sys.model.vo.ListActuatorVO;
 import com.soft.sys.model.vo.ListUsageTrendVO;
@@ -21,7 +21,7 @@ public interface SysActuatorService extends IService<SysActuator> {
 
     List<ListActuatorVO> listActuator(LocalDateTime startTime, LocalDateTime endTime);
 
-    PageVO<ListActuatorVO> listActuatorPage(ListActuatorPageRequest request);
+    PageVO<ListActuatorVO> listActuatorPage(ListActuatorPageDTO request);
 
     GetLatestActuatorMetricVO getLatestActuatorMetric();
 

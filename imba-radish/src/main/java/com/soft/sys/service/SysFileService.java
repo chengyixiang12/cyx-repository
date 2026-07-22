@@ -2,12 +2,12 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysFile;
-import com.soft.sys.model.dto.FileDetailDto;
-import com.soft.sys.model.dto.SelectDeletedFileDto;
-import com.soft.sys.model.request.FilesRequest;
-import com.soft.sys.model.vo.FilesVo;
+import com.soft.sys.model.dto.FileDetailDTO;
+import com.soft.sys.model.dto.SelectDeletedFileDTO;
+import com.soft.sys.model.request.FilesDTO;
+import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.UploadFileVo;
+import com.soft.sys.model.vo.UploadFileVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -20,23 +20,23 @@ import java.util.List;
 */
 public interface SysFileService extends IService<SysFile> {
 
-    UploadFileVo uploadFile(MultipartFile multipartFile, String fileMd5);
+    UploadFileVO uploadFile(MultipartFile multipartFile, String fileMd5);
 
-    FileDetailDto getFileDetailById(Long id);
+    FileDetailDTO getFileDetailById(Long id);
 
     void deleteFile(Long id);
 
-    PageVO<FilesVo> getFiles(FilesRequest request);
+    PageVO<FilesVO> getFiles(FilesDTO request);
 
-    List<SelectDeletedFileDto> selectDeletedFiles();
+    List<SelectDeletedFileDTO> selectDeletedFiles();
 
-    PageVO<FilesVo> getMyFiles(FilesRequest request);
+    PageVO<FilesVO> getMyFiles(FilesDTO request);
 
     void deleteRealByIds(List<Long> list);
 
     String getFileUrl(Long id, String isInline);
 
-    UploadFileVo mergeChunk(File fileTemp, String fileMd5);
+    UploadFileVO mergeChunk(File fileTemp, String fileMd5);
 
     String getFileByMd5(String fileMd5, String fileName);
 

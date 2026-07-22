@@ -1,8 +1,8 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.model.request.LogsRequest;
-import com.soft.sys.model.vo.GetLogVo;
-import com.soft.sys.model.vo.LogsVo;
+import com.soft.sys.model.request.LogsDTO;
+import com.soft.sys.model.vo.GetLogVO;
+import com.soft.sys.model.vo.LogsVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysLogService;
@@ -38,9 +38,9 @@ public class SysLogController {
 
     @PostMapping(value = "/getLogs")
     @Operation(summary = "获取日志列表")
-    public R<PageVO<LogsVo>> getLogs(@RequestBody LogsRequest request) {
+    public R<PageVO<LogsVO>> getLogs(@RequestBody LogsDTO request) {
         try {
-            PageVO<LogsVo> pageVo = sysLogService.getLogs(request);
+            PageVO<LogsVO> pageVo = sysLogService.getLogs(request);
             return R.ok(pageVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -51,9 +51,9 @@ public class SysLogController {
     @GetMapping(value = "/getLog")
     @Operation(summary = "获取日志")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<GetLogVo> getLog(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
+    public R<GetLogVO> getLog(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         try {
-            GetLogVo getLogVo = sysLogService.getLog(id);
+            GetLogVO getLogVo = sysLogService.getLog(id);
             return R.ok(getLogVo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

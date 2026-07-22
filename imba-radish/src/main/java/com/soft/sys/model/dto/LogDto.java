@@ -15,7 +15,7 @@ import java.io.Serializable;
 
 @Data
 @Schema(description = "日志传输参数")
-public class LogDto implements Serializable {
+public class LogDTO implements Serializable {
 
     @Schema(description = "日志级别")
     private String logLevel;

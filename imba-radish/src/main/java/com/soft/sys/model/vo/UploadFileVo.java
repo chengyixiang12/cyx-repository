@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "上传文件响应参数")
-public class UploadFileVo {
+public class UploadFileVO {
 
     @Schema(description = "文件id")
     private String fileId;
