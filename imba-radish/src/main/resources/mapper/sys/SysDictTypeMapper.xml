@@ -10,7 +10,7 @@
         sdt.dict_name,
         sdt.dict_type,
         sdt.`status`,
-        sdt.sort
+        sdt.sort_order
         FROM
         sys_dict_type sdt
         WHERE
@@ -21,14 +21,14 @@
         <if test="request.status != null">
             AND sdt.status = #{request.status}
         </if>
-        order by sdt.sort desc
+        order by sdt.sort_order desc
     </select>
     <select id="getDictType" parameterType="java.lang.Long" resultType="DictTypeVO">
         SELECT
         sdt.id,
         sdt.dict_name,
         sdt.dict_type,
-        sdt.sort,
+        sdt.sort_order,
         sdt.status,
         sdt.remark
         FROM

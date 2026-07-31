@@ -17,8 +17,8 @@ public class SysDictData extends BaseEntity {
     /**
      * sys_dict_type的主键
      */
-    @TableField(value = "parent_id")
-    private Long parentId;
+    @TableField(value = "dict_type_id")
+    private Long dictTypeId;
 
     /**
      * 排序字段

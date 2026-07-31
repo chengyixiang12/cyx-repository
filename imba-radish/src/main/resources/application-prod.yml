@@ -1,7 +1,7 @@
 spring:
   servlet:
     multipart:
-      location: /opt/project/tmp
+      location: /tmp
       max-file-size: 10MB
       max-request-size: 10MB
       file-size-threshold: 1MB
@@ -115,7 +115,7 @@ logging:
   config: classpath:logback-spring.xml
 # 临时文件存储路径
 tmp:
-  path: /opt/project/tmp
+  path: /tmp
 # 限流
 rate-limit:
   # 是否开启限流
@@ -130,7 +130,7 @@ rate-limit:
 # 大文件存储路径
 storage:
   big-file:
-    location: /opt/project/tmp
+    location: /tmp
 # 启用knife4j文档
 knife4j:
   enable: false

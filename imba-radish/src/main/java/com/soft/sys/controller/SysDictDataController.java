@@ -1,5 +1,6 @@
 package com.soft.sys.controller;
 
+import cn.hutool.core.io.FileUtil;
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
@@ -68,7 +69,7 @@ public class SysDictDataController {
     @PostMapping
     @Operation(summary = "添加字典数据")
     public R<Object> saveDictData(@RequestBody @Valid SaveDictDataDTO request) {
-        if (sysDictDataService.existValue(request.getParentId(), request.getValue())) {
+        if (sysDictDataService.existValue(request.getDictTypeId(), request.getValue())) {
             return R.fail("字典编码已存在");
         }
         sysDictDataService.saveDictData(request);
@@ -81,7 +82,7 @@ public class SysDictDataController {
     @PutMapping
     @Operation(summary = "编辑字典数据")
     public R<Object> editDictData(@RequestBody @Valid EditDictDataDTO request) {
-        if (sysDictDataService.existCode(request.getParentId(), request.getValue(), request.getId())) {
+        if (sysDictDataService.existCode(request.getDictTypeId(), request.getValue(), request.getId())) {
             return R.fail("字典编码已存在");
         }
         sysDictDataService.editDictData(request);
@@ -131,11 +132,11 @@ public class SysDictDataController {
     @Operation(summary = "设置默认")
     @Parameters({
             @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY),
-            @Parameter(name = "parentId", description = "字典类型id", required = true, in = ParameterIn.QUERY)
+            @Parameter(name = "dictTypeId", description = "字典类型id", required = true, in = ParameterIn.QUERY)
     })
     public R<Object> setDefaultData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id,
-                                    @RequestParam(value = "parentId", required = false) @NotNull(message = "字典类型id不能为空") Long parentId) {
-        sysDictDataService.setDefaultData(id, parentId);
+                                    @RequestParam(value = "dictTypeId", required = false) @NotNull(message = "字典类型id不能为空") Long dictTypeId) {
+        sysDictDataService.setDefaultData(id, dictTypeId);
         return R.ok("设置成功", null);
     }
 

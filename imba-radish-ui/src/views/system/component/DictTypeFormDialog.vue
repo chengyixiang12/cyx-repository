@@ -16,8 +16,8 @@
                         <el-radio :value="0">禁用</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="排序" prop="sort">
-                    <el-input v-model="formData.sort" type="number" @input="handleSortInput" placeholder="请输入排序值（数字越小越靠前）" />
+                <el-form-item label="排序" prop="sortOrder">
+                    <el-input v-model="formData.sortOrder" type="number" @input="handleSortInput" placeholder="请输入排序值（数字越小越靠前）" />
                 </el-form-item>
                 <el-form-item label="备注" prop="remark">
                     <el-input v-model="formData.remark" type="textarea" :rows="3" placeholder="请输入备注" />
@@ -59,7 +59,7 @@ const formData = ref<SaveDictTypeRequest>({
     dictName: '',
     dictType: '',
     status: 1,
-    sort: null,
+    sortOrder: null,
     remark: ''
 })
 
@@ -103,9 +103,9 @@ const handleSortInput = (value: string) => {
   const numericValue = value.replace(/\D/g, '')
   // 如果有输入，且转成了数字
   if (numericValue) {
-    formData.value.sort = parseInt(numericValue, 10)
+    formData.value.sortOrder = parseInt(numericValue, 10)
   } else {
-    formData.value.sort = null
+    formData.value.sortOrder = null
   }
 }
 

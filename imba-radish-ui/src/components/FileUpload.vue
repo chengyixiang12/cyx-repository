@@ -37,7 +37,7 @@ const emit = defineEmits(['upload-success'])
 const uploadRef = ref();
 
 const uploadProgress = ref<number>(0);
-const maxChunkSize = 5 * 100 * 1024 * 1024;
+const maxChunkSize = 20 * 100 * 1024 * 1024;
 const uploadDialogVisible = ref(false);
 const isCancelled = ref(false);
 

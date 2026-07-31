@@ -30,7 +30,7 @@ public interface SysDictDataMapper extends BaseMapper<SysDictData> {
 
     void forbiddenDictData(@Param("id") Long id);
 
-    void setNotDefault(@Param("parentId") Long parentId);
+    void setNotDefault(@Param("dictTypeId") Long dictTypeId);
 
     void setDefaultData(@Param("id") Long id);
 

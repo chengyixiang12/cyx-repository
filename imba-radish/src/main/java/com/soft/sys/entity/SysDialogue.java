@@ -18,7 +18,7 @@ public class SysDialogue extends BaseEntity {
      * 排序字段
      */
     @TableField(value = "sort_order")
-    private Long sortOrder;
+    private Integer sortOrder;
 
     /**
      * 标题

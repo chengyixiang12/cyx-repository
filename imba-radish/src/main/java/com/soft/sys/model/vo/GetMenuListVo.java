@@ -34,7 +34,7 @@ public class GetMenuListVO {
     private Integer visible;
 
     @Schema(description = "排序")
-    private Integer orderNum;
+    private Integer sortOrder;
 
     @Schema(description = "图标")
     private String icon;

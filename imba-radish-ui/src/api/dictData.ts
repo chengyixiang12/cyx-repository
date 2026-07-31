@@ -65,6 +65,6 @@ export async function getDictDataApi(id: string): Promise<DictDataVo> {
  * @param id 
  * @param dictType 
  */
-export async function setDefaultRoleApi(id: string, parentId: string) {
-    await get('/dictData/setDefaultData', { flag: true, params: { id, parentId } })
+export async function setDefaultRoleApi(id: string, dictTypeId: string) {
+    await get('/dictData/setDefaultData', { flag: true, params: { id, dictTypeId } })
 }

@@ -68,7 +68,7 @@ const formData = ref<SaveDictDataRequest>({
     sortOrder: null,
     label: '',
     value: '',
-    parentId: props.dictDataId,
+    dictTypeId: props.dictDataId,
     cssClass: '',
     listClass: '',
     isDefault: 0,

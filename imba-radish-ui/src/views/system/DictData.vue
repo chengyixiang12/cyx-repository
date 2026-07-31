@@ -110,7 +110,7 @@ const total = ref<number>(0)
 const dictDataId = ref<string>('')
 const addDialogVisible = ref<boolean>(false)
 const editDialogVisible = ref<boolean>(false)
-const parentId = ref<string>(route.query.parentId as string)
+const dictTypeId = ref<string>(route.query.dictTypeId as string)
 
 const dictDataList = ref<DictDatasVo[]>([])
 const searchForm = ref<DictDatasRequest>({
@@ -118,7 +118,7 @@ const searchForm = ref<DictDatasRequest>({
   status: null,
   pageNum: 1,
   pageSize: 10,
-  parentId: parentId.value
+  dictTypeId: dictTypeId.value
 })
 
 // 返回字典类型模块
@@ -140,7 +140,7 @@ const editData = async (row: DictDatasVo) => {
 // 新增数据提交
 const handleAddSubmit = async (formdata: SaveDictDataRequest) => {
   try {
-    formdata.parentId = parentId.value;
+    formdata.dictTypeId = dictTypeId.value;
     await saveDictDataApi(formdata);
     addDialogVisible.value = false
     await handleSearch();
@@ -152,7 +152,7 @@ const handleAddSubmit = async (formdata: SaveDictDataRequest) => {
 // 编辑数据提交
 const handleEditSubmit = async (formdata: SaveDictDataRequest) => {
   try {
-    formdata.parentId = parentId.value;
+    formdata.dictTypeId = dictTypeId.value;
     await editDictDataApi({
       ...formdata,
       id: dictDataId.value
@@ -196,7 +196,7 @@ const resetSearch = () => {
 // 设置默认
 const setDefault = async (row: DictDatasVo) => {
   if (row.isDefault === 1) {
-    await setDefaultRoleApi(row.id, parentId.value);
+    await setDefaultRoleApi(row.id, dictTypeId.value);
   } else {
     showMessage('非法操作', 'warning');
     row.isDefault = 1;

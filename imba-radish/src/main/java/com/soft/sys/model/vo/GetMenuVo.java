@@ -37,7 +37,7 @@ public class GetMenuVO {
     private String type;
 
     @Schema(description = "排序号，数字越小，排序越靠前")
-    private Integer orderNum;
+    private Integer sortOrder;
 
     @Schema(description = "菜单状态：0-禁用，1-启用")
     private Integer status;

@@ -39,7 +39,7 @@ public class SaveMenuDTO {
     private String type;
 
     @Schema(description = "排序号，数字越小，排序越靠前")
-    private Integer sort;
+    private Integer sortOrder;
 
     @Schema(description = "是否显示：0-隐藏，1-显示")
     private Integer visible;

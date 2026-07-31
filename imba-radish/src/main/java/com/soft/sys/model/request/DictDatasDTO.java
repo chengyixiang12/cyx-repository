@@ -1,7 +1,7 @@
 package com.soft.sys.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,8 +16,8 @@ import lombok.EqualsAndHashCode;
 public class DictDatasDTO extends PageDTO {
 
     @Schema(description = "字典类型id")
-    @NotBlank(message = "字典类型id不能为空")
-    private Long parentId;
+    @NotNull(message = "字典类型id不能为空")
+    private Long dictTypeId;
 
     @Schema(description = "关键字")
     private String keyword;

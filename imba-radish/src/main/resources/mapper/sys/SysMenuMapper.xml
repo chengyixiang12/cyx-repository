@@ -3,26 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.sys.mapper.SysMenuMapper">
-
-    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysMenu">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
-            <result property="name" column="name" jdbcType="VARCHAR"/>
-            <result property="path" column="path" jdbcType="VARCHAR"/>
-            <result property="component" column="component" jdbcType="VARCHAR"/>
-            <result property="icon" column="icon" jdbcType="VARCHAR"/>
-            <result property="type" column="type" jdbcType="CHAR"/>
-            <result property="sort" column="sort" jdbcType="INTEGER"/>
-            <result property="status" column="status" jdbcType="TINYINT"/>
-            <result property="visible" column="visible" jdbcType="TINYINT"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="remark" column="remark" jdbcType="VARCHAR"/>
-            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
-            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
-            <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
-    </resultMap>
-
     <select id="getMenuRoute" parameterType="java.util.List" resultType="MenusVO">
         SELECT
         sm.id,
@@ -43,7 +23,7 @@
         sur.user_id = #{userId}
         AND sm.status = 1
         AND sm.type IN ('0', '1')
-        ORDER BY sm.sort
+        ORDER BY sm.sort_order
     </select>
     <select id="getMenuList" parameterType="GetMenuListDTO" resultType="GetMenuListVO">
         SELECT
@@ -52,7 +32,7 @@
             sm.type,
             sm.`status`,
             sm.visible,
-            sm.sort,
+            sm.sort_order,
             sm.icon,
             sm.path,
             sm.component,
@@ -86,7 +66,7 @@
             sm.component,
             sm.icon,
             sm.type,
-            sm.sort,
+            sm.sort_order,
             sm.`status`,
             sm.visible,
             sm.remark
@@ -188,7 +168,7 @@
           AND sm.status = 1
           AND sm.visible = 1
           AND sm.type IN ('0', '1')
-        ORDER BY sm.sort
+        ORDER BY sm.sort_order
     </select>
     <select id="pageMenuTree" parameterType="com.soft.sys.model.request.PageMenuTreeDTO" resultType="com.soft.sys.model.vo.PageMenuTreeVO">
         select
@@ -198,7 +178,7 @@
         t1.icon,
         t1.`path`,
         t1.component,
-        t1.sort,
+        t1.sort_order,
         t1.status,
         t1.visible,
         exists (select 1 from sys_menu t2 where t2.del_flag = '0' and t2.parent_id = t1.id) as hasChild
@@ -224,6 +204,6 @@
         <if test="request.type != null and request.type != ''">
             and t1.`type` = #{request.type}
         </if>
-        order by t1.sort, t1.create_time desc
+        order by t1.sort_order, t1.create_time desc
     </select>
 </mapper>
