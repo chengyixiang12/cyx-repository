@@ -17,7 +17,7 @@ export interface GetMenuListVo {
   name: string;
   type: string;
   status: number;
-  orderNum: number;
+  sortOrder: number;
   icon: string;
   visible: number;
   path: string;
@@ -50,7 +50,7 @@ export interface GetMenuVo {
   component: string | null;
   icon: string;
   type: string;
-  orderNum: number | null;
+  sortOrder: number | null;
   status: number;
   visible: number;
   remark: string;
@@ -63,7 +63,7 @@ export interface SaveMenuRequest {
   component: string;
   icon: string;
   type: string;
-  orderNum: number;
+  sortOrder: number;
   visible: number;
   remark?: string;
 }
@@ -76,7 +76,7 @@ export interface EditMenuRequest {
   component: string;
   icon: string;
   type: string;
-  orderNum: number;
+  sortOrder: number;
   visible: number;
   remark?: string;
 }
@@ -104,7 +104,7 @@ export interface PageMenuTreeVO {
   type: string | null
   path: string | null
   component: string | null
-  sort: number | null
+  sortOrder: number | null
   status: string | null
   visible: string | null
   hasChild: boolean | null

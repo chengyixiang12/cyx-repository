@@ -6,12 +6,12 @@ import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.entity.SysRole;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.dto.FixRolesDto;
+import com.soft.sys.model.dto.FixRolesDTO;
 import com.soft.sys.model.request.*;
-import com.soft.sys.model.vo.GetRoleSelectVo;
+import com.soft.sys.model.vo.GetRoleSelectVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.SysRoleVo;
-import com.soft.sys.model.vo.SysRolesVo;
+import com.soft.sys.model.vo.SysRoleVO;
+import com.soft.sys.model.vo.SysRolesVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysRoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,12 +21,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -40,7 +39,6 @@ public class SysRoleController {
 
     private final SysRoleService sysRoleService;
 
-    @Autowired
     public SysRoleController(SysRoleService sysRoleService) {
         this.sysRoleService = sysRoleService;
     }
@@ -50,7 +48,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_add')")
     @PostMapping
     @Operation(summary = "添加角色")
-    public R<Object> saveRole(@RequestBody @Valid SaveRoleRequest request) {
+    public R<Object> saveRole(@RequestBody @Valid SaveRoleDTO request) {
         if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
             return R.fail("无效的角色编码");
         }
@@ -77,7 +75,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_edit')")
     @PutMapping
     @Operation(summary = "编辑角色")
-    public R<Object> editRole(@RequestBody @Valid EditRoleRequest request) {
+    public R<Object> editRole(@RequestBody @Valid EditRoleDTO request) {
         if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
             return R.fail("无效的角色编码");
         }
@@ -110,12 +108,12 @@ public class SysRoleController {
     @DeleteMapping(value = "/deleteRoleBatch")
     @Operation(summary = "批量删除角色")
     public R<Object> deleteRoleBatch(@RequestParam(value = "ids") @NotNull List<@NotNull Long> ids) {
-        List<FixRolesDto> fixRolesFlag = sysRoleService.fixRolesFlag(ids);
+        List<FixRolesDTO> fixRolesFlag = sysRoleService.fixRolesFlag(ids);
         if (!fixRolesFlag.isEmpty()) {
             StringBuilder message = new StringBuilder();
-            Iterator<FixRolesDto> iterator = fixRolesFlag.iterator();
+            Iterator<FixRolesDTO> iterator = fixRolesFlag.iterator();
             while (iterator.hasNext()) {
-                FixRolesDto next = iterator.next();
+                FixRolesDTO next = iterator.next();
                 if (next.getFixRole().equals(BaseConstant.Role.FIX_ROLE_FLAG)
                         || next.getIsDefault().equals(BaseConstant.Role.DEFAULT_ROLE_FLAG)) {
                     message.append(next.getName());
@@ -134,16 +132,18 @@ public class SysRoleController {
 
     @GetMapping(value = "/getRole")
     @Operation(summary = "获取角色详情")
+    @PreAuthorize(value = "@cps.hasPermission('sys_role_get_role')")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<SysRoleVo> getRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
-        SysRoleVo sysRoleVo = sysRoleService.getRole(id);
+    public R<SysRoleVO> getRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
+        SysRoleVO sysRoleVo = sysRoleService.getRole(id);
         return R.ok(sysRoleVo);
     }
 
     @PostMapping(value = "/getRoles")
     @Operation(summary = "获取角色列表")
-    public R<PageVO<SysRolesVo>> getRoles(@RequestBody GetRolesRequest request) {
-        PageVO<SysRolesVo> resultPage = sysRoleService.getRoles(request);
+    @PreAuthorize(value = "@cps.hasPermission('sys_role_get_roles')")
+    public R<PageVO<SysRolesVO>> getRoles(@RequestBody GetRolesDTO request) {
+        PageVO<SysRolesVO> resultPage = sysRoleService.getRoles(request);
         return R.ok(resultPage);
     }
 
@@ -182,7 +182,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_set_menu')")
     @PostMapping(value = "/setMenus")
     @Operation(summary = "赋予菜单")
-    public R<Object> setMenus(@RequestBody @Valid SetMenusRequest request) {
+    public R<Object> setMenus(@RequestBody @Valid SetMenusDTO request) {
         sysRoleService.setMenus(request);
         return R.ok("菜单赋予成功", null);
     }
@@ -191,7 +191,7 @@ public class SysRoleController {
     @PreAuthorize(value = "@cps.hasPermission('sys_role_set_per')")
     @PostMapping(value = "/setPermissions")
     @Operation(summary = "赋予权限")
-    public R<Object> setPermissions(@RequestBody @Valid SetPermissionsRequest request) {
+    public R<Object> setPermissions(@RequestBody @Valid SetPermissionsDTO request) {
         try {
             sysRoleService.setPermissions(request);
             return R.ok("权限赋予成功", null);
@@ -223,9 +223,9 @@ public class SysRoleController {
 
     @GetMapping(value = "/getRoleSelect")
     @Operation(summary = "获取角色的下拉框数据")
-    public R<List<GetRoleSelectVo>> getRoleSelect() {
+    public R<List<GetRoleSelectVO>> getRoleSelect() {
         try {
-            List<GetRoleSelectVo> roleSelectVos = sysRoleService.getRoleSelect();
+            List<GetRoleSelectVO> roleSelectVos = sysRoleService.getRoleSelect();
             return R.ok(roleSelectVos);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

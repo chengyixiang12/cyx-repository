@@ -2,13 +2,14 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysActuator;
-import com.soft.sys.model.request.ListActuatorPageRequest;
+import com.soft.sys.model.request.ListActuatorPageDTO;
 import com.soft.sys.model.vo.GetLatestActuatorMetricVO;
 import com.soft.sys.model.vo.ListActuatorVO;
 import com.soft.sys.model.vo.ListUsageTrendVO;
 import com.soft.sys.model.vo.PageVO;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public interface SysActuatorService extends IService<SysActuator> {
 
     List<ListActuatorVO> listActuator(LocalDateTime startTime, LocalDateTime endTime);
 
-    PageVO<ListActuatorVO> listActuatorPage(ListActuatorPageRequest request);
+    PageVO<ListActuatorVO> listActuatorPage(ListActuatorPageDTO request);
 
     GetLatestActuatorMetricVO getLatestActuatorMetric();
 
@@ -31,4 +32,6 @@ public interface SysActuatorService extends IService<SysActuator> {
     List<ListUsageTrendVO> listHeapMemoryTrend(LocalDateTime startTime, LocalDateTime endTime);
 
     List<ListUsageTrendVO> listMetaspaceMemoryTrend(LocalDateTime startTime, LocalDateTime endTime);
+
+    void deleteOneMonthAgo(Date date);
 }

@@ -1,7 +1,7 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.model.request.GetQuartzRecordListRequest;
-import com.soft.sys.model.vo.GetQuartzRecordListVo;
+import com.soft.sys.model.request.GetQuartzRecordListDTO;
+import com.soft.sys.model.vo.GetQuartzRecordListVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysScheduleRecordService;
@@ -30,8 +30,8 @@ public class SysScheduleRecordController {
 
     @PostMapping(value = "/getQuartzRecordList")
     @Operation(summary = "获取定时任务执行记录列表")
-    public R<PageVO<GetQuartzRecordListVo>> getQuartzRecordList(@RequestBody GetQuartzRecordListRequest request) {
-        PageVO<GetQuartzRecordListVo> pageVo = sysScheduleRecordService.getQuartzRecordList(request);
+    public R<PageVO<GetQuartzRecordListVO>> getQuartzRecordList(@RequestBody GetQuartzRecordListDTO request) {
+        PageVO<GetQuartzRecordListVO> pageVo = sysScheduleRecordService.getQuartzRecordList(request);
         return R.ok(pageVo);
     }
 

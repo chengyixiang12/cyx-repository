@@ -5,10 +5,12 @@
       <div class="time-range-selector">
         <span class="time-label">时间范围：</span>
         <el-select v-model="quickTimeRange" class="quick-range-select" @change="handleQuickTimeRangeChange">
-          <el-option label="7分钟" :value="7" />
+          <el-option label="15分钟" :value="15" />
           <el-option label="30分钟" :value="30" />
           <el-option label="1小时" :value="60" />
-          <el-option label="当天" :value="'today'" />
+          <el-option label="6小时" :value="360" />
+          <el-option label="1天" :value="1440" />
+          <el-option label="7天" :value="10080" />
         </el-select>
         <span class="time-separator">-</span>
         <el-date-picker v-model="startTime" type="datetime" placeholder="开始时间" class="time-picker"
@@ -261,7 +263,7 @@ const activeTrendTab = ref('cpu');
 // 时间范围选择（仅作用于图表）
 const startTime = ref<Date | null>(null);
 const endTime = ref<Date | null>(null);
-const quickTimeRange = ref<number | string>(7);
+const quickTimeRange = ref<number>(15);
 
 // 组件状态历史记录（直接使用 ListActuatorVO）
 const healthHistory = ref<ListActuatorVO[]>([]);
@@ -453,6 +455,7 @@ const updateCpuChart = async (times: string[], data: number[]) => {
         color: '#409EFF'
       },
       symbol: 'circle',
+      showSymbol: false,
       symbolSize: 6
     }]
   };
@@ -472,6 +475,7 @@ const updateMemoryChart = async (times: string[], memoryData: number[], heapData
       smooth: true,
       lineStyle: { color: '#67C23A' },
       symbol: 'circle',
+      showSymbol: false,
       symbolSize: 6
     }
   ];
@@ -485,6 +489,7 @@ const updateMemoryChart = async (times: string[], memoryData: number[], heapData
       smooth: true,
       lineStyle: { color: '#E6A23C' },
       symbol: 'circle',
+      showSymbol: false,
       symbolSize: 6
     });
   }
@@ -498,6 +503,7 @@ const updateMemoryChart = async (times: string[], memoryData: number[], heapData
       smooth: true,
       lineStyle: { color: '#F56C6C' },
       symbol: 'circle',
+      showSymbol: false,
       symbolSize: 6
     });
   }
@@ -565,18 +571,9 @@ const updateMemoryChart = async (times: string[], memoryData: number[], heapData
 };
 
 // 快捷时间范围选择处理
-const handleQuickTimeRangeChange = (value: number | string) => {
+const handleQuickTimeRangeChange = (value: number) => {
   const now = new Date();
-  let start: Date;
-
-  if (value === 'today') {
-    // 当天：从今天0点到现在
-    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  } else {
-    // 分钟数：从当前时间往前推
-    start = new Date(now.getTime() - Number(value) * 60 * 1000);
-  }
-
+  const start = new Date(now.getTime() - value * 60 * 1000);
   startTime.value = start;
   endTime.value = now;
 };
@@ -605,12 +602,12 @@ const queryData = async () => {
 const refreshData = async () => {
   loading.value = true;
   try {
-    // 重置时间为最近7分钟
+    // 重置时间为最近15分钟
     const now = new Date();
-    const sevenMinutesAgo = new Date(now.getTime() - 7 * 60 * 1000);
-    startTime.value = sevenMinutesAgo;
+    const fifteenMinutesAgo = new Date(now.getTime() - 15 * 60 * 1000);
+    startTime.value = fifteenMinutesAgo;
     endTime.value = now;
-    quickTimeRange.value = 7;
+    quickTimeRange.value = 15;
 
     // 加载最新指标数据（CPU、内存、磁盘、启动时间）
     loadLatestMetrics();
@@ -633,13 +630,13 @@ const refreshData = async () => {
   }
 };
 
-// 设置默认时间范围为最近7分钟
+// 设置默认时间范围为最近15分钟
 const setDefaultTimeRange = async () => {
   const now = new Date();
-  const sevenMinAgo = new Date(now.getTime() - 7 * 60 * 1000);
+  const fifteenMinAgo = new Date(now.getTime() - 15 * 60 * 1000);
 
   endTime.value = now;
-  startTime.value = sevenMinAgo;
+  startTime.value = fifteenMinAgo;
 };
 
 // 格式化日期时间为 ISO 8601 格式（使用 dayjs）

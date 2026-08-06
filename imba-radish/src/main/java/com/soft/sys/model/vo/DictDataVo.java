@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取字典数据详情响应参数")
-@Alias(value = "DictDataVo")
-public class DictDataVo {
+@Alias(value = "DictDataVO")
+public class DictDataVO {
 
     @Schema(description = "主键")
     private String id;

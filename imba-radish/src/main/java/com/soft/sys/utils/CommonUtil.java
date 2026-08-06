@@ -1,20 +1,13 @@
 package com.soft.sys.utils;
 
-import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.exception.GlobalException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: cyx
@@ -45,7 +38,7 @@ public class CommonUtil {
     public static String generate(Integer length) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            double random = Math.random() * 10;
+            double random = ThreadLocalRandom.current().nextDouble() * 10;
             sb.append((int) random);
         }
         return sb.toString();

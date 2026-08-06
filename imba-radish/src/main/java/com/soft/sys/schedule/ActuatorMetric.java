@@ -1,15 +1,21 @@
 package com.soft.sys.schedule;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.soft.sys.entity.SysActuator;
 import com.soft.sys.service.SysActuatorService;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.health.HealthComponent;
-import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.health.actuate.endpoint.HealthDescriptor;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.Optional;
 
 /**
  * @author cyx
@@ -25,7 +31,7 @@ public class ActuatorMetric {
     private final SysActuatorService sysActuatorService;
     private final HealthEndpoint healthEndpoint;
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "*/15 * * * * *")
     public void run() {
         SysActuator sysActuator = new SysActuator();
 
@@ -101,7 +107,7 @@ public class ActuatorMetric {
         sysActuator.setMemoryMax(totalMemoryMax);
 
         // ========== 7. 健康状态 ==========
-        HealthComponent health = healthEndpoint.health();
+        HealthDescriptor health = healthEndpoint.health();
         sysActuator.setHealth(health.getStatus().getCode());
         
         sysActuator.setHealthDb(getComponentStatus("db"));
@@ -116,12 +122,21 @@ public class ActuatorMetric {
     }
 
     /**
+     * 每天0点清理一个月之前的监控记录
+     */
+    @Scheduled(cron = "* * 0 * * *")
+    public void clear() {
+        DateTime dateTime = DateUtil.offsetMonth(new Date(), -1);
+        sysActuatorService.deleteOneMonthAgo(dateTime);
+    }
+
+    /**
      * 获取单个组件的健康状态代码（如 "UP"、"DOWN"）
      */
     private String getComponentStatus(String componentName) {
         try {
-            HealthComponent component = healthEndpoint.healthForPath(componentName);
-            return component.getStatus().getCode();
+            HealthDescriptor component = healthEndpoint.healthForPath(componentName);
+            return Optional.ofNullable(component).map(HealthDescriptor::getStatus).map(Status::getCode).orElseThrow();
         } catch (Exception e) {
             log.debug("无法获取组件 {} 的健康状态，原因：{}", componentName, e.getMessage());
             return "UNKNOWN";

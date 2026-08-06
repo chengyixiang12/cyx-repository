@@ -208,23 +208,33 @@ const shouldShowTooltip = (label: string) => {
 
 // 提交新增用户
 const handleAddSubmit = async (formData: SaveUserRequest) => {
-  const publicKey = await getPublicKeyApi()
-  formData.password = RSAUtil.encrypt(formData.password, publicKey);
-  await addUser(formData)
-  await loadUsers()
+  try {
+    const publicKey = await getPublicKeyApi()
+    formData.password = RSAUtil.encrypt(formData.password, publicKey);
+    await addUser(formData)
+    addDialogVisible.value = false
+    await loadUsers()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑用户
 const handleEditSubmit = async (formData: SaveUserRequest) => {
-  await updateUserApi({
-    id: userId.value,
-    nickname: formData.nickname,
-    deptId: formData.deptId,
-    email: formData.email,
-    phone: formData.phone,
-    roleIds: formData.roleIds
-  })
-  await loadUsers()
+  try {
+    await updateUserApi({
+      id: userId.value,
+      nickname: formData.nickname,
+      deptId: formData.deptId,
+      email: formData.email,
+      phone: formData.phone,
+      roleIds: formData.roleIds
+    })
+    editDialogVisible.value = false
+    await loadUsers()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 const treeProps = {

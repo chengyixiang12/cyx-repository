@@ -279,7 +279,8 @@ const existDashboard = () => {
 
 // 初始化websocket
 const initWebsocket = async () => {
-    const token = sessionStorage.getItem('Authorization') || ''
+    const token = sessionStorage.getItem('Authorization')
+    if (!token) return
     // 连接websocket
     const ws = getWebSocketInstance();
     ws.connect(token);
@@ -288,12 +289,6 @@ const initWebsocket = async () => {
         router.push('/login')
         showMessage(data.msg, 'warning')
     };
-    ws.heartbeat = (data: WebsocketMessage) => {
-        if (data.refreshFlag) {
-            const fingerprint = sessionStorage.getItem('fingerprint');
-            ws.send({ order: 'REFRESH_TOKEN', fingerprint })
-        }
-    }
     ws.refreshToken = (data: WebsocketMessage) => {
         const token = data.token;
         if (token) {

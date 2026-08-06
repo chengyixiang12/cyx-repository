@@ -12,14 +12,9 @@ import org.apache.ibatis.annotations.Param;
 */
 public interface SysSecretKeyMapper extends BaseMapper<SysSecretKey> {
 
-    String getPublicKey(@Param("type") String type);
+    String getPublicKey(@Param("type") Integer type);
 
     String getPrivateKey(@Param("type") Integer type);
-
-    void generateKey(@Param("type") String type,
-                     @Param("privateKey") String privateKey,
-                     @Param("publicKey") String publicKey,
-                     @Param("username") String username);
 }
 
 

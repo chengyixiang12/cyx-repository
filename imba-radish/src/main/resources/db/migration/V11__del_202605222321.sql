@@ -1,1 +1,0 @@
-ALTER TABLE radish_master.sys_actuator DROP COLUMN memory_g1_old_max;

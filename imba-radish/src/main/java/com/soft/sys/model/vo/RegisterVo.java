@@ -6,8 +6,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "注册")
-@Alias(value = "RegisterVo")
-public class RegisterVo {
+@Alias(value = "RegisterVO")
+public class RegisterVO {
 
     @Schema(description = "用户名")
     private String username;

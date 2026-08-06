@@ -11,25 +11,25 @@ import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.RegexConstant;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
-import com.soft.sys.enums.SecretKeyEnum;
+import com.soft.sys.enums.KeyTypeEnum;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysUsersMapper;
-import com.soft.sys.model.dto.GetUsersDto;
-import com.soft.sys.model.request.EditUserRequest;
-import com.soft.sys.model.request.GetUsersRequest;
-import com.soft.sys.model.request.ResetUsernameRequest;
-import com.soft.sys.model.request.SaveUserRequest;
-import com.soft.sys.model.vo.GetUserVo;
+import com.soft.sys.model.dto.GetUsersQueryDTO;
+import com.soft.sys.model.request.EditUserDTO;
+import com.soft.sys.model.request.GetUsersDTO;
+import com.soft.sys.model.request.ResetUsernameDTO;
+import com.soft.sys.model.request.SaveUserDTO;
+import com.soft.sys.model.vo.GetUserVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.UsersVo;
+import com.soft.sys.model.vo.UsersVO;
 import com.soft.sys.rabbitmq.producer.EmailProduce;
 import com.soft.sys.service.*;
 import com.soft.sys.utils.CommonUtil;
 import com.soft.sys.utils.RSAUtil;
 import com.soft.sys.websocket.api.WebSocketConcreteHolder;
 import com.soft.sys.websocket.handler.ForceOfflineHandler;
-import com.soft.sys.websocket.receive.ForceOfflineRecParam;
+import com.soft.sys.websocket.receive.ForceOfflineRequest;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -79,10 +79,10 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     private final EmailProduce emailProduce;
 
     @Override
-    public PageVO<UsersVo> getUsers(GetUsersRequest request) {
-        IPage<UsersVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<UsersVO> getUsers(GetUsersDTO request) {
+        IPage<UsersVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         List<Long> deptIds = new ArrayList<>();
-        GetUsersDto getUsersDto = new GetUsersDto();
+        GetUsersQueryDTO getUsersDto = new GetUsersQueryDTO();
 
         // 获取部门id集合
         Long deptId = request.getDeptId();
@@ -93,10 +93,10 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
         BeanUtils.copyProperties(request, getUsersDto);
         getUsersDto.setDeptIds(deptIds);
-        Page<UsersVo> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
-        PageVO<UsersVo> pageVo = new PageVO<>();
+        Page<UsersVO> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
+        PageVO<UsersVO> pageVo = new PageVO<>();
         allUsers.getRecords().forEach(item -> {
-            item.setIsOnline(redisTemplate.hasKey(RedisConstant.WS_USER_SESSION + item.getId()) ? 1 : 0);
+            item.setIsOnline(WebSocketSessionManager.getSession(Long.parseLong(item.getId())) != null ? 1 : 0);
             if (StringUtils.isNotBlank(item.getPhone())) {
                 item.setPhone(item.getPhone().replaceAll(RegexConstant.PHONE_HIDDEN_REGEX, RegexConstant.PHONE_HIDDEN_EXP));
             }
@@ -112,7 +112,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         try {
             sendWebsocket(id);
 
-            String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+            String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
             String encode = passwordEncoder.encode(rsaUtil.decrypt(targetPass, privateKey));
 
             SysUser sysUser = new SysUser();
@@ -150,8 +150,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveUser(SaveUserRequest request) {
-        String privateKey = secretKeyService.getPrivateKey(SecretKeyEnum.USER_PASSWORD_KEY.getType());
+    public void saveUser(SaveUserDTO request) {
+        String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
         request.setPassword(passwordEncoder.encode(rsaUtil.decrypt(request.getPassword(), privateKey)));
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(request, sysUser);
@@ -181,7 +181,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     @CacheEvict(key = "#username")
     @Transactional(rollbackFor = Exception.class)
-    public void editUser(EditUserRequest request, String username) {
+    public void editUser(EditUserDTO request, String username) {
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(request, sysUser);
         sysUsersMapper.updateById(sysUser);
@@ -220,8 +220,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
-    public GetUserVo getUser(Long id) {
-        GetUserVo getUserVo = sysUsersMapper.getUser(id);
+    public GetUserVO getUser(Long id) {
+        GetUserVO getUserVo = sysUsersMapper.getUser(id);
         getUserVo.setRoleIds(sysRoleService.getUserRole(id));
         return getUserVo;
     }
@@ -241,7 +241,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     @Override
     @CacheEvict(key = "#username")
     @Transactional(rollbackFor = Exception.class)
-    public void resetUsername(ResetUsernameRequest request, String username) {
+    public void resetUsername(ResetUsernameDTO request, String username) {
         try {
             sendWebsocket(request.getId());
 
@@ -316,7 +316,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     private void sendWebsocket(Long id) throws IOException {
         // 重置用户名后需强制用户离线
         ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        ForceOfflineRecParam forceOfflineParam = new ForceOfflineRecParam();
+        ForceOfflineRequest forceOfflineParam = new ForceOfflineRequest();
         forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
         forceOfflineParam.setReceiver(id);
         forceOfflineParam.setMsg("密码已修改，请重新登录");

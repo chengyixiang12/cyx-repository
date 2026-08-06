@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx
@@ -179,7 +180,7 @@ public class MinioUtil {
                     .object(objectKey)
                     .method(Method.GET)
                     .extraQueryParams(headerMap)
-                    .expiry(minioProperty.getExpire(), minioProperty.getTimeUnit())
+                    .expiry(minioProperty.getExpire(), TimeUnit.SECONDS)
                     .build());
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
@@ -200,7 +201,7 @@ public class MinioUtil {
                     .bucket(bucket)
                     .object(objectKey)
                     .method(Method.GET)
-                    .expiry(minioProperty.getExpire(), minioProperty.getTimeUnit())
+                    .expiry(minioProperty.getExpire(), TimeUnit.SECONDS)
                     .build());
         } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
                  NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |

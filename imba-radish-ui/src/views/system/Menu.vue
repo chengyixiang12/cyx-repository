@@ -50,7 +50,7 @@
           width="80" />
         <el-table-column prop="path" align="center" label="路由" show-overflow-tooltip min-width="150" />
         <el-table-column prop="component" align="center" label="组件" show-overflow-tooltip min-width="180" />
-        <el-table-column prop="sort" align="center" label="排序" min-width="65" sortable />
+        <el-table-column prop="sortOrder" align="center" label="排序" min-width="65" sortable />
         <el-table-column prop="status" label="菜单状态" align="center" min-width="80">
           <template #default="scope">
             <el-switch v-model="scope.row.status" :active-value="'1'" :inactive-value="'0'" active-color="#13ce66"
@@ -186,14 +186,24 @@ const handleEdit = (row: PageMenuTreeVO) => {
 
 // 提交新增菜单
 const handleAddSubmit = async (formData: SaveMenuRequest) => {
-  await addMenuStatusApi(formData)
-  await loadMenus()
+  try {
+    await addMenuStatusApi(formData)
+    addDialogVisible.value = false
+    await loadMenus()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑菜单
 const handleEditSubmit = async (formData: EditMenuRequest) => {
-  await updateMenuStatusApi(formData)
-  await loadMenus()
+  try {
+    await updateMenuStatusApi(formData)
+    editDialogVisible.value = false
+    await loadMenus()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 删除菜单

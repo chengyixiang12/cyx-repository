@@ -3,11 +3,11 @@ package com.soft.sys.controller;
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
 import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.model.request.EditDictTypeRequest;
-import com.soft.sys.model.request.GetDictTypesRequest;
-import com.soft.sys.model.request.SaveDictTypeRequest;
-import com.soft.sys.model.vo.DictTypeVo;
-import com.soft.sys.model.vo.DictTypesVo;
+import com.soft.sys.model.request.EditDictTypeDTO;
+import com.soft.sys.model.request.GetDictTypesDTO;
+import com.soft.sys.model.request.SaveDictTypeDTO;
+import com.soft.sys.model.vo.DictTypeVO;
+import com.soft.sys.model.vo.DictTypesVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.resultapi.R;
 import com.soft.sys.service.SysDictTypeService;
@@ -43,8 +43,8 @@ public class SysDictTypeController {
 
     @PostMapping(value = "/getDictTypes")
     @Operation(summary = "获取字典类型列表")
-    public R<PageVO<DictTypesVo>> getDictTypes(@RequestBody GetDictTypesRequest request) {
-        PageVO<DictTypesVo> dictTypesVos = sysDictTypeService.getdictTypes(request);
+    public R<PageVO<DictTypesVO>> getDictTypes(@RequestBody GetDictTypesDTO request) {
+        PageVO<DictTypesVO> dictTypesVos = sysDictTypeService.getdictTypes(request);
         return R.ok(dictTypesVos);
     }
 
@@ -53,7 +53,7 @@ public class SysDictTypeController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_add')")
     @PostMapping
     @Operation(summary = "添加字典类型")
-    public R<Object> saveDictType(@RequestBody @Valid SaveDictTypeRequest request) {
+    public R<Object> saveDictType(@RequestBody @Valid SaveDictTypeDTO request) {
         sysDictTypeService.saveDictType(request);
         return R.ok("添加成功", null);
     }
@@ -63,7 +63,7 @@ public class SysDictTypeController {
     @PreAuthorize(value = "@cps.hasPermission('sys_dict_type_edit')")
     @PutMapping
     @Operation(summary = "编辑字典类型")
-    public R<Object> editDictType(@RequestBody @Valid EditDictTypeRequest request) {
+    public R<Object> editDictType(@RequestBody @Valid EditDictTypeDTO request) {
         sysDictTypeService.editDictType(request);
         return R.ok("修改成功", null);
     }
@@ -71,8 +71,8 @@ public class SysDictTypeController {
     @GetMapping
     @Operation(summary = "获取字典类型详情")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
-    public R<DictTypeVo> getDictType(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
-        DictTypeVo dictTypeVo = sysDictTypeService.getDictType(Long.parseLong(id));
+    public R<DictTypeVO> getDictType(@RequestParam(value = "id", required = false) @NotBlank(message = "主键不能为空") String id) {
+        DictTypeVO dictTypeVo = sysDictTypeService.getDictType(Long.parseLong(id));
         return R.ok(dictTypeVo);
     }
 

@@ -6,8 +6,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "角色")
-@Alias(value = "SysRoleVo")
-public class SysRoleVo {
+@Alias(value = "SysRoleVO")
+public class SysRoleVO {
 
     @Schema(description = "主键")
     private String id;

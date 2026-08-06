@@ -29,8 +29,8 @@
             placeholder="请选择父级菜单" style="width: 100%" clearable />
         </el-form-item>
 
-        <el-form-item label="排序" prop="orderNum">
-          <el-input v-model="formData.orderNum" type="number" @input="handleSortInput" placeholder="请填写序号" />
+        <el-form-item label="排序" prop="sortOrder">
+          <el-input v-model="formData.sortOrder" type="number" @input="handleSortInput" placeholder="请填写序号" />
         </el-form-item>
 
         <el-form-item label="图标" prop="icon">
@@ -69,7 +69,7 @@
 
     <template #footer>
       <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" @click="submitForm">确定</el-button>
+      <el-button type="primary" :loading="submitLoading" :disabled="submitLoading" @click="submitForm">确定</el-button>
     </template>
   </el-dialog>
 </template>
@@ -120,6 +120,7 @@ const props = withDefaults(defineProps<FatherParam>(), {
 const emit = defineEmits(['update:visible', 'submit'])
 
 const formRef = ref<FormInstance>()
+const submitLoading = ref(false)
 const formData = ref<GetMenuVo>({
   id: '',
   parentId: '',
@@ -128,7 +129,7 @@ const formData = ref<GetMenuVo>({
   component: '',
   icon: '',
   type: '0',  // 默认类型为目录
-  orderNum: null,
+  sortOrder: null,
   status: 1,
   visible: 1,
   remark: '',
@@ -195,10 +196,14 @@ const handleTypeChange = () => {
 }
 
 const submitForm = async () => {
+  if (submitLoading.value) return
   const valid = await formRef.value?.validate()
-  if (valid) {
+  if (!valid) return
+  submitLoading.value = true
+  try {
     emit('submit', formData.value)
-    emit('update:visible', false)
+  } finally {
+    submitLoading.value = false
   }
 }
 
@@ -221,9 +226,9 @@ const handleSortInput = (value: string) => {
   const numericValue = value.replace(/\D/g, '')
   // 如果有输入，且转成了数字
   if (numericValue) {
-    formData.value.orderNum = parseInt(numericValue, 10)
+    formData.value.sortOrder = parseInt(numericValue, 10)
   } else {
-    formData.value.orderNum = null
+    formData.value.sortOrder = null
   }
 }
 

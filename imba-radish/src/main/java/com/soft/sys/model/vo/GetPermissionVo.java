@@ -10,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Schema(description = "获取权限响应参数")
-public class GetPermissionVo {
+public class GetPermissionVO {
 
     @Schema(description = "权限名称")
     private String name;

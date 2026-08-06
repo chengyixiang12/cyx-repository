@@ -11,13 +11,13 @@ import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.entity.SysFile;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysFileMapper;
-import com.soft.sys.model.dto.FileDetailDto;
-import com.soft.sys.model.dto.FileHashDto;
-import com.soft.sys.model.dto.SelectDeletedFileDto;
-import com.soft.sys.model.request.FilesRequest;
-import com.soft.sys.model.vo.FilesVo;
+import com.soft.sys.model.dto.FileDetailDTO;
+import com.soft.sys.model.dto.FileHashDTO;
+import com.soft.sys.model.dto.SelectDeletedFileDTO;
+import com.soft.sys.model.request.FilesDTO;
+import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.UploadFileVo;
+import com.soft.sys.model.vo.UploadFileVO;
 import com.soft.sys.properties.MinioProperty;
 import com.soft.sys.service.SysDictDataService;
 import com.soft.sys.service.SysFileService;
@@ -28,16 +28,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 /**
@@ -66,8 +70,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     private final FileUploadAsync fileUploadAsync;
 
     @Override
-    public UploadFileVo uploadFile(MultipartFile multipartFile, String fileMd5) {
-        UploadFileVo uploadFileVo = new UploadFileVo();
+    public UploadFileVO uploadFile(MultipartFile multipartFile, String fileMd5) {
+        UploadFileVO uploadFileVo = new UploadFileVO();
         SysFile sysFile = new SysFile();
         String originalFilename = multipartFile.getOriginalFilename();
         if (StringUtils.isBlank(originalFilename)) {
@@ -75,7 +79,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         }
 
         try {
-            FileHashDto fileHashDto = sysFileMapper.getFileByHash(fileMd5);
+            FileHashDTO fileHashDto = sysFileMapper.getFileByHash(fileMd5);
             if (fileHashDto != null) {
                 BeanUtils.copyProperties(fileHashDto, sysFile);
             } else {
@@ -106,7 +110,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public FileDetailDto getFileDetailById(Long id) {
+    public FileDetailDTO getFileDetailById(Long id) {
         return sysFileMapper.getFileDetailById(id);
     }
 
@@ -116,29 +120,29 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public PageVO<FilesVo> getFiles(FilesRequest request) {
+    public PageVO<FilesVO> getFiles(FilesDTO request) {
 
-        IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+        IPage<FilesVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysFileMapper.getFiles(page, request);
 
         Map<String, String> fileStorageLocation = sysDictDataService.getDictDataMap(DictConstant.FILE_STORAGE_LOCATION);
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
-        PageVO<FilesVo> pageVo = new PageVO<>();
+        PageVO<FilesVO> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
     }
 
     @Override
-    public List<SelectDeletedFileDto> selectDeletedFiles() {
+    public List<SelectDeletedFileDTO> selectDeletedFiles() {
         return sysFileMapper.selectDeletedFiles();
     }
 
     @Override
-    public PageVO<FilesVo> getMyFiles(FilesRequest request) {
-        IPage<FilesVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<FilesVO> getMyFiles(FilesDTO request) {
+        IPage<FilesVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         Long userId = securityUtil.getUserInfo().getId();
         page = sysFileMapper.getMyFiles(page, request, userId);
 
@@ -146,7 +150,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
         page.getRecords().forEach(item -> item.setLocationName(fileStorageLocation.get(String.valueOf(item.getLocation()))));
 
-        PageVO<FilesVo> pageVo = new PageVO<>();
+        PageVO<FilesVO> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
@@ -183,7 +187,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
             }
 
             // 减5是为了防止minio签名过期，redis未过期，导致获取失败
-            redisTemplate.opsForValue().set(redisKey, url, minioProperty.getExpire() - 5, minioProperty.getTimeUnit());
+            redisTemplate.opsForValue().set(redisKey, url, minioProperty.getExpire() - 5, TimeUnit.SECONDS);
         }
         return replaceMinioUrlWithProxy(url);
     }
@@ -204,7 +208,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public UploadFileVo mergeChunk(File fileTemp, String fileMd5) {
+    public UploadFileVO mergeChunk(File fileTemp, String fileMd5) {
         String fileName = fileTemp.getName();
         String fileKey = IdUtil.fastSimpleUUID();
         String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
@@ -225,7 +229,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
         fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize);
 
-        UploadFileVo uploadFileVo = new UploadFileVo();
+        UploadFileVO uploadFileVo = new UploadFileVO();
         uploadFileVo.setFileName(fileName);
         uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
 

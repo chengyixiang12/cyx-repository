@@ -1,7 +1,7 @@
 spring:
   servlet:
     multipart:
-      location: /opt/project/tmp
+      location: /tmp
       max-file-size: 10MB
       max-request-size: 10MB
       file-size-threshold: 1MB
@@ -54,9 +54,9 @@ spring:
           max-wait: 5000
   flyway:
     # 启用flyway
-    enabled: true
+    enabled: false
     # 自动生成flyway_schema_history表
-    baseline-on-migrate: true
+    baseline-on-migrate: false
     locations: classpath:db/migration
   rabbitmq:
     host: ${RABBIT_MQ_HOST}
@@ -97,18 +97,25 @@ springdoc:
 # 日志
 logging:
   level:
+    # 根日志级别（所有 logger 的默认级别）
+    root: info
+
+    # Spring 框架
     org.springframework.boot: info
+
+    # MyBatis / MyBatis-Plus 框架日志
     com.baomidou.mybatisplus: info
     org.mybatis: info
-    com.soft.base.mapper: debug
+    # Mapper SQL 日志
+    com.soft.sys.mapper: debug
     com.soft.module.mapper: info
-    org.springframework.boot.actuate: info
+
+    # Flowable 工作流引擎
     org.flowable.job.service.impl.asyncexecutor: info
-    root: info
   config: classpath:logback-spring.xml
 # 临时文件存储路径
 tmp:
-  path: /opt/project/tmp
+  path: /tmp
 # 限流
 rate-limit:
   # 是否开启限流
@@ -123,7 +130,7 @@ rate-limit:
 # 大文件存储路径
 storage:
   big-file:
-    location: /opt/project/tmp
+    location: /tmp
 # 启用knife4j文档
 knife4j:
   enable: false

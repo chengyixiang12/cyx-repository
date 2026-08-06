@@ -4,40 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.sys.mapper.SysUsersMapper">
 
-    <resultMap id="BaseResultMap" type="com.soft.sys.entity.SysUser">
-        <id property="id" column="id" jdbcType="BIGINT"/>
-        <result property="username" column="username" jdbcType="VARCHAR"/>
-        <result property="password" column="password" jdbcType="VARCHAR"/>
-        <result property="enabled" column="enabled" jdbcType="TINYINT"/>
-        <result property="accountNonLocked" column="account_non_locked" jdbcType="TINYINT"/>
-        <result property="credentialsNonExpired" column="credentials_non_expired" jdbcType="TINYINT"/>
-        <result property="accountNonExpired" column="account_non_expired" jdbcType="TINYINT"/>
-        <result property="email" column="email" jdbcType="VARCHAR"/>
-        <result property="phone" column="phone" jdbcType="VARCHAR"/>
-        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="delFlag" column="del_flag" jdbcType="CHAR"/>
-        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
-        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
-        <result property="deptId" column="dept_id" jdbcType="BIGINT"/>
-        <result property="avatar" column="avatar" jdbcType="BIGINT"/>
-    </resultMap>
-
-<!--    <select id="getByUserName" parameterType="java.lang.String" resultType="java.lang.String">-->
-<!--        SELECT-->
-<!--        u.`password`-->
-<!--        FROM-->
-<!--        sysUser u-->
-<!--        WHERE-->
-<!--        u.del_flag = '0'-->
-<!--        AND u.enabled = 1-->
-<!--        AND u.account_non_locked = 1-->
-<!--        AND u.credentials_non_expired = 1-->
-<!--        AND u.account_non_expired = 1-->
-<!--        AND u.username = #{username}-->
-<!--    </select>-->
-
-    <select id="getUsers" parameterType="GetUsersDto" resultType="UsersVo">
+    <select id="getUsers" parameterType="GetUsersDto" resultType="UsersVO">
         SELECT
         u.id,
         u.username,
@@ -70,7 +37,7 @@
             AND u.account_non_locked = #{getUsersDto.accountNonLocked}
         </if>
     </select>
-    <select id="getUser" parameterType="java.lang.Long" resultType="GetUserVo">
+    <select id="getUser" parameterType="java.lang.Long" resultType="GetUserVO">
         SELECT
         su.id,
         su.username,

@@ -123,7 +123,7 @@ async function request<T = any>(
     return res;
 
   } catch (error) {
-    return handleRequestError(error as ApiError, config?.silent);
+    handleRequestError(error as ApiError, config?.silent);
   }
 }
 

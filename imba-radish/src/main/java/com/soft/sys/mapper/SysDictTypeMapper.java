@@ -3,9 +3,9 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysDictType;
-import com.soft.sys.model.request.GetDictTypesRequest;
-import com.soft.sys.model.vo.DictTypeVo;
-import com.soft.sys.model.vo.DictTypesVo;
+import com.soft.sys.model.request.GetDictTypesDTO;
+import com.soft.sys.model.vo.DictTypeVO;
+import com.soft.sys.model.vo.DictTypesVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -18,10 +18,10 @@ import java.util.List;
 */
 public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
 
-    IPage<DictTypesVo> getdictTypes(@Param("page") IPage<DictTypesVo> page,
-                                    @Param("request") GetDictTypesRequest request);
+    IPage<DictTypesVO> getdictTypes(@Param("page") IPage<DictTypesVO> page,
+                                    @Param("request") GetDictTypesDTO request);
 
-    DictTypeVo getDictType(@Param("id") Long id);
+    DictTypeVO getDictType(@Param("id") Long id);
 
     void enableDictType(@Param("id") Long id);
 

@@ -12,7 +12,7 @@ import java.util.List;
  **/
 @Data
 @Schema(description = "获取用户响应参数")
-public class GetUserVo {
+public class GetUserVO {
 
     @Schema(description = "主键")
     private String id;

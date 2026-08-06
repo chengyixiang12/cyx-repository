@@ -98,7 +98,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm">确定</el-button>
+        <el-button type="primary" :loading="submitLoading" :disabled="submitLoading" @click="submitForm">确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -120,6 +120,7 @@ import { GetJobVo } from '@/types/quartz'
 // 表单引用
 const formRef = ref<FormInstance>()
 
+const submitLoading = ref(false)
 const showCronDrawer = ref(false)
 
 // 控制弹窗显示
@@ -194,11 +195,14 @@ const handleClose = () => {
 
 // 提交表单
 const submitForm = async () => {
+  if (submitLoading.value) return
   const valid = await formRef.value?.validate()
-
-  if (valid) {
+  if (!valid) return
+  submitLoading.value = true
+  try {
     emit('submit', formData.value)
-    emit('update:visible', false)
+  } finally {
+    submitLoading.value = false
   }
 }
 

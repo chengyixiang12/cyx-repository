@@ -10,19 +10,18 @@ import com.soft.sys.entity.SysScheduleJob;
 import com.soft.sys.enums.QuartzIntervalEnum;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysScheduleJobMapper;
-import com.soft.sys.model.dto.DictDataDto;
-import com.soft.sys.model.request.CreateJobRequest;
-import com.soft.sys.model.request.EditJobRequest;
-import com.soft.sys.model.request.GetQuartzTasksRequest;
-import com.soft.sys.model.vo.GetJobVo;
-import com.soft.sys.model.vo.GetQuartzTasksVo;
+import com.soft.sys.model.dto.DictDataDTO;
+import com.soft.sys.model.request.CreateJobDTO;
+import com.soft.sys.model.request.EditJobDTO;
+import com.soft.sys.model.request.GetQuartzTasksDTO;
+import com.soft.sys.model.vo.GetJobVO;
+import com.soft.sys.model.vo.GetQuartzTasksVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDictDataService;
 import com.soft.sys.service.SysScheduleJobService;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +48,6 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
     private final SysDictDataService sysDictDataService;
 
-    @Autowired
     public SysScheduleJobServiceImpl(SysScheduleJobMapper sysScheduleJobMapper,
                                      Scheduler scheduler,
                                      SysDictDataService sysDictDataService) {
@@ -60,7 +58,7 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createJob(CreateJobRequest request) {
+    public void createJob(CreateJobDTO request) {
         SysScheduleJob sysScheduleJob = new SysScheduleJob();
         BeanUtils.copyProperties(request, sysScheduleJob);
         sysScheduleJobMapper.insert(sysScheduleJob);
@@ -68,15 +66,15 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
     }
 
     @Override
-    public PageVO<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request) {
-        Page<GetQuartzTasksVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<GetQuartzTasksVO> getQuartzTasks(GetQuartzTasksDTO request) {
+        Page<GetQuartzTasksVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysScheduleJobMapper.getQuartzTasks(page, request);
-        PageVO<GetQuartzTasksVo> pageVo = new PageVO<>();
+        PageVO<GetQuartzTasksVO> pageVo = new PageVO<>();
         pageVo.setRecords(page.getRecords());
         pageVo.setTotal(page.getTotal());
 
-        List<DictDataDto> sysDictDataList = sysDictDataService.getByDictType(DictConstant.SCHEDULE_TYPE);
-        Map<String, String> scheduleTypeMap = sysDictDataList.stream().collect(Collectors.toMap(DictDataDto::getValue, DictDataDto::getLabel));
+        List<DictDataDTO> sysDictDataList = sysDictDataService.getByDictType(DictConstant.SCHEDULE_TYPE);
+        Map<String, String> scheduleTypeMap = sysDictDataList.stream().collect(Collectors.toMap(DictDataDTO::getValue, DictDataDTO::getLabel));
 
         pageVo.getRecords().forEach(item -> item.setScheduleType(scheduleTypeMap.get(item.getScheduleType())));
         return pageVo;
@@ -126,12 +124,12 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
     }
 
     @Override
-    public GetJobVo getJob(Long id) {
+    public GetJobVO getJob(Long id) {
         return sysScheduleJobMapper.getJob(id);
     }
 
     @Override
-    public void editJob(EditJobRequest request) {
+    public void editJob(EditJobDTO request) {
         SysScheduleJob sysScheduleJob = new SysScheduleJob();
         BeanUtils.copyProperties(request, sysScheduleJob);
         sysScheduleJobMapper.updateById(sysScheduleJob);

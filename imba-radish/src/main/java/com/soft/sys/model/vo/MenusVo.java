@@ -15,8 +15,8 @@ import java.util.List;
  **/
 @Data
 @Schema(description = "获取菜单响应参数")
-@Alias(value = "MenusVo")
-public class MenusVo implements MenuTree<MenusVo> {
+@Alias(value = "MenusVO")
+public class MenusVO implements MenuTree<MenusVO> {
 
     @Schema(description = "菜单唯一标识")
     private String id;
@@ -40,5 +40,5 @@ public class MenusVo implements MenuTree<MenusVo> {
     private Integer visible;
 
     @Schema(description = "子菜单列表")
-    private List<MenusVo> children = new ArrayList<>();
+    private List<MenusVO> children = new ArrayList<>();
 }

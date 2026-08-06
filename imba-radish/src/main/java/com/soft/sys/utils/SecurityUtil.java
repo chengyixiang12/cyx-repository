@@ -1,7 +1,7 @@
 package com.soft.sys.utils;
 
 import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,8 +21,8 @@ public class SecurityUtil {
      * 从上下文获取用户信息
      * @return
      */
-    public UserDto getUserInfo() {
-        return (UserDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public UserDTO getUserInfo() {
+        return (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     /**

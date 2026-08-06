@@ -47,6 +47,21 @@
               inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
           </template>
         </el-table-column>
+        <el-table-column label="执行记录" align="center" min-width="180">
+          <template #default="scope">
+            <span>
+              <el-tag type="success" size="small" style="margin-right: 4px">
+                成功 {{ scope.row.successNum ?? 0 }}
+              </el-tag>
+              <el-tag type="danger" size="small" style="margin-right: 4px">
+                失败 {{ scope.row.failNum ?? 0 }}
+              </el-tag>
+              <el-tag type="warning" size="small">
+                执行中 {{ scope.row.executingNum ?? 0 }}
+              </el-tag>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="remark" align="center" label="备注" show-overflow-tooltip />
         <el-table-column label="操作" min-width="240" align="center">
           <template #default="scope">
@@ -139,14 +154,24 @@ const handleEdit = (id: number) => {
 
 // 提交新增任务
 const handleAddSubmit = async (formData: SaveJobRequest) => {
-  await createJobApi(formData);
-  await loadJobs();
+  try {
+    await createJobApi(formData);
+    addDialogVisible.value = false
+    await loadJobs();
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑任务
 const handleEditSubmit = async (formData: EditJobRequest) => {
-  await editJobApi(formData)
-  await loadJobs()
+  try {
+    await editJobApi(formData)
+    editDialogVisible.value = false
+    await loadJobs()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 删除任务

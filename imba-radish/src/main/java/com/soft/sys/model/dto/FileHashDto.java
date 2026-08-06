@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "文件hash传输参数")
-@Alias(value = "FileHashDto")
-public class FileHashDto {
+@Alias(value = "FileHashDTO")
+public class FileHashDTO {
 
     @Schema(description = "源文件名")
     private String originalName;

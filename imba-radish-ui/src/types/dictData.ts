@@ -1,7 +1,7 @@
 export interface DictDatasRequest {
     pageNum: number;
     pageSize: number;
-    parentId: string | null;
+    dictTypeId: string | null;
     keyword: string;
     status: number | null;
 }
@@ -19,7 +19,7 @@ export interface SaveDictDataRequest {
     sortOrder: number | null;
     label: string;
     value: string;
-    parentId: string | null;
+    dictTypeId: string | null;
     cssClass: string;
     listClass: string;
     isDefault: number;
@@ -32,7 +32,7 @@ export interface EditDictDataRequest {
     sortOrder: number | null;
     label: string;
     value: string;
-    parentId: string | null;
+    dictTypeId: string | null;
     cssClass: string;
     listClass: string;
     isDefault: number;
@@ -47,7 +47,7 @@ export interface DictDataVo {
     isDefault: number;
     status: number;
     cssClass: string;
-    parentId: string;
+    dictTypeId: string;
     listClass: string;
     remark: string;
     sortOrder: number | null;

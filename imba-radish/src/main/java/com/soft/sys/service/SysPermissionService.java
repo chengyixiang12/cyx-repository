@@ -2,9 +2,9 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysPermission;
-import com.soft.sys.model.request.EditPermissionRequest;
-import com.soft.sys.model.request.PermissionsRequest;
-import com.soft.sys.model.request.SavePermissionRequest;
+import com.soft.sys.model.request.EditPermissionDTO;
+import com.soft.sys.model.request.PermissionsDTO;
+import com.soft.sys.model.request.SavePermissionDTO;
 import com.soft.sys.model.vo.*;
 
 import java.util.List;
@@ -16,20 +16,20 @@ import java.util.List;
 */
 public interface SysPermissionService extends IService<SysPermission> {
 
-    PageVO<PermissionsVo> getPermissions(PermissionsRequest request);
+    PageVO<PermissionsVO> getPermissions(PermissionsDTO request);
 
 
-    void savePermission(SavePermissionRequest request);
+    void savePermission(SavePermissionDTO request);
 
     List<String> getPermissionsByRoleCodes(List<String> roleCodes);
 
     boolean existCode(String code);
 
-    List<GetAllPermissionVo> getAllPermission();
+    List<GetAllPermissionVO> getAllPermission();
 
-    List<GetAssignPerVo> getAssignPer(Long roleId);
+    List<GetAssignPerVO> getAssignPer(Long roleId);
 
-    void editPermission(EditPermissionRequest request);
+    void editPermission(EditPermissionDTO request);
 
     void deletePermission(Long id);
 
@@ -39,5 +39,5 @@ public interface SysPermissionService extends IService<SysPermission> {
 
     boolean existEnableCode(String[] permissions);
 
-    GetPermissionVo getPermission(Long id);
+    GetPermissionVO getPermission(Long id);
 }

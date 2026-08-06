@@ -29,7 +29,7 @@ public class WebSocketConcreteRegistry {
      */
     @PostConstruct
     public void init() {
-        log.info("开始注入websocket消息处理器");
+        log.debug("开始注入websocket消息处理器");
         for (WebSocketConcreteHandler<?> c : webSocketConcreteHandlers) {
             WebSocketConcreteHolder.addConcreteHandler(c.getOrder().toString(), c);
             log.debug("{}处理器注入成功", c.getOrder());

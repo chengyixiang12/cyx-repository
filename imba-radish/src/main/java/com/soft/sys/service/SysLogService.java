@@ -2,10 +2,10 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysLog;
-import com.soft.sys.model.dto.LogDto;
-import com.soft.sys.model.request.LogsRequest;
-import com.soft.sys.model.vo.GetLogVo;
-import com.soft.sys.model.vo.LogsVo;
+import com.soft.sys.model.dto.LogDTO;
+import com.soft.sys.model.request.LogsDTO;
+import com.soft.sys.model.vo.GetLogVO;
+import com.soft.sys.model.vo.LogsVO;
 import com.soft.sys.model.vo.PageVO;
 
 /**
@@ -15,11 +15,11 @@ import com.soft.sys.model.vo.PageVO;
 */
 public interface SysLogService extends IService<SysLog> {
 
-    void saveLog(LogDto logDto);
+    void saveLog(LogDTO logDto);
 
-    PageVO<LogsVo> getLogs(LogsRequest request);
+    PageVO<LogsVO> getLogs(LogsDTO request);
 
-    GetLogVo getLog(Long id);
+    GetLogVO getLog(Long id);
 
     void deleteLog(Long id);
 }

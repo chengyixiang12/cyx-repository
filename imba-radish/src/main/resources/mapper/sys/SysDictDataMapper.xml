@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.sys.mapper.SysDictDataMapper">
-    <select id="getDictDatas" parameterType="DictDatasRequest" resultType="DictDatasVo">
+    <select id="getDictDatas" parameterType="DictDatasDTO" resultType="DictDatasVO">
         SELECT
         sdd.id,
         sdd.label,
@@ -15,7 +15,7 @@
         sys_dict_data sdd
         WHERE
         sdd.del_flag = '0'
-        AND sdd.parent_id = #{request.parentId}
+        AND sdd.dict_type_id = #{request.dictTypeId}
         <if test="request.keyword != null and request.keyword != ''">
             AND ( sdd.code LIKE concat('%', #{request.keyword}, '%') OR sdd.label LIKE concat('%', #{request.keyword}, '$') )
         </if>
@@ -23,7 +23,7 @@
             AND sdd.status = #{request.status}
         </if>
     </select>
-    <select id="getDictData" parameterType="java.lang.Long" resultType="DictDataVo">
+    <select id="getDictData" parameterType="java.lang.Long" resultType="DictDataVO">
         SELECT
         sdd.id,
         sdd.label,
@@ -40,7 +40,7 @@
         sdd.del_flag = '0'
         AND sdd.id = #{id}
     </select>
-    <update id="deleteDictDataBatch" parameterType="DeleteRequest">
+    <update id="deleteDictDataBatch" parameterType="DeleteDTO">
         UPDATE sys_dict_data sdd
         SET del_flag = '0'
         WHERE
@@ -68,7 +68,7 @@
         SET
             is_default = 0
         WHERE is_default = 1
-           AND parent_id = #{parentId}
+           AND dict_type_id = #{dictTypeId}
     </update>
     <update id="setDefaultData" parameterType="java.lang.Long">
         UPDATE
@@ -85,7 +85,7 @@
         FROM
             sys_dict_data t1
                 JOIN sys_dict_type t2 ON
-                t1.parent_id = t2.id
+                t1.dict_type_id = t2.id
         WHERE
             t1.del_flag = '0'
           AND t1.status = 1
@@ -98,7 +98,7 @@
             t1.label
         FROM
             sys_dict_data t1
-        JOIN sys_dict_type t2 ON t1.parent_id = t2.id
+        JOIN sys_dict_type t2 ON t1.dict_type_id = t2.id
         WHERE
             t1.del_flag = '0'
           AND t2.dict_type = #{dictType}

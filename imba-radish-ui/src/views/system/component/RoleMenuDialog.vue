@@ -8,7 +8,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="visible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button type="primary" :loading="submitLoading" :disabled="submitLoading" @click="handleSubmit">确定</el-button>
       </div>
     </template>
   </el-dialog>
@@ -40,6 +40,7 @@ const visible = computed({
 const menuTree = ref<GetMenuTreeVo[]>([])
 const selectedMenuIds = ref<string[]>([])
 const menuTreeRef = ref()
+const submitLoading = ref(false)
 
 const loadMenus = async (roleId: string) => {
   const [allMenus, assignedMenus] = await Promise.all([
@@ -65,6 +66,7 @@ watch(
 )
 
 const handleSubmit = () => {
+  if (submitLoading.value) return
   const checkedKeys = menuTreeRef.value.getCheckedKeys() as string[]
   const halfCheckedKeys = menuTreeRef.value.getHalfCheckedKeys() as string[]
 
@@ -74,8 +76,12 @@ const handleSubmit = () => {
     roleId: props.roleId,
     menuIds: allSelected
   }
-  emit('submit', request)
-  visible.value = false
+  submitLoading.value = true
+  try {
+    emit('submit', request)
+  } finally {
+    submitLoading.value = false
+  }
 }
 </script>
 

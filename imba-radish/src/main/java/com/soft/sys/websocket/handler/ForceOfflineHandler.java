@@ -4,10 +4,10 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.receive.ForceOfflineRecParam;
-import com.soft.sys.websocket.send.ForceOfflineSendParams;
+import com.soft.sys.websocket.receive.ForceOfflineRequest;
+import com.soft.sys.websocket.send.ForceOfflineResponse;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,25 +36,24 @@ public class ForceOfflineHandler implements WebSocketConcreteHandler<String> {
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        ForceOfflineRecParam forceOfflineRecParam = JSON.parseObject(message.getPayload(), ForceOfflineRecParam.class);
+        ForceOfflineRequest forceOfflineRecParam = JSON.parseObject(message.getPayload(), ForceOfflineRequest.class);
         WebSocketSession receiveSession = WebSocketSessionManager.getSession(forceOfflineRecParam.getReceiver());
         if (receiveSession == null) {
             log.info("接收方未连接websocket...");
             return;
         }
 
-        ForceOfflineSendParams forceOfflineSendParams = new ForceOfflineSendParams();
+        ForceOfflineResponse forceOfflineSendParams = new ForceOfflineResponse();
         forceOfflineSendParams.setOrder(forceOfflineRecParam.getOrder());
         forceOfflineSendParams.setMsg(forceOfflineRecParam.getMsg());
         receiveSession.sendMessage(new TextMessage(forceOfflineSendParams.toJsonString()));
 
-        UserDto userDto = (UserDto) receiveSession.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        UserDTO userDto = (UserDTO) receiveSession.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
 
         String token = (String) receiveSession.getAttributes().get(WebSocketConstant.AUTHORIZATION);
         WebSocketSessionManager.removeSession(userDto.getId());
         Set<String> keySet = new HashSet<>(4);
-        keySet.add(RedisConstant.WS_USER_SESSION + userDto.getId());
         keySet.add(RedisConstant.AUTHORIZATION_USERNAME + token);
         keySet.add(RedisConstant.USER_INFO + username);
         keySet.add(RedisConstant.FINGERPRINT + username);

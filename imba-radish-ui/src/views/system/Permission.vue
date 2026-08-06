@@ -48,6 +48,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="name" align="center" label="名称" show-overflow-tooltip />
+        <el-table-column prop="code" align="center" label="编码" show-overflow-tooltip />
         <el-table-column prop="type" align="center" label="类型" show-overflow-tooltip>
           <template #default="scope">
             {{ scope.row.type === '1' ? '菜单' : '按钮' }}
@@ -165,14 +166,24 @@ const handleEdit = (row: PermissionsVo) => {
 
 // 提交新增菜单
 const handleAddSubmit = async (formData: SavePermissionRequest) => {
-  await savePermissionApi(formData)
-  loadPermissions()
+  try {
+    await savePermissionApi(formData)
+    addDialogVisible.value = false
+    loadPermissions()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑菜单
 const handleEditSubmit = async (formData: EditPermissionRequest) => {
-  await editPermissionApi(formData);
-  loadPermissions();
+  try {
+    await editPermissionApi(formData);
+    editDialogVisible.value = false
+    loadPermissions();
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 改变权限状态

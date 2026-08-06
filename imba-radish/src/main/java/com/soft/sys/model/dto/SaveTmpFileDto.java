@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "保存临时文件请求参数")
-public class SaveTmpFileDto {
+public class SaveTmpFileDTO {
 
     @Schema(description = "字节数组")
     private Byte[] buffer;

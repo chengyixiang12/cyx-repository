@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取公钥响应参数")
-@Alias(value = "PublicKeyVo")
-public class PublicKeyVo {
+@Alias(value = "PublicKeyVO")
+public class PublicKeyVO {
 
     @Schema(description = "公钥")
     private String publicKey;

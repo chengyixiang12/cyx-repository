@@ -8,12 +8,6 @@ package com.soft.sys.constants;
 public class RedisConstant {
 
     /**
-     * 黑名单
-     */
-    @Deprecated
-    public static final String TOKEN_BLACKLIST_KEY = "radish:token:blacklist";
-
-    /**
      * 用户鉴权
      */
     public static final String AUTHORIZATION_USERNAME = "radish:token:";
@@ -22,11 +16,6 @@ public class RedisConstant {
      * 邮箱验证码
      */
     public static final String EMAIL_CAPTCHA_KEY = "radish:email:captcha:";
-
-    /**
-     * 保存日志key
-     */
-    public static final String SYS_LOG_CACHE = "radish:log:";
 
     /**
      * 用户信息，tips：此处的"::"不能改为":"
@@ -42,21 +31,6 @@ public class RedisConstant {
      * 用户登录错误次数
      */
     public static final String USER_LOGIN_ERROR_TIME = "radish:login-error-time:";
-
-    /**
-     * websocket中的用户会话
-     */
-    public static final String WS_USER_SESSION = "ws:user:session:";
-
-    /**
-     * websocket的用户会话保存过期时间；比心跳间隔长5秒；单位：秒
-     */
-    public static final Long WS_USER_SESSION_EXPIRE = 35L;
-
-    /**
-     * 通配符
-     */
-    public static final String WILDCARD_CHARACTER = "*";
 
     /**
      * 公钥
@@ -112,4 +86,9 @@ public class RedisConstant {
      * 接口访问控制
      */
     public static final String ACCESS_CONTROL = "radish:access-control:";
+
+    /**
+     * ping的状态，如果客户端回复，则删除该缓存；如果客户端没有回复，则在下一次心跳时，将其关闭
+     */
+    public static final String PING_STATUS = "radish:ping-status:";
 }

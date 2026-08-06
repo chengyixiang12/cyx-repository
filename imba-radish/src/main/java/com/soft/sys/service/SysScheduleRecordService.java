@@ -2,8 +2,8 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysScheduleRecord;
-import com.soft.sys.model.request.GetQuartzRecordListRequest;
-import com.soft.sys.model.vo.GetQuartzRecordListVo;
+import com.soft.sys.model.request.GetQuartzRecordListDTO;
+import com.soft.sys.model.vo.GetQuartzRecordListVO;
 import com.soft.sys.model.vo.PageVO;
 
 /**
@@ -13,7 +13,7 @@ import com.soft.sys.model.vo.PageVO;
 */
 public interface SysScheduleRecordService extends IService<SysScheduleRecord> {
 
-    PageVO<GetQuartzRecordListVo> getQuartzRecordList(GetQuartzRecordListRequest request);
+    PageVO<GetQuartzRecordListVO> getQuartzRecordList(GetQuartzRecordListDTO request);
 
     String getLogDetail(Long id);
 }

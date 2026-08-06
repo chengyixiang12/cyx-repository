@@ -4,16 +4,16 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.api.WebSocketConcreteHolder;
-import com.soft.sys.websocket.receive.AbstractRecParam;
-import com.soft.sys.websocket.receive.RecParam;
-import com.soft.sys.websocket.send.SendParams;
+import com.soft.sys.websocket.receive.AbstractWebSocketRequest;
+import com.soft.sys.websocket.receive.WebSocketRequest;
+import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.NonNull;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -24,16 +24,16 @@ import java.nio.ByteBuffer;
  * @DateTime: 2024/11/21 19:46
  **/
 @Slf4j
-public class WebSocketHandler extends TextWebSocketHandler {
+public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     protected void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) throws Exception {
         // 获取消息体
         String payload = message.getPayload();
-        AbstractRecParam abstractRecParam = JSON.parseObject(payload, RecParam.class);
+        AbstractWebSocketRequest abstractRecParam = JSON.parseObject(payload, WebSocketRequest.class);
         String order = abstractRecParam.getOrder();
         if (StringUtils.isBlank(order)) {
-            SendParams sendParams = new SendParams();
+            WebSocketResponse sendParams = new WebSocketResponse();
             sendParams.setStatus(false);
             sendParams.setMsg("websocket连接异常，指令为空");
             log.warn("websocket连接异常，指令为空");
@@ -41,7 +41,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             return;
         }
         if (!WebSocketOrderEnum.exist(order)) {
-            SendParams sendParams = new SendParams();
+            WebSocketResponse sendParams = new WebSocketResponse();
             sendParams.setStatus(false);
             sendParams.setMsg("无效的指令");
             log.warn("无效的指令");

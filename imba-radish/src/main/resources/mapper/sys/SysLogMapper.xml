@@ -34,7 +34,7 @@
         exception_info,os_browser_info,type
     </sql>
 
-    <select id="getLogs" parameterType="LogsRequest" resultType="LogsVo">
+    <select id="getLogs" parameterType="LogsDTO" resultType="LogsVO">
         SELECT
         sl.id,
         su.nickname,
@@ -70,7 +70,7 @@
         </if>
         ORDER BY sl.create_time DESC
     </select>
-    <select id="getLog" parameterType="java.lang.Long" resultType="GetLogVo">
+    <select id="getLog" parameterType="java.lang.Long" resultType="GetLogVO">
         SELECT
             sl.id,
             sl.create_time,

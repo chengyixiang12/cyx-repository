@@ -129,20 +129,30 @@ const handleEdit = (row: GetDeptsVo) => {
 
 // 提交新增部门
 const handleAddSubmit = async (formData: SaveDeptRequest) => {
-  await saveDeptApi(formData)
-  await loadDepts()
+  try {
+    await saveDeptApi(formData)
+    addDialogVisible.value = false
+    await loadDepts()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 提交编辑部门
 const handleEditSubmit = async (formData: EditDeptRequest) => {
-  await updateDeptApi({
-    id: deptId.value,
-    code: formData.code,
-    name: formData.name,
-    sortOrder: formData.sortOrder || 0,
-    parentId: formData.parentId
-  })
-  await loadDepts()
+  try {
+    await updateDeptApi({
+      id: deptId.value,
+      code: formData.code,
+      name: formData.name,
+      sortOrder: formData.sortOrder || 0,
+      parentId: formData.parentId
+    })
+    editDialogVisible.value = false
+    await loadDepts()
+  } catch (e) {
+    // 失败时不关闭弹窗
+  }
 }
 
 // 加载部门数据

@@ -2,7 +2,7 @@ package com.soft.sys.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.soft.sys.entity.SysDialogueDetails;
-import com.soft.sys.model.dto.GetRecentContentDto;
+import com.soft.sys.model.dto.GetRecentContentDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public interface SysDialogueDetailsMapper extends BaseMapper<SysDialogueDetails> {
 
 
-    List<GetRecentContentDto> getRecentContext(@Param("dialogueId") Long dialogueId,
+    List<GetRecentContentDTO> getRecentContext(@Param("dialogueId") Long dialogueId,
                                                @Param("maxContextNum") Long maxContextNum);
 }
 

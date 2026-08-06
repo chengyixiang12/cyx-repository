@@ -10,7 +10,7 @@ import lombok.Data;
  **/
 @Data
 @Schema(description = "获取字典数据列表响应参数")
-public class DictDatasVo {
+public class DictDatasVO {
 
     @Schema(description = "主键")
     private String id;

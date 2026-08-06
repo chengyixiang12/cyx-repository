@@ -1,11 +1,12 @@
 package com.soft.sys.websocket.session;
 
-import cn.hutool.cache.CacheUtil;
-import cn.hutool.cache.impl.TimedCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author: cyx
@@ -16,13 +17,7 @@ import java.io.IOException;
 @Slf4j
 public class WebSocketSessionManager {
 
-    // 默认缓存30秒过期
-    private static final TimedCache<String, WebSocketSession> USER_SESSION_CACHE = CacheUtil.newTimedCache(30000);
-
-    static {
-        // 启动定时清理，每10秒清理一次
-        USER_SESSION_CACHE.schedulePrune(10000);
-    }
+    private static final Map<String, WebSocketSession> USER_SESSION_CACHE = new ConcurrentHashMap<>();
 
     /**
      * 添加用户session
@@ -37,6 +32,7 @@ public class WebSocketSessionManager {
      * 删除用户session
      * @param sessionKey
      */
+    @SuppressWarnings("resource")
     public static void removeSession(Long sessionKey) throws RuntimeException {
         try {
             WebSocketSession session = getSession(sessionKey);
@@ -50,22 +46,30 @@ public class WebSocketSessionManager {
     }
 
     /**
+     * 获取所有的key
+     * @return
+     */
+    public static Set<String> getKeys() {
+        return USER_SESSION_CACHE.keySet();
+    }
+
+    /**
      * 获取用户session
      * @param sessionKey
      * @return
      */
     public static WebSocketSession getSession(Long sessionKey) {
-        return USER_SESSION_CACHE.get(String.valueOf(sessionKey), false);
+        return USER_SESSION_CACHE.get(String.valueOf(sessionKey));
     }
 
     /**
      * 清空用户会话
      */
     public static void clear() {
-        USER_SESSION_CACHE.forEach(item -> {
+        USER_SESSION_CACHE.forEach((k, v) -> {
             try {
-                if (item != null && item.isOpen()) {
-                    item.close();
+                if (v != null && v.isOpen()) {
+                    v.close();
                 }
             } catch (Exception e) {
                 log.warn("session会话关闭时出错", e);

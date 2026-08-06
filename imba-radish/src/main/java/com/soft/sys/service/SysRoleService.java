@@ -2,15 +2,15 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysRole;
-import com.soft.sys.model.dto.FixRolesDto;
-import com.soft.sys.model.request.EditRoleRequest;
-import com.soft.sys.model.request.GetRolesRequest;
-import com.soft.sys.model.request.SetMenusRequest;
-import com.soft.sys.model.request.SetPermissionsRequest;
-import com.soft.sys.model.vo.GetRoleSelectVo;
+import com.soft.sys.model.dto.FixRolesDTO;
+import com.soft.sys.model.request.EditRoleDTO;
+import com.soft.sys.model.request.GetRolesDTO;
+import com.soft.sys.model.request.SetMenusDTO;
+import com.soft.sys.model.request.SetPermissionsDTO;
+import com.soft.sys.model.vo.GetRoleSelectVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.model.vo.SysRoleVo;
-import com.soft.sys.model.vo.SysRolesVo;
+import com.soft.sys.model.vo.SysRoleVO;
+import com.soft.sys.model.vo.SysRolesVO;
 
 import java.util.List;
 
@@ -29,9 +29,9 @@ public interface SysRoleService extends IService<SysRole> {
 
     Boolean fixRoleFlag(Long id);
 
-    SysRoleVo getRole(Long id);
+    SysRoleVO getRole(Long id);
 
-    PageVO<SysRolesVo> getRoles(GetRolesRequest request);
+    PageVO<SysRolesVO> getRoles(GetRolesDTO request);
 
     void enableRole(Long id);
 
@@ -39,11 +39,11 @@ public interface SysRoleService extends IService<SysRole> {
 
     void setDefaultRole(Long id);
 
-    List<FixRolesDto> fixRolesFlag(List<Long> ids);
+    List<FixRolesDTO> fixRolesFlag(List<Long> ids);
 
-    void setMenus(SetMenusRequest request);
+    void setMenus(SetMenusDTO request);
 
-    void setPermissions(SetPermissionsRequest request);
+    void setPermissions(SetPermissionsDTO request);
 
     List<String> getUserRole(Long userId);
 
@@ -55,7 +55,7 @@ public interface SysRoleService extends IService<SysRole> {
 
     void cancelFixRole(Long id);
 
-    void editRole(EditRoleRequest request);
+    void editRole(EditRoleDTO request);
 
-    List<GetRoleSelectVo> getRoleSelect();
+    List<GetRoleSelectVO> getRoleSelect();
 }

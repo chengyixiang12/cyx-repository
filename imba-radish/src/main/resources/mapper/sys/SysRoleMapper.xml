@@ -28,7 +28,7 @@
         fix_role
     </sql>
 
-    <select id="getRole" parameterType="java.lang.Long" resultType="SysRoleVo">
+    <select id="getRole" parameterType="java.lang.Long" resultType="SysRoleVO">
         SELECT
         sr.id,
         sr.sort_order AS "sortOrder",
@@ -44,7 +44,7 @@
         sr.del_flag = '0'
         AND sr.id = #{id}
     </select>
-    <select id="getRoles" parameterType="GetRolesRequest" resultType="SysRolesVo">
+    <select id="getRoles" parameterType="GetRolesDTO" resultType="SysRolesVO">
         SELECT
         sr.id,
         sr.sort_order,
@@ -125,7 +125,7 @@
             #{item}
         </foreach>
     </select>
-    <insert id="setMenus" parameterType="SetMenusRequest">
+    <insert id="setMenus" parameterType="SetMenusDTO">
         INSERT INTO sys_role_menu ( role_id, menu_id )
         <foreach collection="request.menuIds" item="item" open="VALUES" separator="," close="">
             (#{request.roleId},#{item})
@@ -138,7 +138,7 @@
         WHERE
         role_id = #{roleId}
     </delete>
-    <delete id="deleteRolePermissions" parameterType="SetPermissionsRequest">
+    <delete id="deleteRolePermissions" parameterType="SetPermissionsDTO">
         DELETE
         FROM
         sys_role_permission
@@ -151,7 +151,7 @@
             </foreach>
         </if>
     </delete>
-    <insert id="setPermissions" parameterType="SetPermissionsRequest">
+    <insert id="setPermissions" parameterType="SetPermissionsDTO">
         INSERT INTO sys_role_permission ( role_id, permission_id )
         <foreach collection="request.permissionIds" item="item" open="VALUES" separator="," close="">
             (#{request.roleId},#{item})
@@ -203,7 +203,7 @@
             del_flag = '0'
           AND id = #{id}
     </update>
-    <select id="getRoleSelect" resultType="GetRoleSelectVo">
+    <select id="getRoleSelect" resultType="GetRoleSelectVO">
         SELECT
             sr.id,
             sr.name

@@ -3,11 +3,11 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysDept;
-import com.soft.sys.model.dto.ExportDeptDto;
-import com.soft.sys.model.request.GetDeptsRequest;
-import com.soft.sys.model.vo.DeptTreeVo;
-import com.soft.sys.model.vo.DeptVo;
-import com.soft.sys.model.vo.GetDeptsVo;
+import com.soft.sys.model.dto.ExportDeptExcelDTO;
+import com.soft.sys.model.request.GetDeptsDTO;
+import com.soft.sys.model.vo.DeptTreeVO;
+import com.soft.sys.model.vo.DeptVO;
+import com.soft.sys.model.vo.GetDeptsVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -22,14 +22,14 @@ public interface SysDeptMapper extends BaseMapper<SysDept> {
 
     String getLevel(@Param("parentId") Long parentId);
 
-    List<DeptTreeVo> getAllDept();
+    List<DeptTreeVO> getAllDept();
 
-    DeptVo getDept(@Param("id") Long id);
+    DeptVO getDept(@Param("id") Long id);
 
-    List<ExportDeptDto> exportDept(@Param("ids") List<Long> ids);
+    List<ExportDeptExcelDTO> exportDept(@Param("ids") List<Long> ids);
 
-    IPage<GetDeptsVo> getDepts(@Param("page") IPage<GetDeptsVo> page,
-                                @Param("request") GetDeptsRequest request);
+    IPage<GetDeptsVO> getDepts(@Param("page") IPage<GetDeptsVO> page,
+                                @Param("request") GetDeptsDTO request);
 
     List<Long> getChildDeptIds(@Param("deptIds") List<Long> deptIds);
 

@@ -18,11 +18,11 @@ public class AESUtil {
     // AES 加密
     public String encrypt(String data, String secret) throws Exception {
         // 创建 AES 密钥
-        SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(), "AES");
+        SecretKeySpec secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret), "AES");
 
         // 创建 AES 加密器
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(BaseConstant.AES_OFFSET.getBytes(StandardCharsets.UTF_8))); // IV 为全零
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(BaseConstant.AES_OFFSET.getBytes(StandardCharsets.UTF_8)));
 
         // 执行加密
         byte[] encrypted = cipher.doFinal(data.getBytes());
@@ -34,7 +34,7 @@ public class AESUtil {
     // AES 解密
     public String decrypt(String encryptedData, String secret) throws Exception {
         // 创建 AES 密钥
-        SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(), "AES");
+        SecretKeySpec secretKey = new SecretKeySpec(Base64.getDecoder().decode(secret), "AES");
 
         // 创建 AES 解密器
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");

@@ -3,9 +3,8 @@ package com.soft.sys.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.entity.SysDialogueDetails;
 import com.soft.sys.mapper.SysDialogueDetailsMapper;
-import com.soft.sys.model.dto.GetRecentContentDto;
+import com.soft.sys.model.dto.GetRecentContentDTO;
 import com.soft.sys.service.SysDialogueDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +20,12 @@ public class SysDialogueDetailsServiceImpl extends ServiceImpl<SysDialogueDetail
 
     private final SysDialogueDetailsMapper sysDialogueDetailsMapper;
 
-    @Autowired
     public SysDialogueDetailsServiceImpl(SysDialogueDetailsMapper sysDialogueDetailsMapper) {
         this.sysDialogueDetailsMapper = sysDialogueDetailsMapper;
     }
 
     @Override
-    public List<GetRecentContentDto> getRecentContext(Long dialogueId, Long maxContextNum) {
+    public List<GetRecentContentDTO> getRecentContext(Long dialogueId, Long maxContextNum) {
         return sysDialogueDetailsMapper.getRecentContext(dialogueId, maxContextNum);
     }
 }

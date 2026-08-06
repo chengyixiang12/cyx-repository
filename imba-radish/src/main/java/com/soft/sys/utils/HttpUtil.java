@@ -2,7 +2,6 @@ package com.soft.sys.utils;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.LRUCache;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
@@ -24,7 +23,6 @@ public class HttpUtil {
 
     private final LRUCache<String, WebClient> cache;
 
-    @Autowired
     public HttpUtil(WebClient.Builder webClientBuilder) {
         this.webClientBuilder = webClientBuilder;
         this.cache = CacheUtil.newLRUCache(50);

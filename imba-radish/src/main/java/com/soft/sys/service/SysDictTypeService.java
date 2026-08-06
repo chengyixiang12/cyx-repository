@@ -2,11 +2,11 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysDictType;
-import com.soft.sys.model.request.EditDictTypeRequest;
-import com.soft.sys.model.request.GetDictTypesRequest;
-import com.soft.sys.model.request.SaveDictTypeRequest;
-import com.soft.sys.model.vo.DictTypeVo;
-import com.soft.sys.model.vo.DictTypesVo;
+import com.soft.sys.model.request.EditDictTypeDTO;
+import com.soft.sys.model.request.GetDictTypesDTO;
+import com.soft.sys.model.request.SaveDictTypeDTO;
+import com.soft.sys.model.vo.DictTypeVO;
+import com.soft.sys.model.vo.DictTypesVO;
 import com.soft.sys.model.vo.PageVO;
 
 import java.util.List;
@@ -18,13 +18,13 @@ import java.util.List;
 */
 public interface SysDictTypeService extends IService<SysDictType> {
 
-    PageVO<DictTypesVo> getdictTypes(GetDictTypesRequest request);
+    PageVO<DictTypesVO> getdictTypes(GetDictTypesDTO request);
 
-    void saveDictType(SaveDictTypeRequest request);
+    void saveDictType(SaveDictTypeDTO request);
 
-    void editDictType(EditDictTypeRequest request);
+    void editDictType(EditDictTypeDTO request);
 
-    DictTypeVo getDictType(Long id);
+    DictTypeVO getDictType(Long id);
 
     void deleteDictType(Long id);
 

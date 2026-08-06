@@ -4,14 +4,13 @@ import com.alibaba.fastjson2.JSON;
 import com.soft.sys.constants.RedisConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
-import com.soft.sys.websocket.receive.FileTransferContinueRecParam;
-import com.soft.sys.websocket.send.FileTransferContinueSendParams;
-import com.soft.sys.websocket.send.SendParams;
+import com.soft.sys.websocket.receive.FileTransferContinueRequest;
+import com.soft.sys.websocket.send.FileTransferContinueResponse;
+import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
@@ -31,19 +30,18 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
     public FileTransferContinueHandler(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        UserDto userDto = (UserDto) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
-        FileTransferContinueRecParam fileTransferContinueRecParam = JSON.parseObject(message.getPayload(), FileTransferContinueRecParam.class);
+        FileTransferContinueRequest fileTransferContinueRecParam = JSON.parseObject(message.getPayload(), FileTransferContinueRequest.class);
         String fileHash = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INFO + username);
         if (StringUtils.isBlank(fileHash) || !fileHash.equals(fileTransferContinueRecParam.getFileHash())) {
-            SendParams sendParams = new SendParams();
+            WebSocketResponse sendParams = new WebSocketResponse();
             sendParams.setStatus(false);
             sendParams.setMsg("文件hash值不一致");
             sendParams.setOrder(fileTransferContinueRecParam.getOrder());
@@ -52,7 +50,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
         }
         Integer currIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
         log.info("当前索引为：{}", currIndex);
-        FileTransferContinueSendParams fileTransferContinueSendParams = new FileTransferContinueSendParams();
+        FileTransferContinueResponse fileTransferContinueSendParams = new FileTransferContinueResponse();
         fileTransferContinueSendParams.setStatus(true);
         fileTransferContinueSendParams.setIndex(currIndex);
         fileTransferContinueSendParams.setOrder(fileTransferContinueRecParam.getOrder());

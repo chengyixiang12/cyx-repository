@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "文件详情")
-@Alias(value = "FileDetailDto")
-public class FileDetailDto {
+@Alias(value = "FileDetailDTO")
+public class FileDetailDTO {
 
     @Schema(description = "文件路径")
     private String objectKey;

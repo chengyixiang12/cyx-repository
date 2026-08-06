@@ -11,8 +11,8 @@ import org.apache.ibatis.type.Alias;
  **/
 @Schema(description = "字典类型")
 @Data
-@Alias(value = "DictTypesVo")
-public class DictTypesVo {
+@Alias(value = "DictTypesVO")
+public class DictTypesVO {
 
     @Schema(description = "主键")
     private String id;

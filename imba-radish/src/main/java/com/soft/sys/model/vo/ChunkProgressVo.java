@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @Schema(description = "分片上传进度响应参数")
-public class ChunkProgressVo {
+public class ChunkProgressVO {
 
     @Schema(description = "已上传的分片索引列表")
     private List<Integer> uploadedIndices;

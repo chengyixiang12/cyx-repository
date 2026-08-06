@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取菜单列表响应参数")
-@Alias(value = "GetMenuListVo")
-public class GetMenuListVo {
+@Alias(value = "GetMenuListVO")
+public class GetMenuListVO {
 
     @Schema(description = "主键")
     private String id;
@@ -34,7 +34,7 @@ public class GetMenuListVo {
     private Integer visible;
 
     @Schema(description = "排序")
-    private Integer orderNum;
+    private Integer sortOrder;
 
     @Schema(description = "图标")
     private String icon;

@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "用户使用邮箱登录")
-public class UserEmailDto {
+public class UserEmailDTO {
 
     @Schema(description = "邮箱")
     private String email;

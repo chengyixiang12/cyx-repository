@@ -53,8 +53,8 @@ public class SysMenu extends BaseEntity {
     /**
      * 排序号，数字越小，排序越靠前
      */
-    @TableField(value = "sort")
-    private Integer sort;
+    @TableField(value = "sort_order")
+    private Integer sortOrder;
 
     /**
      * 菜单状态：0-禁用，1-启用

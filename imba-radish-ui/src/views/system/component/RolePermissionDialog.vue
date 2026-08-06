@@ -12,7 +12,7 @@
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="visible = false">取消</el-button>
-                <el-button type="primary" @click="handleSubmit">确定</el-button>
+                <el-button type="primary" :loading="submitLoading" :disabled="submitLoading" @click="handleSubmit">确定</el-button>
             </div>
         </template>
     </el-dialog>
@@ -43,6 +43,7 @@ const visible = computed({
 
 const permissionOptions = ref<GetAllPermissionVo[]>([])
 const selectedPermissions = ref<string[]>([])
+const submitLoading = ref(false)
 
 const loadPermissions = async (id: string) => {
     // 获取全部权限数据
@@ -56,10 +57,14 @@ const loadPermissions = async (id: string) => {
 
 
 const handleSubmit = async () => {
+    if (submitLoading.value) return
     const request: SetPermissionsRequest = { roleId: props.roleId, permissionIds: selectedPermissions.value }
-
-    emit('submit', request)
-    visible.value = false
+    submitLoading.value = true
+    try {
+      emit('submit', request)
+    } finally {
+      submitLoading.value = false
+    }
 }
 
 watch(

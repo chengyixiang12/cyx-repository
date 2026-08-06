@@ -2,11 +2,11 @@ package com.soft.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysScheduleJob;
-import com.soft.sys.model.request.CreateJobRequest;
-import com.soft.sys.model.request.EditJobRequest;
-import com.soft.sys.model.request.GetQuartzTasksRequest;
-import com.soft.sys.model.vo.GetJobVo;
-import com.soft.sys.model.vo.GetQuartzTasksVo;
+import com.soft.sys.model.request.CreateJobDTO;
+import com.soft.sys.model.request.EditJobDTO;
+import com.soft.sys.model.request.GetQuartzTasksDTO;
+import com.soft.sys.model.vo.GetJobVO;
+import com.soft.sys.model.vo.GetQuartzTasksVO;
 import com.soft.sys.model.vo.PageVO;
 
 /**
@@ -16,9 +16,9 @@ import com.soft.sys.model.vo.PageVO;
 */
 public interface SysScheduleJobService extends IService<SysScheduleJob> {
 
-    void createJob(CreateJobRequest request);
+    void createJob(CreateJobDTO request);
 
-    PageVO<GetQuartzTasksVo> getQuartzTasks(GetQuartzTasksRequest request);
+    PageVO<GetQuartzTasksVO> getQuartzTasks(GetQuartzTasksDTO request);
 
     void startJob(Long id);
 
@@ -26,9 +26,9 @@ public interface SysScheduleJobService extends IService<SysScheduleJob> {
 
     boolean existJobType(String jobType, String jobGroup);
 
-    GetJobVo getJob(Long id);
+    GetJobVO getJob(Long id);
 
-    void editJob(EditJobRequest request);
+    void editJob(EditJobDTO request);
 
     void deleteJob(Long id);
 }

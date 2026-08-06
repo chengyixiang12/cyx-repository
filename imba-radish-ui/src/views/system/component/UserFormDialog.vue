@@ -44,7 +44,7 @@
     </div>
     <template #footer>
       <el-button class="btn-cancel" @click="dialogVisible = false">取消</el-button>
-      <el-button class="btn-submit" type="primary" @click="handleSubmit">确定</el-button>
+      <el-button class="btn-submit" type="primary" :loading="submitLoading" :disabled="submitLoading" @click="handleSubmit">确定</el-button>
     </template>
   </el-dialog>
 </template>
@@ -82,6 +82,7 @@ const dialogTitle = computed(() => props.isAdd ? '新增用户' : '编辑用户'
 const treeProps = { label: 'name', children: 'children', value: 'id' }
 
 const formRef = ref()
+const submitLoading = ref(false)
 const formData = ref<SaveUserRequest>({
   username: '',
   password: '',
@@ -111,12 +112,17 @@ const handleClose = () => {
 }
 
 const handleSubmit = async () => {
+  if (submitLoading.value) return
   try {
     await formRef.value.validate()
-    emit('submit', formData.value)
-    dialogVisible.value = false
   } catch (e) {
-    //
+    return
+  }
+  submitLoading.value = true
+  try {
+    emit('submit', formData.value)
+  } finally {
+    submitLoading.value = false
   }
 }
 

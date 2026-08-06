@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.soft.sys.mapper.SysDictTypeMapper">
 
-    <select id="getdictTypes" resultType="DictTypesVo">
+    <select id="getdictTypes" resultType="DictTypesVO">
         SELECT
         sdt.id,
         sdt.dict_name,
@@ -23,7 +23,7 @@
         </if>
         order by sdt.sort_order desc
     </select>
-    <select id="getDictType" parameterType="java.lang.Long" resultType="DictTypeVo">
+    <select id="getDictType" parameterType="java.lang.Long" resultType="DictTypeVO">
         SELECT
         sdt.id,
         sdt.dict_name,

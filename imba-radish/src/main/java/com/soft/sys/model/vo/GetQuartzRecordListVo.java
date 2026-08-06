@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "获取定时任务执行记录列表的相应参数")
-@Alias(value = "GetQuartzRecordListVo")
-public class GetQuartzRecordListVo {
+@Alias(value = "GetQuartzRecordListVO")
+public class GetQuartzRecordListVO {
 
     @Schema(description = "主键")
     private String id;

@@ -3,7 +3,7 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysDialogue;
-import com.soft.sys.model.vo.GetDialoguesVo;
+import com.soft.sys.model.vo.GetDialoguesVO;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Param;
 */
 public interface SysDialogueMapper extends BaseMapper<SysDialogue> {
 
-    IPage<GetDialoguesVo> getDialogues(@Param("page") IPage<GetDialoguesVo> page,
+    IPage<GetDialoguesVO> getDialogues(@Param("page") IPage<GetDialoguesVO> page,
                                        @Param("keyword") String keyword,
                                        @Param("userId") Long userId);
 }

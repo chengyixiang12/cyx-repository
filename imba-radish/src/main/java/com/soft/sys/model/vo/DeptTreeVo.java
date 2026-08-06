@@ -15,8 +15,8 @@ import java.util.List;
 
 @Data
 @Schema(description = "组织架构")
-@Alias(value = "DeptTreeVo")
-public class DeptTreeVo {
+@Alias(value = "DeptTreeVO")
+public class DeptTreeVO {
 
     @Schema(description = "主键")
     private String id;
@@ -31,8 +31,8 @@ public class DeptTreeVo {
     private String parentId;
 
     @Schema(description = "子节点")
-    private List<DeptTreeVo> children = new ArrayList<>();
+    private List<DeptTreeVO> children = new ArrayList<>();
 
     @Schema(description = "用户", hidden = true)
-    private List<DeptUserVo> users = new ArrayList<>();
+    private List<DeptUserVO> users = new ArrayList<>();
 }

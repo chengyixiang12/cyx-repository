@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.soft.sys.entity.SysRole;
-import com.soft.sys.model.dto.FixRolesDto;
-import com.soft.sys.model.request.GetRolesRequest;
-import com.soft.sys.model.request.SetMenusRequest;
-import com.soft.sys.model.request.SetPermissionsRequest;
-import com.soft.sys.model.vo.GetRoleSelectVo;
-import com.soft.sys.model.vo.SysRoleVo;
-import com.soft.sys.model.vo.SysRolesVo;
+import com.soft.sys.model.dto.FixRolesDTO;
+import com.soft.sys.model.request.GetRolesDTO;
+import com.soft.sys.model.request.SetMenusDTO;
+import com.soft.sys.model.request.SetPermissionsDTO;
+import com.soft.sys.model.vo.GetRoleSelectVO;
+import com.soft.sys.model.vo.SysRoleVO;
+import com.soft.sys.model.vo.SysRolesVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -23,10 +23,10 @@ import java.util.List;
 */
 public interface SysRoleMapper extends BaseMapper<SysRole> {
 
-    SysRoleVo getRole(@Param("id") Long id);
+    SysRoleVO getRole(@Param("id") Long id);
 
-    Page<SysRolesVo> getRoles(IPage<SysRolesVo> page,
-                              @Param("request") GetRolesRequest request);
+    Page<SysRolesVO> getRoles(IPage<SysRolesVO> page,
+                              @Param("request") GetRolesDTO request);
 
     void enableRole(@Param("id") Long id);
 
@@ -38,15 +38,15 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     List<String> getRoleCodeByUserId(@Param("userId") Long id);
 
-    List<FixRolesDto> fixRolesFlag(@Param("ids") List<Long> ids);
+    List<FixRolesDTO> fixRolesFlag(@Param("ids") List<Long> ids);
 
-    void setMenus(@Param("request") SetMenusRequest request);
+    void setMenus(@Param("request") SetMenusDTO request);
 
     void deleteRoleMenus(@Param("roleId") Long roleId);
 
-    void deleteRolePermissions(@Param("request") SetPermissionsRequest request);
+    void deleteRolePermissions(@Param("request") SetPermissionsDTO request);
 
-    void setPermissions(@Param("request") SetPermissionsRequest request);
+    void setPermissions(@Param("request") SetPermissionsDTO request);
 
     List<String> getUserRole(@Param("userId") Long userId);
 
@@ -58,7 +58,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     void cancelFixRole(@Param("id") Long id);
 
-    List<GetRoleSelectVo> getRoleSelect();
+    List<GetRoleSelectVO> getRoleSelect();
 }
 
 

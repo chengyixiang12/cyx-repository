@@ -8,19 +8,18 @@ import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.entity.SysDept;
 import com.soft.sys.exception.GlobalException;
 import com.soft.sys.mapper.SysDeptMapper;
-import com.soft.sys.mapper.SysUsersMapper;
-import com.soft.sys.model.dto.ExportDeptDto;
-import com.soft.sys.model.request.EditDeptRequest;
-import com.soft.sys.model.request.ExportDeptRequest;
-import com.soft.sys.model.request.GetDeptsRequest;
-import com.soft.sys.model.request.SaveDeptRequest;
-import com.soft.sys.model.vo.DeptTreeVo;
-import com.soft.sys.model.vo.DeptVo;
-import com.soft.sys.model.vo.GetDeptsVo;
+import com.soft.sys.model.dto.ExportDeptExcelDTO;
+import com.soft.sys.model.request.EditDeptDTO;
+import com.soft.sys.model.request.ExportDeptDTO;
+import com.soft.sys.model.request.GetDeptsDTO;
+import com.soft.sys.model.request.SaveDeptDTO;
+import com.soft.sys.model.vo.DeptTreeVO;
+import com.soft.sys.model.vo.DeptVO;
+import com.soft.sys.model.vo.GetDeptsVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDeptService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,23 +33,15 @@ import java.util.Map;
 * @createDate 2024-10-26 09:06:18
 */
 @Service
+@RequiredArgsConstructor
 public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     implements SysDeptService{
 
     private final SysDeptMapper sysDeptMapper;
 
-    private final SysUsersMapper sysUsersMapper;
-
-    @Autowired
-    public SysDeptServiceImpl(SysDeptMapper sysDeptMapper,
-                              SysUsersMapper sysUsersMapper) {
-        this.sysDeptMapper = sysDeptMapper;
-        this.sysUsersMapper = sysUsersMapper;
-    }
-
     @Override
-    public List<DeptTreeVo> getDeptTree(Long id) {
-        List<DeptTreeVo> deptTreeVos = sysDeptMapper.getAllDept();
+    public List<DeptTreeVO> getDeptTree(Long id) {
+        List<DeptTreeVO> deptTreeVos = sysDeptMapper.getAllDept();
         deptTreeVos = buildTree(deptTreeVos, id);
         return deptTreeVos;
     }
@@ -71,7 +62,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
-    public void saveDept(SaveDeptRequest request) {
+    public void saveDept(SaveDeptDTO request) {
         String level = sysDeptMapper.getLevel(request.getParentId());
         SysDept sysDept = new SysDept();
         BeanUtils.copyProperties(request, sysDept);
@@ -80,7 +71,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
-    public void editDept(EditDeptRequest request) {
+    public void editDept(EditDeptDTO request) {
         String level = sysDeptMapper.getLevel(request.getParentId());
         SysDept sysDept = new SysDept();
         BeanUtils.copyProperties(request, sysDept);
@@ -89,20 +80,20 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     }
 
     @Override
-    public DeptVo getDept(Long id) {
+    public DeptVO getDept(Long id) {
         return sysDeptMapper.getDept(id);
     }
 
     @Override
-    public List<ExportDeptDto> exportDept(ExportDeptRequest request) {
+    public List<ExportDeptExcelDTO> exportDept(ExportDeptDTO request) {
         return sysDeptMapper.exportDept(request.getIds());
     }
 
     @Override
-    public PageVO<GetDeptsVo> getDepts(GetDeptsRequest request) {
-        IPage<GetDeptsVo> page = new Page<>(request.getPageNum(), request.getPageSize());
+    public PageVO<GetDeptsVO> getDepts(GetDeptsDTO request) {
+        IPage<GetDeptsVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         page = sysDeptMapper.getDepts(page, request);
-        PageVO<GetDeptsVo> pageVo = new PageVO<>();
+        PageVO<GetDeptsVO> pageVo = new PageVO<>();
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
@@ -123,7 +114,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
      * @param departments
      * @return
      */
-    private List<DeptTreeVo> buildTree(List<DeptTreeVo> departments, Long id) {
+    private List<DeptTreeVO> buildTree(List<DeptTreeVO> departments, Long id) {
         if (departments == null || departments.isEmpty()) {
             throw new GlobalException("组织架构为空");
         }
@@ -133,20 +124,20 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
             departments = departments.stream().filter(item -> id != Long.parseLong(item.getId())).toList();
         }
 
-        Map<String, DeptTreeVo> map = new HashMap<>();
-        List<DeptTreeVo> tree = new ArrayList<>();
+        Map<String, DeptTreeVO> map = new HashMap<>();
+        List<DeptTreeVO> tree = new ArrayList<>();
 
         // 将部门存入映射
-        for (DeptTreeVo dept : departments) {
+        for (DeptTreeVO dept : departments) {
             map.put(dept.getId(), dept);
         }
 
         // 构建树结构并映射用户
-        for (DeptTreeVo dept : departments) {
+        for (DeptTreeVO dept : departments) {
             if (dept.getParentId() == null) {
                 tree.add(dept);
             } else {
-                DeptTreeVo parent = map.get(dept.getParentId());
+                DeptTreeVO parent = map.get(dept.getParentId());
                 if (parent != null) {
                     parent.getChildren().add(dept);
                 }

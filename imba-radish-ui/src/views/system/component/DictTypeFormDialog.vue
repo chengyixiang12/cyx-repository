@@ -7,6 +7,9 @@
                 <el-form-item label="字典名称" prop="dictName">
                     <el-input v-model="formData.dictName" placeholder="请输入字典名称" />
                 </el-form-item>
+                <el-form-item :disabled="!props.isAdd" label="字典类型" prop="dictType">
+                    <el-input v-model="formData.dictType" placeholder="请输入字典类型" />
+                </el-form-item>
                 <el-form-item label="状态" prop="status">
                     <el-radio-group v-model="formData.status">
                         <el-radio :value="1">启用</el-radio>
@@ -24,7 +27,7 @@
 
         <template #footer>
             <el-button @click="visible = false">取消</el-button>
-            <el-button type="primary" @click="submitForm">确定</el-button>
+            <el-button type="primary" :loading="submitLoading" :disabled="submitLoading" @click="submitForm">确定</el-button>
         </template>
     </el-dialog>
 </template>
@@ -50,6 +53,7 @@ const props = withDefaults(defineProps<FatherParam>(), {
 const emit = defineEmits(['update:visible', 'submit'])
 
 const formRef = ref<FormInstance>()
+const submitLoading = ref(false)
 
 const formData = ref<SaveDictTypeRequest>({
     dictName: '',
@@ -75,11 +79,15 @@ const handleClose = () => {
 }
 
 const submitForm = async () => {
-    const valid = await formRef.value?.validate()
-    if (valid) {
-        emit('submit', formData.value)
-        emit('update:visible', false)
-    }
+  if (submitLoading.value) return
+  const valid = await formRef.value?.validate()
+  if (!valid) return
+  submitLoading.value = true
+  try {
+    emit('submit', formData.value)
+  } finally {
+    submitLoading.value = false
+  }
 }
 
 const loadDictType = async () => {

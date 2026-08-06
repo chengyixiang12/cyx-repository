@@ -1,0 +1,19 @@
+package com.soft.sys.websocket.receive;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @author cyq
+ * @date 2025/11/21
+ * @description
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class RefreshTokenRequest extends AbstractWebSocketRequest {
+
+    /**
+     * 客户端指纹
+     */
+    private String fingerprint;
+}

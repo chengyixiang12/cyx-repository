@@ -100,8 +100,13 @@ const deleteCard = async(id: string) => {
 
 // 提交重命名表单
 const handleRenameSubmit = async (formData: RenameRequest) => {
-    await renameApi(formData);
-    await loadMore();
+    try {
+        await renameApi(formData);
+        renameVisible.value = false
+        await loadMore();
+    } catch (e) {
+        // 失败时不关闭弹窗
+    }
 }
 
 const handlePageChange = (val: number) => {

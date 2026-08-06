@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(description = "获取job详情")
-@Alias(value = "GetJobVo")
-public class GetJobVo {
+@Alias(value = "GetJobVO")
+public class GetJobVO {
 
     @Schema(description = "主键")
     private String id;

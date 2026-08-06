@@ -2,10 +2,9 @@ package com.soft.sys.service.impl;
 
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.mapper.SysUsersMapper;
-import com.soft.sys.model.dto.UserDto;
+import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.service.SysRoleService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +29,6 @@ public class UsersDetailServiceImpl implements UserDetailsService{
 
     private final SysRoleService sysRoleService;
 
-    @Autowired
     public UsersDetailServiceImpl(SysUsersMapper sysUsersMapper, SysRoleService sysRoleService) {
         this.sysUsersMapper = sysUsersMapper;
         this.sysRoleService = sysRoleService;
@@ -46,7 +44,7 @@ public class UsersDetailServiceImpl implements UserDetailsService{
         // 角色集合
         List<String> roleCodes = sysRoleService.getRoleCodesByUserId(sysUser.getId());
 
-        return new UserDto(sysUser.getId(), sysUser.getUsername(), sysUser.getDeptId(), sysUser.getPhone(),
+        return new UserDTO(sysUser.getId(), sysUser.getUsername(), sysUser.getDeptId(), sysUser.getPhone(),
                 sysUser.getNickname(), sysUser.getEmail(), sysUser.getPassword(), sysUser.getEnabled(),
                 sysUser.getAccountNonExpired(), sysUser.getCredentialsNonExpired(), sysUser.getAccountNonLocked(),
                 roleCodes.stream()

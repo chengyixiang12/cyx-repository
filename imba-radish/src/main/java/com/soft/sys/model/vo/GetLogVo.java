@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "获取日志响应参数")
-@Alias(value = "GetLogVo")
-public class GetLogVo {
+@Alias(value = "GetLogVO")
+public class GetLogVO {
 
     @Schema(description = "主键")
     private String id;

@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取角色的下拉框数据响应参数")
-@Alias(value = "GetRoleSelectVo")
-public class GetRoleSelectVo {
+@Alias(value = "GetRoleSelectVO")
+public class GetRoleSelectVO {
 
     @Schema(description = "主键")
     private String id;

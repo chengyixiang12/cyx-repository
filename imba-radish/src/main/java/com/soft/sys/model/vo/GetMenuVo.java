@@ -12,8 +12,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取菜单详情相应参数")
-@Alias(value = "GetMenuVo")
-public class GetMenuVo {
+@Alias(value = "GetMenuVO")
+public class GetMenuVO {
 
     @Schema(description = "主键")
     private String id;
@@ -37,7 +37,7 @@ public class GetMenuVo {
     private String type;
 
     @Schema(description = "排序号，数字越小，排序越靠前")
-    private Integer orderNum;
+    private Integer sortOrder;
 
     @Schema(description = "菜单状态：0-禁用，1-启用")
     private Integer status;

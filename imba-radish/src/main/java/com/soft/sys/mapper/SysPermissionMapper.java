@@ -3,10 +3,10 @@ package com.soft.sys.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysPermission;
-import com.soft.sys.model.request.PermissionsRequest;
-import com.soft.sys.model.vo.GetAllPermissionVo;
-import com.soft.sys.model.vo.GetAssignPerVo;
-import com.soft.sys.model.vo.PermissionsVo;
+import com.soft.sys.model.request.PermissionsDTO;
+import com.soft.sys.model.vo.GetAllPermissionVO;
+import com.soft.sys.model.vo.GetAssignPerVO;
+import com.soft.sys.model.vo.PermissionsVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,14 +19,14 @@ import java.util.List;
 */
 public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 
-    IPage<PermissionsVo> getPermissions(IPage<PermissionsVo> page,
-                                        @Param("request") PermissionsRequest request);
+    IPage<PermissionsVO> getPermissions(IPage<PermissionsVO> page,
+                                        @Param("request") PermissionsDTO request);
 
     List<String> getPermissionsByRoleCodes(@Param("roleCodes") List<String> roleCodes);
 
-    List<GetAllPermissionVo> getAllPermission();
+    List<GetAllPermissionVO> getAllPermission();
 
-    List<GetAssignPerVo> getAssignPer(@Param("roleId") Long roleId);
+    List<GetAssignPerVO> getAssignPer(@Param("roleId") Long roleId);
 
     void enablePermission(@Param("id") Long id);
 

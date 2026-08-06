@@ -1,7 +1,7 @@
 package com.soft.sys.core.conf;
 
 import com.soft.sys.properties.WebSocketProperty;
-import com.soft.sys.websocket.handler.CustomWebSocketHandlerDecorator;
+import com.soft.sys.websocket.decorator.CustomWebSocketHandlerDecorator;
 import com.soft.sys.websocket.handler.WebSocketHandler;
 import com.soft.sys.websocket.interceptor.WebSocketInterceptor;
 import lombok.RequiredArgsConstructor;

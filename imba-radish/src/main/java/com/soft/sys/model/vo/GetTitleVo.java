@@ -6,8 +6,8 @@ import org.apache.ibatis.type.Alias;
 
 @Data
 @Schema(description = "获取标题响应参数")
-@Alias(value = "GetTitleVo")
-public class GetTitleVo {
+@Alias(value = "GetTitleVO")
+public class GetTitleVO {
 
     @Schema(description = "主键")
     private String id;
