@@ -22,7 +22,6 @@ import com.soft.sys.service.SysScheduleJobService;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +48,6 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
     private final SysDictDataService sysDictDataService;
 
-    @Autowired
     public SysScheduleJobServiceImpl(SysScheduleJobMapper sysScheduleJobMapper,
                                      Scheduler scheduler,
                                      SysDictDataService sysDictDataService) {

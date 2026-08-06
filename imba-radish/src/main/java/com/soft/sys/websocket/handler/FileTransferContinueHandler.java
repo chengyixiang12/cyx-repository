@@ -11,7 +11,6 @@ import com.soft.sys.websocket.send.FileTransferContinueResponse;
 import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
@@ -31,7 +30,6 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
     public FileTransferContinueHandler(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }

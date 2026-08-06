@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.soft.sys.service.SysPermissionService;
 import com.soft.sys.utils.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
@@ -24,7 +23,6 @@ public class CustomPermissionService {
 
     private final SysPermissionService sysPermissionService;
 
-    @Autowired
     public CustomPermissionService(SecurityUtil securityUtil,
                                    SysPermissionService sysPermissionService) {
         this.securityUtil = securityUtil;

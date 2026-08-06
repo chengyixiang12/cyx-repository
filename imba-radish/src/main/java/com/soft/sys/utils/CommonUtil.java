@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: cyx
@@ -37,7 +38,7 @@ public class CommonUtil {
     public static String generate(Integer length) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            double random = Math.random() * 10;
+            double random = ThreadLocalRandom.current().nextDouble() * 10;
             sb.append((int) random);
         }
         return sb.toString();

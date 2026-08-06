@@ -30,6 +30,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author: cyx
@@ -93,7 +94,7 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         SysDialogueDetails answer = new SysDialogueDetails();
 
         chatModel.stream(prompt).subscribe(item -> {
-            String partialText = item.getResult().getOutput().getText();
+            String partialText = Objects.requireNonNull(item.getResult()).getOutput().getText();
             if (partialText == null) return;
             chatSendParams.setAnswer(partialText);
             try {

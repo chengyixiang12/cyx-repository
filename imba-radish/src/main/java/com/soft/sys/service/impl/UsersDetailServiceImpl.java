@@ -5,7 +5,6 @@ import com.soft.sys.mapper.SysUsersMapper;
 import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.service.SysRoleService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +29,6 @@ public class UsersDetailServiceImpl implements UserDetailsService{
 
     private final SysRoleService sysRoleService;
 
-    @Autowired
     public UsersDetailServiceImpl(SysUsersMapper sysUsersMapper, SysRoleService sysRoleService) {
         this.sysUsersMapper = sysUsersMapper;
         this.sysRoleService = sysRoleService;

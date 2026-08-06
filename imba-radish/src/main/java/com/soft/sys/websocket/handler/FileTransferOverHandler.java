@@ -25,7 +25,6 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 /**
@@ -94,7 +93,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
             while (index < maxIndex) {
                 String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
-                Path path = Paths.get(filePath);
+                Path path = Path.of(filePath);
                 InputStream stream = Files.newInputStream(path);
                 length = stream.read(buffer, BaseConstant.INTEGER_INIT_VAL, length);
                 stream.close();

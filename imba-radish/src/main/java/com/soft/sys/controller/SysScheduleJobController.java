@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +47,6 @@ public class SysScheduleJobController {
 
     private final Scheduler scheduler;
 
-    @Autowired
     public SysScheduleJobController(SysScheduleJobService sysScheduleJobService, Scheduler scheduler) {
         this.sysScheduleJobService = sysScheduleJobService;
         this.scheduler = scheduler;

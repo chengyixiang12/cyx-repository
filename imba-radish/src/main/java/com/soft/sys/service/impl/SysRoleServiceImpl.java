@@ -19,7 +19,6 @@ import com.soft.sys.model.vo.SysRoleVO;
 import com.soft.sys.model.vo.SysRolesVO;
 import com.soft.sys.service.SysRoleService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     private final SysRoleMapper sysRoleMapper;
 
-    @Autowired
     public SysRoleServiceImpl(SysRoleMapper sysRoleMapper) {
         this.sysRoleMapper = sysRoleMapper;
     }

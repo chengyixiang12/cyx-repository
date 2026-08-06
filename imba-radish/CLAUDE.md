@@ -30,22 +30,22 @@ The application binds to port `8081` by default.
 
 ## Architecture Overview
 
-**Tech Stack**: Spring Boot 3.5.14 / Java 21 / MyBatis Plus 3.5.9 / Spring Security / WebSocket / Redis / RabbitMQ / Minio / Flyway / Flowable 7.2 / Spring AI (DeepSeek) / Quartz / Spring Modulith 1.4.9
+**Tech Stack**: Spring Boot 4.0.7 / Java 21 / MyBatis Plus 3.5.16 / Spring Security / WebSocket / Redis / RabbitMQ / Minio / Flyway / Flowable 7.2 / Spring AI 2.0.0 (DeepSeek) / Quartz / Spring Modulith 1.4.9
 
 ### Package Layout
 
 | Package | Purpose |
 |---|---|
 | `com.soft.ImbaRadishApplication` | Entry point. Uses `EnvLoaderHandler` initializer to load `.env` → Spring Environment. Annotated `@EnableCaching` + `@EnableScheduling`. |
-| `com.soft.sys.controller` | REST controllers (18 classes). One per domain entity. Modeled as a typical admin-CRUD system (users, roles, menus, permissions, depts, dicts, logs, files, announcements, dialogs, scheduler). |
-| `com.soft.sys.service` / `impl` | Business logic via interface + `*ServiceImpl` extending MyBatis Plus `ServiceImpl<M, E>`. Includes `UsersDetailServiceImpl` for Spring Security user details. `SysActuatorServiceImpl` implements LTTB trend downsampling (see below). |
-| `com.soft.sys.mapper` | MyBatis Plus mappers (18 interfaces), backed by `.xml` files under `src/main/resources/mapper/sys/`. |
-| `com.soft.sys.entity` | DB entities (18 classes), all extend `BaseEntity` (provides `id`, `createBy/Time`, `updateBy/Time`, `delFlag` with auto-fill). Logic delete via MyBatis Plus `delFlag` column. |
+| `com.soft.sys.controller` | REST controllers (18 classes). Modeled as a typical admin-CRUD system (users, roles, menus, permissions, depts, dicts, logs, files, announcements, dialogs, schedule jobs/records, secret keys), plus `AuthController` (login) and `MessageController` (captchas/messages). |
+| `com.soft.sys.service` / `impl` | Business logic via interface + `*ServiceImpl` extending MyBatis Plus `ServiceImpl<M, E>`. Includes `UsersDetailServiceImpl` for Spring Security user details, `SecretKeyService` for RSA key-pair management, and `SysActuatorServiceImpl` implementing LTTB trend downsampling (see below). |
+| `com.soft.sys.mapper` | MyBatis Plus mappers (17 interfaces), backed by `.xml` files under `src/main/resources/mapper/sys/`. |
+| `com.soft.sys.entity` | DB entities (17 business classes + `BaseEntity`), all extend `BaseEntity` (provides `id`, `createBy/Time`, `updateBy/Time`, `delFlag` with auto-fill). Logic delete via MyBatis Plus `delFlag` column. |
 | `com.soft.sys.constants` | Centralized constants: `BaseConstant`, `DictConstant`, `RabbitmqConstant`, `RedisConstant`, `RegexConstant`, `TokenConstant`, `WebSocketConstant`. |
-| `com.soft.sys.enums` | Enumerations: `LogLevelEnum`, `LogModuleEnum`, `LogTypeEnum`, `QuartzIntervalEnum`, `ResultEnum`, `SecretKeyEnum`, `WebSocketOrderEnum`. |
-| `com.soft.sys.model.dto` | Internal transfer objects (13 classes, including `rabbitmq/` sub-package for `EmailDto`, `GenerateFileHashDto`). |
-| `com.soft.sys.model.vo` | Response view objects (40 classes) returned to frontend. |
-| `com.soft.sys.model.request` | Inbound request bodies (33 classes). |
+| `com.soft.sys.enums` | Enumerations: `KeyTypeEnum`, `LogLevelEnum`, `LogModuleEnum`, `LogTypeEnum`, `QuartzIntervalEnum`, `ResultEnum`, `WebSocketOrderEnum`. |
+| `com.soft.sys.model.dto` | Internal transfer objects (15 classes, including `rabbitmq/` sub-package for `EmailDTO`, `GenerateFileHashDTO`). |
+| `com.soft.sys.model.vo` | Response view objects (43 classes) returned to frontend. |
+| `com.soft.sys.model.request` | Inbound request bodies (46 classes). |
 | `com.soft.sys.model.ctf` | Custom data structures (e.g., `MenuTree` tree interface). |
 | `com.soft.sys.core.conf` | `@Configuration` classes (14): Security, MyBatis Plus, Redis, RabbitMQ, Minio, Knife4j, Quartz, Async, ThreadPool, WebSocket, Jackson, Captcha, WebClient, Transaction. |
 | `com.soft.sys.core.filter` | Servlet filters: `AuthorizationVerifyFilter` (JWT token → Redis lookup → SecurityContext), `RateLimitFilter` (Redis sliding window). Filter chain order matters: RateLimit → Auth → business. |
@@ -61,7 +61,7 @@ The application binds to port `8081` by default.
 | `com.soft.sys.resultapi.R<T>` | Unified REST response: `{timestamp, code, msg, data, extra}`. Factory methods: `R.ok(data)`, `R.fail(msg)`. |
 | `com.soft.sys.properties` | `@ConfigurationProperties` classes bound to structured YAML config under `radish.*`, `websocket.*` (`WebSocketProperty`), `rate-limit.*`, `minio.*`, `web-client.*`, `spring.security.permit.*`. |
 | `com.soft.sys.utils` | AES/RSA encryption, Minio file ops, HTTP/Security/Response helpers. |
-| `com.soft.module` | Spring Modulith `@ApplicationModule` extension module. Declares module dependencies on `sys::exception`, `sys::utils`, `sys::service`, `sys::entity`, `sys::websocket`. Contains `WebController` skeleton. Uses its own mapper logging category. |
+| `com.soft.module` | Spring Modulith `@ApplicationModule` extension module. Declares module dependencies on `sys::exception`, `sys::utils`, `sys::service`, `sys::entity`, `sys::websocket`, `sys::resultapi`. Currently empty — the `WebController` skeleton was removed; reserved for future module code. |
 
 ### WebSocket Architecture (Registry Pattern)
 
@@ -78,11 +78,11 @@ WebSocketInterceptor (handshake)
 | Sub-package | Content |
 |---|---|
 | `api/` | `WebSocketConcreteHandler<T>` interface, `WebSocketConcreteHolder` static registry map |
-| `handler/` | Concrete handler implementations: `ChatHandler`, `FileTransferHandler`, `FileTransferStartHandler`, `FileTransferContinueHandler`, `FileTransferOverHandler`, `ForceOfflineHandler`, `HeartbeatHandler`, `PushMessageHandler`, `RefreshTokenHandler` + `WebSocketHandler` (router) + `CustomWebSocketHandlerDecorator` |
+| `handler/` | Concrete handler implementations: `ChatHandler`, `FileTransferHandler`, `FileTransferStartHandler`, `FileTransferContinueHandler`, `FileTransferOverHandler`, `ForceOfflineHandler`, `PingHandler`, `PongHandler`, `PushMessageHandler`, `RefreshTokenHandler` + `WebSocketHandler` (router) + `CustomWebSocketHandlerDecorator` |
 | `interceptor/` | `WebSocketInterceptor` (handshake auth/origin validation) |
-| `receive/` | Receive parameter POJOs: `AbstractRecParam`, `ChatRecParam`, `FileTransferContinueRecParam`, `FileTransferOverRecParam`, `FileTransferStartRecParam`, `FilesTransferRecParam`, `ForceOfflineRecParam`, `HeartbeatRecParam`, `PushMessageRecParam`, `RefreshTokenRecParm` |
+| `receive/` | Request POJOs: `WebSocketRequest` (interface), `AbstractWebSocketRequest`, `ChatRequest`, `FileTransferContinueRequest`, `FileTransferOverRequest`, `FileTransferStartRequest`, `FilesTransferRequest`, `ForceOfflineRequest`, `HeartbeatRequest`, `PushMessageRequest`, `RefreshTokenRequest` |
 | `registry/` | `WebSocketConcreteRegistry` — `@PostConstruct` auto-discovers all `WebSocketConcreteHandler<?>` beans |
-| `send/` | Send parameter POJOs: `AbstractSendParams`, `ChatSendParams`, `FileTransferContinueSendParams`, `FileTransferStartSendParams`, `ForceOfflineSendParams`, `HeartBeatSendParams`, `PushMessageSendParams`, `RefreshTokenSendParam` |
+| `send/` | Response POJOs: `WebSocketResponse` (interface), `AbstractWebSocketResponse`, `ChatResponse`, `FileTransferContinueResponse`, `FileTransferStartResponse`, `ForceOfflineResponse`, `HeartBeatResponse`, `PingResponse`, `PushMessageResponse`, `RefreshTokenResponse` |
 | `session/` | `WebSocketSessionManager` — session cache backed by `TimedCache` (30s TTL, 10s prune interval), keyed by user ID |
 
 - **`WebSocketConcreteHandler<T>`** — generic interface with `handle(session, message)` + `getOrder()` → `WebSocketOrderEnum`.
@@ -90,18 +90,24 @@ WebSocketInterceptor (handshake)
 - **WebSocket allowed origins** — configured via `WebSocketProperty` (`websocket.allowed-origins` in YAML), no longer hardcoded.
 - To add a new WebSocket command: implement `WebSocketConcreteHandler<T>`, add an entry to `WebSocketOrderEnum`, and the registry auto-discovers it.
 
+### Secret Key Management
+
+- `sys_secret_key` 表存储 RSA 密钥对,由 `SecretKeyService` / `SecretKeyServiceImpl` 提供 `getPublicKey` / `getPrivateKey` / `generateKey` / `getSecretKeyList`。
+- `KeyTypeEnum` 区分密钥用途(当前仅 `USER_PASSWORD_KEY`);登录/用户模块按类型取出私钥解密前端 RSA 加密的密码。
+- 列表接口(`SysSecretKeyVO`)对公钥/私钥做脱敏显示。
+
 ### Security Flow
 
 - **Auth**: Stateless JWT via `AuthorizationVerifyFilter`. Token stored in Redis as `authorization:username:<token>` with configurable TTL.
 - **Login**: `AuthService.authenticate()` — supports password (RSA decrypted) and email-captcha modes. Generates UUID token.
-- **Password**: RSA-encrypted in transit → server decrypts with private key → BCrypt hashes for storage.
+- **Password**: RSA-encrypted in transit → server decrypts with the private key loaded from `sys_secret_key` via `SecretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY)` → BCrypt hashes for storage.
 - **Concurrent-session control**: Same-user new login triggers `ForceOfflineHandler` via WebSocket to the old session. On application shutdown, `ApplicationShutdownListener` gracefully closes all WebSocket sessions at highest priority.
 - **White-listed URLs**: Configured via `spring.security.permit.url` in YAML (e.g., `/auth/**`, `/ws/**`, `/secretKey/getPublicKey`).
 
 ### Database
 
 - **MySQL** (master, primary) + **PostgreSQL** (slave) via `dynamic-datasource` MyBatis Plus plugin.
-- **Flyway** migrations at `src/main/resources/db/migration/` (`V1__init_database.sql` through `V12__mod_202606091630.sql`). Latest migrations: V10 adds `memory_metaspace_max` to `sys_actuator`, V11 drops `memory_g1_old_max`, V12 adds `dict_type` column to `sys_dict_type`.
+- **Flyway** migrations at `src/main/resources/db/migration/`. 当前为单个基线迁移 `V1__init_database.sql`(含全部表结构);后续 schema 变更以新版本号追加。
 - MyBatis Plus with logic delete (`delFlag` = 0/1), auto-fill timestamps, and `@TableId(assign_id)`.
 - Schema changes use Flyway for version-controlled migrations; no JPA/Hibernate DDL auto-generation.
 

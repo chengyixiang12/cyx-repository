@@ -5,7 +5,6 @@ import com.soft.sys.entity.SysDialogueDetails;
 import com.soft.sys.mapper.SysDialogueDetailsMapper;
 import com.soft.sys.model.dto.GetRecentContentDTO;
 import com.soft.sys.service.SysDialogueDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class SysDialogueDetailsServiceImpl extends ServiceImpl<SysDialogueDetail
 
     private final SysDialogueDetailsMapper sysDialogueDetailsMapper;
 
-    @Autowired
     public SysDialogueDetailsServiceImpl(SysDialogueDetailsMapper sysDialogueDetailsMapper) {
         this.sysDialogueDetailsMapper = sysDialogueDetailsMapper;
     }

@@ -24,7 +24,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -53,7 +52,6 @@ public class SysDeptController {
 
     private final SysDeptService sysDeptService;
 
-    @Autowired
     public SysDeptController(SysDeptService sysDeptService) {
         this.sysDeptService = sysDeptService;
     }

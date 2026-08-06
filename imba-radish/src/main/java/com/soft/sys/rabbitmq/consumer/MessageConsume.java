@@ -11,13 +11,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
-import org.springframework.boot.autoconfigure.mail.MailProperties;
+import org.springframework.boot.mail.autoconfigure.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @Author: cyx
@@ -48,7 +49,7 @@ public class MessageConsume {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-            helper.setFrom(mailProperties.getUsername());
+            helper.setFrom(Optional.ofNullable(mailProperties.getUsername()).orElseThrow());
             helper.setTo(emailDto.getEmail());
             helper.setSubject(radishProperty.getCaptcha().getTopic());
             helper.setText(emailDto.getContent(), true);

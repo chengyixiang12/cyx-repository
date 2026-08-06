@@ -8,7 +8,6 @@ import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -34,7 +33,6 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
     @Value(value = "${tmp.path}")
     private String tmpPath;
 
-    @Autowired
     public FileTransferHandler(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }

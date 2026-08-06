@@ -11,7 +11,6 @@ import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.receive.FileTransferStartRequest;
 import com.soft.sys.websocket.send.WebSocketResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,6 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
     @Value(value = "${tmp.path}")
     private String tmpPath;
 
-    @Autowired
     public FileTransferStartHandler(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }

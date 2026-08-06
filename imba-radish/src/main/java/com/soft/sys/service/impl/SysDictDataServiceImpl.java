@@ -17,7 +17,6 @@ import com.soft.sys.model.vo.DictDatasVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDictDataService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,7 +42,6 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
     public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper,
                                   RedisTemplate<String, Object> redisTemplate) {
         this.sysDictDataMapper = sysDictDataMapper;

@@ -18,7 +18,6 @@ import com.soft.sys.service.SysMenuService;
 import com.soft.sys.utils.SecurityUtil;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
 
     private final SecurityUtil securityUtil;
 
-    @Autowired
     public SysMenuServiceImpl(SysMenuMapper sysMenuMapper,
                               SecurityUtil securityUtil) {
         this.sysMenuMapper = sysMenuMapper;

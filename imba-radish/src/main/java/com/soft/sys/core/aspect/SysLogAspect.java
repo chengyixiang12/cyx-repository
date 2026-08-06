@@ -129,8 +129,8 @@ public class SysLogAspect {
         if (data == null) {
             return null;
         }
-        if (data instanceof byte[]) {
-            return "[二进制数据, 长度:" + ((byte[]) data).length + " bytes]";
+        if (data instanceof byte[] bytes) {
+            return "[二进制数据, 长度:" + bytes.length + " bytes]";
         }
         if (data instanceof InputStream || data instanceof MultipartFile) {
             return "[流数据]";

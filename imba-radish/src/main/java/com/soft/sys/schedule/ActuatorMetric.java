@@ -8,12 +8,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.health.HealthComponent;
-import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.health.actuate.endpoint.HealthDescriptor;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.health.contributor.Status;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * @author cyx
@@ -105,7 +107,7 @@ public class ActuatorMetric {
         sysActuator.setMemoryMax(totalMemoryMax);
 
         // ========== 7. 健康状态 ==========
-        HealthComponent health = healthEndpoint.health();
+        HealthDescriptor health = healthEndpoint.health();
         sysActuator.setHealth(health.getStatus().getCode());
         
         sysActuator.setHealthDb(getComponentStatus("db"));
@@ -133,8 +135,8 @@ public class ActuatorMetric {
      */
     private String getComponentStatus(String componentName) {
         try {
-            HealthComponent component = healthEndpoint.healthForPath(componentName);
-            return component.getStatus().getCode();
+            HealthDescriptor component = healthEndpoint.healthForPath(componentName);
+            return Optional.ofNullable(component).map(HealthDescriptor::getStatus).map(Status::getCode).orElseThrow();
         } catch (Exception e) {
             log.debug("无法获取组件 {} 的健康状态，原因：{}", componentName, e.getMessage());
             return "UNKNOWN";

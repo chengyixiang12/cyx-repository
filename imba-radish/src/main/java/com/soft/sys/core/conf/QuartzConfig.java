@@ -3,6 +3,7 @@ package com.soft.sys.core.conf;
 import org.jspecify.annotations.NonNull;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class QuartzConfig {
     }
 
     @Bean
+    @DependsOnDatabaseInitialization
     public SchedulerFactoryBean schedulerFactoryBean(SpringBeanJobFactory jobFactory) {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setJobFactory(jobFactory);

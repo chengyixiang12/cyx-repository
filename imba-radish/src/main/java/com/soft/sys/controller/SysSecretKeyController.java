@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +39,6 @@ public class SysSecretKeyController {
 
     private final SecretKeyService secretKeyService;
 
-    @Autowired
     public SysSecretKeyController(SecretKeyService secretKeyService) {
         this.secretKeyService = secretKeyService;
     }

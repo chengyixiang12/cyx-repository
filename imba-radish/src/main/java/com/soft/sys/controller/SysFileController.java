@@ -41,7 +41,7 @@ import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,7 +96,7 @@ public class SysFileController {
 
         try {
             // 设置响应头
-            String mimeType = Files.probeContentType(Paths.get(fileDetail.getOriginalName()));
+            String mimeType = Files.probeContentType(Path.of(fileDetail.getOriginalName()));
             headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
             headers.setContentType(MediaType.parseMediaType(mimeType != null ? mimeType : MediaType.APPLICATION_OCTET_STREAM_VALUE));
             headers.setContentLength(fileDetail.getFileSize());
