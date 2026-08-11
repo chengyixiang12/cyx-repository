@@ -2,6 +2,7 @@ package com.soft.sys.websocket.handler;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
+import com.soft.module.thirdapi.gaode.ThirdInterface;
 import com.soft.sys.constants.BaseConstant;
 import com.soft.sys.constants.WebSocketConstant;
 import com.soft.sys.entity.SysDialogueDetails;
@@ -15,12 +16,10 @@ import com.soft.sys.websocket.receive.ChatRequest;
 import com.soft.sys.websocket.send.ChatResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.deepseek.DeepSeekChatModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
@@ -30,7 +29,6 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @Author: cyx
@@ -42,19 +40,23 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ChatHandler implements WebSocketConcreteHandler<String> {
 
+    private static final String SYSTEM_PROMPT = "使用中文回答。";
+
     @Value(value = "${spring.ai.max-context-num}")
     private Long maxContextNum;
 
-    private final DeepSeekChatModel chatModel;
+    private final ChatClient.Builder chatClientBuilder;
 
     private final SysDialogueDetailsService sysDialogueDetailsService;
+
+    private final ThirdInterface thirdInterface;
 
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         ChatRequest chatRecParam = JSON.parseObject(message.getPayload(), ChatRequest.class);
         UserDTO user = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
 
-        // 问题
+        // 问题入库
         SysDialogueDetails question = new SysDialogueDetails();
         question.setCreateBy(user.getId());
         question.setUpdateBy(user.getId());
@@ -62,64 +64,87 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         question.setTag(BaseConstant.CHAT_TAG_USER);
         question.setParentId(chatRecParam.getDialogueId());
         sysDialogueDetailsService.save(question);
-        List<GetRecentContentDTO> recentContext = sysDialogueDetailsService.getRecentContext(chatRecParam.getDialogueId(), maxContextNum);
-
-        List<Message> messages = new ArrayList<>();
-
-        // 添加系统提示词
-        messages.add(SystemMessage
-                .builder()
-                .text("使用中文回答。")
-                .build());
-
-        if (CollectionUtil.isNotEmpty(recentContext)) {
-            for (GetRecentContentDTO getRecentContentDto : recentContext) {
-                Integer tag = getRecentContentDto.getTag();
-                String content = getRecentContentDto.getContent();
-                if (BaseConstant.CHAT_TAG_USER.equals(tag)) {
-                    messages.add(UserMessage.builder().text(content).build());
-                } else if (BaseConstant.CHAT_TAG_AI.equals(tag)) {
-                    messages.add(AssistantMessage.builder().content(content).build());
-                }
-            }
-        }
-
-        var prompt = new Prompt(messages);
 
         ChatResponse chatSendParams = new ChatResponse();
         chatSendParams.setOrder(WebSocketOrderEnum.AI.toString());
         StringBuilder answerStr = new StringBuilder();
 
-        // 回答
-        SysDialogueDetails answer = new SysDialogueDetails();
+        chatClientBuilder.build()
+                .prompt(SYSTEM_PROMPT)
+                .tools(thirdInterface)
+                .messages(buildMessages(chatRecParam.getDialogueId()))
+                .stream()
+                .content()
+                .retry(10)
+                .doOnNext(partialText -> {
+                    if (partialText.isEmpty()) {
+                        return;
+                    }
+                    answerStr.append(partialText);
+                    chatSendParams.setAnswer(partialText);
+                    if (session.isOpen()) {
+                        try {
+                            session.sendMessage(new TextMessage(chatSendParams.toJsonString()));
+                        } catch (IOException e) {
+                            log.error("发送 AI 回答失败: {}", e.getMessage(), e);
+                        }
+                    }
+                })
+                .doOnError(error -> {
+                    log.error("AI 流式响应异常: {}", error.getMessage(), error);
+                    if (session.isOpen()) {
+                        try {
+                            session.sendMessage(new TextMessage(ResultEnum.FAIL_NORMAL.getMessage()));
+                        } catch (IOException e) {
+                            log.error("发送错误消息失败: {}", e.getMessage(), e);
+                        }
+                    }
+                })
+                .doOnComplete(() -> saveAnswer(chatRecParam, user, answerStr.toString()))
+                .subscribe();
+    }
 
-        chatModel.stream(prompt).subscribe(item -> {
-            String partialText = Objects.requireNonNull(item.getResult()).getOutput().getText();
-            if (partialText == null) return;
-            chatSendParams.setAnswer(partialText);
-            try {
-                session.sendMessage(new TextMessage(chatSendParams.toJsonString()));
-                answerStr.append(partialText);
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                throw new RuntimeException(e);
+    /**
+     * 组装历史上下文
+     * @param dialogueId
+     * @return
+     */
+    private List<Message> buildMessages(Long dialogueId) {
+        List<GetRecentContentDTO> recentContext = sysDialogueDetailsService.getRecentContext(dialogueId, maxContextNum);
+
+        List<Message> messages = new ArrayList<>();
+//        messages.add(new SystemMessage(SYSTEM_PROMPT));
+
+        if (CollectionUtil.isNotEmpty(recentContext)) {
+            for (GetRecentContentDTO dto : recentContext) {
+                if (BaseConstant.CHAT_TAG_USER.equals(dto.getTag())) {
+                    messages.add(new UserMessage(dto.getContent()));
+                } else if (BaseConstant.CHAT_TAG_AI.equals(dto.getTag())) {
+                    messages.add(new AssistantMessage(dto.getContent()));
+                }
             }
-        }, error -> {
-            log.error(error.getMessage());
-            try {
-                session.sendMessage(new TextMessage(ResultEnum.FAIL_NORMAL.getMessage()));
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-                throw new RuntimeException(e);
-            }
-        }, () -> {
-            answer.setParentId(chatRecParam.getDialogueId());
-            answer.setContent(answerStr.toString());
-            answer.setTag(BaseConstant.CHAT_TAG_AI);
-            answer.setCreateBy(user.getId());
-            answer.setUpdateBy(user.getId());
-            sysDialogueDetailsService.save(answer);
-        });
+        }
+        return messages;
+    }
+
+    /**
+     * 流结束落库;出错时不落库
+     * @param chatRecParam
+     * @param user
+     * @param answer
+     */
+    private void saveAnswer(ChatRequest chatRecParam, UserDTO user, String answer) {
+        if (answer == null || answer.isEmpty()) {
+            log.warn("AI 未生成回答内容,跳过保存, dialogueId={}", chatRecParam.getDialogueId());
+            return;
+        }
+        SysDialogueDetails answerEntity = new SysDialogueDetails();
+        answerEntity.setParentId(chatRecParam.getDialogueId());
+        answerEntity.setContent(answer);
+        answerEntity.setTag(BaseConstant.CHAT_TAG_AI);
+        answerEntity.setCreateBy(user.getId());
+        answerEntity.setUpdateBy(user.getId());
+        sysDialogueDetailsService.save(answerEntity);
     }
 
     @Override

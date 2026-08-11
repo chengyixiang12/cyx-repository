@@ -21,7 +21,7 @@ public class WebSocketHeardHeatTimer {
 
     private final SendPingAsync sendPingAsync;
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "*/15 * * * * *")
     public void heartBeat() {
         Set<String> keys = WebSocketSessionManager.getKeys();
         if (keys.isEmpty()) return;

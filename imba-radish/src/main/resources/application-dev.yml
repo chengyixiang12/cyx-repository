@@ -94,6 +94,7 @@ spring:
         - /user/validUserInfoForRegister
         - /webjars/**
         - /v3/**
+        - /test/**
 
 # 启用api文档
 springdoc:
