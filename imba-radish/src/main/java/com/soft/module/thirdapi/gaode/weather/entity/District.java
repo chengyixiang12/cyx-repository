@@ -55,7 +55,7 @@ public class District {
 
             private String type;
 
-            private List<Double> coordinates;
+            private List<Double[]> coordinates;
         }
     }
 }

@@ -111,6 +111,7 @@ minio:
   default-bucket: ${MINIO_DEFAULT_BUCKET}
   expire: 3600
 
+# 高德地图api
 geo:
-  gaode:
+  gao-de:
     api-key: ${GAO_DE_API_KEY}

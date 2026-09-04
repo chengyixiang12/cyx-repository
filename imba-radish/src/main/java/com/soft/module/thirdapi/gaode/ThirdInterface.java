@@ -26,7 +26,7 @@ public class ThirdInterface {
 
     private final HttpUtil httpUtil;
 
-    @Value("${geo.gaode.api-key}")
+    @Value("${geo.gao-de.api-key}")
     private String apiKey;
 
     @Tool(description = "用于查询天气，需要传入行政区划的编码，如北京：110000")
@@ -43,12 +43,10 @@ public class ThirdInterface {
     public String getDistrictCode(@ToolParam(description = "地名，如：北京") String name) {
         log.info("开始调用getDistrictCode");
         Map<String, Object> param = new HashMap<>();
-        param.put("code", name);
-        param.put("maxLevel", 0);
+        param.put("stName", name);
         Map<String, String> header = new HashMap<>();
         District district = httpUtil.syncMonoGet("https://dmfw.mca.gov.cn", "/9095/stname/listPub", param, header, District.class);
+        log.info("查询行政区划代码API返回的结果：{}", district);
         return district.getRecords().getFirst().getPlace_type_code();
     }
-
-
 }

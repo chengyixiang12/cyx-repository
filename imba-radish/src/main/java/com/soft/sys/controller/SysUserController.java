@@ -120,27 +120,22 @@ public class SysUserController {
     @GetMapping(value = "/getUserInfo")
     @Operation(summary = "获取登录用户信息")
     public R<UserInfoVO> getUserInfo() {
-        try {
-            UserInfoVO userInfoVo = new UserInfoVO();
-            UserDTO userInfo = securityUtil.getUserInfo();
-            SysUser sysUser = sysUsersService.getById(userInfo.getId());
-            userInfoVo.setId(String.valueOf(sysUser.getId()));
-            userInfoVo.setUsername(sysUser.getUsername());
-            userInfoVo.setEmail(sysUser.getEmail());
-            userInfoVo.setPhone(sysUser.getPhone());
-            userInfoVo.setAvatar(String.valueOf(sysUser.getAvatar()));
-            userInfoVo.setNickname(sysUser.getNickname());
-            userInfoVo.setDeptId(String.valueOf(sysUser.getDeptId()));
+        UserInfoVO userInfoVo = new UserInfoVO();
+        UserDTO userInfo = securityUtil.getUserInfo();
+        SysUser sysUser = sysUsersService.getById(userInfo.getId());
+        userInfoVo.setId(String.valueOf(sysUser.getId()));
+        userInfoVo.setUsername(sysUser.getUsername());
+        userInfoVo.setEmail(sysUser.getEmail());
+        userInfoVo.setPhone(sysUser.getPhone());
+        userInfoVo.setAvatar(String.valueOf(sysUser.getAvatar()));
+        userInfoVo.setNickname(sysUser.getNickname());
+        userInfoVo.setDeptId(String.valueOf(sysUser.getDeptId()));
 
-            List<String> roleCodes = securityUtil.getRoleCodes();
-            if (roleCodes != null && !roleCodes.isEmpty()) {
-                userInfoVo.setPermissions(sysPermissionService.getPermissionsByRoleCodes(roleCodes));
-            }
-            return R.ok(userInfoVo);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return R.fail();
+        List<String> roleCodes = securityUtil.getRoleCodes();
+        if (roleCodes != null && !roleCodes.isEmpty()) {
+            userInfoVo.setPermissions(sysPermissionService.getPermissionsByRoleCodes(roleCodes));
         }
+        return R.ok(userInfoVo);
     }
 
     @GetMapping(value = "/getUser")

@@ -1,6 +1,7 @@
 package com.soft.sys.controller;
 
 import com.soft.sys.constants.BaseConstant;
+import com.soft.sys.constants.RegexConstant;
 import com.soft.sys.core.annotation.LogIgnore;
 import com.soft.sys.core.annotation.SysLock;
 import com.soft.sys.core.annotation.SysLog;
@@ -22,6 +23,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
@@ -152,7 +154,7 @@ public class SysFileController {
     @Operation(summary = "取消分片上传")
     @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
     public R<Object> cancelChunk(
-            @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5) {
+            @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5) {
 
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
 
@@ -211,7 +213,7 @@ public class SysFileController {
             @Parameter(name = "chunkIndex", description = "索引", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "chunk", description = "分片", required = true, in = ParameterIn.QUERY)
     })
-    public R<Object> uploadChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5,
+    public R<Object> uploadChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
                                  @RequestParam(value = "chunkIndex", required = false) @NotNull(message = "索引不能为空") Integer chunkIndex,
                                  @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") @LogIgnore MultipartFile chunk) throws IOException {
 
@@ -235,7 +237,7 @@ public class SysFileController {
     @GetMapping(value = "/getUploadProgress")
     @Operation(summary = "查询分片上传进度")
     @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
-    public R<ChunkProgressVO> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5) {
+    public R<ChunkProgressVO> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5) {
 
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
         ChunkProgressVO vo = new ChunkProgressVO();
@@ -277,7 +279,7 @@ public class SysFileController {
 
     @GetMapping(value = "/mergeChunk")
     @Operation(summary = "合并分片")
-    public R<Object> mergeChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") String fileMd5,
+    public R<Object> mergeChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
                                 @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName,
                                 @RequestParam(value = "total", required = false) @NotNull(message = "分片总数不能为空") Integer total) {
         File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
@@ -331,7 +333,7 @@ public class SysFileController {
 
     @GetMapping(value = "/getFileByMd5")
     @Operation(summary = "根据md5获取文件")
-    public R<String> getFileByMd5(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "md5不能为空") String fileMd5,
+    public R<String> getFileByMd5(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "md5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
                                   @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName) {
         String id = sysFileService.getFileByMd5(fileMd5, fileName);
         return R.ok(id);

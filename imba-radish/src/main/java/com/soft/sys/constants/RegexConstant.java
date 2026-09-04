@@ -29,4 +29,9 @@ public class RegexConstant {
      * 隐藏电话号码示例
      */
     public final static String PHONE_HIDDEN_EXP = "$1*****$2";
+
+    /**
+     * 文件hash正则。防止传递路径符
+     */
+    public final static String FILE_HASH_REGEX = "^[a-fA-F0-9]{32}$";
 }

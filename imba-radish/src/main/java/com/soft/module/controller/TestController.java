@@ -27,26 +27,8 @@ public class TestController {
 
     private final ThirdInterface thirdInterface;
 
-    private final HttpUtil httpUtil;
-
     @GetMapping(value = "/getWeather")
-    public R<Weather> getWeather(@RequestParam(value = "code") String code) {
-        return R.ok(thirdInterface.getWeather(code));
+    public R<String> getWeather(@RequestParam(value = "code") String code) {
+        return R.ok(thirdInterface.getDistrictCode(code));
     }
-
-//    @GetMapping(value = "/getCaptcha")
-//    public ResponseEntity<Byte> getCaptcha() {
-//        Map<String, Object> param = new HashMap<>();
-//        param.put("uuid", "1234567891234567");
-//
-//        Map<String, String> header = new HashMap<>();
-//        header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-//        header.put("Accept", "application/json, text/plain, */*");
-//        try (InputStream inputStream = httpUtil.syncMonoGet("http://imba-radish.top", "/api/auth/getGraphicCaptcha", param, new HashMap<>(), InputStream.class)) {
-//
-//        } catch (Exception e) {
-//            log.error(e.getMessage(), e);
-//        }
-//        return R.ok();
-//    }
 }

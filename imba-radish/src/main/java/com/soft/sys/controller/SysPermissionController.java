@@ -113,6 +113,7 @@ public class SysPermissionController {
 
     @GetMapping(value = "/getPermission")
     @Operation(summary = "获取权限")
+    @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<GetPermissionVO> getPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         GetPermissionVO getPermissionVo =  sysPermissionService.getPermission(id);
         return R.ok(getPermissionVo);
