@@ -15,7 +15,6 @@ import com.soft.sys.model.vo.SysSecretKeyVO;
 import com.soft.sys.service.SecretKeyService;
 import com.soft.sys.utils.AESUtil;
 import com.soft.sys.utils.RSAUtil;
-import com.soft.sys.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -45,8 +44,6 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
     private final RSAUtil rsaUtil;
 
     private final AESUtil aesUtil;
-
-    private final SecurityUtil securityUtil;
 
     @Cacheable(cacheNames = "cyx:rsa:public", key = "#type")
     @Override

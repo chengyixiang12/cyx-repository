@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -51,7 +52,7 @@ public class MinioUtil {
      * @return
      */
     public String getObjectKey(String fileKey, String fileSuffix) {
-        return DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + BaseConstant.LEFT_SLASH + fileKey + fileSuffix;
+        return DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator + fileKey + fileSuffix;
     }
 
     /**

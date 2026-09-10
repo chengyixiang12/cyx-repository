@@ -24,12 +24,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-
-import static com.soft.sys.constants.BaseConstant.LEFT_SLASH;
 
 
 /**
@@ -172,7 +171,7 @@ public class SysLogAspect {
             UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
             String osName = userAgent.getOperatingSystem().getName();
             String browserName = userAgent.getBrowser().getName();
-            logDto.setOsBrowserInfo(osName + LEFT_SLASH + browserName);
+            logDto.setOsBrowserInfo(osName + File.separator + browserName);
         } catch (Exception e) {
             logDto.setOsBrowserInfo("Unknown");
         }

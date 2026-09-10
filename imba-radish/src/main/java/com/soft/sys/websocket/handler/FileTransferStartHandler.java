@@ -47,7 +47,7 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         FileTransferStartRequest fileTransferStartRecParam = JSON.parseObject(message.getPayload(), FileTransferStartRequest.class);
         String fileKey = IdUtil.fastSimpleUUID();
         log.info("fileKey: {}", fileKey);
-        String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey;
+        String filePath = tmpPath + File.separator + username + File.separator + fileKey;
         File file = new File(filePath);
         boolean isCreate = file.mkdirs();
         WebSocketResponse sendParams = new WebSocketResponse();

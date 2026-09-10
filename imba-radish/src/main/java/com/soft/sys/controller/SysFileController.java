@@ -114,7 +114,7 @@ public class SysFileController {
                 if (BaseConstant.Minio.MINIO.equals(fileDetail.getLocation())) {
                     is = minioUtil.download(fileDetail.getObjectKey());
                 } else if (BaseConstant.Minio.DISK.equals(fileDetail.getLocation())) {
-                    file = new File(bigfileLocation + BaseConstant.LEFT_SLASH + fileDetail.getObjectKey());
+                    file = new File(bigfileLocation + File.separator + fileDetail.getObjectKey());
                     if (!file.exists()) {
                         throw new GlobalException("资源不存在");
                     }
@@ -156,7 +156,7 @@ public class SysFileController {
     public R<Object> cancelChunk(
             @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5) {
 
-        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+        File chunkDir = new File(tmp + File.separator + fileMd5);
 
         if (!chunkDir.exists()) {
             return R.ok("分片已清空", null);
@@ -217,7 +217,7 @@ public class SysFileController {
                                  @RequestParam(value = "chunkIndex", required = false) @NotNull(message = "索引不能为空") Integer chunkIndex,
                                  @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") @LogIgnore MultipartFile chunk) throws IOException {
 
-        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+        File chunkDir = new File(tmp + File.separator + fileMd5);
         if (!chunkDir.exists() && !chunkDir.mkdirs()) {
             return R.fail("分片目录创建失败");
         }
@@ -239,7 +239,7 @@ public class SysFileController {
     @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
     public R<ChunkProgressVO> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5) {
 
-        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+        File chunkDir = new File(tmp + File.separator + fileMd5);
         ChunkProgressVO vo = new ChunkProgressVO();
 
         if (!chunkDir.exists() || !chunkDir.isDirectory()) {
@@ -282,7 +282,7 @@ public class SysFileController {
     public R<Object> mergeChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
                                 @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName,
                                 @RequestParam(value = "total", required = false) @NotNull(message = "分片总数不能为空") Integer total) {
-        File chunkDir = new File(tmp + BaseConstant.LEFT_SLASH + fileMd5);
+        File chunkDir = new File(tmp + File.separator + fileMd5);
         File[] allFiles = chunkDir.listFiles();
 
         if (allFiles == null || allFiles.length == 0) {

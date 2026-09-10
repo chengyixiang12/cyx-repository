@@ -46,7 +46,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
         // 分片文件索引
         Integer index = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
-        String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
+        String filePath = tmpPath + File.separator + username + File.separator + fileKey + File.separator + index + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
         WebSocketResponse sendParams = new WebSocketResponse();
         sendParams.setOrder(WebSocketOrderEnum.FILE_TRANSFER.toString());

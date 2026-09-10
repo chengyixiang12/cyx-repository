@@ -58,7 +58,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         String originalName = fileTransferOverRecParam.getOriginalName();
         // 文件后缀
         String suffix = originalName.substring(originalName.lastIndexOf("."));
-        String objectKey = BaseConstant.LEFT_SLASH + DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + BaseConstant.LEFT_SLASH + fileKey + suffix;
+        String objectKey = File.separator + DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator + fileKey + suffix;
 
         byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
         int length = BaseConstant.BUFFER_SIZE;
@@ -92,7 +92,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         }
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
             while (index < maxIndex) {
-                String filePath = tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey + BaseConstant.LEFT_SLASH + index + BaseConstant.TMP_SUFFIX;
+                String filePath = tmpPath + File.separator + username + File.separator + fileKey + File.separator + index + BaseConstant.TMP_SUFFIX;
                 Path path = Path.of(filePath);
                 InputStream stream = Files.newInputStream(path);
                 length = stream.read(buffer, BaseConstant.INTEGER_INIT_VAL, length);
@@ -131,7 +131,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
 
-            File tmpFile = new File(tmpPath + BaseConstant.LEFT_SLASH + username + BaseConstant.LEFT_SLASH + fileKey);
+            File tmpFile = new File(tmpPath + File.separator + username + File.separator + fileKey);
             if (deleteChildFile(tmpFile)) {
                 tmpFile.deleteOnExit();
             }
