@@ -1,0 +1,51 @@
+server:
+  port: 8080
+  tomcat:
+    connection-timeout: 60000
+    keep-alive-timeout: 30000
+
+spring:
+  application:
+    name: radish-gateway
+  threads:
+    virtual:
+      enabled: true
+
+  cloud:
+    nacos:
+      # 阶段一：Nacos 未部署时也能独立启动
+      discovery:
+        enabled: ${NACOS_ENABLED:false}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      config:
+        enabled: ${NACOS_ENABLED:false}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+
+    gateway:
+      server:
+        # 注意前缀：Spring Cloud 2025.x 起为 spring.cloud.gateway.server.webmvc.*
+        # （旧前缀 spring.cloud.gateway.mvc.* 已废弃）
+        webmvc:
+          # 阶段一预留路由骨架，待 system / business 服务落地后启用
+          routes:
+            - id: radish-system
+              uri: ${SYSTEM_SERVICE_URI:http://127.0.0.1:8082}
+              predicates:
+                - Path=/sys/**
+            - id: radish-business
+              uri: ${BUSINESS_SERVICE_URI:http://127.0.0.1:8083}
+              predicates:
+                - Path=/biz/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: info

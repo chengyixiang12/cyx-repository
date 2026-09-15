@@ -1,0 +1,34 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: radish-business
+  threads:
+    virtual:
+      enabled: true
+
+  cloud:
+    nacos:
+      # 阶段一：Nacos 未部署时也能独立启动
+      discovery:
+        enabled: ${NACOS_ENABLED:false}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      config:
+        enabled: ${NACOS_ENABLED:false}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        # 接入 Nacos 配置中心后启用（注意：SCA 2025.x 已废弃 bootstrap.yml）：
+        # spring.config.import: optional:nacos:radish-business.yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: info

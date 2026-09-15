@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.soft</groupId>
+        <artifactId>imba-radish</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>radish-gateway</artifactId>
+    <description>API 网关（:8080）</description>
+
+    <dependencies>
+        <!--
+            注意坐标：Spring Cloud 2025.x 起网关拆分为 WebMVC / WebFlux 两个 starter，
+            旧的 spring-cloud-starter-gateway（响应式）与 spring-cloud-starter-gateway-mvc
+            均已废弃。本项目为 WebMVC 技术栈，故选用 Servlet 版。
+            版本由父 POM 的 spring-cloud-dependencies BOM 管理（当前为 5.0.0）。
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway-server-webmvc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- 内部模块 -->
+        <dependency>
+            <groupId>com.soft</groupId>
+            <artifactId>radish-nacos</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.soft</groupId>
+            <artifactId>radish-common</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

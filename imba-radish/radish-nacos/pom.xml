@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.soft</groupId>
+        <artifactId>imba-radish</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>radish-nacos</artifactId>
+    <description>Nacos 注册中心与配置中心接入封装</description>
+
+    <!--
+        本模块是「库」：统一各微服务接入 Nacos 的方式与版本，绝不声明
+        spring-boot-maven-plugin，也不带 application.yml。
+
+        ⚠️ Spring Cloud Alibaba 2025.1.0.0 已移除 bootstrap 支持，
+           不要再引入 spring-cloud-starter-bootstrap 或编写 bootstrap.yml。
+           配置中心一律通过 application.yml 的
+               spring.config.import: optional:nacos:<dataId>.yaml
+           接入。
+    -->
+    <dependencies>
+        <!-- 服务注册与发现 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- 配置中心 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
