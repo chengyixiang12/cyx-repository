@@ -2,31 +2,60 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Module Layout
+
+多模块 Maven 工程，根 `pom.xml` 是**纯 BOM + pluginManagement 父 POM**（不含任何实际依赖）。
+
+| Module | Type | Port | Purpose |
+|---|---|---|---|
+| `radish-common` | 库 | — | 公共基础件：`R`、异常、常量、枚举、工具、注解。包名 `com.soft.common.*` |
+| `radish-nacos` | 库 | — | Nacos 注册/配置中心接入封装 |
+| `radish-gateway` | 可执行 | 8080 | API 网关（Gateway Server **WebMVC**） |
+| `radish-system` | 可执行 | 8082 | 系统设置服务（阶段一为空骨架） |
+| `radish-business` | 可执行 | 8083 | 业务服务（阶段一为空骨架） |
+| `radish-monolithic` | 可执行 | 8081 | 原单体，保留可独立运行，当前承载全部业务代码 |
+
+**模块约束（改动时务必遵守）**：
+
+- 库模块（`radish-common` / `radish-nacos`）**绝不**声明 `spring-boot-maven-plugin`，否则 repackage 会因找不到主类而构建失败。
+- 各服务启动类置于 `com.soft` 包，但**必须用 `scanBasePackages` 收窄扫描范围**。`radish-common` 中的 `HttpUtil` 是 `@Component` 且构造器注入 `WebClient`，默认全包扫描会让未引入 webflux 的模块（如网关）启动即 `NoClassDefFoundError`。
+- `GlobalExceptionHandler` 位于 `com.soft.common.handle`，**不得引用任何 Spring Security 异常类型**；认证/授权异常已拆到 `com.soft.sys.core.handle.SecurityExceptionHandler`。否则无 spring-security 的模块加载它即崩。
+- `radish-common` 的框架依赖一律 `<optional>true</optional>`，防止向使用方传递 webflux 等。
+
 ## Build & Run Commands
 
 ```bash
-# Build (tests are skipped by default in surefire config)
+# 全量构建（tests 默认跳过）
 mvn clean package
 
-# Run with dev profile (default)
-mvn spring-boot:run
+# 只构建某模块及其依赖
+mvn -pl radish-monolithic -am clean package
 
-# Run with prod profile
-java -jar target/imba-radish-1.0-SNAPSHOT.jar --spring.profiles.active=prod
+# 运行单体（dev profile 默认）
+mvn -pl radish-monolithic spring-boot:run
+# 或直接跑 fat jar
+java -jar radish-monolithic/target/radish-monolithic-1.0-SNAPSHOT.jar
 
-# Run a single test class
+# 运行网关
+java -jar radish-gateway/target/radish-gateway-1.0-SNAPSHOT.jar
+
+# prod profile
+java -jar radish-monolithic/target/radish-monolithic-1.0-SNAPSHOT.jar --spring.profiles.active=prod
+
+# 跑单个测试类
 mvn test -Dtest=YourTestClass -DfailIfNoTests=false
-
-# Run tests (skip disabled, if you re-enable them)
-mvn test
 ```
 
-The application binds to port `8081` by default.
+端口分配：monolithic `8081`、gateway `8080`、system `8082`、business `8083`。
 
 ## Prerequisites
 
 - Java 21
-- External services declared in `.env` — MySQL (master), PostgreSQL (slave), Redis 15 (dev) / 14 (prod), RabbitMQ, Minio, DeepSeek API. `.env` is loaded at startup by `EnvLoaderHandler` before Spring context creation.
+- Maven 3.6.3+（Spring Boot 4 的最低要求；多模块构建建议 3.9.x）
+- External services declared in `.env` — MySQL (master), PostgreSQL (slave), Redis 15 (dev) / 14 (prod), RabbitMQ, Minio, DeepSeek API.
+
+  ⚠️ `.env` 必须位于**启动进程的工作目录**下：`EnvLoaderHandler` 用相对路径 `new FileInputStream(".env")` 读取，且文件缺失会直接抛异常终止启动。从模块目录启动时，该目录下需有 `.env`（`radish-monolithic/` 下已备一份）。
+- 微服务模式还需 Nacos 3.x。阶段一通过 `NACOS_ENABLED=false` 默认关闭，各服务可脱离 Nacos 独立启动。
 
 ## Architecture Overview
 
@@ -41,16 +70,17 @@ The application binds to port `8081` by default.
 | `com.soft.sys.service` / `impl` | Business logic via interface + `*ServiceImpl` extending MyBatis Plus `ServiceImpl<M, E>`. Includes `UsersDetailServiceImpl` for Spring Security user details, `SecretKeyService` for RSA key-pair management, and `SysActuatorServiceImpl` implementing LTTB trend downsampling (see below). |
 | `com.soft.sys.mapper` | MyBatis Plus mappers (17 interfaces), backed by `.xml` files under `src/main/resources/mapper/sys/`. |
 | `com.soft.sys.entity` | DB entities (17 business classes + `BaseEntity`), all extend `BaseEntity` (provides `id`, `createBy/Time`, `updateBy/Time`, `delFlag` with auto-fill). Logic delete via MyBatis Plus `delFlag` column. |
-| `com.soft.sys.constants` | Centralized constants: `BaseConstant`, `DictConstant`, `RabbitmqConstant`, `RedisConstant`, `RegexConstant`, `TokenConstant`, `WebSocketConstant`. |
-| `com.soft.sys.enums` | Enumerations: `KeyTypeEnum`, `LogLevelEnum`, `LogModuleEnum`, `LogTypeEnum`, `QuartzIntervalEnum`, `ResultEnum`, `WebSocketOrderEnum`. |
+| `com.soft.common.constants` | **已迁至 radish-common**。7 个常量类：`BaseConstant`, `DictConstant`, `RabbitmqConstant`, `RedisConstant`, `RegexConstant`, `TokenConstant`, `WebSocketConstant`. |
+| `com.soft.sys.enums` | 部分迁至 `com.soft.common.enums`：`ResultEnum`, `LogModuleEnum`, `LogTypeEnum`。仍留此处：`KeyTypeEnum`, `LogLevelEnum`, `QuartzIntervalEnum`, `WebSocketOrderEnum`. |
 | `com.soft.sys.model.dto` | Internal transfer objects (15 classes, including `rabbitmq/` sub-package for `EmailDTO`, `GenerateFileHashDTO`). |
 | `com.soft.sys.model.vo` | Response view objects (43 classes) returned to frontend. |
 | `com.soft.sys.model.request` | Inbound request bodies (46 classes). |
-| `com.soft.sys.model.ctf` | Custom data structures (e.g., `MenuTree` tree interface). |
+| `com.soft.common.model.ctf` | **已迁至 radish-common**。`MenuTree` 树接口。 |
 | `com.soft.sys.core.conf` | `@Configuration` classes (14): Security, MyBatis Plus, Redis, RabbitMQ, Minio, Knife4j, Quartz, Async, ThreadPool, WebSocket, Jackson, Captcha, WebClient, Transaction. |
 | `com.soft.sys.core.filter` | Servlet filters: `AuthorizationVerifyFilter` (JWT token → Redis lookup → SecurityContext), `RateLimitFilter` (Redis sliding window). Filter chain order matters: RateLimit → Auth → business. |
 | `com.soft.sys.core.aspect` | AOP: `SysLogAspect` (audit logging via `@SysLog`), `SysLockAspect` (distributed lock via `@SysLock`), `AccessControlAspect`. |
-| `com.soft.sys.core.handle` | Exception/authentication/access-denied/logout handlers; `EnvLoaderHandler`; `ScheduleJobLoadHandler`. |
+| `com.soft.sys.core.handle` | `AuthenticationHandler`, `CustomAccessDeniedHandler`, `LogoutAfterSuccessHandler`, `ScheduleJobLoadHandler`, `SecurityExceptionHandler`。注：`EnvLoaderHandler` 与 `GlobalExceptionHandler` 已迁至 `com.soft.common.handle`；认证授权异常处理从后者拆出，见 `SecurityExceptionHandler`。 |
+| `com.soft.common.annotation` | **已迁至 radish-common**。`AccessControl`, `LogIgnore`, `SysLock`, `SysLog`. |
 | `com.soft.sys.core.listener` | Application lifecycle listeners: `ApplicationShutdownListener` (cleanly closes WebSocket sessions on `ContextClosedEvent` at highest precedence). |
 | `com.soft.sys.core.permission` | Permission evaluation: `CustomPermissionService` (custom permission logic for Spring Security). |
 | `com.soft.sys.websocket` | WebSocket subsystem with registry pattern (see below). Sub-packages: `api/`, `handler/`, `interceptor/`, `receive/`, `registry/`, `send/`, `session/`. |
@@ -58,10 +88,11 @@ The application binds to port `8081` by default.
 | `com.soft.sys.quartz` | Quartz jobs (`ClearDeletedFile`, `NmapScanScheduler`, `UpdatePrimaryKey`) and listeners (`LoggingJobListener`, `QuartzAppender`). |
 | `com.soft.sys.async` | Async operations: `FileUploadAsync` (background file upload processing), `SendPingAsync` (WebSocket PING via virtual threads). |
 | `com.soft.sys.schedule` | Scheduled tasks: `ActuatorMetric` (system health data collection every 30s), `WebSocketHeardHeatTimer` (PING heartbeat every 30s via virtual threads). |
-| `com.soft.sys.resultapi.R<T>` | Unified REST response: `{timestamp, code, msg, data, extra}`. Factory methods: `R.ok(data)`, `R.fail(msg)`. |
+| `com.soft.common.resultapi.R<T>` | **已迁至 radish-common**。Unified REST response: `{timestamp, code, msg, data, extra}`. Factory methods: `R.ok(data)`, `R.fail(msg)`. |
+| `com.soft.common.exception` | **已迁至 radish-common**。`GlobalException`. |
 | `com.soft.sys.properties` | `@ConfigurationProperties` classes bound to structured YAML config under `radish.*`, `websocket.*` (`WebSocketProperty`), `rate-limit.*`, `minio.*`, `web-client.*`, `spring.security.permit.*`. |
-| `com.soft.sys.utils` | AES/RSA encryption, Minio file ops, HTTP/Security/Response helpers. |
-| `com.soft.module` | Spring Modulith `@ApplicationModule` extension module. Declares module dependencies on `sys::exception`, `sys::utils`, `sys::service`, `sys::entity`, `sys::websocket`, `sys::resultapi`. Currently empty — the `WebController` skeleton was removed; reserved for future module code. |
+| `com.soft.common.utils` | **部分已迁至 radish-common**：`AESUtil`, `RSAUtil`, `CommonUtil`, `ResponseUtil`, `HttpUtil`。仍留 `com.soft.sys.utils`：`SecurityUtil`（依赖 SecurityContext + UserDTO）、`MinioUtil`（依赖 MinioClient）。 |
+| `com.soft.module` | Spring Modulith `@ApplicationModule` extension module. `allowedDependencies` 现为 `sys::utils`, `sys::service`, `sys::entity`, `sys::websocket`（`sys::exception` 与 `sys::resultapi` 已随 radish-common 抽离）。当前只有高德天气第三方 API 封装与 `TestController`，待阶段二迁入 `radish-business`。 |
 
 ### WebSocket Architecture (Registry Pattern)
 
