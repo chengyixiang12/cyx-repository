@@ -6,7 +6,7 @@ import com.soft.sys.model.request.SaveDialogueDTO;
 import com.soft.sys.model.vo.GetDialoguesVO;
 import com.soft.sys.model.vo.GetTitleVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysDialogueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

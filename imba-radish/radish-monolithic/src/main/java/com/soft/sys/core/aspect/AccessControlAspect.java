@@ -1,9 +1,9 @@
 package com.soft.sys.core.aspect;
 
-import com.soft.sys.constants.RedisConstant;
-import com.soft.sys.core.annotation.AccessControl;
-import com.soft.sys.exception.GlobalException;
-import com.soft.sys.utils.CommonUtil;
+import com.soft.common.constants.RedisConstant;
+import com.soft.common.annotation.AccessControl;
+import com.soft.common.exception.GlobalException;
+import com.soft.common.utils.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

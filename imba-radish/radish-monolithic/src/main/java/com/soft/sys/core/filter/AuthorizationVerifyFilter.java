@@ -1,12 +1,12 @@
 package com.soft.sys.core.filter;
 
-import com.soft.sys.constants.RedisConstant;
-import com.soft.sys.constants.TokenConstant;
-import com.soft.sys.enums.ResultEnum;
-import com.soft.sys.exception.GlobalException;
+import com.soft.common.constants.RedisConstant;
+import com.soft.common.constants.TokenConstant;
+import com.soft.common.enums.ResultEnum;
+import com.soft.common.exception.GlobalException;
 import com.soft.sys.model.dto.UserDTO;
-import com.soft.sys.resultapi.R;
-import com.soft.sys.utils.ResponseUtil;
+import com.soft.common.resultapi.R;
+import com.soft.common.utils.ResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

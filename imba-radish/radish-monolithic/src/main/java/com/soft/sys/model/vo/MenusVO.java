@@ -1,6 +1,6 @@
 package com.soft.sys.model.vo;
 
-import com.soft.sys.model.ctf.MenuTree;
+import com.soft.common.model.ctf.MenuTree;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;

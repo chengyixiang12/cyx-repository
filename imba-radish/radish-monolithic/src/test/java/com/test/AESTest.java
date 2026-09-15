@@ -1,8 +1,8 @@
 package com.test;
 
 import com.soft.ImbaRadishApplication;
-import com.soft.sys.core.handle.EnvLoaderHandler;
-import com.soft.sys.utils.AESUtil;
+import com.soft.common.handle.EnvLoaderHandler;
+import com.soft.common.utils.AESUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

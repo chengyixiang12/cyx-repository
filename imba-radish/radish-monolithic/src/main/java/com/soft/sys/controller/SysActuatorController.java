@@ -5,7 +5,7 @@ import com.soft.sys.model.vo.GetLatestActuatorMetricVO;
 import com.soft.sys.model.vo.ListActuatorVO;
 import com.soft.sys.model.vo.ListUsageTrendVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysActuatorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

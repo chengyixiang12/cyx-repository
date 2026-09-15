@@ -2,7 +2,7 @@ package com.soft.module.thirdapi.gaode;
 
 import com.soft.module.thirdapi.gaode.weather.entity.District;
 import com.soft.module.thirdapi.gaode.weather.entity.Weather;
-import com.soft.sys.utils.HttpUtil;
+import com.soft.common.utils.HttpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;

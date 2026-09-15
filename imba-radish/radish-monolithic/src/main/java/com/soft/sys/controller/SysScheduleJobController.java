@@ -1,7 +1,7 @@
 package com.soft.sys.controller;
 
 import cn.hutool.core.util.StrUtil;
-import com.soft.sys.constants.BaseConstant;
+import com.soft.common.constants.BaseConstant;
 import com.soft.sys.entity.SysScheduleJob;
 import com.soft.sys.model.request.CreateJobDTO;
 import com.soft.sys.model.request.EditJobDTO;
@@ -9,7 +9,7 @@ import com.soft.sys.model.request.GetQuartzTasksDTO;
 import com.soft.sys.model.vo.GetJobVO;
 import com.soft.sys.model.vo.GetQuartzTasksVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysScheduleJobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

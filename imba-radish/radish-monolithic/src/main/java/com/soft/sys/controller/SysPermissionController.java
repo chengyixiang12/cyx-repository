@@ -1,12 +1,12 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.core.annotation.SysLog;
-import com.soft.sys.enums.LogModuleEnum;
+import com.soft.common.annotation.SysLog;
+import com.soft.common.enums.LogModuleEnum;
 import com.soft.sys.model.request.EditPermissionDTO;
 import com.soft.sys.model.request.PermissionsDTO;
 import com.soft.sys.model.request.SavePermissionDTO;
 import com.soft.sys.model.vo.*;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysPermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -1,13 +1,13 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.core.annotation.SysLog;
-import com.soft.sys.enums.LogModuleEnum;
+import com.soft.common.annotation.SysLog;
+import com.soft.common.enums.LogModuleEnum;
 import com.soft.sys.model.request.EditMenuDTO;
 import com.soft.sys.model.request.GetMenuListDTO;
 import com.soft.sys.model.request.PageMenuTreeDTO;
 import com.soft.sys.model.request.SaveMenuDTO;
 import com.soft.sys.model.vo.*;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysMenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

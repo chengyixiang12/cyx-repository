@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.sys.constants.BaseConstant;
+import com.soft.common.constants.BaseConstant;
 import com.soft.sys.entity.SysPermission;
 import com.soft.sys.mapper.SysPermissionMapper;
 import com.soft.sys.model.request.EditPermissionDTO;

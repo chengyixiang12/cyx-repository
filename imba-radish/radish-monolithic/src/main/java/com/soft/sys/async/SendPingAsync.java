@@ -1,6 +1,6 @@
 package com.soft.sys.async;
 
-import com.soft.sys.constants.RedisConstant;
+import com.soft.common.constants.RedisConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.websocket.api.WebSocketConcreteHolder;
 import com.soft.sys.websocket.handler.PingHandler;

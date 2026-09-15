@@ -1,19 +1,19 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.constants.RegexConstant;
-import com.soft.sys.core.annotation.LogIgnore;
-import com.soft.sys.core.annotation.SysLock;
-import com.soft.sys.core.annotation.SysLog;
-import com.soft.sys.enums.LogModuleEnum;
-import com.soft.sys.exception.GlobalException;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.constants.RegexConstant;
+import com.soft.common.annotation.LogIgnore;
+import com.soft.common.annotation.SysLock;
+import com.soft.common.annotation.SysLog;
+import com.soft.common.enums.LogModuleEnum;
+import com.soft.common.exception.GlobalException;
 import com.soft.sys.model.dto.FileDetailDTO;
 import com.soft.sys.model.request.FilesDTO;
 import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.model.vo.UploadFileVO;
 import com.soft.sys.model.vo.ChunkProgressVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysFileService;
 import com.soft.sys.utils.MinioUtil;
 import io.swagger.v3.oas.annotations.Operation;

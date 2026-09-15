@@ -1,7 +1,7 @@
 package com.soft.sys.websocket.handler;
 
-import com.soft.sys.constants.RedisConstant;
-import com.soft.sys.constants.WebSocketConstant;
+import com.soft.common.constants.RedisConstant;
+import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;

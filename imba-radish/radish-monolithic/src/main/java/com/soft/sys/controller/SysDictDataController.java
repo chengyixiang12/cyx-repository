@@ -1,16 +1,16 @@
 package com.soft.sys.controller;
 
 import cn.hutool.core.io.FileUtil;
-import com.soft.sys.core.annotation.SysLock;
-import com.soft.sys.core.annotation.SysLog;
-import com.soft.sys.enums.LogModuleEnum;
+import com.soft.common.annotation.SysLock;
+import com.soft.common.annotation.SysLog;
+import com.soft.common.enums.LogModuleEnum;
 import com.soft.sys.model.request.DictDatasDTO;
 import com.soft.sys.model.request.EditDictDataDTO;
 import com.soft.sys.model.request.SaveDictDataDTO;
 import com.soft.sys.model.vo.DictDataVO;
 import com.soft.sys.model.vo.DictDatasVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysDictDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

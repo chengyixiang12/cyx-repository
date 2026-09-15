@@ -1,6 +1,6 @@
 package com.soft.sys.core.conf;
 
-import com.soft.sys.constants.RabbitmqConstant;
+import com.soft.common.constants.RabbitmqConstant;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

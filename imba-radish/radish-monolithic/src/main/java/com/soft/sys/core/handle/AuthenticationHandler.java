@@ -1,8 +1,8 @@
 package com.soft.sys.core.handle;
 
-import com.soft.sys.enums.ResultEnum;
-import com.soft.sys.resultapi.R;
-import com.soft.sys.utils.ResponseUtil;
+import com.soft.common.enums.ResultEnum;
+import com.soft.common.resultapi.R;
+import com.soft.common.utils.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.NonNull;

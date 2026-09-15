@@ -1,6 +1,6 @@
 package com.soft.sys.utils;
 
-import com.soft.sys.constants.BaseConstant;
+import com.soft.common.constants.BaseConstant;
 import com.soft.sys.model.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;

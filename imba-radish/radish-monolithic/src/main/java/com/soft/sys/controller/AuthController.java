@@ -1,17 +1,17 @@
 package com.soft.sys.controller;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.constants.RedisConstant;
-import com.soft.sys.constants.RegexConstant;
-import com.soft.sys.core.annotation.AccessControl;
-import com.soft.sys.core.annotation.SysLock;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.constants.RedisConstant;
+import com.soft.common.constants.RegexConstant;
+import com.soft.common.annotation.AccessControl;
+import com.soft.common.annotation.SysLock;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.model.request.LoginDTO;
 import com.soft.sys.model.request.RegisterDTO;
 import com.soft.sys.model.vo.LoginVO;
 import com.soft.sys.properties.RadishProperty;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.AuthService;
 import com.soft.sys.service.SysUsersService;
 import io.swagger.v3.oas.annotations.Operation;

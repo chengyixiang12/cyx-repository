@@ -1,15 +1,15 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.constants.RedisConstant;
-import com.soft.sys.constants.RegexConstant;
-import com.soft.sys.core.annotation.AccessControl;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.constants.RedisConstant;
+import com.soft.common.constants.RegexConstant;
+import com.soft.common.annotation.AccessControl;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.rabbitmq.producer.EmailProduce;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysUsersService;
-import com.soft.sys.utils.CommonUtil;
+import com.soft.common.utils.CommonUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

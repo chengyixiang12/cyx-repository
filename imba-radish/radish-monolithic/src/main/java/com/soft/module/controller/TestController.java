@@ -2,8 +2,8 @@ package com.soft.module.controller;
 
 import com.soft.module.thirdapi.gaode.ThirdInterface;
 import com.soft.module.thirdapi.gaode.weather.entity.Weather;
-import com.soft.sys.resultapi.R;
-import com.soft.sys.utils.HttpUtil;
+import com.soft.common.resultapi.R;
+import com.soft.common.utils.HttpUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

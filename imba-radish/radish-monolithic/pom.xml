@@ -18,6 +18,12 @@
         flowable 与 easyexcel 的 exclusions 已在父 POM 定义，此处不要重复声明。
     -->
     <dependencies>
+        <!-- ==================== 内部模块 ==================== -->
+        <dependency>
+            <groupId>com.soft</groupId>
+            <artifactId>radish-common</artifactId>
+        </dependency>
+
         <!-- ==================== Web / 通信 ==================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

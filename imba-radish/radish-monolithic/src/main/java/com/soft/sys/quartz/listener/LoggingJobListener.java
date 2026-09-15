@@ -1,7 +1,7 @@
 package com.soft.sys.quartz.listener;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.soft.sys.constants.BaseConstant;
+import com.soft.common.constants.BaseConstant;
 import com.soft.sys.entity.SysScheduleJob;
 import com.soft.sys.entity.SysScheduleRecord;
 import com.soft.sys.quartz.log.QuartzAppender;

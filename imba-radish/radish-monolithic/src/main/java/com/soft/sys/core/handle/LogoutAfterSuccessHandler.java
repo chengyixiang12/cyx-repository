@@ -1,11 +1,11 @@
 package com.soft.sys.core.handle;
 
-import com.soft.sys.constants.RedisConstant;
-import com.soft.sys.constants.TokenConstant;
-import com.soft.sys.enums.ResultEnum;
+import com.soft.common.constants.RedisConstant;
+import com.soft.common.constants.TokenConstant;
+import com.soft.common.enums.ResultEnum;
 import com.soft.sys.model.dto.UserDTO;
-import com.soft.sys.resultapi.R;
-import com.soft.sys.utils.ResponseUtil;
+import com.soft.common.resultapi.R;
+import com.soft.common.utils.ResponseUtil;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

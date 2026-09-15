@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.soft</groupId>
+        <artifactId>imba-radish</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>radish-common</artifactId>
+    <description>公共基础库：统一响应、异常、常量、枚举、工具、注解</description>
+
+    <!--
+        本模块是「库」，不是应用：
+          · 绝不声明 spring-boot-maven-plugin（避免 repackage 找不到主类而构建失败）
+          · 不带任何 application.yml / logback-spring.xml（避免污染使用方 classpath）
+          · 框架相关依赖一律 <optional>true</optional>，由使用方（各服务）自行提供，
+            否则会把 spring-webflux / servlet-api 等强行传递给网关等不该有的模块
+    -->
+    <dependencies>
+        <!-- ==================== 必需（本模块自身功能的硬依赖）==================== -->
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-cache</artifactId>
+        </dependency>
+
+        <!-- ==================== 可选（由使用方提供）==================== -->
+
+        <!-- @Component / ApplicationContextInitializer -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- @RestControllerAdvice 与各类 Web 异常（NoResourceFoundException 在 webmvc 下） -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- HttpUtil 的 WebClient。必须 optional：网关默认不带 webflux -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- HttpServletRequest / HttpServletResponse（容器提供） -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- @Valid / @NotBlank / ValidationException -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- R 上的 @Schema -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

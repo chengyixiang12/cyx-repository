@@ -1,7 +1,7 @@
 package com.soft.sys.rabbitmq.consumer;
 
 import com.rabbitmq.client.Channel;
-import com.soft.sys.constants.RabbitmqConstant;
+import com.soft.common.constants.RabbitmqConstant;
 import com.soft.sys.model.dto.LogDTO;
 import com.soft.sys.model.dto.rabbitmq.EmailDTO;
 import com.soft.sys.properties.RadishProperty;

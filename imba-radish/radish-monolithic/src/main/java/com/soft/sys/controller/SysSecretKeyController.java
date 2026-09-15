@@ -1,14 +1,14 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.core.annotation.SysLog;
-import com.soft.sys.enums.LogModuleEnum;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.annotation.SysLog;
+import com.soft.common.enums.LogModuleEnum;
 import com.soft.sys.model.request.GenerateKeyDTO;
 import com.soft.sys.model.request.GetSecretKeyListDTO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.model.vo.PublicKeyVO;
 import com.soft.sys.model.vo.SysSecretKeyVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SecretKeyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

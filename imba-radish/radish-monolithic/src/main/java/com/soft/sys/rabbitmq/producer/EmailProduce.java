@@ -1,6 +1,6 @@
 package com.soft.sys.rabbitmq.producer;
 
-import com.soft.sys.constants.RabbitmqConstant;
+import com.soft.common.constants.RabbitmqConstant;
 import com.soft.sys.model.dto.rabbitmq.EmailDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;

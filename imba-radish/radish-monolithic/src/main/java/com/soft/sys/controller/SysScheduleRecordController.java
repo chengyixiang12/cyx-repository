@@ -3,7 +3,7 @@ package com.soft.sys.controller;
 import com.soft.sys.model.request.GetQuartzRecordListDTO;
 import com.soft.sys.model.vo.GetQuartzRecordListVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysScheduleRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,15 +1,15 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.core.annotation.SysLock;
-import com.soft.sys.core.annotation.SysLog;
-import com.soft.sys.enums.LogModuleEnum;
+import com.soft.common.annotation.SysLock;
+import com.soft.common.annotation.SysLog;
+import com.soft.common.enums.LogModuleEnum;
 import com.soft.sys.model.request.EditDictTypeDTO;
 import com.soft.sys.model.request.GetDictTypesDTO;
 import com.soft.sys.model.request.SaveDictTypeDTO;
 import com.soft.sys.model.vo.DictTypeVO;
 import com.soft.sys.model.vo.DictTypesVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.sys.resultapi.R;
+import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysDictTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

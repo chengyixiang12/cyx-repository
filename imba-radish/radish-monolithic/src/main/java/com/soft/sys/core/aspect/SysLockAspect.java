@@ -1,11 +1,11 @@
 package com.soft.sys.core.aspect;
 
 import cn.hutool.core.util.IdUtil;
-import com.soft.sys.constants.BaseConstant;
-import com.soft.sys.constants.RedisConstant;
-import com.soft.sys.core.annotation.SysLock;
-import com.soft.sys.enums.ResultEnum;
-import com.soft.sys.exception.GlobalException;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.constants.RedisConstant;
+import com.soft.common.annotation.SysLock;
+import com.soft.common.enums.ResultEnum;
+import com.soft.common.exception.GlobalException;
 import com.soft.sys.properties.RadishProperty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
