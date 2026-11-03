@@ -152,7 +152,9 @@ public class HttpUtil {
     private WebClient getWebClient(String url) {
         WebClient webClient = cache.get(url);
         if (webClient == null) {
-            webClient = webClientBuilder.baseUrl(url).build();
+            webClient = webClientBuilder.clone()
+                    .baseUrl(url)
+                    .build();
             cache.put(url, webClient);
         }
         return webClient;

@@ -48,9 +48,9 @@
         <!-- 主体内容区：左侧菜单 + 右侧内容（main + footer） -->
         <el-container class="page-body">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '64px' : '160px'" class="main-left">
-                <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
-                    text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
+            <el-aside :width="isCollapsed ? '64px' : '200px'" class="main-left">
+                <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#ffffff"
+                    text-color="#4E5969" active-text-color="#4F6EF2" :collapse="isCollapsed"
                     :collapse-transition="false">
                     <template v-for="menu in menuList" :key="menu.path">
                         <el-sub-menu v-if="menu.children?.length" :index="menu.path">
@@ -321,31 +321,26 @@ onMounted(() => {
 .page-container {
     height: 100vh;
     overflow: hidden;
+    background: var(--radish-bg-page);
 }
 
+/* ---------- 顶栏: 白底 + 细分割线 ---------- */
 .page-header {
-    height: 64px;
-    background: #858ea1;
-    color: white;
+    height: var(--radish-header-height);
+    background: var(--radish-bg-card);
+    color: var(--radish-text-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--radish-border-light);
 }
 
-.page-body {
-    flex: 1;
-    /* margin: 5px 0 5px 5px; */
-    min-height: 0;
-}
-
+/* ---------- 侧边栏: 白底, 菜单项胶囊化 ---------- */
+/* 滚动逻辑在 global.css: .main-left 定位容器 + 顶层菜单绝对定位自行滚动 */
 .main-left {
-    background: #dadbdd;
-    overflow: hidden;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
+    background: var(--radish-bg-card);
+    border-right: 1px solid var(--radish-border-light);
 }
 
 .main-right-wrapper {
@@ -363,11 +358,12 @@ onMounted(() => {
     overflow: hidden;
     padding: 0;
     min-height: 0;
+    background: var(--radish-bg-page);
 }
 
 .router-view-wrapper {
     flex: 1;
-    padding: 5px;
+    padding: 10px;
     overflow: hidden;
     min-height: 0;
 }
@@ -378,18 +374,21 @@ onMounted(() => {
     overflow: hidden;
 }
 
+/* ---------- 页脚 ---------- */
 .page-footer {
-    height: 40px;
-    background: #dadbdd;
+    height: var(--radish-footer-height);
+    background: var(--radish-bg-card);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--radish-border-light);
 }
 
 .footer-content {
     text-align: center;
+    font-size: 12px;
+    color: var(--radish-text-secondary);
 }
 
 :deep(.el-tabs__header) {
@@ -397,20 +396,29 @@ onMounted(() => {
     margin-top: 0px;
 }
 
+/* ---------- 顶栏元素 ---------- */
 .header-left {
     display: flex;
     align-items: center;
     padding: 10px 0;
 }
 
+/* 右侧图标组: flex 垂直居中, 替代原来的 margin-top 对齐 hack */
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
 .logo {
-    height: 40px;
-    margin-right: 15px;
+    height: 32px;
+    margin-right: 12px;
 }
 
 .system-name {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--radish-text-primary);
+    letter-spacing: 0.5px;
 }
 
 .user-info {
@@ -418,45 +426,60 @@ onMounted(() => {
     display: flex;
     align-items: center;
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: all 0.3s;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: background 0.25s;
 }
 
 .user-info:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--radish-fill);
 }
 
 .user-name {
     margin-left: 10px;
+    font-size: 14px;
+    color: var(--radish-text-primary);
 }
 
+/* ---------- 菜单样式 ---------- */
+/* 尺寸/滚动在 global.css (.main-left > .el-menu), 这里只管视觉 */
 .el-menu {
     border-right: none;
     width: 100%;
+    padding: 8px;
 }
 
-.el-menu-item,
-.el-sub-menu {
-    margin-bottom: 4px;
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title) {
+    border-radius: var(--radish-radius-sm);
+    margin: 2px 0;
+    height: 40px;
+    line-height: 40px;
+    transition: background 0.2s, color 0.2s;
 }
 
-.el-menu-item:not(:last-child),
-.el-sub-menu:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+:deep(.el-menu-item:hover),
+:deep(.el-sub-menu__title:hover) {
+    background: var(--radish-fill);
 }
 
+:deep(.el-menu-item.is-active) {
+    background: var(--radish-primary-light-9);
+    font-weight: 600;
+}
+
+/* ---------- 顶栏图标 ---------- */
 .home-icon {
-    margin-top: 17px;
-    margin-right: 20px;
+    margin-right: 16px;
     font-size: 20px;
     cursor: pointer;
-    transition: color 0.3s;
-    color: #e6e7e8;
+    transition: color 0.25s;
+    color: var(--radish-text-regular);
+    vertical-align: middle;
 }
 
 .home-icon:hover {
-    color: #409EFF;
+    color: var(--radish-primary);
 }
 
 /* 消息图标容器 */
@@ -464,22 +487,20 @@ onMounted(() => {
     position: relative;
     display: inline-block;
     margin-right: 20px;
-    margin-top: 17px;
-    /* 保持与其他图标对齐 */
+    vertical-align: middle;
 }
 
 /* 消息图标基础样式 */
 .message-icon {
     font-size: 20px;
-    color: #e6e7e8;
+    color: var(--radish-text-regular);
     cursor: pointer;
-    transition: color 0.3s;
+    transition: color 0.25s;
     position: relative;
-    /* 为红点定位做准备 */
 }
 
 .message-icon:hover {
-    color: #409eff;
+    color: var(--radish-primary);
 }
 
 /* 小红点样式 */
@@ -489,10 +510,9 @@ onMounted(() => {
     right: -3px;
     width: 8px;
     height: 8px;
-    background-color: #f56c6c;
+    background-color: var(--radish-danger);
     border-radius: 50%;
-    border: 1px solid #b3b9bf;
-    /* 与header背景色一致 */
+    border: 2px solid var(--radish-bg-card);
     box-sizing: border-box;
     animation: pulse 1.5s infinite;
 }
@@ -515,10 +535,11 @@ onMounted(() => {
     margin-right: 15px;
     font-size: 20px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: color 0.25s;
+    color: var(--radish-text-regular);
 }
 
 .collapse-icon:hover {
-    color: #99c0e7;
+    color: var(--radish-primary);
 }
 </style>

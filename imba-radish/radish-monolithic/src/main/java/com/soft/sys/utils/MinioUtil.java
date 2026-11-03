@@ -2,7 +2,6 @@ package com.soft.sys.utils;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
-import com.soft.common.constants.BaseConstant;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.properties.MinioProperty;
 import io.minio.*;

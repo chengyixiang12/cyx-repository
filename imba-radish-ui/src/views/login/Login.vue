@@ -218,7 +218,7 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #EDF1FE 0%, #E4E9FD 45%, #F3F0FE 100%);
   padding: 20px;
 }
 

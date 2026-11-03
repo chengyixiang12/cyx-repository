@@ -234,7 +234,9 @@ router.beforeEach(async (to, _from, next) => {
     }
 
     // 重新尝试当前路径（此时路由表已完整）
-    next({ ...to, replace: true })
+    // 注意: 不能直接展开 to —— 未匹配时 to 已被预解析为 404 兜底路由(name='404'),
+    // 带 name 重新导航会被 vue-router 按 name 命中 404。必须用 path 重新解析。
+    next({ path: to.path, query: to.query, hash: to.hash, replace: true })
     return
   }
 

@@ -1,6 +1,5 @@
 package com.soft.sys.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
@@ -17,7 +16,6 @@ import java.time.LocalDateTime;
 @Alias(value = "ListActuatorVO")
 public class ListActuatorVO {
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime createTime;
 
     private Double cpuUsage;

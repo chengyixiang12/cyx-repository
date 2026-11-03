@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     host: '0.0.0.0',
-    port: 8090,
+    port: 5147,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8081', // 设置代理目标

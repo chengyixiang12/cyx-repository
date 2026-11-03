@@ -118,6 +118,7 @@ import JobFormDialog from './component/JobFormDialog.vue'
 import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi, deleteJobApi, execImmediately } from '@/api/quartz'
 import { EditJobRequest, GetQuartzTasksRequest, GetQuartzTasksVo, SaveJobRequest } from '@/types/quartz'
 import router from '@/router/routers'
+import { showMessage } from '@/utils/message'
 
 const loading = ref(false)
 const jobList = ref<GetQuartzTasksVo[]>([])
@@ -192,7 +193,12 @@ const handleStatusChange = async (row: GetQuartzTasksVo) => {
 
 // 查看执行记录
 const handleViewRecords = (row: GetQuartzTasksVo) => {
-  router.push({ name: 'quartzRecord', query: { id: row.id } })
+  // 路由由后端菜单驱动, 菜单未配置时 push 按 name 跳转会直接抛异常
+  if (router.hasRoute('quartzRecord')) {
+    router.push({ name: 'quartzRecord', query: { id: row.id } })
+  } else {
+    showMessage('未找到"执行记录"页面, 请检查菜单管理中是否已配置 path 为 /quartzRecord 的菜单', 'warning')
+  }
 }
 
 // 分页变化

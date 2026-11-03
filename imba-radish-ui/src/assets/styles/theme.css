@@ -1,0 +1,145 @@
+/* ============================================================
+   萝卜系统 · UI 设计令牌 (Design Tokens)
+   风格: 清爽浅色企业风 | 主色: 靛蓝 #4F6EF2
+   本文件是全站视觉的唯一事实来源, 改主题只改这里
+   ============================================================ */
+
+:root {
+  /* ---------- 品牌主色 ---------- */
+  --radish-primary: #4F6EF2;
+  --radish-primary-light-3: #849AF6;  /* hover */
+  --radish-primary-light-5: #A7B7F9;
+  --radish-primary-light-7: #CAD4FB;  /* plain 边框 */
+  --radish-primary-light-8: #DCE2FC;
+  --radish-primary-light-9: #EDF1FE;  /* 选中底色 */
+  --radish-primary-dark-2: #3F58C2;   /* active */
+
+  /* ---------- 功能色 ---------- */
+  --radish-success: #00B42A;
+  --radish-warning: #FF7D00;
+  --radish-danger:  #F53F3F;
+  --radish-info:    #86909C;
+
+  /* ---------- 中性色 ---------- */
+  --radish-text-primary:   #1F2D3D;  /* 标题 */
+  --radish-text-regular:   #4E5969;  /* 正文 */
+  --radish-text-secondary: #86909C;  /* 辅助 */
+  --radish-border:         #E5E6EB;  /* 分割线 */
+  --radish-border-light:   #F0F1F3;  /* 次级分割线 */
+  --radish-fill:           #F7F8FA;  /* 填充底色 */
+  --radish-bg-page:        #F0F2F5;  /* 页面内容区底色 (与白色侧边栏明确区分) */
+  --radish-bg-card:        #FFFFFF;  /* 卡片底色 */
+
+  /* ---------- 布局 ---------- */
+  --radish-header-height: 56px;
+  --radish-footer-height: 36px;
+  --radish-sidebar-width: 200px;
+  --radish-radius-sm: 6px;
+  --radish-radius: 8px;
+  --radish-radius-lg: 10px;
+  --radish-radius-xl: 12px;
+  --radish-shadow-card: 0 1px 2px rgba(31, 45, 61, 0.04), 0 2px 8px rgba(31, 45, 61, 0.06);
+  --radish-shadow-pop: 0 4px 16px rgba(31, 45, 61, 0.12);
+
+  /* ============================================================
+     Element Plus 主题变量覆盖 (必须写在 :root, 覆盖官方默认值)
+     ============================================================ */
+  --el-color-primary: var(--radish-primary);
+  --el-color-primary-light-3: var(--radish-primary-light-3);
+  --el-color-primary-light-5: var(--radish-primary-light-5);
+  --el-color-primary-light-7: var(--radish-primary-light-7);
+  --el-color-primary-light-8: var(--radish-primary-light-8);
+  --el-color-primary-light-9: var(--radish-primary-light-9);
+  --el-color-primary-dark-2: var(--radish-primary-dark-2);
+
+  --el-color-success: var(--radish-success);
+  --el-color-warning: var(--radish-warning);
+  --el-color-danger: var(--radish-danger);
+  --el-color-error: var(--radish-danger);
+  --el-color-info: var(--radish-info);
+
+  --el-text-color-primary: var(--radish-text-primary);
+  --el-text-color-regular: var(--radish-text-regular);
+  --el-text-color-secondary: var(--radish-text-secondary);
+  --el-border-color: var(--radish-border);
+  --el-border-color-light: var(--radish-border-light);
+  --el-border-color-lighter: var(--radish-border-light);
+  --el-fill-color-light: var(--radish-fill);
+  --el-fill-color-lighter: var(--radish-fill);
+
+  /* 全局圆角体系 */
+  --el-border-radius-base: var(--radish-radius);
+  --el-border-radius-small: var(--radish-radius-sm);
+  --el-border-radius-round: 999px;
+
+  /* 组件级微调 */
+  --el-dialog-border-radius: var(--radish-radius-xl);
+  --el-table-header-bg-color: var(--radish-fill);
+  --el-table-header-text-color: var(--radish-text-regular);
+  --el-card-border-radius: var(--radish-radius-lg);
+  --el-box-shadow-light: var(--radish-shadow-card);
+  --el-box-shadow: var(--radish-shadow-pop);
+  --el-messagebox-border-radius: var(--radish-radius-lg);
+  --el-notification-border-radius: var(--radish-radius-lg);
+  --el-message-border-color: transparent;
+}
+
+/* ============================================================
+   组件细节打磨 (全站通用)
+   ============================================================ */
+
+/* 卡片: 悬浮轻微上移 */
+.el-card {
+  box-shadow: var(--radish-shadow-card);
+  transition: box-shadow 0.25s ease;
+}
+.el-card:hover {
+  box-shadow: 0 2px 4px rgba(31, 45, 61, 0.06), 0 8px 20px rgba(31, 45, 61, 0.1);
+}
+
+/* 按钮: 提升字重, 主按钮带柔和投影 */
+.el-button {
+  font-weight: 500;
+}
+.el-button--primary:not(.is-plain):not(.is-text):not(.is-link) {
+  box-shadow: 0 2px 6px rgba(79, 110, 242, 0.3);
+}
+.el-button--primary:not(.is-plain):not(.is-text):not(.is-link):hover {
+  box-shadow: 0 3px 10px rgba(79, 110, 242, 0.4);
+}
+
+/* 输入框: 聚焦主色柔光 */
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px var(--radish-primary) inset, 0 0 0 3px rgba(79, 110, 242, 0.12) !important;
+}
+
+/* 表格: 表头浅灰底 + 去掉最后一行下边框 */
+.el-table th.el-table__cell {
+  font-weight: 600;
+}
+.el-table .el-table__cell {
+  padding: 10px 0;
+}
+
+/* 弹窗: 头部不留分割线, 标题加重 */
+.el-dialog__header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--radish-border-light);
+  margin-right: 0;
+}
+.el-dialog__title {
+  font-weight: 600;
+  color: var(--radish-text-primary);
+}
+
+/* 标签页: 激活项带主色胶囊底 */
+.el-tabs__item.is-active {
+  font-weight: 600;
+}
+
+/* 下拉菜单 / 气泡: 阴影柔和 */
+.el-popper.is-light {
+  border-color: var(--radish-border-light);
+  box-shadow: var(--radish-shadow-pop);
+}

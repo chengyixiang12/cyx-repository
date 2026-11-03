@@ -1,6 +1,5 @@
 package com.soft.sys.model.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -31,7 +30,6 @@ public class FilesVO {
     private String originalName;
 
     @Schema(description = "上传时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     @Schema(description = "上传人")
