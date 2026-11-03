@@ -195,4 +195,4 @@ radish:
     # 是否开启日志记录
     enable: true
     # 日志位置
-    location: logs
+    location: logs/radish-monolithic
