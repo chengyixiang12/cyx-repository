@@ -7,6 +7,7 @@ out/
 *.iml
 *.class
 .vscode/
+.workbuddy/
 
 # 操作系统文件
 .DS_Store
