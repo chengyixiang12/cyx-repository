@@ -12,6 +12,9 @@ public class LoginVO {
     @Schema(description = "用户认证")
     private String token;
 
+    @Schema(description = "用户主键")
+    private Long userId;
+
     @Schema(description = "用户名")
     private String username;
 }

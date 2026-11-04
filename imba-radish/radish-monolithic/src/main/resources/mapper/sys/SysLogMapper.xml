@@ -44,10 +44,11 @@
         sl.status_code,
         sl.execution_time,
         sl.operation_desc,
-        sl.log_level
+        sl.log_level,
+        sl.type
         FROM
         sys_log sl
-        JOIN sys_user su
+        LEFT JOIN sys_user su
         ON sl.create_by = su.id
         WHERE
         sl.del_flag = '0'
@@ -62,6 +63,9 @@
         </if>
         <if test="request.logLevel != null and request.logLevel != ''">
             AND sl.log_level = #{request.logLevel}
+        </if>
+        <if test="request.type != null and request.type != ''">
+            AND sl.type = #{request.type}
         </if>
         <if test="request.startTime != null and request.endTime != null">
             AND (
@@ -80,16 +84,17 @@
             sl.request_url,
             sl.request_method,
             sl.request_params,
-            sl.response_result,
+            sl.response_result AS response_params,
             sl.operation_desc,
             sl.execution_time,
             sl.module_name,
             sl.status_code,
             sl.exception_info,
-            sl.os_browser_info
+            sl.os_browser_info,
+            sl.type
         FROM
             sys_log sl
-                JOIN sys_user su ON
+                LEFT JOIN sys_user su ON
                 sl.create_by = su.id
         WHERE
             sl.del_flag = '0'

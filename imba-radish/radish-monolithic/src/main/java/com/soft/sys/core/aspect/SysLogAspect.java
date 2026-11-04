@@ -3,12 +3,11 @@ package com.soft.sys.core.aspect;
 import com.alibaba.fastjson2.JSON;
 import com.soft.common.annotation.LogIgnore;
 import com.soft.common.annotation.SysLog;
+import com.soft.common.resultapi.R;
 import com.soft.sys.enums.LogLevelEnum;
-import com.soft.common.exception.GlobalException;
 import com.soft.sys.model.dto.LogDTO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.rabbitmq.producer.SysLogProduce;
-import com.soft.common.resultapi.R;
 import com.soft.sys.utils.SecurityUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +27,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 
 /**

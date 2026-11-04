@@ -136,6 +136,7 @@ public class AuthServiceImpl implements AuthService {
             redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token,
                     request.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
             loginVo.setToken(token);
+            loginVo.setUserId(id);
             loginVo.setUsername(request.getUsername());
             return loginVo;
         } catch (BadCredentialsException e) {

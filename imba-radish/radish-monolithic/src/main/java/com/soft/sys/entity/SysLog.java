@@ -93,8 +93,9 @@ public class SysLog extends BaseEntity {
     private String osBrowserInfo;
 
     /**
-     * 日志类型
+     * 日志类型，取值见 {@link com.soft.common.enums.LogTypeEnum}：
+     * 1-登录日志，2-注册日志，3-业务操作日志
      */
     @TableField(value = "type")
-    private Integer type;
+    private String type;
 }

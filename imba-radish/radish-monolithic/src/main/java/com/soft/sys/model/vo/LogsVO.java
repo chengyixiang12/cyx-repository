@@ -41,4 +41,7 @@ public class LogsVO {
 
     @Schema(description = "日志级别")
     private String logLevel;
+
+    @Schema(description = "日志类型：1-登录日志，2-注册日志，3-业务操作日志")
+    private String type;
 }

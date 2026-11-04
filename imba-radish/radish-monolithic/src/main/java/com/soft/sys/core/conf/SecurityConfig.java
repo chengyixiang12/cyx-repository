@@ -1,12 +1,15 @@
 package com.soft.sys.core.conf;
 
 import com.soft.sys.core.filter.AuthorizationVerifyFilter;
+import com.soft.sys.core.filter.LoginLogFilter;
 import com.soft.sys.core.filter.RateLimitFilter;
 import com.soft.sys.core.handle.AuthenticationHandler;
 import com.soft.sys.core.handle.CustomAccessDeniedHandler;
 import com.soft.sys.core.handle.LogoutAfterSuccessHandler;
 import com.soft.sys.properties.AuthorizationIgnoreProperty;
+import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.properties.RateLimitProperty;
+import com.soft.sys.rabbitmq.producer.SysLogProduce;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +33,7 @@ import org.springframework.util.PathMatcher;
 /**
  * Spring Security 核心配置
  *
- * <p>过滤器链顺序：RateLimitFilter → AuthorizationVerifyFilter → 业务处理</p>
+ * <p>过滤器链顺序：LoginLogFilter → RateLimitFilter → AuthorizationVerifyFilter → 业务处理</p>
  * <p>认证方式：无状态 JWT（从 Redis 校验 token → 用户名映射）</p>
  *
  * @author cyx
@@ -48,6 +51,8 @@ public class SecurityConfig {
     private final RedisTemplate<String, Object> redisTemplate;
     private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
     private final RateLimitProperty rateLimitProperty;
+    private final RadishProperty radishProperty;
+    private final SysLogProduce sysLogProduce;
     private final PathMatcher pathMatcher;
 
     /**
@@ -111,7 +116,11 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(
                         new RateLimitFilter(redisTemplate, rateLimitProperty, pathMatcher),
-                        AuthorizationVerifyFilter.class);
+                        AuthorizationVerifyFilter.class)
+                // 登录日志位于最外层，保证能完整包装请求/响应
+                .addFilterBefore(
+                        new LoginLogFilter(sysLogProduce, radishProperty),
+                        RateLimitFilter.class);
 
         return http.build();
     }
