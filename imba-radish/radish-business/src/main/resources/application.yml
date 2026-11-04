@@ -8,17 +8,25 @@ spring:
     virtual:
       enabled: true
 
+  # 从 Nacos 配置中心加载动态配置；dataId 不存在时不影响启动
+  # （SCA 2025.x 已废弃 bootstrap.yml，必须使用 spring.config.import）
+  config:
+    import: optional:nacos:radish-business.yaml
+
   cloud:
     nacos:
-      # 阶段一：Nacos 未部署时也能独立启动
       discovery:
-        enabled: ${NACOS_ENABLED:false}
-        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        enabled: ${NACOS_ENABLED:true}
+        server-addr: ${NACOS_SERVER_ADDR:192.168.226.130:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        # Nacos 不可达时不阻断服务启动，只记录注册失败
+        fail-fast: ${NACOS_FAIL_FAST:false}
       config:
-        enabled: ${NACOS_ENABLED:false}
-        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
-        # 接入 Nacos 配置中心后启用（注意：SCA 2025.x 已废弃 bootstrap.yml）：
-        # spring.config.import: optional:nacos:radish-business.yaml
+        enabled: ${NACOS_CONFIG_ENABLED:true}
+        server-addr: ${NACOS_SERVER_ADDR:192.168.226.130:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
 
 management:
   endpoints:
