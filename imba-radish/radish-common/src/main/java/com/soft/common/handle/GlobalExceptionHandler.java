@@ -1,6 +1,5 @@
 package com.soft.common.handle;
 
-import com.soft.common.enums.ResultEnum;
 import com.soft.common.exception.GlobalException;
 import com.soft.common.resultapi.R;
 import jakarta.validation.ValidationException;
