@@ -1,15 +1,15 @@
 package com.soft.sys.model.dto.rabbitmq;
 
-import lombok.Builder;
 import lombok.Data;
 
 /**
+ * MQ 消息体需保证有无参构造器，否则 Jackson 反序列化会失败。
+ *
  * @author cyq
  * @date 2025/12/20
  * @description
  */
 @Data
-@Builder
 public class EmailDTO {
 
     /**

@@ -57,11 +57,4 @@ public class RabbitmqConstant {
          */
         public static final String DEAD_LETTER_ROUTING_KEY = "radish-dead-rout-key";
     }
-
-
-
-
-
-
-
 }

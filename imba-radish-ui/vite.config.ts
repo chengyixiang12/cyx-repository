@@ -18,6 +18,11 @@ export default defineConfig({
       '/ws': {
         target: 'ws://127.0.0.1:8081', // 设置代理目标
         changeOrigin: true, // 是否改变请求源地址
+      },
+      '/download': {
+        target: 'http://192.168.226.130:9000',
+        changeOrigin: true,  // 是否改变请求源地址
+        rewrite: (path) => path.replace(/^\/download/, '')
       }
     }
   },

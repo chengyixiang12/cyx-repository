@@ -26,6 +26,9 @@ public class EmailProduce {
      * @param content
      */
     public void send(String email, String content) {
-        rabbitTemplate.convertAndSend(RabbitmqConstant.Topic.EXCHANGE, RabbitmqConstant.Topic.ROUTE_KEY_EMAIL, EmailDTO.builder().email(email).content(content).build());
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setEmail(email);
+        emailDTO.setContent(content);
+        rabbitTemplate.convertAndSend(RabbitmqConstant.Topic.EXCHANGE, RabbitmqConstant.Topic.ROUTE_KEY_EMAIL, emailDTO);
     }
 }

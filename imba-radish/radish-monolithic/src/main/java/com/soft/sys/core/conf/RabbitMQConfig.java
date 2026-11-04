@@ -9,6 +9,7 @@ import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @Author: cyx
@@ -20,19 +21,19 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, JacksonJsonMessageConverter jacksonJsonMessageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         // 设置JSON转换器，支持任意POJO对象序列化/反序列化
-        rabbitTemplate.setMessageConverter(new JacksonJsonMessageConverter());
+        rabbitTemplate.setMessageConverter(jacksonJsonMessageConverter);
         return rabbitTemplate;
     }
 
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory, JacksonJsonMessageConverter jacksonJsonMessageConverter) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         // 消费端也设置JacksonJsonMessageConverter，用于反序列化
-        factory.setMessageConverter(new JacksonJsonMessageConverter());
+        factory.setMessageConverter(jacksonJsonMessageConverter);
         // 消息手动确认
         factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         // 每次从队列取出一条消息消费

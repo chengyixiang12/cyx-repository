@@ -320,7 +320,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
         forceOfflineParam.setReceiver(id);
         forceOfflineParam.setMsg("密码已修改，请重新登录");
-        TextMessage textMessage = new TextMessage(forceOfflineParam.toString());
+        TextMessage textMessage = new TextMessage(forceOfflineParam.toJsonString());
         concreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
     }
 
