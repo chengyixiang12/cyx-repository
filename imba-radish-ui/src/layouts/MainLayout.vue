@@ -374,6 +374,11 @@ onMounted(() => {
     min-height: 0;
 }
 
+/* flex 纵向子项默认 min-height:auto 会被内容撑开, 必须归零才能让内层滚动生效 */
+.page-body {
+    min-height: 0;
+}
+
 .main-right {
     flex: 1;
     display: flex;
@@ -387,7 +392,8 @@ onMounted(() => {
 .router-view-wrapper {
     flex: 1;
     padding: 10px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     min-height: 0;
 }
 
