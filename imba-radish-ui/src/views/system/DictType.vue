@@ -33,7 +33,8 @@
 
     <!-- 类型表格 -->
     <div class="table-wrapper">
-      <el-table :data="dictTypeList" border size="small" style="width: 100%" v-loading="loading" :row-class-name="tableRowClassName" height="calc(100vh - 325px)">
+      <TableSkeleton :loading="loading" :count="dictTypeList.length" :columns="5" />
+      <el-table :data="dictTypeList" border size="small" style="width: 100%" v-loading="loading && dictTypeList.length > 0" :row-class-name="tableRowClassName" height="calc(100vh - 325px)">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -95,6 +96,7 @@
 </template>
 
 <script lang="ts" setup>
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getDictTypesApi, deleteDictTypeApi, enableDictTypeApi, forbiddenDictTypeApi, saveDictTypeApi, editDictTypeApi } from '@/api/dictType'

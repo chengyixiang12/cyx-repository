@@ -1,14 +1,13 @@
 <template>
     <div class="container">
-        <!-- 头部 -->
+        <!-- 头部: 返回按钮统一在左上角 -->
         <div class="list-header">
             <div class="header-title">
-                <span>执行记录</span>
-            </div>
-            <div class="right-header">
                 <el-button link @click="goBack" class="go-back">
-                    返回
+                    <el-icon><ArrowLeft /></el-icon>返回
                 </el-button>
+                <el-divider direction="vertical" />
+                <span>执行记录</span>
             </div>
         </div>
 
@@ -31,7 +30,8 @@
 
         <!-- 数据列表区域 -->
         <div class="table-wrapper">
-            <el-table v-loading="loading" :data="tableData" border size="small" style="width: 100%" height="calc(100vh - 325px)">
+            <TableSkeleton :loading="loading" :count="tableData.length" :columns="9" />
+            <el-table v-loading="loading && tableData.length > 0" :data="tableData" border size="small" style="width: 100%" height="calc(100vh - 325px)">
                 <el-table-column type="index" label="序号" min-width="50" align="center" />
                 <el-table-column prop="jobName" label="任务名称" min-width="120" show-overflow-tooltip />
                 <el-table-column prop="jobType" label="任务类型" min-width="120" />
@@ -84,10 +84,12 @@
 </template>
 
 <script setup lang="ts">
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { getLogDetailApi, getQuartzRecordListApi } from '@/api/quartzRecord'
 import { GetQuartzRecordListVo } from '@/types/quartzRecord'
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ArrowLeft } from '@element-plus/icons-vue'
 
 
 const route = useRoute()
@@ -196,13 +198,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 返回按钮: 统一左上角, link 风格 */
 .go-back {
     font-size: 14px;
-    color: #606266;
+    color: var(--radish-text-regular);
+}
+
+.go-back .el-icon {
+    margin-right: 2px;
 }
 
 .go-back:hover {
-    color: #409EFF;
+    color: var(--radish-primary);
 }
 
 .log-content,

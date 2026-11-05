@@ -33,7 +33,8 @@
 
     <!-- 菜单表格 - 树形数据与懒加载 -->
     <div class="table-wrapper">
-      <el-table :data="menuList" border size="small" style="width: 100%" v-loading="loading" lazy
+      <TableSkeleton :loading="loading" :count="menuList.length" :columns="9" />
+      <el-table :data="menuList" border size="small" style="width: 100%" v-loading="loading && menuList.length > 0" lazy
         :load="loadChildMenus" :tree-props="{ children: 'children', hasChildren: 'hasChild' }" row-key="id" height="calc(100vh - 325px)">
         <el-table-column prop="name" align="center" label="菜单名称" show-overflow-tooltip min-width="180" />
         <el-table-column label="菜单图标" min-width="70" align="center">
@@ -100,6 +101,7 @@
 </template>
 
 <script lang="ts" setup>
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
 import { QuestionFilled } from '@element-plus/icons-vue'
 import {

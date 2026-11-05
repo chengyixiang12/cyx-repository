@@ -33,7 +33,8 @@
 
     <!-- 部门表格 -->
     <div class="table-wrapper">
-      <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading" highlight-current-row
+      <TableSkeleton :loading="loading" :count="deptList.length" :columns="8" />
+      <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading && deptList.length > 0" highlight-current-row
         @selection-change="handleSelectionChange" height="calc(100vh - 325px)">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="序号" min-width="60" align="center" type="index" />
@@ -80,6 +81,7 @@
 </template>
 
 <script lang="ts" setup>
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
 import {
   getDeptsApi,

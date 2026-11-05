@@ -1,28 +1,41 @@
 <template>
-    <div class="log-detail-container">
-        <!-- 返回按钮 -->
-        <el-button type="primary" :icon="ArrowLeft" @click="handleBack" class="back-button">
-            返回
-        </el-button>
-        <el-card class="detail-card">
-            <div class="short-fields">
+    <div class="container">
+        <!-- 头部: 返回按钮统一在左上角 -->
+        <div class="list-header">
+            <div class="header-title">
+                <el-button link @click="handleBack" class="go-back">
+                    <el-icon><ArrowLeft /></el-icon>返回
+                </el-button>
+                <el-divider direction="vertical" />
+                <span>日志详情</span>
+            </div>
+        </div>
+
+        <div class="detail-wrapper">
+            <div class="detail-card">
+                <!-- 短字段 -->
                 <el-row :gutter="20">
-                    <el-col v-for="item in displayData.filter(i => !i.isLong)" :key="item.label" :span="12" :xs="24" :sm="12" :md="8">
+                    <el-col v-for="item in displayData.filter(i => !i.isLong)" :key="item.label" :span="12" :xs="24"
+                        :sm="12" :md="8">
                         <div class="field-item">
                             <span class="field-label">{{ item.label }}</span>
-                            <span class="field-value">{{ item.value }}</span>
+                            <el-tag v-if="item.label === '日志级别' && item.value !== '-'" :type="logLevelTagType(item.value)">
+                                {{ item.value }}
+                            </el-tag>
+                            <span v-else class="field-value">{{ item.value }}</span>
                         </div>
                     </el-col>
                 </el-row>
-            </div>
 
-            <div class="long-fields" v-for="item in displayData.filter(i => i.isLong)" :key="item.label">
-                <div class="field-item">
-                    <span class="field-label">{{ item.label }}：</span>
-                    <div class="long-text">{{ item.value }}</div>
+                <!-- 长文本字段 -->
+                <div class="long-fields" v-for="item in displayData.filter(i => i.isLong)" :key="item.label">
+                    <div class="field-item is-block">
+                        <span class="field-label">{{ item.label }}：</span>
+                        <div class="long-text">{{ item.value }}</div>
+                    </div>
                 </div>
             </div>
-        </el-card>
+        </div>
     </div>
 </template>
 
@@ -74,6 +87,15 @@ const formatLogLevel = (level?: string) => {
     }
 }
 
+// 日志级别对应的标签颜色
+const logLevelTagType = (level: string) => {
+    switch (level) {
+        case '警告': return 'warning'
+        case '错误': return 'danger'
+        default: return 'info'
+    }
+}
+
 const handleBack = () => {
     router.back()
 }
@@ -84,29 +106,38 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.log-detail-container {
-    height: calc(100vh - 170px);
-    padding: 20px;
-    background: #f8f9fa;
-    overflow-y: auto;
-    box-sizing: border-box;
+/* 返回按钮: 统一左上角, link 风格 */
+.go-back {
+    font-size: 14px;
+    color: var(--radish-text-regular);
 }
 
-.back-button {
-    margin-bottom: 20px;
-    --el-button-bg-color: #409eff;
-    --el-button-border-color: #409eff;
+.go-back .el-icon {
+    margin-right: 2px;
+}
+
+.go-back:hover {
+    color: var(--radish-primary);
+}
+
+/* 内容区: 滚动 + 白色卡片 */
+.detail-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px;
 }
 
 .detail-card {
-    padding: 24px;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
-    background: #ffffff;
+    background: var(--radish-bg-card);
+    border: 1px solid var(--radish-border);
+    border-radius: var(--radish-radius-lg);
+    box-shadow: var(--radish-shadow-card);
+    padding: 20px 24px;
 }
 
 .short-fields {
-    margin-bottom: 24px;
+    margin-bottom: 8px;
 }
 
 .field-item {
@@ -117,9 +148,13 @@ onMounted(() => {
     gap: 8px;
 }
 
+.field-item.is-block {
+    display: block;
+}
+
 .field-label {
     font-weight: 600;
-    color: #909399;
+    color: var(--radish-text-secondary);
     font-size: 14px;
 }
 
@@ -128,18 +163,19 @@ onMounted(() => {
 }
 
 .field-value {
-    color: #303133;
+    color: var(--radish-text-primary);
     font-size: 14px;
     line-height: 1.5;
+    word-break: break-all;
 }
 
 .long-fields {
     margin-top: 24px;
     padding-top: 24px;
-    border-top: 1px solid #e4e7ed;
+    border-top: 1px solid var(--radish-border-light);
 }
 
-.long-fields:first-child {
+.long-fields:first-of-type {
     margin-top: 0;
     padding-top: 0;
     border-top: none;
@@ -147,15 +183,17 @@ onMounted(() => {
 
 .long-text {
     margin-top: 8px;
-    padding: 16px;
-    background: #f5f7fa;
-    border: 1px solid #e4e7ed;
-    border-radius: 6px;
-    color: #303133;
+    padding: 14px 16px;
+    background: var(--radish-fill);
+    border: 1px solid var(--radish-border);
+    border-radius: var(--radish-radius);
+    color: var(--radish-text-primary);
     white-space: pre-wrap;
     word-break: break-word;
     font-family: 'Courier New', Courier, monospace;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.6;
+    max-height: 420px;
+    overflow-y: auto;
 }
 </style>

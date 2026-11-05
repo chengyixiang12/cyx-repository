@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>骨架屏效果预览 · 萝卜系统</title>
+  <style>
+    :root {
+      --primary: #4F6EF2;
+      --text-primary: #1F2D3D;
+      --text-regular: #4E5969;
+      --text-secondary: #86909C;
+      --border: #E5E6EB;
+      --border-light: #F0F1F3;
+      --fill: #F7F8FA;
+      --bg-page: #F0F2F5;
+      --bg-card: #FFFFFF;
+      --radius: 8px;
+      --radius-lg: 10px;
+      --radius-xl: 12px;
+      --shadow-card: 0 1px 2px rgba(31, 45, 61, 0.04), 0 2px 8px rgba(31, 45, 61, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg-page);
+      color: var(--text-regular);
+      padding: 28px 32px 60px;
+      font-size: 13px;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: var(--text-primary);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #EDF1FE;
+      color: var(--primary);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ---------- shimmer ---------- */
+    .sk-bar,
+    .sk-avatar {
+      display: block;
+      background: linear-gradient(90deg, var(--border-light) 25%, #F7F8FA 37%, var(--border-light) 63%);
+      background-size: 400% 100%;
+      animation: sk-shimmer 1.4s ease-in-out infinite;
+    }
+
+    .sk-bar {
+      height: 10px;
+      border-radius: 4px;
+    }
+
+    .sk-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    @keyframes sk-shimmer {
+      0% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0 50%;
+      }
+    }
+
+    /* ---------- 表格骨架 ---------- */
+    .table-skeleton {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ts-row {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .ts-head {
+      background: var(--fill);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ts-cell {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 100%;
+      padding: 0 12px;
+    }
+
+    .ts-cell+.ts-cell {
+      border-left: 1px solid var(--border-light);
+    }
+
+    .ts-head .ts-cell+.ts-cell {
+      border-left-color: var(--border);
+    }
+
+    /* ---------- 卡片列表骨架 ---------- */
+    .dashboard-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .dashboard-row .card {
+      flex: 1;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .fake-btn {
+      height: 24px;
+      width: 68px;
+      border-radius: 6px;
+      background: #EDF1FE;
+    }
+
+    .card-body {
+      padding: 4px 18px 10px;
+    }
+
+    .ls-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .ls-item:last-child {
+      border-bottom: none;
+    }
+
+    .ls-title {
+      height: 12px;
+    }
+
+    .ls-meta {
+      height: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ---------- 聊天气泡骨架 ---------- */
+    .chat-box {
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .ms-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .ms-avatar {
+      width: 34px;
+      height: 34px;
+      margin-top: 2px;
+      opacity: .85;
+    }
+
+    .ms-bubble {
+      max-width: 62%;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      border-bottom-left-radius: 4px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .ms-line {
+      height: 11px;
+    }
+
+    /* ---------- 说明区 ---------- */
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .note {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-card);
+      border-left: 3px solid var(--primary);
+    }
+
+    .note b {
+      display: block;
+      color: var(--text-primary);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .note span {
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>骨架屏效果预览</h1>
+  <p class="subtitle">替代原来的 v-loading 转圈 · 首次加载时显示页面轮廓，数据到达后无缝切换为真实内容</p>
+
+  <!-- 1. 表格 -->
+  <div class="section">
+    <div class="section-title">表格页 <span class="badge">用户管理 / 角色 / 菜单 等 12 个列表页</span></div>
+    <div class="card">
+      <div class="table-skeleton" id="table-sk"></div>
+    </div>
+  </div>
+
+  <!-- 2. 卡片列表 -->
+  <div class="section">
+    <div class="section-title">首页卡片 <span class="badge">系统公告 / 我的待办</span></div>
+    <div class="dashboard-row">
+      <div class="card">
+        <div class="card-head"><span>系统公告</span><div class="fake-btn"></div></div>
+        <div class="card-body" id="list-sk-1"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span>我的待办</span><div class="fake-btn"></div></div>
+        <div class="card-body" id="list-sk-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 聊天 -->
+  <div class="section">
+    <div class="section-title">聊天记录加载 <span class="badge">历史对话</span></div>
+    <div class="card">
+      <div class="chat-box" id="msg-sk"></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <b>首次加载</b>
+      <span>列表为空时显示骨架，保持页面结构稳定，不会出现“白屏 + 转圈”。</span>
+    </div>
+    <div class="note">
+      <b>翻页 / 刷新</b>
+      <span>已有数据时仍用 v-loading 轻遮罩，避免整表被骨架替换造成跳动。</span>
+    </div>
+    <div class="note">
+      <b>动效可关</b>
+      <span>系统开启“减少动效”时自动降级为静态灰块。</span>
+    </div>
+  </div>
+
+  <script>
+    // 表格: 11 列 9 行, 第一列带头像(对齐用户管理的用户名列)
+    const table = document.getElementById('table-sk')
+    const cols = 11, rows = 9
+    const headerWidth = c => (48 + ((c * 17) % 26)) + '%'
+    const cellWidth = (r, c) => (32 + ((r * 13 + c * 29) % 52)) + '%'
+
+    let html = '<div class="ts-row ts-head">'
+    for (let c = 1; c <= cols; c++) html += `<div class="ts-cell"><span class="sk-bar" style="width:${headerWidth(c)};height:9px"></span></div>`
+    html += '</div>'
+    for (let r = 1; r <= rows; r++) {
+      html += '<div class="ts-row">'
+      for (let c = 1; c <= cols; c++) {
+        html += '<div class="ts-cell">'
+        if (c === 1) html += '<span class="sk-avatar"></span>'
+        html += `<span class="sk-bar" style="width:${cellWidth(r, c)}"></span></div>`
+      }
+      html += '</div>'
+    }
+    table.innerHTML = html
+
+    // 卡片列表
+    const renderList = (el, lines) => {
+      let s = ''
+      for (let i = 1; i <= lines; i++) {
+        s += `<div class="ls-item"><span class="sk-bar ls-title" style="width:${52 + ((i * 23) % 38)}%"></span>
+              <span class="sk-bar ls-meta" style="width:${18 + ((i * 11) % 16)}%"></span></div>`
+      }
+      el.innerHTML = s
+    }
+    renderList(document.getElementById('list-sk-1'), 5)
+    renderList(document.getElementById('list-sk-2'), 5)
+
+    // 聊天气泡
+    const msg = document.getElementById('msg-sk')
+    let m = ''
+    for (let i = 1; i <= 3; i++) {
+      const lines = 2 + ((i * 2) % 3)
+      m += '<div class="ms-row"><span class="sk-avatar ms-avatar"></span><div class="ms-bubble">'
+      for (let l = 1; l <= lines; l++) {
+        let w = 55 + ((l * 19 + i * 11) % 42)
+        if (l === lines) w = Math.max(30, w - 28)
+        m += `<span class="sk-bar ms-line" style="width:${w}%"></span>`
+      }
+      m += '</div></div>'
+    }
+    msg.innerHTML = m
+  </script>
+</body>
+
+</html>

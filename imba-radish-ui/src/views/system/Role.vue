@@ -33,7 +33,8 @@
 
     <!-- 角色表格 -->
     <div class="table-wrapper">
-      <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 325px)">
+      <TableSkeleton :loading="loading" :count="roleList.length" :columns="8" />
+      <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading && roleList.length > 0" height="calc(100vh - 325px)">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -112,6 +113,7 @@
 </template>
 
 <script lang="ts" setup>
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
 import { updateRoleMenusApi, updateRolePermissionsApi } from '@/api/role'

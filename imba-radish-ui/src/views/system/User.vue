@@ -86,7 +86,8 @@
 
           <!-- 用户表格 -->
           <div class="table-wrapper">
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 325px)">
+            <TableSkeleton :loading="loading" :count="userList.length" :columns="11" avatar />
+            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading && userList.length > 0" height="calc(100vh - 325px)">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
@@ -185,6 +186,7 @@
 </template>
 
 <script lang="ts" setup>
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTreeApi } from '@/api/dept'
 import {

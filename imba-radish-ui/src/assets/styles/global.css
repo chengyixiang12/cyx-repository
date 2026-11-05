@@ -73,6 +73,8 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-gutter: stable;
+  /* 收起/展开宽度动画: el-aside 的 width 是行内样式直改, 必须在这里补过渡 */
+  transition: width 0.28s ease;
 }
 
 /* 仅用 webkit 自定义滚动条: 常驻可见。
@@ -156,6 +158,8 @@ body {
   margin: 0 5px;
   overflow: hidden;
   box-shadow: var(--radish-shadow-card);
+  /* 作为骨架屏的定位参照 */
+  position: relative;
 }
 
 .action-buttons-container {
@@ -198,4 +202,52 @@ body {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+/* ============================================================
+   骨架屏 (Skeleton) 基础样式
+   用法: 容器内放 .sk-bar / .sk-avatar, 由各 Skeleton 组件负责布局
+   ============================================================ */
+.sk-bar,
+.sk-avatar {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--radish-border-light) 25%,
+    #F7F8FA 37%,
+    var(--radish-border-light) 63%
+  );
+  background-size: 400% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+}
+
+.sk-bar {
+  height: 10px;
+  border-radius: 4px;
+}
+
+.sk-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes sk-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* 尊重系统「减少动效」设置 */
+@media (prefers-reduced-motion: reduce) {
+
+  .sk-bar,
+  .sk-avatar {
+    animation: none;
+    background: var(--radish-border-light);
+  }
 }

@@ -17,20 +17,20 @@
             <el-row :gutter="20" style="width: 100%;">
                 <el-col :span="24">
                     <div class="card-list">
-                        <el-card shadow="hover" v-for="(item, index) in visibleCards" :key="item.id" class="card-item" @click.native="goToDetail(item.id)">
+                        <el-card shadow="hover" v-for="(item, index) in visibleCards" :key="item.id" class="card-item" @click="goToDetail(item.id)">
                             <template #header>
                                 <div class="card-header">
                                     <span class="title">{{ item.title }}</span>
-                                    <el-dropdown>
-                                        <span class="el-dropdown-link">
+                                    <el-dropdown @click.stop>
+                                        <span class="el-dropdown-link" @click.stop>
                                             <el-icon>
                                                 <MoreFilled />
                                             </el-icon>
                                         </span>
                                         <template #dropdown>
                                             <el-dropdown-menu>
-                                                <el-dropdown-item @click="renameCard(item.id)">重命名</el-dropdown-item>
-                                                <el-dropdown-item @click="deleteCard(item.id)">删除</el-dropdown-item>
+                                                <el-dropdown-item @click.stop="renameCard(item.id)">重命名</el-dropdown-item>
+                                                <el-dropdown-item @click.stop="deleteCard(item.id)">删除</el-dropdown-item>
                                             </el-dropdown-menu>
                                         </template>
                                     </el-dropdown>
@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { MoreFilled } from '@element-plus/icons-vue';
 import { deleteDialogueApi, getDialogueHistoriesApi, renameApi } from '@/api/dialogueHistory'
 import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo, RenameRequest } from '@/types/dialogueHistory';
@@ -72,6 +73,7 @@ const visibleCards = ref<GetDialogueHistoriesVo[]>([]);
 const total = ref<number>(0);
 const renameVisible = ref(false);
 const dialogId = ref<string | null>(null);
+const router = useRouter();
 
 const searchForm = ref<GetDialogueHistoriesRequest>({
     pageNum: 1,
@@ -120,7 +122,8 @@ const handleSizeChange = (val: number) => {
 }
 
 const goToDetail = (id: string) => {
-    // router.push({ path: `/card-detail/${id}` });
+    // 跳转到对话页并带上对话id, 由对话页加载该对话的全部历史消息
+    router.push({ path: '/dialog', query: { dialogueId: id } });
 }
 
 onMounted(() => {

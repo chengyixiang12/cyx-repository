@@ -36,7 +36,8 @@
 
     <!-- 数据表格 -->
     <div class="table-wrapper">
-      <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading"
+      <TableSkeleton :loading="loading" :count="dictDataList.length" :columns="7" />
+      <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading && dictDataList.length > 0"
         :row-class-name="tableRowClassName" height="calc(100vh - 325px)">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
@@ -95,6 +96,7 @@
 </template>
 
 <script lang="ts" setup>
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 

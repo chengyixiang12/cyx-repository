@@ -14,7 +14,8 @@
 
     <!-- 密钥表格 -->
     <div class="table-wrapper">
-      <el-table :data="keyList" border size="small" style="width: 100%" v-loading="loading"
+      <TableSkeleton :loading="loading" :count="keyList.length" :columns="8" />
+      <el-table :data="keyList" border size="small" style="width: 100%" v-loading="loading && keyList.length > 0"
         height="calc(100vh - 270px)" :row-class-name="tableRowClassName">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
@@ -101,6 +102,7 @@
 </template>
 
 <script setup lang="ts">
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted, reactive } from 'vue'
 import { getSecretKeyListApi, generateKeyApi } from '@/api/secretKey'
 import type { GetSecretKeyListRequest, SysSecretKeyVo, GenerateKeyRequest } from '@/types/secretKey'

@@ -31,7 +31,8 @@
 
     <!-- 任务表格 -->
     <div class="table-wrapper">
-      <el-table :data="jobList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 325px)">
+      <TableSkeleton :loading="loading" :count="jobList.length" :columns="9" />
+      <el-table :data="jobList" border size="small" style="width: 100%" v-loading="loading && jobList.length > 0" height="calc(100vh - 325px)">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -113,6 +114,7 @@
 </template>
 
 <script setup lang="ts">
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
 import JobFormDialog from './component/JobFormDialog.vue'
 import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi, deleteJobApi, execImmediately } from '@/api/quartz'

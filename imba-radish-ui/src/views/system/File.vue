@@ -25,7 +25,8 @@
 
     <!-- 文件表格 -->
     <div class="table-wrapper">
-      <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading"
+      <TableSkeleton :loading="loading" :count="fileList.length" :columns="8" />
+      <el-table :data="fileList" border size="small" style="width: 100%" v-loading="loading && fileList.length > 0"
         height="calc(100vh - 325px)">
         <el-table-column type="selection" min-width="20" align="center" />
         <el-table-column label="序号" min-width="50" align="center">
@@ -75,6 +76,7 @@
 </template>
 
 <script lang="ts" setup>
+import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
 import { FilesRequest, FilesVo } from '@/types/file'
 import { deleteFileApi, getFilesApi, downloadFileApi, getFileUrlApi } from '@/api/file'

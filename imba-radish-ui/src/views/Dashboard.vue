@@ -12,20 +12,21 @@
     <el-row :gutter="20" class="content-row">
       <!-- 公告板 -->
       <el-col :span="12">
-        <el-card shadow="hover" v-loading="loading">
+        <el-card shadow="hover">
           <template #header>
             <div class="card-header">
               <span>系统公告</span>
               <el-button type="primary" size="small">查看全部</el-button>
             </div>
           </template>
-          <div v-if="announcements.length === 0" class="empty-state">
+          <ListSkeleton :loading="loading" :count="announcements.length" />
+          <div v-if="!loading && announcements.length === 0" class="empty-state">
             <el-icon size="48" class="empty-icon">
               <Bell />
             </el-icon>
             <p>暂无公告</p>
           </div>
-          <div v-else class="content-list">
+          <div v-else-if="!loading" class="content-list">
             <div v-for="item in announcements" :key="item.id" class="content-item"
               @click="showAnnouncementDetail(item)">
               <div class="content-title">{{ item.title }}</div>
@@ -37,20 +38,21 @@
 
       <!-- 待办事项 -->
       <el-col :span="12">
-        <el-card shadow="hover" v-loading="loading">
+        <el-card shadow="hover">
           <template #header>
             <div class="card-header">
               <span>我的待办</span>
               <el-button type="primary" size="small">查看全部</el-button>
             </div>
           </template>
-          <div v-if="todos.length === 0" class="empty-state">
+          <ListSkeleton :loading="loading" :count="todos.length" />
+          <div v-if="!loading && todos.length === 0" class="empty-state">
             <el-icon size="48" class="empty-icon">
               <CircleCheck />
             </el-icon>
             <p>暂无待办</p>
           </div>
-          <div v-else class="content-list">
+          <div v-else-if="!loading" class="content-list">
             <div v-for="item in todos" :key="item.id" class="content-item" @click="showTodoDetail(item)">
               <div class="content-title">
                 <el-tag :type="item.status === '已完成' ? 'success' : 'warning'" size="small">
@@ -102,6 +104,7 @@ import { computed, onMounted, ref, reactive } from 'vue'
 import dayjs from 'dayjs'
 import { User, Files, Bell, Clock } from '@element-plus/icons-vue'
 import { showMessage } from '@/utils/message';
+import ListSkeleton from '@/components/skeleton/ListSkeleton.vue'
 
 // 用户信息
 const nickname = ref('');

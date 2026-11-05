@@ -86,11 +86,10 @@
                         @close-other="closeOtherTabs" @close-all="closeAllTabs" />
                     <div class="router-view-wrapper">
                         <router-view v-slot="{ Component }">
-                            <transition name="fade" mode="out-in">
-                                <div>
-                                    <component :is="Component" :key="Component" />
-                                </div>
-                            </transition>
+                            <!-- key 必须是字符串: 用组件对象作 key 会导致 keep-alive 缓存永远不命中 -->
+                            <keep-alive :include="cachedComponentNames">
+                                <component :is="Component" :key="route.path" />
+                            </keep-alive>
                         </router-view>
                     </div>
                 </el-main>
@@ -107,7 +106,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import {
     User,
@@ -210,6 +209,30 @@ watch(
     },
     { immediate: true }
 )
+
+/**
+ * keep-alive include 名单: 由"当前打开的标签页"推导各页面的组件名。
+ * - 组件经 vue-router 懒加载首次解析后, record.components.default 即为 SFC 对象,
+ *   其 name 来自 SFC 文件名(script setup 自动推断), 与 keep-alive 的 include 匹配规则一致。
+ * - 懒加载函数尚未解析时取不到 name, 自动跳过(该页面也尚未被访问过)。
+ * - 标签页关闭 => 名单移除对应组件名 => keep-alive 自动释放缓存, 重开为全新实例。
+ */
+const cachedComponentNames = computed<string[]>(() => {
+    const names = new Set<string>()
+    for (const tab of cachedTabs.value) {
+        try {
+            const matched = router.resolve(tab.path).matched
+            const comp = matched[matched.length - 1]?.components?.default as any
+            const name = comp && (comp.name || comp.__name)
+            if (typeof name === 'string' && name) {
+                names.add(name)
+            }
+        } catch {
+            // 路由解析失败时忽略该标签
+        }
+    }
+    return Array.from(names)
+})
 
 // 个人中心
 const goProfile = () => {

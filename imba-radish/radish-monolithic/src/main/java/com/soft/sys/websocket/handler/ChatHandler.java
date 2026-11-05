@@ -29,6 +29,7 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Author: cyx
@@ -41,6 +42,11 @@ import java.util.List;
 public class ChatHandler implements WebSocketConcreteHandler<String> {
 
     private static final String SYSTEM_PROMPT = "使用中文回答。";
+
+    /**
+     * 流式下发节流间隔(ms): 按token攒批后统一推送, 避免每个token一帧
+     */
+    private static final long FLUSH_INTERVAL_MS = 60;
 
     @Value(value = "${spring.ai.max-context-num}")
     private Long maxContextNum;
@@ -68,6 +74,9 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         ChatResponse chatSendParams = new ChatResponse();
         chatSendParams.setOrder(WebSocketOrderEnum.AI.toString());
         StringBuilder answerStr = new StringBuilder();
+        // 下发缓冲: 攒批以降低 WS 帧频率, 完整内容仍在 answerStr 中用于落库
+        StringBuilder sendBuffer = new StringBuilder();
+        AtomicLong lastFlush = new AtomicLong(System.currentTimeMillis());
 
         chatClientBuilder.build()
                 .prompt(SYSTEM_PROMPT)
@@ -81,13 +90,12 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
                         return;
                     }
                     answerStr.append(partialText);
-                    chatSendParams.setAnswer(partialText);
-                    if (session.isOpen()) {
-                        try {
-                            session.sendMessage(new TextMessage(chatSendParams.toJsonString()));
-                        } catch (IOException e) {
-                            log.error("发送 AI 回答失败: {}", e.getMessage(), e);
-                        }
+                    sendBuffer.append(partialText);
+                    long now = System.currentTimeMillis();
+                    if (now - lastFlush.get() >= FLUSH_INTERVAL_MS) {
+                        lastFlush.set(now);
+                        sendChunk(session, chatSendParams, sendBuffer.toString());
+                        sendBuffer.setLength(0);
                     }
                 })
                 .doOnError(error -> {
@@ -100,8 +108,30 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
                         }
                     }
                 })
-                .doOnComplete(() -> saveAnswer(chatRecParam, user, answerStr.toString()))
+                .doOnComplete(() -> {
+                    // 冲刷缓冲区中剩余的尾部内容, 保证回答完整送达
+                    if (!sendBuffer.isEmpty()) {
+                        sendChunk(session, chatSendParams, sendBuffer.toString());
+                        sendBuffer.setLength(0);
+                    }
+                    saveAnswer(chatRecParam, user, answerStr.toString());
+                })
                 .subscribe();
+    }
+
+    /**
+     * 下发一个回答分片
+     */
+    private void sendChunk(WebSocketSession session, ChatResponse chatSendParams, String chunk) {
+        if (!session.isOpen() || chunk.isEmpty()) {
+            return;
+        }
+        try {
+            chatSendParams.setAnswer(chunk);
+            session.sendMessage(new TextMessage(chatSendParams.toJsonString()));
+        } catch (IOException e) {
+            log.error("发送 AI 回答失败: {}", e.getMessage(), e);
+        }
     }
 
     /**

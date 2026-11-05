@@ -1,5 +1,5 @@
 import { PaginatedData } from '@/types/api';
-import { GetDialogueHistoriesRequest, GetDialogueHistoriesVo, GetTitleVo, RenameRequest, SaveDialogueRequest } from '@/types/dialogueHistory';
+import { DialogueDetailsVo, GetDialogueDetailsRequest, GetDialogueHistoriesRequest, GetDialogueHistoriesVo, GetTitleVo, RenameRequest, SaveDialogueRequest } from '@/types/dialogueHistory';
 import { get, post, del, put } from '@/utils/http'
 
 /**
@@ -40,5 +40,13 @@ export async function renameApi(data: RenameRequest) {
 
 export async function getTitleApi(id: string | null): Promise<GetTitleVo> {
     const res = await get<GetTitleVo>('/dialogue/getTitle', { flag: true, params: { id } });
+    return res.data;
+}
+
+/**
+ * 分页获取对话明细（倒序分页，第 1 页为最新消息，用于向上懒加载）
+ */
+export async function getDialogueDetailsApi(data: GetDialogueDetailsRequest): Promise<PaginatedData<DialogueDetailsVo>> {
+    const res = await post<PaginatedData<DialogueDetailsVo>>('/dialogueDetails/getDetails', data, { flag: true });
     return res.data;
 }
