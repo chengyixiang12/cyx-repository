@@ -2,6 +2,7 @@ package com.soft.sys.websocket.interceptor;
 
 import com.soft.common.constants.RedisConstant;
 import com.soft.common.constants.WebSocketConstant;
+import com.soft.common.enums.DeviceTypeEnum;
 import com.soft.sys.model.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -36,8 +37,12 @@ public record WebSocketInterceptor(UserDetailsService userDetailsService,
                 return false;
             }
             UserDTO user = (UserDTO) userDetailsService.loadUserByUsername(username);
+            // 设备类型由握手参数传入，未传时默认 web
+            String deviceType = DeviceTypeEnum.normalize(
+                    servletRequest.getServletRequest().getParameter(WebSocketConstant.DEVICE_TYPE));
             attributes.put(WebSocketConstant.WEBSOCKET_USER, user);
             attributes.put(WebSocketConstant.AUTHORIZATION, token);
+            attributes.put(WebSocketConstant.DEVICE_TYPE, deviceType);
         } else {
             log.warn("request is not ServletServerHttpRequest type");
             return false;

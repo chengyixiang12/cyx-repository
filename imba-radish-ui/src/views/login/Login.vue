@@ -91,6 +91,7 @@ import router from '@/router/routers';
 import { LoginRequest } from '@/types/login';
 import { getUserInfoApi } from '@/api/user';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { deviceType } from '@/common/global-config';
 
 const currentLoginType = ref<'password' | 'email'>('password');
 const loginFormRef = ref<FormInstance>();
@@ -173,7 +174,8 @@ const handleLogin = async () => {
 
     loading.value = true;
     const loginParam: LoginRequest = {
-      loginMethod: currentLoginType.value
+      loginMethod: currentLoginType.value,
+      deviceType: deviceType,
     };
 
     if (currentLoginType.value === 'password') {

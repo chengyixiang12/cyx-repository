@@ -6,6 +6,7 @@ import com.soft.common.annotation.SysLock;
 import com.soft.common.annotation.SysLog;
 import com.soft.sys.entity.SysUser;
 import com.soft.common.enums.LogModuleEnum;
+import com.soft.common.enums.DeviceTypeEnum;
 import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.model.request.*;
 import com.soft.sys.model.vo.GetUserVO;
@@ -16,6 +17,7 @@ import com.soft.common.resultapi.R;
 import com.soft.sys.service.SecretKeyService;
 import com.soft.sys.service.SysPermissionService;
 import com.soft.sys.service.SysUsersService;
+import com.soft.sys.websocket.service.ForceOfflineService;
 import com.soft.common.utils.RSAUtil;
 import com.soft.sys.utils.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -54,6 +57,8 @@ public class SysUserController {
     private final SecretKeyService secretKeyService;
 
     private final SysPermissionService sysPermissionService;
+
+    private final ForceOfflineService forceOfflineService;
 
     @PostMapping(value = "/getUsers")
     @Operation(summary = "获取用户列表")
@@ -217,6 +222,18 @@ public class SysUserController {
         String username = sysUsersService.getUsername(id);
         sysUsersService.forbiddenUser(username);
         return R.ok("用户已禁用", null);
+    }
+
+    @SysLog(value = "强制下线", module = LogModuleEnum.USER)
+    @PostMapping(value = "/forceOffline")
+    @Operation(summary = "强制下线")
+    @PreAuthorize(value = "@cps.hasPermission('sys_user_force_offline')")
+    public R<Object> forceOffline(@RequestBody @Valid ForceOfflineDTO request) throws IOException {
+        // 设备类型规范化，未知值回退 web；为空则全端下线
+        String deviceType = StringUtils.isBlank(request.getDeviceType())
+                ? null : DeviceTypeEnum.normalize(request.getDeviceType());
+        forceOfflineService.kick(request.getId(), deviceType, "您已被管理员强制下线");
+        return R.ok("已强制下线", null);
     }
 
     @PutMapping(value = "/editSelf")

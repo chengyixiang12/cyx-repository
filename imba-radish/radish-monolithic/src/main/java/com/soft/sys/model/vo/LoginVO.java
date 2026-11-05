@@ -17,4 +17,7 @@ public class LoginVO {
 
     @Schema(description = "用户名")
     private String username;
+
+    @Schema(description = "设备类型：web / app / mini-program")
+    private String deviceType;
 }

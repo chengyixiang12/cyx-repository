@@ -5,6 +5,7 @@ import com.soft.sys.mapper.SysUsersMapper;
 import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.service.SysRoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,7 +37,7 @@ public class UsersDetailServiceImpl implements UserDetailsService{
 
     @Override
     @Cacheable(key = "#username")
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public @NonNull UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
         SysUser sysUser = sysUsersMapper.loadUser(username);
         if (sysUser == null) {
             throw new UsernameNotFoundException("用户不存在");

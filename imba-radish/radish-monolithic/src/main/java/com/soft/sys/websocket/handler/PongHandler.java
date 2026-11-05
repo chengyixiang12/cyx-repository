@@ -34,10 +34,15 @@ public class PongHandler implements WebSocketConcreteHandler<String> {
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
         try {
             UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+            String deviceType = (String) session.getAttributes().get(WebSocketConstant.DEVICE_TYPE);
+            String sessionKey = WebSocketSessionManager.sessionKey(userDto.getId(), deviceType);
 
-            redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
+            redisTemplate.delete(RedisConstant.PING_STATUS + sessionKey);
 
-            WebSocketSessionManager.addSession(userDto.getId(), session);
+            WebSocketSession current = WebSocketSessionManager.getSession(userDto.getId(), deviceType);
+            if (current == null || current == session) {
+                WebSocketSessionManager.addSession(userDto.getId(), deviceType, session);
+            }
 
             String token = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);
 

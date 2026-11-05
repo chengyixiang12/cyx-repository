@@ -31,17 +31,24 @@ public class SendPingAsync {
     @Async
     public void send(String sessionKey) {
         int TIME_OUT = 40;
-        Boolean pingStatus = redisTemplate.opsForValue().setIfAbsent(RedisConstant.PING_STATUS + sessionKey, "1", Duration.ofSeconds(TIME_OUT));
+        Long userId = WebSocketSessionManager.parseUserId(sessionKey);
+        String deviceType = WebSocketSessionManager.parseDeviceType(sessionKey);
+        String pingKey = RedisConstant.PING_STATUS + sessionKey;
+        Boolean pingStatus = redisTemplate.opsForValue().setIfAbsent(pingKey, "1", Duration.ofSeconds(TIME_OUT));
         if (Boolean.FALSE.equals(pingStatus)) {
-            WebSocketSessionManager.removeSession(Long.parseLong(sessionKey));
+            WebSocketSessionManager.removeSession(userId, deviceType);
         } else {
-            WebSocketSession session = WebSocketSessionManager.getSession(Long.parseLong(sessionKey));
+            WebSocketSession session = WebSocketSessionManager.getSession(userId, deviceType);
+            if (session == null) {
+                redisTemplate.delete(pingKey);
+                return;
+            }
             PingHandler pingHandler = (PingHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.PING.toString());
             try {
                 pingHandler.handle(session, new TextMessage("ping"));
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
-                redisTemplate.delete(RedisConstant.PING_STATUS + sessionKey);
+                redisTemplate.delete(pingKey);
             }
         }
     }

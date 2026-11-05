@@ -30,23 +30,27 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        String deviceType = (String) session.getAttributes().get(WebSocketConstant.DEVICE_TYPE);
+        String sessionKey = WebSocketSessionManager.sessionKey(userDto.getId(), deviceType);
         // 删除上一次连接的ping状态
-        redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
-        // 添加用户会话
-        if (WebSocketSessionManager.getSession(userDto.getId()) == null) {
-            WebSocketSessionManager.addSession(userDto.getId(), session);
-        }
-        log.info("{} connected...", userDto.getUsername());
+        redisTemplate.delete(RedisConstant.PING_STATUS + sessionKey);
+        // 同一设备类型只保留一个连接，关闭旧连接后登记新连接
+        WebSocketSessionManager.removeSession(userDto.getId(), deviceType);
+        WebSocketSessionManager.addSession(userDto.getId(), deviceType, session);
+        log.info("{} connected, deviceType={}", userDto.getUsername(), deviceType);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, @NonNull CloseStatus closeStatus) {
         UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
-        // 移除用户会话
-        WebSocketSessionManager.removeSession(userDto.getId());
-        // 删除遗留的ping状态
-        redisTemplate.delete(RedisConstant.PING_STATUS + userDto.getId());
-        log.info("{} connect closed...", userDto.getUsername());
+        String deviceType = (String) session.getAttributes().get(WebSocketConstant.DEVICE_TYPE);
+        String sessionKey = WebSocketSessionManager.sessionKey(userDto.getId(), deviceType);
+        // 只有当前连接仍是缓存中的连接时才移除，避免旧连接关闭误删同类型新连接
+        if (WebSocketSessionManager.getSession(userDto.getId(), deviceType) == session) {
+            WebSocketSessionManager.removeSession(userDto.getId(), deviceType);
+            redisTemplate.delete(RedisConstant.PING_STATUS + sessionKey);
+        }
+        log.info("{} connect closed, deviceType={}", userDto.getUsername(), deviceType);
     }
 
 

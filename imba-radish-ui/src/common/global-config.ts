@@ -1,0 +1,1 @@
+export const deviceType = 'web'; // 设备类型，默认为 'web'，可根据实际情况修改为 'mobile' 或其他值

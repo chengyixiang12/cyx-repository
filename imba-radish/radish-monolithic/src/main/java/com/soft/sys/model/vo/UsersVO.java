@@ -39,6 +39,9 @@ public class UsersVO {
     @Schema(description = "部门名称")
     private String deptName;
 
-    @Schema(description = "是否在线")
-    private Integer isOnline;
+    @Schema(description = "web端是否在线")
+    private Integer webIsOnline;
+
+    @Schema(description = "小程序端是否在线")
+    private Integer miniProgramIsOnline;
 }

@@ -17,6 +17,8 @@ export interface WebsocketConfig {
   maxReconnectAttempts?: number
 }
 
+import { deviceType } from '@/common/global-config';
+
 export class WebsocketManager {
   private socket: WebSocket | null = null
   private reconnectTimer: number | null = null
@@ -62,7 +64,7 @@ export class WebsocketManager {
 
     this.setStatus(ConnectionStatus.CONNECTING)
 
-    this.socket = new WebSocket(`${this.url}?Authorization=${encodeURIComponent(token)}`)
+    this.socket = new WebSocket(`${this.url}?Authorization=${encodeURIComponent(token)}&deviceType=${encodeURIComponent(deviceType)}`)
 
     this.socket.onopen = () => {
       console.log('[WebSocket] 连接成功')

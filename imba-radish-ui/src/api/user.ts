@@ -1,10 +1,15 @@
 import { get, post, put, del } from '@/utils/http';
-import { SaveUserRequest, EditUserRequest, GetUserVo, AllUserVo, EditSelfRequest } from '@/types/user';
+import { SaveUserRequest, EditUserRequest, GetUserVo, UsersVO, EditSelfRequest, GetUsersDTO } from '@/types/user';
 import { PaginatedData } from '@/types/api'
 import { ApiResponse, UserInfoVo } from '@/types/login';
 
-export async function getUserList(data: any): Promise<PaginatedData<AllUserVo>> {
-   const res = await post<PaginatedData<AllUserVo>>('/user/getUsers', data, { flag: true });
+/**
+ * 获取用户列表
+ * @param data 
+ * @returns 
+ */
+export async function getUserList(data: GetUsersDTO): Promise<PaginatedData<UsersVO>> {
+   const res = await post<PaginatedData<UsersVO>>('/user/getUsers', data, { flag: true });
    return res.data;
 }
 
@@ -74,6 +79,14 @@ export async function enableUserApi(id: string) {
  */
 export async function forbiddenUser(id: string) {
    await get('/user/forbiddenUser', { flag: true, params: { id } })
+}
+
+/**
+ * 强制下线（走 HTTP 管理接口, 由后端鉴权后从服务端下发下线指令）
+ * @param params id: 目标用户id; deviceType: web / mini-program, 不传则全端下线
+ */
+export async function forceOfflineApi(params: { id: string; deviceType?: string }) {
+  await post('/user/forceOffline', params)
 }
 
 /**

@@ -2,20 +2,17 @@ package com.soft.sys.service.impl;
 
 import com.soft.common.constants.BaseConstant;
 import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.DeviceTypeEnum;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
 import com.soft.sys.enums.KeyTypeEnum;
-import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.model.request.LoginDTO;
 import com.soft.sys.model.vo.LoginVO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.service.*;
 import com.soft.common.utils.RSAUtil;
-import com.soft.sys.websocket.api.WebSocketConcreteHolder;
-import com.soft.sys.websocket.handler.ForceOfflineHandler;
-import com.soft.sys.websocket.receive.ForceOfflineRequest;
-import com.soft.sys.websocket.session.WebSocketSessionManager;
+import com.soft.sys.websocket.service.ForceOfflineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,8 +23,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -57,6 +52,8 @@ public class AuthServiceImpl implements AuthService {
     private final SysUserRoleService sysUserRoleService;
 
     private final SysRoleService sysRoleService;
+
+    private final ForceOfflineService forceOfflineService;
 
     @Override
     public void register(SysUser sysUser) {
@@ -112,32 +109,37 @@ public class AuthServiceImpl implements AuthService {
             String errorKey = RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername();
             redisTemplate.delete(errorKey);
 
-            // 同一个用户只能有一个客户端登录
-            WebSocketSession session = WebSocketSessionManager.getSession(id);
-            if (session != null) {
-                ForceOfflineHandler handler = (ForceOfflineHandler) WebSocketConcreteHolder
-                        .getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-                ForceOfflineRequest param = new ForceOfflineRequest();
-                param.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-                param.setReceiver(id);
-                param.setMsg("该账号已在其他地方登录");
-                handler.handle(session, new TextMessage(param.toJsonString()));
+            // 设备类型：不同类型设备可同时在线，同类型设备互斥
+            String deviceType = DeviceTypeEnum.normalize(request.getDeviceType());
+            String username = request.getUsername();
+            String devicesKey = RedisConstant.USER_DEVICES + id;
+            long expire = radishProperty.getToken().getExpireTime();
+
+            // 同类型旧会话下线（服务端内部触发, 走 ForceOfflineService）
+            String oldToken = (String) redisTemplate.opsForHash().get(devicesKey, deviceType);
+            if (StringUtils.isNotBlank(oldToken)) {
+                forceOfflineService.kick(id, deviceType, "该账号已在其他地方登录");
             }
 
-            // 客户端指纹
+            // 客户端指纹，按用户 + 设备类型存储
             String fingerprint = request.getFingerprint();
             if (StringUtils.isNotBlank(fingerprint)) {
-                redisTemplate.opsForValue().set(RedisConstant.FINGERPRINT + request.getUsername(), fingerprint);
+                redisTemplate.opsForValue().set(RedisConstant.FINGERPRINT + id + ":" + deviceType,
+                        fingerprint, expire, TimeUnit.SECONDS);
             }
 
             // 生成 token
             LoginVO loginVo = new LoginVO();
             String token = UUID.randomUUID().toString();
             redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token,
-                    request.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
+                    username, expire, TimeUnit.SECONDS);
+            // 记录该用户当前设备类型对应的 token
+            redisTemplate.opsForHash().put(devicesKey, deviceType, token);
+            redisTemplate.expire(devicesKey, expire, TimeUnit.SECONDS);
             loginVo.setToken(token);
             loginVo.setUserId(id);
-            loginVo.setUsername(request.getUsername());
+            loginVo.setUsername(username);
+            loginVo.setDeviceType(deviceType);
             return loginVo;
         } catch (BadCredentialsException e) {
             throw handleBadCredentials(request, e);

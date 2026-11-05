@@ -9,10 +9,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
 import com.soft.common.constants.RedisConstant;
 import com.soft.common.constants.RegexConstant;
+import com.soft.common.enums.DeviceTypeEnum;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
 import com.soft.sys.enums.KeyTypeEnum;
-import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.mapper.SysUsersMapper;
 import com.soft.sys.model.dto.GetUsersQueryDTO;
@@ -27,9 +27,7 @@ import com.soft.sys.rabbitmq.producer.EmailProduce;
 import com.soft.sys.service.*;
 import com.soft.common.utils.CommonUtil;
 import com.soft.common.utils.RSAUtil;
-import com.soft.sys.websocket.api.WebSocketConcreteHolder;
-import com.soft.sys.websocket.handler.ForceOfflineHandler;
-import com.soft.sys.websocket.receive.ForceOfflineRequest;
+import com.soft.sys.websocket.service.ForceOfflineService;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +38,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.TextMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,6 +75,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final EmailProduce emailProduce;
 
+    private final ForceOfflineService forceOfflineService;
+
     @Override
     public PageVO<UsersVO> getUsers(GetUsersDTO request) {
         IPage<UsersVO> page = new Page<>(request.getPageNum(), request.getPageSize());
@@ -96,7 +95,8 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
         Page<UsersVO> allUsers = sysUsersMapper.getUsers(page, getUsersDto);
         PageVO<UsersVO> pageVo = new PageVO<>();
         allUsers.getRecords().forEach(item -> {
-            item.setIsOnline(WebSocketSessionManager.getSession(Long.parseLong(item.getId())) != null ? 1 : 0);
+            item.setWebIsOnline(WebSocketSessionManager.isOnline(Long.parseLong(item.getId()), DeviceTypeEnum.WEB.getType()) ? 1 : 0);
+            item.setMiniProgramIsOnline(WebSocketSessionManager.isOnline(Long.parseLong(item.getId()), DeviceTypeEnum.MINI_PROGRAM.getType()) ? 1 : 0);
             if (StringUtils.isNotBlank(item.getPhone())) {
                 item.setPhone(item.getPhone().replaceAll(RegexConstant.PHONE_HIDDEN_REGEX, RegexConstant.PHONE_HIDDEN_EXP));
             }
@@ -314,14 +314,9 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
      * @throws IOException
      */
     private void sendWebsocket(Long id) throws IOException {
-        // 重置用户名后需强制用户离线
-        ForceOfflineHandler concreteHandler = (ForceOfflineHandler) WebSocketConcreteHolder.getConcreteHandler(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        ForceOfflineRequest forceOfflineParam = new ForceOfflineRequest();
-        forceOfflineParam.setOrder(WebSocketOrderEnum.FORCE_OFFLINE.toString());
-        forceOfflineParam.setReceiver(id);
-        forceOfflineParam.setMsg("密码已修改，请重新登录");
-        TextMessage textMessage = new TextMessage(forceOfflineParam.toJsonString());
-        concreteHandler.handle(WebSocketSessionManager.getSession(id), textMessage);
+        // 重置用户名后需强制用户离线（服务端内部触发, 走 ForceOfflineService）
+        // 不指定 deviceType，强制该账号所有设备下线
+        forceOfflineService.kick(id, null, "密码已修改，请重新登录");
     }
 
     /**

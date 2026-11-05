@@ -8,6 +8,7 @@ export interface LoginRequest {
     email?: string;
     emailCaptcha?: string;
     fingerprint?: string | null;
+    deviceType?: string | null;
   }
   
   // 登录成功响应

@@ -73,7 +73,12 @@ public class RedisConstant {
     public static final String DICT_KEY = "radish:dict::";
 
     /**
-     * 客户端指纹
+     * 用户在线设备，Hash 结构：key = 前缀 + userId，field = deviceType，value = token
+     */
+    public static final String USER_DEVICES = "radish:user-devices:";
+
+    /**
+     * 客户端指纹，按用户 + 设备类型存储：前缀 + userId + ":" + deviceType
      */
     public static final String FINGERPRINT = "radish:fingerprint:";
 

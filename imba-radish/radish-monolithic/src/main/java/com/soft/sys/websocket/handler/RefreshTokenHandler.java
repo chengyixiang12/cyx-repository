@@ -43,11 +43,14 @@ public class RefreshTokenHandler implements WebSocketConcreteHandler<String> {
         String fingerprint = refreshTokenRecParm.getFingerprint();
 
         UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        String deviceType = (String) session.getAttributes().get(WebSocketConstant.DEVICE_TYPE);
+        String oldToken = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);
 
         RefreshTokenResponse refreshTokenSendParam = new RefreshTokenResponse();
         refreshTokenSendParam.setOrder(WebSocketOrderEnum.REFRESH_TOKEN.toString());
 
-        String fingerprintCache = (String) redisTemplate.opsForValue().get(RedisConstant.FINGERPRINT + userDto.getUsername());
+        String fingerprintCache = (String) redisTemplate.opsForValue()
+                .get(RedisConstant.FINGERPRINT + userDto.getId() + ":" + deviceType);
         if (StringUtils.isBlank(fingerprintCache) || !fingerprintCache.equals(fingerprint)) {
             refreshTokenSendParam.setMsg("token刷新失败");
             log.warn("token refresh fail");
@@ -56,11 +59,19 @@ public class RefreshTokenHandler implements WebSocketConcreteHandler<String> {
         }
 
         String token = UUID.randomUUID().toString();
+        long expire = radishProperty.getToken().getExpireTime();
         // 更新attributes的token
         session.getAttributes().put(WebSocketConstant.AUTHORIZATION, token);
-        // 存储token
-        redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token, userDto.getUsername(), radishProperty.getToken().getExpireTime(), TimeUnit.SECONDS);
-        log.info("{} token refreshed...", userDto.getUsername());
+        // 存储token，并更新该设备对应的 token 记录
+        redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token,
+                userDto.getUsername(), expire, TimeUnit.SECONDS);
+        redisTemplate.opsForHash().put(RedisConstant.USER_DEVICES + userDto.getId(), deviceType, token);
+        redisTemplate.expire(RedisConstant.USER_DEVICES + userDto.getId(), expire, TimeUnit.SECONDS);
+        // 旧 token 立即失效
+        if (StringUtils.isNotBlank(oldToken)) {
+            redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + oldToken);
+        }
+        log.info("{} token refreshed, deviceType={}", userDto.getUsername(), deviceType);
         refreshTokenSendParam.setToken(token);
         session.sendMessage(new TextMessage(refreshTokenSendParam.toJsonString()));
     }

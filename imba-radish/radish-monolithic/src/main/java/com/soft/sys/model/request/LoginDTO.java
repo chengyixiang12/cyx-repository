@@ -35,4 +35,7 @@ public class LoginDTO {
     @Schema(description = "设备指纹")
     @NotBlank(message = "设备指纹不能为空")
     private String fingerprint;
+
+    @Schema(description = "设备类型：web / app / mini-program，未传默认 web")
+    private String deviceType;
 }

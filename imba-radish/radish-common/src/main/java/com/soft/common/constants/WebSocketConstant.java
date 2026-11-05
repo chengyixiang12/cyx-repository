@@ -16,4 +16,9 @@ public class WebSocketConstant {
      * websocket鉴权
      */
     public final static String AUTHORIZATION = "Authorization";
+
+    /**
+     * 设备类型（web / app / mini-program），握手参数与 session attributes 共用
+     */
+    public final static String DEVICE_TYPE = "deviceType";
 }

@@ -51,6 +51,15 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
         @SuppressWarnings("unchecked")
         WebSocketConcreteHandler<String> webSocketConcreteHandler = (WebSocketConcreteHandler<String>) WebSocketConcreteHolder.getConcreteHandler(order);
+        if (webSocketConcreteHandler == null) {
+            // 指令在枚举白名单中但未注册处理器（如 FORCE_OFFLINE 仅允许服务端触发），拒绝处理
+            WebSocketResponse sendParams = new WebSocketResponse();
+            sendParams.setStatus(false);
+            sendParams.setMsg("无效的指令");
+            log.warn("指令 {} 未注册处理器, 已拒绝", order);
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
+            return;
+        }
         webSocketConcreteHandler.handle(session, message);
 
     }

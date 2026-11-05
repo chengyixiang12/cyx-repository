@@ -32,11 +32,12 @@ public class PushMessageHandler implements WebSocketConcreteHandler<String> {
         pushMessageSendParams.setMsg(pushMessageRecParam.getMessage());
         pushMessageSendParams.setMsg(pushMessageRecParam.getOrder());
         for (int i = 0; i < receivers.size(); i++) {
-            WebSocketSession sendSession = WebSocketSessionManager.getSession(receivers.getLong(i));
-            if (sendSession == null) {
-                continue;
+            // 推送给该用户所有在线设备（web / app / mini-program）
+            for (WebSocketSession sendSession : WebSocketSessionManager.getSessions(receivers.getLong(i))) {
+                if (sendSession.isOpen()) {
+                    sendSession.sendMessage(new TextMessage(pushMessageSendParams.toJsonString()));
+                }
             }
-            sendSession.sendMessage(new TextMessage(pushMessageSendParams.toJsonString()));
         }
     }
 
