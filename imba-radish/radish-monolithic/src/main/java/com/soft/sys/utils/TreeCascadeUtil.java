@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 /**
  * @Author: cyx
- * @Description: 树形数据级联删除辅助
+ * 树形数据级联删除辅助
  * <p>
  * 统一收集"自身 + 全部子孙"节点 id，供部门、菜单这类 parent_id 自关联表做级联删除。
  * 使用 Set 去重，同时过滤已收集节点，避免脏数据形成环时死循环。
