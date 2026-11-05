@@ -336,7 +336,7 @@ const buildOption = (list: TrendSeriesVO[], dualAxis: boolean): echarts.EChartsO
     },
     legend: {
       top: 0,
-      right: 0,
+      left: 'center',
       itemWidth: 12,
       itemHeight: 8,
       textStyle: { fontSize: 12, color: '#5F6570' }
