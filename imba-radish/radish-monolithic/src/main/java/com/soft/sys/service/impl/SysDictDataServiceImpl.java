@@ -1,7 +1,6 @@
 package com.soft.sys.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
@@ -94,16 +93,6 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     public void deleteDictDataBatch(List<Long> ids) {
         sysDictDataMapper.deleteByIds(ids);
         ids.forEach(this::removeCache);
-    }
-
-    @Override
-    public boolean existValue(Long dictTypeId, String value) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getDictTypeId, dictTypeId).eq(SysDictData::getValue, value));
-    }
-
-    @Override
-    public boolean existCode(Long dictTypeId, String value, Long id) {
-        return sysDictDataMapper.exists(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getDictTypeId, dictTypeId).eq(SysDictData::getValue, value).ne(SysDictData::getId, id));
     }
 
     @Override

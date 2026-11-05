@@ -1,6 +1,5 @@
 package com.soft.sys.controller;
 
-import cn.hutool.core.util.StrUtil;
 import com.soft.common.constants.BaseConstant;
 import com.soft.sys.entity.SysScheduleJob;
 import com.soft.sys.model.request.CreateJobDTO;
@@ -55,9 +54,7 @@ public class SysScheduleJobController {
     @PostMapping(value = "/createJob")
     @Operation(summary = "创建定时任务")
     public R<Object> createJob(@RequestBody @Valid CreateJobDTO request) {
-        if (sysScheduleJobService.existJobType(request.getJobType(), request.getJobGroup())) {
-            return R.fail(StrUtil.format("“{}”任务类型已存在于“{}”组中", request.getJobType(), request.getJobGroup()));
-        }
+        // 同任务组下的任务类型是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         sysScheduleJobService.createJob(request);
         return R.ok("创建成功", null);
     }

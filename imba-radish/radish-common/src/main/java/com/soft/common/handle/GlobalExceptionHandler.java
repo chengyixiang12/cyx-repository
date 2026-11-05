@@ -5,6 +5,7 @@ import com.soft.common.exception.GlobalException;
 import com.soft.common.resultapi.R;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -132,6 +136,65 @@ public class GlobalExceptionHandler {
         log.warn("参数类型不匹配: {}", message);
         return ResponseEntity.badRequest().body(R.fail(message));
     }
+
+    /**
+     * 唯一索引冲突
+     * <p>
+     * 前置的存在性校验（先查再插）已按唯一索引方案移除，并发下的重复数据统一由数据库唯一索引兜底，
+     * 这里把冲突翻译成用户能看懂的提示。
+     */
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<R<Object>> duplicateKeyException(DuplicateKeyException e) {
+        String message = resolveDuplicateMessage(e);
+        log.warn("唯一索引冲突: {}", e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(R.fail(message));
+    }
+
+    /**
+     * 从 MySQL 错误信息中解析冲突的索引名（形如 Duplicate entry 'x' for key 'table.index'），
+     * 按索引给出具体的业务提示
+     */
+    private String resolveDuplicateMessage(DuplicateKeyException e) {
+        Matcher matcher = DUPLICATE_KEY_PATTERN.matcher(e.getMessage());
+        if (matcher.find()) {
+            // MySQL 8.x 的 key 可能是 table.index 或 db.table.index，统一取最后两段
+            String[] segments = matcher.group(1).toLowerCase().split("\\.");
+            String key = segments.length >= 2
+                    ? segments[segments.length - 2] + "." + segments[segments.length - 1]
+                    : segments[0];
+            String message = UNIQUE_KEY_MESSAGES.get(key);
+            if (message != null) {
+                return message;
+            }
+        }
+        return "保存失败，数据已存在，请勿重复提交";
+    }
+
+    /**
+     * 索引名 -> 业务提示；key 为 message 中的 table.index 小写形式
+     */
+    private static final Map<String, String> UNIQUE_KEY_MESSAGES = Map.ofEntries(
+            Map.entry("sys_user.sys_user_username_idx", "用户名已注册，请更换用户名"),
+            Map.entry("sys_user.sys_user_email_idx", "邮箱已注册，请更换邮箱"),
+            Map.entry("sys_role.idx_code", "角色编码已存在，请更换编码"),
+            Map.entry("sys_dept.idx_sys_dept_code", "部门编码已存在，请更换编码"),
+            Map.entry("sys_dict_type.sys_dict_type_dict_type_idx", "字典类型已存在，请更换类型标识"),
+            Map.entry("sys_dict_data.sys_dict_data_dict_type_id_idx", "该字典类型下已存在相同的字典值"),
+            Map.entry("sys_permission.idx_sys_permission_code", "权限编码已存在，请更换编码"),
+            Map.entry("sys_schedule_job.uk_schedule_job", "该任务类型已存在于该任务组中"),
+            Map.entry("sys_user_role.uk_role_user", "该用户已绑定此角色"),
+            Map.entry("sys_role_menu.uk_sys_role_menu", "该角色已绑定此菜单"),
+            Map.entry("sys_role_permission.uk_sys_role_permission", "该角色已绑定此权限")
+    );
+
+    /**
+     * 匹配 "for key 'table.index'"（MySQL 8.x 带库名时为 'db.table.index'，取最后两段）
+     */
+    private static final Pattern DUPLICATE_KEY_PATTERN =
+            Pattern.compile("for key '([\\w.]+)'");
 
     /**
      * 其他未处理的异常

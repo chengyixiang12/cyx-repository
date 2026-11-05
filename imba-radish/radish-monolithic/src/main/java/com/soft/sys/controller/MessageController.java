@@ -61,7 +61,7 @@ public class MessageController {
         if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + email))) {
             return R.fail("请勿重复发送验证码");
         }
-        emailProduce.send(email, getCaptchaEmailContent(email));
+        emailProduce.send(email, getCaptchaEmailContent(RedisConstant.EMAIL_CAPTCHA_KEY, email));
         return R.ok("验证码已发送，请留意您的邮箱", null);
     }
 
@@ -78,7 +78,26 @@ public class MessageController {
         if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + email))) {
             return R.fail("请勿重复发送验证码");
         }
-        emailProduce.send(email, getCaptchaEmailContent(email));
+        emailProduce.send(email, getCaptchaEmailContent(RedisConstant.EMAIL_CAPTCHA_KEY, email));
+        return R.ok("验证码已发送，请留意您的邮箱", null);
+    }
+
+    @AccessControl(unit = TimeUnit.MINUTES, key = "send-mail")
+    @GetMapping(value = "/sendForgotPasswordCaptcha")
+    @Operation(summary = "发送忘记密码验证码")
+    @Parameter(name = "email", description = "邮箱", required = true, in = ParameterIn.QUERY)
+    public R<Object> sendForgotPasswordCaptcha(@RequestParam(value = "email", required = false) @NotBlank(message = "邮箱不能为空") String email) {
+        if (!Pattern.matches(RegexConstant.EMAIL, email)) {
+            return R.fail("非法邮箱");
+        }
+        if (sysUsersService.getUserByEmail(email) == null) {
+            return R.fail("邮箱尚未注册，请前往注册");
+        }
+
+        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.FORGET_PASSWORD_CAPTCHA_KEY + email))) {
+            return R.fail("请勿重复发送验证码");
+        }
+        emailProduce.send(email, getCaptchaEmailContent(RedisConstant.FORGET_PASSWORD_CAPTCHA_KEY, email));
         return R.ok("验证码已发送，请留意您的邮箱", null);
     }
 
@@ -90,11 +109,13 @@ public class MessageController {
 
     /**
      * 获取验证码邮箱内容
+     * @param captchaKey 验证码的 redis key 前缀（注册/登录/忘记密码各自独立）
+     * @param uniqueTag 通常是邮箱地址
      * @return
      */
-    private String getCaptchaEmailContent(String uniqueTag) {
+    private String getCaptchaEmailContent(String captchaKey, String uniqueTag) {
         String captChat = CommonUtil.generate(BaseConstant.LOGIN_CAPTCHA_LENGTH);
-        redisTemplate.opsForValue().set(RedisConstant.EMAIL_CAPTCHA_KEY + uniqueTag, captChat, radishProperty.getCaptcha().getExpireTime(), TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(captchaKey + uniqueTag, captChat, radishProperty.getCaptcha().getExpireTime(), TimeUnit.SECONDS);
         return  "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>验证码邮件</title><style>body {background-color: #f9f9f9;margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;}.email-container {max-width: 600px;margin: 50px auto;background-color: #ffffff;padding: 20px;border-radius: 8px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);text-align: center;}.email-header {font-size: 18px;font-weight: bold;margin-bottom: 20px;}.email-content p {font-size: 16px;line-height: 1.6;margin: 10px 0;} .email-content strong{color: #d9534f; }.email-footer{font-size: 12px;color: #999;margin-top: 20px;}</style></head><body><div class=\"email-container\"><div class=\"email-header\">验证码邮件</div><div class=\"email-content\"><p>尊敬的用户您好！</p><p>您的验证码是：<strong>" +
                 captChat +
                 "</strong>，请您在 5 分钟内完成验证。</p><p>如果该验证码不是您本人申请的，请忽略此邮件。</p><p>感谢您的使用！</p></div><div class=\"email-footer\">此邮件由系统自动发送，请勿回复。</div></div></body></html>";

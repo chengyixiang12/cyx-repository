@@ -66,16 +66,6 @@
         del_flag = '0'
         AND username = #{username}
     </update>
-    <select id="existsEmail" resultType="java.lang.Boolean">
-        SELECT
-        COUNT( * )
-        FROM
-        `sys_user` su
-        WHERE
-        su.del_flag = '0'
-        AND su.`id` <![CDATA[<>]]> #{id}
-        AND su.email = #{email}
-    </select>
     <select id="getUsername" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT
         su.username

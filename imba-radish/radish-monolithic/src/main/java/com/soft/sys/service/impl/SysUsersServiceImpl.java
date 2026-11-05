@@ -255,21 +255,6 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
     }
 
     @Override
-    public boolean existsUsername(String newUsername) {
-        return sysUsersMapper.exists(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getUsername, newUsername));
-    }
-
-    @Override
-    public boolean existsEmail(String email) {
-        return sysUsersMapper.exists(Wrappers.lambdaQuery(SysUser.class).eq(SysUser::getEmail, email));
-    }
-
-    @Override
-    public boolean existsEmail(Long id, String email) {
-        return sysUsersMapper.existsEmail(id, email);
-    }
-
-    @Override
     @CacheEvict(key = "#username")
     @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id, String username) {

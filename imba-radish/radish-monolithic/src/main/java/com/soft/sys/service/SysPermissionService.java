@@ -23,8 +23,6 @@ public interface SysPermissionService extends IService<SysPermission> {
 
     List<String> getPermissionsByRoleCodes(List<String> roleCodes);
 
-    boolean existCode(String code);
-
     List<GetAllPermissionVO> getAllPermission();
 
     List<GetAssignPerVO> getAssignPer(Long roleId);

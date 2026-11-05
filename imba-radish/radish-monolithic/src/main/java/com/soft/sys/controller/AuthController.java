@@ -7,13 +7,13 @@ import com.soft.common.constants.RegexConstant;
 import com.soft.common.annotation.AccessControl;
 import com.soft.common.annotation.SysLock;
 import com.soft.sys.entity.SysUser;
+import com.soft.sys.model.request.ForgotPasswordDTO;
 import com.soft.sys.model.request.LoginDTO;
 import com.soft.sys.model.request.RegisterDTO;
 import com.soft.sys.model.vo.LoginVO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.common.resultapi.R;
 import com.soft.sys.service.AuthService;
-import com.soft.sys.service.SysUsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -51,8 +51,6 @@ public class AuthController {
     private final AuthService authService;
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    private final SysUsersService sysUsersService;
 
     private final DefaultKaptcha captchaProducer;
 
@@ -107,16 +105,10 @@ public class AuthController {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
         }
-        if (sysUsersService.existsUsername(request.getUsername())) {
-            return R.fail("用户名已注册");
-        }
         if (!Pattern.matches(RegexConstant.EMAIL, request.getEmail())) {
             return R.fail("非法邮箱");
         }
-        if (sysUsersService.existsEmail(request.getEmail())) {
-            return R.fail("邮箱已注册");
-        }
-
+        // 用户名/邮箱是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         String captchaCache = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
         if (!request.getVerificationCode().equals(captchaCache)) {
             return R.fail("验证码错误，请检查您的邮箱是否更改或者验证码是否过期");
@@ -129,6 +121,19 @@ public class AuthController {
         authService.register(sysUser);
         redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
         return R.ok();
+    }
+
+    @PostMapping("/forgotPassword")
+    @Operation(summary = "忘记密码-通过邮箱验证码重置密码")
+    public R<Object> forgotPassword(@RequestBody @Valid ForgotPasswordDTO request) {
+        if (!Pattern.matches(RegexConstant.EMAIL, request.getEmail())) {
+            return R.fail("非法邮箱");
+        }
+        if (request.getVerificationCode().length() != BaseConstant.LOGIN_CAPTCHA_LENGTH) {
+            return R.fail("验证码错误");
+        }
+        authService.forgotPassword(request);
+        return R.ok("密码重置成功，请使用新密码登录");
     }
 
     @GetMapping(value = "/getGraphicCaptcha")

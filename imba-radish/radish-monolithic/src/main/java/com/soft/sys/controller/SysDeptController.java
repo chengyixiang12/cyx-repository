@@ -74,17 +74,11 @@ public class SysDeptController {
     @PostMapping
     @Operation(summary = "添加部门")
     public R<Object> saveDept(@RequestBody @Valid SaveDeptDTO request) {
-        if (sysDeptService.existCode(request.getCode())) {
-            return R.fail("部门编码已存在");
-        }
+        // 部门编码是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         Boolean notEmpty = sysDeptService.isNotEmpty();
         // 如果数据库中存在值，则父id不能为空
         if (notEmpty && request.getParentId() == null) {
             return R.fail("父级id不能为空");
-        }
-        Boolean existCode = sysDeptService.existCode(request.getCode());
-        if (existCode) {
-            return R.fail("编码：" + request.getCode() + "已存在");
         }
         sysDeptService.saveDept(request);
         return R.ok("添加成功", null);
@@ -96,9 +90,6 @@ public class SysDeptController {
     @PutMapping
     @Operation(summary = "编辑部门")
     public R<Object> editDept(@RequestBody @Valid EditDeptDTO request) {
-        if (sysDeptService.existCode(request.getCode(), request.getId())) {
-            return R.fail("部门编码已存在");
-        }
         sysDeptService.editDept(request);
         return R.ok("修改成功", null);
     }

@@ -52,15 +52,9 @@ public class SysRoleController {
         if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
             return R.fail("无效的角色编码");
         }
-        if (sysRoleService.existCode(request.getCode())) {
-            return R.fail("角色编码已存在");
-        }
+        // 角色编码是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         if (request.getStatus() == null) {
             request.setStatus(BaseConstant.Status.STATUS_ENABLE);
-        }
-        Boolean existCode = sysRoleService.existCode(request.getCode());
-        if (existCode) {
-            return R.fail("编码：" + request.getCode() + "已存在");
         }
         SysRole sysRole = new SysRole();
         BeanUtils.copyProperties(request, sysRole);
@@ -78,9 +72,6 @@ public class SysRoleController {
     public R<Object> editRole(@RequestBody @Valid EditRoleDTO request) {
         if (!Pattern.matches(RegexConstant.ROLE_CODE_HEADER, request.getCode())) {
             return R.fail("无效的角色编码");
-        }
-        if (sysRoleService.existCode(request.getCode(), request.getId())) {
-            return R.fail("角色编码已存在");
         }
         if (request.getStatus() == null) {
             request.setStatus(BaseConstant.Status.STATUS_ENABLE);

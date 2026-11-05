@@ -18,6 +18,11 @@ public class RedisConstant {
     public static final String EMAIL_CAPTCHA_KEY = "radish:email:captcha:";
 
     /**
+     * 忘记密码验证码（与登录/注册验证码分开，避免同一验证码被跨流程使用）
+     */
+    public static final String FORGET_PASSWORD_CAPTCHA_KEY = "radish:email:forget-password:";
+
+    /**
      * 用户信息，tips：此处的"::"不能改为":"
      */
     public static final String USER_INFO = "radish:users::";

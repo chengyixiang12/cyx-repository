@@ -24,8 +24,6 @@ public interface SysScheduleJobService extends IService<SysScheduleJob> {
 
     void stopJob(Long id);
 
-    boolean existJobType(String jobType, String jobGroup);
-
     GetJobVO getJob(Long id);
 
     void editJob(EditJobDTO request);

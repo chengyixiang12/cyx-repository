@@ -51,9 +51,7 @@ public class SysPermissionController {
     @PostMapping
     @Operation(summary = "添加权限")
     public R<Object> savePermission(@RequestBody SavePermissionDTO request) {
-        if (sysPermissionService.existCode(request.getCode())) {
-            R.fail("权限编码已存在");
-        }
+        // 权限编码是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         sysPermissionService.savePermission(request);
         return R.ok("权限添加成功", null);
     }
@@ -62,9 +60,6 @@ public class SysPermissionController {
     @PreAuthorize(value = "@cps.hasPermission('sys_pms_edit')")
     @Operation(summary = "编辑权限")
     public R<Object> editPermission(@RequestBody EditPermissionDTO request) {
-        if (sysPermissionService.existCode(request.getCode())) {
-            R.fail("权限编码已存在");
-        }
         sysPermissionService.editPermission(request);
         return R.ok("权限编辑成功", null);
     }

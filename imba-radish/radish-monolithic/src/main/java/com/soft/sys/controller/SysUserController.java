@@ -101,9 +101,7 @@ public class SysUserController {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
         }
-        if (sysUsersService.existsEmail(request.getEmail())) {
-            return R.fail("邮箱已注册");
-        }
+        // 邮箱/用户名是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         sysUsersService.saveUser(request);
         return R.ok("添加成功", null);
     }
@@ -114,9 +112,6 @@ public class SysUserController {
     @PutMapping
     @Operation(summary = "编辑用户")
     public R<Object> editUser(@RequestBody @Valid EditUserDTO request) {
-        if (StringUtils.isNotBlank(request.getEmail()) && sysUsersService.existsEmail(request.getId(), request.getEmail())) {
-            return R.fail("邮箱已注册");
-        }
         String username = sysUsersService.getUsername(request.getId());
         sysUsersService.editUser(request, username);
         return R.ok("修改成功", null);
@@ -182,9 +177,6 @@ public class SysUserController {
     public R<Object> resetUsername(@RequestBody @Valid ResetUsernameDTO request) {
         if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
             return R.fail("用户名只能包含英文字母或数字");
-        }
-        if (sysUsersService.existsUsername(request.getUsername())) {
-            return R.fail("用户名重复");
         }
         String username = sysUsersService.getUsername(request.getId());
         sysUsersService.resetUsername(request, username);

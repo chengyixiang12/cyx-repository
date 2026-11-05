@@ -58,6 +58,12 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'register',
     component: () => import('../views/register/Register.vue'),
     meta: { title: '注册', requiresAuth: false, isClose: false, visible: 1 }
+  },
+  {
+    path: '/forgotPassword',
+    name: 'forgotPassword',
+    component: () => import('../views/login/ForgotPassword.vue'),
+    meta: { title: '忘记密码', requiresAuth: false, isClose: false, visible: 1 }
   }
 ]
 
@@ -188,7 +194,7 @@ router.beforeEach(async (to, _from, next) => {
   const token = getToken()
 
   // 白名单路径直接放行
-  const whiteList = ['/login', '/register', '/404']
+  const whiteList = ['/login', '/register', '/forgotPassword', '/404']
   if (whiteList.includes(to.path)) {
     if (to.path === '/login' && token) {
       next('/')

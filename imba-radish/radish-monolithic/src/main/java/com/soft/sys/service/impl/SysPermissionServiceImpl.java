@@ -2,7 +2,6 @@ package com.soft.sys.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
@@ -56,11 +55,6 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     @Override
     public List<String> getPermissionsByRoleCodes(List<String> roleCodes) {
         return sysPermissionMapper.getPermissionsByRoleCodes(roleCodes);
-    }
-
-    @Override
-    public boolean existCode(String code) {
-        return sysPermissionMapper.exists(Wrappers.lambdaQuery(SysPermission.class).eq(SysPermission::getCode, code));
     }
 
     @Override

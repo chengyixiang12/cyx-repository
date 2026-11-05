@@ -7,6 +7,7 @@ import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
 import com.soft.sys.enums.KeyTypeEnum;
 import com.soft.common.exception.GlobalException;
+import com.soft.sys.model.request.ForgotPasswordDTO;
 import com.soft.sys.model.request.LoginDTO;
 import com.soft.sys.model.vo.LoginVO;
 import com.soft.sys.properties.RadishProperty;
@@ -16,6 +17,7 @@ import com.soft.sys.websocket.service.ForceOfflineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -75,6 +77,9 @@ public class AuthServiceImpl implements AuthService {
             sysUserRole.setUserId(sysUser.getId());
             sysUserRole.setRoleId(sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG));
             sysUserRoleService.save(sysUserRole);
+        } catch (DuplicateKeyException e) {
+            // 用户名/邮箱唯一索引冲突直接抛出，由全局异常处理器翻译成业务提示
+            throw e;
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
@@ -146,6 +151,29 @@ public class AuthServiceImpl implements AuthService {
         } catch (IOException e) {
             throw new GlobalException(e);
         }
+    }
+
+    @Override
+    public void forgotPassword(ForgotPasswordDTO request) {
+        String captchaKey = RedisConstant.FORGET_PASSWORD_CAPTCHA_KEY + request.getEmail();
+        String captchaCache = (String) redisTemplate.opsForValue().get(captchaKey);
+        if (captchaCache == null) {
+            throw new GlobalException("验证码已过期，请重新获取");
+        }
+        if (!request.getVerificationCode().equals(captchaCache)) {
+            throw new GlobalException("验证码错误，请检查您的邮箱是否输入正确或验证码是否过期");
+        }
+
+        SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
+        if (sysUser == null) {
+            throw new GlobalException("邮箱尚未注册");
+        }
+
+        // 复用 editPassword：RSA 解密 + BCrypt 加密 + 强制该账号所有设备下线
+        sysUsersService.editPassword(request.getPassword(), sysUser.getId());
+
+        // 验证码一次性使用
+        redisTemplate.delete(captchaKey);
     }
 
     /**

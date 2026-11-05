@@ -1,15 +1,17 @@
 <template>
-  <el-form :model="formData" :rules="rules" ref="formRef" label-width="100px">
-    <el-form-item label="密码" prop="password">
-      <el-input type="password" v-model="formData.password" show-password />
+  <el-form :model="formData" :rules="rules" ref="formRef">
+    <el-form-item prop="password">
+      <el-input type="password" v-model="formData.password" placeholder="请输入密码（6-20位）" prefix-icon="Lock"
+        size="large" show-password />
     </el-form-item>
-    <el-form-item label="确认密码" prop="confirmPassword">
-      <el-input type="password" v-model="formData.confirmPassword" show-password />
+    <el-form-item prop="confirmPassword">
+      <el-input type="password" v-model="formData.confirmPassword" placeholder="请再次输入密码" prefix-icon="Lock"
+        size="large" show-password />
     </el-form-item>
     <el-form-item>
-      <div style="display: flex; justify-content: space-between; width: 100%;">
-        <el-button @click="emit('prev')">上一步</el-button>
-        <el-button type="primary" @click="handleNext">下一步</el-button>
+      <div class="btn-group">
+        <el-button size="large" class="btn-half" @click="emit('prev')">上一步</el-button>
+        <el-button type="primary" size="large" round class="btn-half" @click="handleNext">下一步</el-button>
       </div>
     </el-form-item>
   </el-form>
@@ -68,14 +70,14 @@ const handleNext = async () => {
 </script>
 
 <style scoped>
-.register-link {
+.btn-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
   margin-top: 10px;
-  text-align: center;
-  font-size: 14px;
-  color: #666;
 }
 
-.el-form-item {
-  margin-bottom: 20px;
+.btn-half {
+  flex: 1;
 }
 </style>

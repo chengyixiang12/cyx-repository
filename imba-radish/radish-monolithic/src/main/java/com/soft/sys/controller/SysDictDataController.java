@@ -67,9 +67,7 @@ public class SysDictDataController {
     @PostMapping
     @Operation(summary = "添加字典数据")
     public R<Object> saveDictData(@RequestBody @Valid SaveDictDataDTO request) {
-        if (sysDictDataService.existValue(request.getDictTypeId(), request.getValue())) {
-            return R.fail("字典编码已存在");
-        }
+        // 同一字典类型下的字典值是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         sysDictDataService.saveDictData(request);
         return R.ok();
     }
@@ -80,9 +78,6 @@ public class SysDictDataController {
     @PutMapping
     @Operation(summary = "编辑字典数据")
     public R<Object> editDictData(@RequestBody @Valid EditDictDataDTO request) {
-        if (sysDictDataService.existCode(request.getDictTypeId(), request.getValue(), request.getId())) {
-            return R.fail("字典编码已存在");
-        }
         sysDictDataService.editDictData(request);
         return R.ok();
     }

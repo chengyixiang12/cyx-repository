@@ -21,10 +21,6 @@ import java.util.List;
 */
 public interface SysRoleService extends IService<SysRole> {
 
-    Boolean existCode(String code);
-
-    Boolean existCode(String code, Long id);
-
     void deleteRoleBatch(List<Long> ids);
 
     Boolean fixRoleFlag(Long id);

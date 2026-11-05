@@ -23,10 +23,6 @@ public interface SysDeptService extends IService<SysDept> {
 
     List<DeptTreeVO> getDeptTree(Long id);
 
-    Boolean existCode(String code);
-
-    Boolean existCode(String code, Long id);
-
     Boolean isNotEmpty();
 
     void saveDept(SaveDeptDTO request);

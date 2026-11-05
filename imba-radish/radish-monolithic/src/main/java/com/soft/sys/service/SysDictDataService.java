@@ -32,10 +32,6 @@ public interface SysDictDataService extends IService<SysDictData> {
 
     void deleteDictDataBatch(List<Long> ids);
 
-    boolean existValue(Long dictTypeId, String value);
-
-    boolean existCode(Long dictTypeId, String value, Long id);
-
     void enableDictData(Long id);
 
     void forbiddenDictData(Long id);

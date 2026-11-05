@@ -43,6 +43,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- DuplicateKeyException（org.springframework.dao 在 spring-tx 下） -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- @RestControllerAdvice 与各类 Web 异常（NoResourceFoundException 在 webmvc 下） -->
         <dependency>
             <groupId>org.springframework</groupId>

@@ -342,7 +342,8 @@ CREATE TABLE `sys_schedule_job` (
                                     `schedule_type` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '调度类型；0：简单调度；1：cron表达式调度',
                                     `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
                                     `job_class` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '作业执行类',
-                                    PRIMARY KEY (`id`)
+                                    PRIMARY KEY (`id`),
+                                    UNIQUE KEY `uk_schedule_job` (`job_group`,`job_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='调度任务表';
 
 

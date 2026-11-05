@@ -45,16 +45,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public Boolean existCode(String code) {
-        return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getCode, code));
-    }
-
-    @Override
-    public Boolean existCode(String code, Long id) {
-        return sysRoleMapper.exists(Wrappers.lambdaQuery(SysRole.class).eq(SysRole::getCode, code).ne(SysRole::getId, id));
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteRoleBatch(List<Long> ids) {
         if (CollectionUtil.isEmpty(ids)) {

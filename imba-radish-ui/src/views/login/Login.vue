@@ -58,9 +58,11 @@
           </el-button>
         </el-form-item>
 
-        <!-- 注册引导 -->
+        <!-- 注册引导 / 忘记密码 -->
         <div class="register-link">
           <el-link type="primary" @click="goToRegister">没有账号？前往注册</el-link>
+          <el-divider direction="vertical" />
+          <el-link type="info" @click="goToForgotPassword">忘记密码？</el-link>
         </div>
 
         <!-- 源码地址 -->
@@ -165,6 +167,10 @@ const sendEmailCaptcha = async () => {
 
 const goToRegister = () => {
   router.push('/register')
+}
+
+const goToForgotPassword = () => {
+  router.push('/forgotPassword')
 }
 
 const handleLogin = async () => {
@@ -296,6 +302,10 @@ onMounted(() => {
   text-align: center;
   font-size: 14px;
   color: #666;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
 }
 
 .source-link {

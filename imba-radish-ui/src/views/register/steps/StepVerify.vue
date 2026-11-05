@@ -1,16 +1,20 @@
 <template>
-  <el-form :model="formData" :rules="rules" ref="formRef" label-width="100px">
-    <el-form-item label="验证码" prop="verificationCode">
-      <el-input v-model="formData.verificationCode" placeholder="输入验证码">
+  <el-form :model="formData" :rules="rules" ref="formRef">
+    <el-form-item prop="verificationCode">
+      <el-input v-model="formData.verificationCode" placeholder="请输入邮箱验证码" prefix-icon="Key" size="large"
+        maxlength="6">
         <template #append>
-          <el-button @click="sendCode">{{ countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}</el-button>
+          <el-button @click="sendCode" :disabled="countdown > 0">
+            {{ countdown > 0 ? `${countdown}s 后重试` : '发送验证码' }}
+          </el-button>
         </template>
       </el-input>
     </el-form-item>
     <el-form-item>
-      <div style="display: flex; justify-content: space-between; width: 100%;">
-        <el-button @click="emit('prev')">上一步</el-button>
-        <el-button type="primary" @click="complete">完成注册</el-button>
+      <div class="btn-group">
+        <el-button size="large" class="btn-half" @click="emit('prev')">上一步</el-button>
+        <el-button type="primary" size="large" round class="btn-half" :loading="submitting"
+          @click="complete">完成注册</el-button>
       </div>
     </el-form-item>
   </el-form>
@@ -23,6 +27,7 @@ import { registerApi, sendRegistCaptchaApi } from '@/api/register'
 import type { FormInstance, FormRules } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa'
 import { getPublicKeyApi } from '@/api/auth'
+import { showMessage } from '@/utils/message'
 
 const props = defineProps<{ modelValue: RegisterRequest }>()
 const emit = defineEmits<{
@@ -62,21 +67,26 @@ const formData = computed({
 })
 
 const sendCode = async () => {
-  await sendRegistCaptchaApi(formData.value.email)
-  startCountdown()
+  try {
+    await sendRegistCaptchaApi(formData.value.email)
+    startCountdown()
+  } catch (error) {
+    console.error('发送验证码失败:', error)
+  }
 }
 
 const complete = async () => {
   try {
     const valid = await formRef.value?.validate()
     if (valid) {
+      submitting.value = true
       const publicKey = await getPublicKeyApi()
       formData.value.password = RSAUtil.encrypt(formData.value.password, publicKey)
       await registerApi(formData.value)
       emit('next')
     }
   } catch (error) {
-    console.log(error)
+    console.error('注册失败:', error)
   } finally {
     submitting.value = false
   }
@@ -89,7 +99,14 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.el-form-item {
-  margin-bottom: 20px;
+.btn-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.btn-half {
+  flex: 1;
 }
 </style>

@@ -1,22 +1,20 @@
 <template>
-  <el-form :model="formData" :rules="rules" ref="formRef" label-width="100px">
-    <el-form-item label="用户名" prop="username">
-      <el-input v-model="formData.username" />
+  <el-form :model="formData" :rules="rules" ref="formRef">
+    <el-form-item prop="username">
+      <el-input v-model="formData.username" placeholder="请输入用户名" prefix-icon="User" size="large" />
     </el-form-item>
-    <el-form-item label="昵称" prop="nickname">
-      <el-input v-model="formData.nickname" />
+    <el-form-item prop="nickname">
+      <el-input v-model="formData.nickname" placeholder="请输入昵称（选填）" prefix-icon="UserFilled" size="large" />
     </el-form-item>
-    <el-form-item label="邮箱" prop="email">
-      <el-input v-model="formData.email" />
+    <el-form-item prop="email">
+      <el-input v-model="formData.email" placeholder="请输入邮箱" prefix-icon="Message" size="large" />
     </el-form-item>
     <el-form-item>
-      <div style="display: flex; justify-content: space-between; width: 100%;">
-        <div class="register-link">
-          <el-link type="primary" @click="goToLogin">已有帐号？前往登录</el-link>
-        </div>
-        <el-button type="primary" @click="handleNext">下一步</el-button>
-      </div>
+      <el-button type="primary" size="large" round class="next-btn" @click="handleNext">下一步</el-button>
     </el-form-item>
+    <div class="login-link">
+      <el-link type="primary" @click="goToLogin">已有帐号？前往登录</el-link>
+    </div>
   </el-form>
 </template>
 
@@ -41,7 +39,10 @@ const formRef = ref<FormInstance>()
 
 const rules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }]
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+  ]
 }
 
 const handleNext = async () => {
@@ -58,15 +59,16 @@ const goToLogin = () => {
   router.push('/login')
 }
 </script>
+
 <style scoped>
-.register-link {
+.next-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.login-link {
   margin-top: 10px;
   text-align: center;
   font-size: 14px;
-  color: #666;
-}
-
-.el-form-item {
-  margin-bottom: 20px;
 }
 </style>

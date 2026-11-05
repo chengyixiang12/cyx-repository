@@ -34,12 +34,6 @@ public interface SysUsersService extends IService<SysUser> {
 
     void resetUsername(ResetUsernameDTO request, String username);
 
-    boolean existsUsername(String newUsername);
-
-    boolean existsEmail(String email);
-
-    boolean existsEmail(Long id, String email);
-
     void deleteUser(Long id, String username);
 
     String getUsername(Long id);

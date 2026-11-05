@@ -123,14 +123,6 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
     }
 
     @Override
-    public boolean existJobType(String jobType, String jobGroup) {
-        LambdaQueryWrapper<SysScheduleJob> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysScheduleJob::getJobType, jobType);
-        wrapper.eq(SysScheduleJob::getJobGroup, jobGroup);
-        return sysScheduleJobMapper.exists(wrapper);
-    }
-
-    @Override
     public GetJobVO getJob(Long id) {
         return sysScheduleJobMapper.getJob(id);
     }

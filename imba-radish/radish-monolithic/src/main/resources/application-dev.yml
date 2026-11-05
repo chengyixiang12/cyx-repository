@@ -87,6 +87,7 @@ spring:
         - /doc.html
         - /message/sendRegistCaptcha
         - /message/sendLoginCaptcha
+        - /message/sendForgotPasswordCaptcha
         - /ws/**
         - /secretKey/getPublicKey
         - /error
