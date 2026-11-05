@@ -37,9 +37,8 @@ public class MetricRollupJob {
     @Scheduled(cron = "0 */5 * * * *")
     public void rollup5m() {
         try {
-            LocalDateTime end = LocalDateTime.now()
-                    .truncatedTo(ChronoUnit.MINUTES)
-                    .withMinute(minute -> minute / 5 * 5);
+            LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+            LocalDateTime end = now.withMinute(now.getMinute() / 5 * 5);
             aggregateService.rebuild5m(end.minusMinutes(30), end);
         } catch (Exception e) {
             log.error("5 分钟聚合失败", e);
