@@ -94,4 +94,11 @@
         where del_flag = '0'
           and id = #{id}
     </update>
+    <delete id="deleteRolePermissionsByPermissionId" parameterType="java.lang.Long">
+        DELETE
+        FROM
+        sys_role_permission
+        WHERE
+        permission_id = #{permissionId}
+    </delete>
 </mapper>

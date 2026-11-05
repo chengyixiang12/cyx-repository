@@ -15,6 +15,7 @@ import com.soft.sys.model.vo.*;
 import com.soft.sys.service.SysPermissionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,8 +81,12 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deletePermission(Long id) {
         sysPermissionMapper.deleteById(id);
+
+        // 级联解除角色与权限的绑定关系
+        sysPermissionMapper.deleteRolePermissionsByPermissionId(id);
     }
 
     @Override

@@ -5,12 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.soft.sys.entity.SysFile;
 import com.soft.sys.model.dto.FileDetailDTO;
 import com.soft.sys.model.dto.FileHashDTO;
-import com.soft.sys.model.dto.SelectDeletedFileDTO;
 import com.soft.sys.model.request.FilesDTO;
 import com.soft.sys.model.vo.FilesVO;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
 * @author cyq
@@ -26,13 +23,9 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
 
     FileHashDTO getFileByHash(@Param("hashCode") String hashCode);
 
-    List<SelectDeletedFileDTO> selectDeletedFiles();
-
     IPage<FilesVO> getMyFiles(IPage<FilesVO> page,
                                @Param("request") FilesDTO request,
                                @Param("userId") Long userId);
-
-    void deleteRealByIds(@Param("ids") List<Long> ids);
 
     SysFile getFileByMd5(@Param("fileMd5") String fileMd5);
 }

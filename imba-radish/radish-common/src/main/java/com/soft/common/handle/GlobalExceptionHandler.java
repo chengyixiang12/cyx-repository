@@ -1,5 +1,6 @@
 package com.soft.common.handle;
 
+import com.soft.common.enums.ResultEnum;
 import com.soft.common.exception.GlobalException;
 import com.soft.common.resultapi.R;
 import jakarta.validation.ValidationException;
@@ -86,10 +87,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(GlobalException.class)
     public ResponseEntity<R<Object>> globalException(GlobalException e) {
         log.warn("业务异常: {}", e.getMessage());
+        // 业务主动抛出的异常（没有底层 cause）把提示原样透出，前端才能展示"该部门下还有用户"这类信息；
+        // 包装了底层异常的仍返回通用提示，避免把内部堆栈信息暴露出去
+        String message = e.getCause() == null && e.getMessage() != null && !e.getMessage().isBlank()
+                ? e.getMessage()
+                : ResultEnum.FAIL_NORMAL.getMessage();
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(R.fail());
+                .body(R.fail(message));
     }
 
     /**

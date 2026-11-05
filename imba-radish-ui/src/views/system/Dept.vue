@@ -49,14 +49,9 @@
               <el-button type="primary" @click="handleEdit(scope.row)" class="action-button edit-button">
                 编辑
               </el-button>
-              <el-popconfirm title="确认删除该部门吗？" confirm-button-text="确认" cancel-button-text="取消"
-                @confirm="handleDelete(scope.row.id)">
-                <template #reference>
-                  <el-button type="danger" class="action-button delete-button">
-                    删除
-                  </el-button>
-                </template>
-              </el-popconfirm>
+              <el-button type="danger" class="action-button delete-button" @click="handleDeleteClick(scope.row)">
+                删除
+              </el-button>
             </div>
           </template>
         </el-table-column>
@@ -83,14 +78,16 @@
 <script lang="ts" setup>
 import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
 import { ref, onMounted } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   getDeptsApi,
+  getDeptTreeApi,
   deleteDeptApi,
   saveDeptApi,
   updateDeptApi,
   exportDept
 } from '@/api/dept'
-import type { GetDeptsRequest, GetDeptsVo, SaveDeptRequest, EditDeptRequest } from '@/types/dept'
+import type { DeptTreeVo, GetDeptsRequest, GetDeptsVo, SaveDeptRequest, EditDeptRequest } from '@/types/dept'
 import DeptFormDialog from './component/DeptFormDialog.vue'
 import { download } from '@/utils/download'
 
@@ -133,6 +130,7 @@ const handleEdit = (row: GetDeptsVo) => {
 const handleAddSubmit = async (formData: SaveDeptRequest) => {
   try {
     await saveDeptApi(formData)
+    deptTreeCache = null
     addDialogVisible.value = false
     await loadDepts()
   } catch (e) {
@@ -150,6 +148,7 @@ const handleEditSubmit = async (formData: EditDeptRequest) => {
       sortOrder: formData.sortOrder || 0,
       parentId: formData.parentId
     })
+    deptTreeCache = null
     editDialogVisible.value = false
     await loadDepts()
   } catch (e) {
@@ -177,10 +176,70 @@ const loadDepts = async () => {
   }
 }
 
+// 部门树缓存：列表是分页扁平数据，拿不到层级关系，只在删除前用它统计下级部门数量
+let deptTreeCache: DeptTreeVo[] | null = null
+
+const loadDeptTree = async (): Promise<DeptTreeVo[]> => {
+  if (!deptTreeCache) {
+    deptTreeCache = (await getDeptTreeApi(null)) || []
+  }
+  return deptTreeCache
+}
+
+// 统计该部门下所有层级（含子、孙）的部门数量
+const countDescendants = (nodes: DeptTreeVo[], id: string): number => {
+  const findNode = (list: DeptTreeVo[]): DeptTreeVo | null => {
+    for (const node of list) {
+      if (node.id === id) return node
+      const hit = findNode(node.children || [])
+      if (hit) return hit
+    }
+    return null
+  }
+  const countAll = (node: DeptTreeVo): number =>
+    (node.children || []).reduce((sum, child) => sum + 1 + countAll(child), 0)
+
+  const target = findNode(nodes)
+  return target ? countAll(target) : 0
+}
+
+// 删除前提示：说明会级联删除下级部门，以及部门内有用户时会被拒绝
+const handleDeleteClick = async (row: GetDeptsVo) => {
+  let descendantCount = 0
+  try {
+    descendantCount = countDescendants(await loadDeptTree(), row.id)
+  } catch (error) {
+    // 树加载失败不影响删除，只是不显示下级部门数量
+    console.error('加载部门树失败:', error)
+  }
+
+  const message = descendantCount > 0
+    ? `确定删除部门「${row.name}」吗？其下 ${descendantCount} 个下级部门将一并删除，不可恢复；若其中仍有用户，将拒绝删除。`
+    : `确定删除部门「${row.name}」吗？若该部门下仍有用户，将拒绝删除。`
+
+  try {
+    await ElMessageBox.confirm(message, '删除部门', {
+      confirmButtonText: '确认删除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+  } catch {
+    return // 用户取消
+  }
+
+  await handleDelete(row.id)
+}
+
 // 删除部门
 const handleDelete = async (id: string) => {
-  await deleteDeptApi(id)
-  await loadDepts()
+  try {
+    await deleteDeptApi(id)
+    deptTreeCache = null // 层级变了，下次删除重新拉树
+    ElMessage.success('删除成功')
+    await loadDepts()
+  } catch (error) {
+    // 失败提示（如“部门下还有用户”）已由请求拦截器统一弹出，这里只保证列表不刷新
+  }
 }
 
 // 分页变化

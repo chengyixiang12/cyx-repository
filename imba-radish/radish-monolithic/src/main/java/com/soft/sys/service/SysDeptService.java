@@ -33,6 +33,8 @@ public interface SysDeptService extends IService<SysDept> {
 
     void editDept(EditDeptDTO request);
 
+    void deleteDept(Long id);
+
     DeptVO getDept(Long id);
 
     List<ExportDeptExcelDTO> exportDept(ExportDeptDTO request);

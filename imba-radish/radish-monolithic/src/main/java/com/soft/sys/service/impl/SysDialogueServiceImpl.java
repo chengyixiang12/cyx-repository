@@ -1,9 +1,12 @@
 package com.soft.sys.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.sys.entity.SysDialogue;
+import com.soft.sys.entity.SysDialogueDetails;
+import com.soft.sys.mapper.SysDialogueDetailsMapper;
 import com.soft.sys.mapper.SysDialogueMapper;
 import com.soft.sys.model.request.GetDialoguesDTO;
 import com.soft.sys.model.request.RenameDTO;
@@ -15,6 +18,7 @@ import com.soft.sys.service.SysDialogueService;
 import com.soft.sys.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
 * @author cyq
@@ -27,10 +31,15 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
 
     private final SysDialogueMapper sysDialogueMapper;
 
+    private final SysDialogueDetailsMapper sysDialogueDetailsMapper;
+
     private final SecurityUtil securityUtil;
 
-    public SysDialogueServiceImpl(SysDialogueMapper sysDialogueMapper, SecurityUtil securityUtil) {
+    public SysDialogueServiceImpl(SysDialogueMapper sysDialogueMapper,
+                                  SysDialogueDetailsMapper sysDialogueDetailsMapper,
+                                  SecurityUtil securityUtil) {
         this.sysDialogueMapper = sysDialogueMapper;
+        this.sysDialogueDetailsMapper = sysDialogueDetailsMapper;
         this.securityUtil = securityUtil;
     }
 
@@ -57,8 +66,13 @@ public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDi
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteDialogue(Long id) {
         sysDialogueMapper.deleteById(id);
+
+        // 级联删除对话明细
+        sysDialogueDetailsMapper.delete(
+                Wrappers.lambdaQuery(SysDialogueDetails.class).eq(SysDialogueDetails::getParentId, id));
     }
 
     @Override

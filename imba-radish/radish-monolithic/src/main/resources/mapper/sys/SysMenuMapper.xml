@@ -88,6 +88,16 @@
             #{item}
         </foreach>
     </select>
+    <delete id="deleteRoleMenusByMenuIds" parameterType="java.util.List">
+        DELETE
+        FROM
+        sys_role_menu
+        WHERE
+        menu_id IN
+        <foreach collection="menuIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
     <update id="enableMenu" parameterType="java.lang.Long">
         UPDATE sys_menu
         SET status = 1

@@ -31,6 +31,8 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
     void enablePermission(@Param("id") Long id);
 
     void forbiddenPermission(@Param("id") Long id);
+
+    void deleteRolePermissionsByPermissionId(@Param("permissionId") Long permissionId);
 }
 
 

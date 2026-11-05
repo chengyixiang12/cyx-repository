@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
 import com.soft.sys.entity.SysRole;
+import com.soft.sys.entity.SysUserRole;
 import com.soft.sys.mapper.SysRoleMapper;
 import com.soft.sys.model.dto.FixRolesDTO;
 import com.soft.sys.model.request.EditRoleDTO;
@@ -18,6 +19,7 @@ import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.model.vo.SysRoleVO;
 import com.soft.sys.model.vo.SysRolesVO;
 import com.soft.sys.service.SysRoleService;
+import com.soft.sys.service.SysUserRoleService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +37,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     private final SysRoleMapper sysRoleMapper;
 
-    public SysRoleServiceImpl(SysRoleMapper sysRoleMapper) {
+    private final SysUserRoleService sysUserRoleService;
+
+    public SysRoleServiceImpl(SysRoleMapper sysRoleMapper, SysUserRoleService sysUserRoleService) {
         this.sysRoleMapper = sysRoleMapper;
+        this.sysUserRoleService = sysUserRoleService;
     }
 
     @Override
@@ -50,7 +55,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteRoleBatch(List<Long> ids) {
+        if (CollectionUtil.isEmpty(ids)) {
+            return;
+        }
+
+        // 物理删除后关联表不会自动清理，先解除角色与菜单、权限、用户的绑定关系
+        sysRoleMapper.deleteRoleMenusByRoleIds(ids);
+        sysRoleMapper.deleteRolePermissionsByRoleIds(ids);
+        sysUserRoleService.remove(Wrappers.lambdaQuery(SysUserRole.class).in(SysUserRole::getRoleId, ids));
+
         sysRoleMapper.deleteByIds(ids);
     }
 

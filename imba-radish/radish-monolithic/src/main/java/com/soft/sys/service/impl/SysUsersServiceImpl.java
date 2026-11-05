@@ -271,11 +271,15 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     @Override
     @CacheEvict(key = "#username")
+    @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id, String username) {
         try {
             sendWebsocket(id);
 
             sysUsersMapper.deleteById(id);
+
+            // 物理删除后关联表不会自动清理，需手动解除用户与角色的绑定
+            sysUserRoleService.remove(Wrappers.lambdaQuery(SysUserRole.class).eq(SysUserRole::getUserId, id));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

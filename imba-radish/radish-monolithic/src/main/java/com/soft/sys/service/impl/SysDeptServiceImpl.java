@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
 import com.soft.sys.entity.SysDept;
+import com.soft.sys.entity.SysUser;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.mapper.SysDeptMapper;
+import com.soft.sys.mapper.SysUsersMapper;
 import com.soft.sys.model.dto.ExportDeptExcelDTO;
 import com.soft.sys.model.request.EditDeptDTO;
 import com.soft.sys.model.request.ExportDeptDTO;
@@ -18,9 +20,11 @@ import com.soft.sys.model.vo.DeptVO;
 import com.soft.sys.model.vo.GetDeptsVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.service.SysDeptService;
+import com.soft.sys.utils.TreeCascadeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +42,8 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     implements SysDeptService{
 
     private final SysDeptMapper sysDeptMapper;
+
+    private final SysUsersMapper sysUsersMapper;
 
     @Override
     public List<DeptTreeVO> getDeptTree(Long id) {
@@ -82,6 +88,22 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept>
     @Override
     public DeptVO getDept(Long id) {
         return sysDeptMapper.getDept(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteDept(Long id) {
+        // 级联收集自身 + 所有下级部门
+        List<Long> ids = TreeCascadeUtil.collectSelfAndDescendantIds(List.of(id), sysDeptMapper::getChildDeptIds);
+
+        // 部门下（含下级部门）还有用户时禁止删除，避免级联把账号一起删掉
+        Long userCount = sysUsersMapper.selectCount(
+                Wrappers.lambdaQuery(SysUser.class).in(SysUser::getDeptId, ids));
+        if (userCount != null && userCount > 0) {
+            throw new GlobalException("该部门及下级部门下还有 " + userCount + " 个用户，请先调整用户所属部门");
+        }
+
+        sysDeptMapper.deleteByIds(ids);
     }
 
     @Override

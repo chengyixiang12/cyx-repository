@@ -99,7 +99,8 @@ public class SysRoleController {
         if (fixRoleFlag) {
             return R.fail("固定角色不可删除");
         }
-        sysRoleService.removeById(id);
+        // 走统一删除入口，级联清理角色与菜单、权限、用户的绑定关系
+        sysRoleService.deleteRoleBatch(List.of(id));
         return R.ok("删除成功", null);
     }
 

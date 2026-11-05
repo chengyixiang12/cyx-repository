@@ -73,8 +73,8 @@
               <el-button type="primary" @click="handleAssignMenu(scope.row.id)" class="action-button">
                 菜单
               </el-button>
-              <el-popconfirm title="确认删除该角色吗？" confirm-button-text="确认" cancel-button-text="取消"
-                @confirm="handleDelete(scope.row.id)">
+              <el-popconfirm title="确认删除该角色吗？菜单、权限及用户绑定会一并解除" width="280"
+                confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)">
                 <template #reference>
                   <el-button type="danger" class="action-button">
                     删除

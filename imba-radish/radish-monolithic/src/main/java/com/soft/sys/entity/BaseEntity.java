@@ -46,7 +46,7 @@ public abstract class BaseEntity {
     private LocalDateTime updateTime;
 
     /**
-     * 逻辑删除
+     * 逻辑删除标记（已停用逻辑删除，字段保留仅为兼容历史数据，插入时恒为 0，不参与任何查询条件）
      */
     @TableField(value = "del_flag", fill = FieldFill.INSERT)
     private Integer delFlag;

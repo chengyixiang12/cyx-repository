@@ -63,7 +63,8 @@
                 编辑
               </el-button>
               <el-popconfirm 
-                title="确认删除该类型吗？" 
+                title="确认删除该类型吗？其下所有字典数据会一并删除" 
+                width="280"
                 confirm-button-text="确认" 
                 cancel-button-text="取消"
                 @confirm="deleteType(scope.row.id)"

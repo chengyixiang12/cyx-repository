@@ -79,8 +79,8 @@
                 :disabled="scope.row.status == 1" class="action-button">
                 编辑
               </el-button>
-              <el-popconfirm title="确认删除？" confirm-button-text="确认" cancel-button-text="取消"
-                @confirm="handleDelete(scope.row.id)">
+              <el-popconfirm title="确认删除该任务吗？其执行记录会一并删除" width="280" confirm-button-text="确认"
+                cancel-button-text="取消" @confirm="handleDelete(scope.row.id)">
                 <template #reference>
                   <el-button type="danger" class="action-button">
                     删除

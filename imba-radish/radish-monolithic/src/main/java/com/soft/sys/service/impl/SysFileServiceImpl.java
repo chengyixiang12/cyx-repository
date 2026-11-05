@@ -2,8 +2,10 @@ package com.soft.sys.service.impl;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.sys.async.FileDeleteAsync;
 import com.soft.sys.async.FileUploadAsync;
 import com.soft.common.constants.BaseConstant;
 import com.soft.common.constants.DictConstant;
@@ -13,7 +15,6 @@ import com.soft.common.exception.GlobalException;
 import com.soft.sys.mapper.SysFileMapper;
 import com.soft.sys.model.dto.FileDetailDTO;
 import com.soft.sys.model.dto.FileHashDTO;
-import com.soft.sys.model.dto.SelectDeletedFileDTO;
 import com.soft.sys.model.request.FilesDTO;
 import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
@@ -39,7 +40,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -68,6 +68,8 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final FileUploadAsync fileUploadAsync;
+
+    private final FileDeleteAsync fileDeleteAsync;
 
     @Override
     public UploadFileVO uploadFile(MultipartFile multipartFile, String fileMd5) {
@@ -116,7 +118,23 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     @Override
     public void deleteFile(Long id) {
+        SysFile sysFile = sysFileMapper.selectById(id);
+        if (sysFile == null) {
+            // 记录不存在，保持幂等
+            return;
+        }
+
         sysFileMapper.deleteById(id);
+
+        // 秒传场景下同一个 objectKey 会被多条记录引用，只有最后一条引用被删除时才清理对象
+        Long refCount = sysFileMapper.selectCount(
+                Wrappers.lambdaQuery(SysFile.class).eq(SysFile::getObjectKey, sysFile.getObjectKey()));
+        if (refCount != null && refCount == 0) {
+            String bucket = StringUtils.isBlank(sysFile.getBucket())
+                    ? minioProperty.getDefaultBucket()
+                    : sysFile.getBucket();
+            fileDeleteAsync.deleteObject(bucket, sysFile.getObjectKey());
+        }
     }
 
     @Override
@@ -136,11 +154,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
     }
 
     @Override
-    public List<SelectDeletedFileDTO> selectDeletedFiles() {
-        return sysFileMapper.selectDeletedFiles();
-    }
-
-    @Override
     public PageVO<FilesVO> getMyFiles(FilesDTO request) {
         IPage<FilesVO> page = new Page<>(request.getPageNum(), request.getPageSize());
         Long userId = securityUtil.getUserInfo().getId();
@@ -154,11 +167,6 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         pageVo.setTotal(page.getTotal());
         pageVo.setRecords(page.getRecords());
         return pageVo;
-    }
-
-    @Override
-    public void deleteRealByIds(List<Long> list) {
-        sysFileMapper.deleteRealByIds(list);
     }
 
     /**

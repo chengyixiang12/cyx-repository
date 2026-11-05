@@ -2,14 +2,17 @@ package com.soft.sys.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
 import com.soft.common.constants.DictConstant;
 import com.soft.sys.entity.SysScheduleJob;
+import com.soft.sys.entity.SysScheduleRecord;
 import com.soft.sys.enums.QuartzIntervalEnum;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.mapper.SysScheduleJobMapper;
+import com.soft.sys.mapper.SysScheduleRecordMapper;
 import com.soft.sys.model.dto.DictDataDTO;
 import com.soft.sys.model.request.CreateJobDTO;
 import com.soft.sys.model.request.EditJobDTO;
@@ -48,12 +51,16 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
 
     private final SysDictDataService sysDictDataService;
 
+    private final SysScheduleRecordMapper sysScheduleRecordMapper;
+
     public SysScheduleJobServiceImpl(SysScheduleJobMapper sysScheduleJobMapper,
                                      Scheduler scheduler,
-                                     SysDictDataService sysDictDataService) {
+                                     SysDictDataService sysDictDataService,
+                                     SysScheduleRecordMapper sysScheduleRecordMapper) {
         this.sysScheduleJobMapper = sysScheduleJobMapper;
         this.scheduler = scheduler;
         this.sysDictDataService = sysDictDataService;
+        this.sysScheduleRecordMapper = sysScheduleRecordMapper;
     }
 
     @Override
@@ -154,6 +161,10 @@ public class SysScheduleJobServiceImpl extends ServiceImpl<SysScheduleJobMapper,
         }
 
         sysScheduleJobMapper.deleteById(id);
+
+        // 级联删除该任务的执行记录
+        sysScheduleRecordMapper.delete(
+                Wrappers.lambdaQuery(SysScheduleRecord.class).eq(SysScheduleRecord::getJobId, id));
     }
 
     /**

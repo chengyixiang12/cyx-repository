@@ -72,7 +72,8 @@
                 编辑
               </el-button>
               <el-popconfirm 
-                title="确认删除该权限吗？" 
+                title="确认删除该权限吗？角色与该权限的绑定会一并解除" 
+                width="280"
                 confirm-button-text="确认" 
                 cancel-button-text="取消"
                 @confirm="handleDelete(scope.row.id)"

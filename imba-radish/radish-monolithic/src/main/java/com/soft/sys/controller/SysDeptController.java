@@ -109,7 +109,7 @@ public class SysDeptController {
     @Operation(summary = "删除部门")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteDept(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
-        sysDeptService.removeById(id);
+        sysDeptService.deleteDept(id);
         return R.ok("删除成功");
     }
 

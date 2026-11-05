@@ -153,8 +153,8 @@
                         </el-button>
                       </template>
                     </el-popconfirm>
-                    <el-popconfirm title="确认删除该用户吗？" confirm-button-text="确认" cancel-button-text="取消"
-                      @confirm="handleDelete(scope.row.id)">
+                    <el-popconfirm title="确认删除该用户吗？其角色绑定会一并解除" width="280" confirm-button-text="确认"
+                      cancel-button-text="取消" @confirm="handleDelete(scope.row.id)">
                       <template #reference>
                         <el-button type="danger" class="action-button">
                           删除

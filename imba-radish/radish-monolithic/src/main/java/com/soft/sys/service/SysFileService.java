@@ -3,7 +3,6 @@ package com.soft.sys.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.soft.sys.entity.SysFile;
 import com.soft.sys.model.dto.FileDetailDTO;
-import com.soft.sys.model.dto.SelectDeletedFileDTO;
 import com.soft.sys.model.request.FilesDTO;
 import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
@@ -11,7 +10,6 @@ import com.soft.sys.model.vo.UploadFileVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.List;
 
 /**
 * @author cyq
@@ -28,11 +26,7 @@ public interface SysFileService extends IService<SysFile> {
 
     PageVO<FilesVO> getFiles(FilesDTO request);
 
-    List<SelectDeletedFileDTO> selectDeletedFiles();
-
     PageVO<FilesVO> getMyFiles(FilesDTO request);
-
-    void deleteRealByIds(List<Long> list);
 
     String getFileUrl(Long id, String isInline);
 

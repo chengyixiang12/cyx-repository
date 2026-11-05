@@ -44,6 +44,10 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 
     void deleteRoleMenus(@Param("roleId") Long roleId);
 
+    void deleteRoleMenusByRoleIds(@Param("roleIds") List<Long> roleIds);
+
+    void deleteRolePermissionsByRoleIds(@Param("roleIds") List<Long> roleIds);
+
     void deleteRolePermissions(@Param("request") SetPermissionsDTO request);
 
     void setPermissions(@Param("request") SetPermissionsDTO request);

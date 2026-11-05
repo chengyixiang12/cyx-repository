@@ -16,9 +16,11 @@ import com.soft.sys.model.request.SaveMenuDTO;
 import com.soft.sys.model.vo.*;
 import com.soft.sys.service.SysMenuService;
 import com.soft.sys.utils.SecurityUtil;
+import com.soft.sys.utils.TreeCascadeUtil;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,15 +95,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteMenu(Long id) {
-        List<Long> ids = new ArrayList<>();
-        ids.add(id);
-        List<Long> tmpList = new ArrayList<>();
-        do {
-            tmpList.addAll(ids);
-            ids = sysMenuMapper.getByIds(ids);
-        } while (!ids.isEmpty());
-        sysMenuMapper.deleteByIds(tmpList);
+        // 级联收集自身 + 所有子菜单
+        List<Long> ids = TreeCascadeUtil.collectSelfAndDescendantIds(List.of(id), sysMenuMapper::getByIds);
+
+        // 物理删除后关联表不会自动清理，先解除角色与这些菜单的绑定关系
+        sysMenuMapper.deleteRoleMenusByMenuIds(ids);
+
+        sysMenuMapper.deleteByIds(ids);
     }
 
     @Override

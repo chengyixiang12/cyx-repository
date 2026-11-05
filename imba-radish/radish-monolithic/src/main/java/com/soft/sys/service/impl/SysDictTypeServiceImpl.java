@@ -1,9 +1,12 @@
 package com.soft.sys.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.sys.entity.SysDictData;
 import com.soft.sys.entity.SysDictType;
+import com.soft.sys.mapper.SysDictDataMapper;
 import com.soft.sys.mapper.SysDictTypeMapper;
 import com.soft.sys.model.request.EditDictTypeDTO;
 import com.soft.sys.model.request.GetDictTypesDTO;
@@ -17,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +36,8 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     implements SysDictTypeService{
 
     private final SysDictTypeMapper sysDictTypeMapper;
+
+    private final SysDictDataMapper sysDictDataMapper;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -65,15 +71,25 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteDictType(Long id) {
-        SysDictType sysDictType = sysDictTypeMapper.selectById(id);
         sysDictTypeMapper.deleteById(id);
-//        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictType.getDictType());
+
+        // 级联删除该类型下的全部字典数据
+        sysDictDataMapper.delete(Wrappers.lambdaQuery(SysDictData.class).eq(SysDictData::getDictTypeId, id));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteDictTypeBatch(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
         sysDictTypeMapper.deleteByIds(ids);
+
+        // 级联删除这些类型下的全部字典数据
+        sysDictDataMapper.delete(Wrappers.lambdaQuery(SysDictData.class).in(SysDictData::getDictTypeId, ids));
     }
 
     @Override

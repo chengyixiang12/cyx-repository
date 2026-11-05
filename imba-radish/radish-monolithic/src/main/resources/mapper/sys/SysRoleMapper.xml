@@ -138,6 +138,26 @@
         WHERE
         role_id = #{roleId}
     </delete>
+    <delete id="deleteRoleMenusByRoleIds" parameterType="java.util.List">
+        DELETE
+        FROM
+        sys_role_menu
+        WHERE
+        role_id IN
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteRolePermissionsByRoleIds" parameterType="java.util.List">
+        DELETE
+        FROM
+        sys_role_permission
+        WHERE
+        role_id IN
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
     <delete id="deleteRolePermissions" parameterType="SetPermissionsDTO">
         DELETE
         FROM
