@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysMetricSampleMapper">
+
+    <select id="selectRawRange" resultType="MetricRowDTO">
+        select t1.collect_time,
+               t1.cpu_usage,
+               t1.process_cpu_usage,
+               t1.heap_used,
+               t1.heap_max,
+               t1.nonheap_used,
+               t1.threads_live,
+               t1.threads_blocked,
+               t1.gc_count,
+               t1.gc_pause_ms,
+               t1.qps,
+               t1.p95_ms,
+               t1.error_rate,
+               t1.pool_active,
+               t1.pool_pending,
+               t1.pool_max,
+               t1.disk_free
+        from sys_metric_sample t1
+        where t1.collect_time &gt;= #{start}
+          and t1.collect_time &lt; #{end}
+        order by t1.collect_time
+    </select>
+
+    <insert id="insert5mRollup">
+        insert into sys_metric_rollup (granularity, bucket_time,
+                                       cpu_usage_avg, process_cpu_usage_avg,
+                                       heap_used_avg, heap_used_max, heap_max_avg, nonheap_used_avg,
+                                       threads_live_avg, threads_live_max,
+                                       gc_count_sum, gc_pause_ms_sum,
+                                       qps_avg, qps_max, p95_ms_max,
+                                       error_rate_avg, error_rate_max,
+                                       pool_active_max, pool_pending_max, pool_max_avg,
+                                       disk_free_min)
+        select '5m',
+               from_unixtime(floor(unix_timestamp(t1.collect_time) / 300) * 300),
+               round(avg(t1.cpu_usage), 2),
+               round(avg(t1.process_cpu_usage), 2),
+               round(avg(t1.heap_used)),
+               max(t1.heap_used),
+               round(avg(t1.heap_max)),
+               round(avg(t1.nonheap_used)),
+               round(avg(t1.threads_live)),
+               max(t1.threads_live),
+               ifnull(sum(t1.gc_count), 0),
+               ifnull(sum(t1.gc_pause_ms), 0),
+               round(avg(t1.qps), 2),
+               max(t1.qps),
+               max(t1.p95_ms),
+               round(avg(t1.error_rate), 2),
+               max(t1.error_rate),
+               max(t1.pool_active),
+               max(t1.pool_pending),
+               round(avg(t1.pool_max)),
+               min(t1.disk_free)
+        from sys_metric_sample t1
+        where t1.collect_time &gt;= #{start}
+          and t1.collect_time &lt; #{end}
+        <!-- group by 必须与 select 中的表达式完全一致，否则 only_full_group_by 会报错 -->
+        group by from_unixtime(floor(unix_timestamp(t1.collect_time) / 300) * 300)
+    </insert>
+
+    <delete id="deleteBefore">
+        delete from sys_metric_sample
+        where collect_time &lt; #{time}
+        limit #{batch}
+    </delete>
+</mapper>

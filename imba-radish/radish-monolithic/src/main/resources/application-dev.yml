@@ -161,6 +161,15 @@ management:
     health:
       # 显示详细信息
       show-details: always
+  metrics:
+    distribution:
+      # 开启直方图桶，采集器才能算出“最近 30 秒”的 P95，而不是启动至今的分位
+      percentiles-histogram:
+        "[http.server.requests]": true
+      minimum-expected-value:
+        "[http.server.requests]": 5ms
+      maximum-expected-value:
+        "[http.server.requests]": 10s
 # websocket允许连接源
 websocket:
   allowed-origins:

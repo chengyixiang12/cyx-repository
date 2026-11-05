@@ -1,30 +1,28 @@
 package com.soft.sys.controller;
 
-import com.soft.sys.model.request.ListActuatorPageDTO;
-import com.soft.sys.model.vo.GetLatestActuatorMetricVO;
-import com.soft.sys.model.vo.ListActuatorVO;
-import com.soft.sys.model.vo.ListUsageTrendVO;
-import com.soft.sys.model.vo.PageVO;
 import com.soft.common.resultapi.R;
-import com.soft.sys.service.SysActuatorService;
+import com.soft.sys.model.vo.ComponentOverviewVO;
+import com.soft.sys.model.vo.MetricOverviewVO;
+import com.soft.sys.model.vo.TrendSeriesVO;
+import com.soft.sys.service.MonitorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * @author cyx
- * @description:
- * @date 2026-05-01
+ * @description 系统监控
+ * @date 2026-11-05
  */
 @RestController
 @RequestMapping(value = "/actuator")
@@ -34,68 +32,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SysActuatorController {
 
-    private final SysActuatorService sysActuatorService;
+    private final MonitorService monitorService;
 
-    @GetMapping(value = "/listActuators")
-    @Operation(summary = "获取监控记录")
-    public R<List<ListActuatorVO>> listActuator(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
-                                                @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return R.ok(sysActuatorService.listActuator(startTime, endTime));
+    @GetMapping(value = "/overview")
+    @Operation(summary = "实时总览（读内存快照，不查库）")
+    public R<MetricOverviewVO> overview() {
+        return R.ok(monitorService.getOverview());
     }
 
-    @PostMapping(value = "/listActuatorPage")
-    @Operation(summary = "获取监控记录")
-    public R<PageVO<ListActuatorVO>> listActuatorPage(@RequestBody ListActuatorPageDTO request) {
-        return R.ok(sysActuatorService.listActuatorPage(request));
+    @GetMapping(value = "/trend")
+    @Operation(summary = "指标趋势，按时间范围自动选择原始或聚合数据")
+    public R<List<TrendSeriesVO>> trend(
+            @Parameter(description = "时间范围：15m/1h/6h/1d/7d/30d", in = ParameterIn.QUERY)
+            @RequestParam(value = "range", required = false, defaultValue = "15m") String range,
+            @Parameter(description = "指标标识，逗号分隔", in = ParameterIn.QUERY)
+            @RequestParam(value = "metrics", required = false) String metrics) {
+        return R.ok(monitorService.getTrend(range, metrics));
     }
 
-    @GetMapping(value = "/getLatestActuatorMetric")
-    @Operation(summary = "获取最新的监控指标")
-    public R<GetLatestActuatorMetricVO> getLatestActuatorMetric() {
-        return R.ok(sysActuatorService.getLatestActuatorMetric());
-    }
-
-    @GetMapping(value = "/listCpuTrend")
-    @Operation(summary = "获取cpu趋势")
-    @Parameters(value = {
-            @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
-            @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
-    })
-    public R<List<ListUsageTrendVO>> listCpuTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
-                                                  @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return R.ok(sysActuatorService.listCpuTrend(startTime, endTime));
-    }
-
-    @GetMapping(value = "/listMemoryTrend")
-    @Operation(summary = "获取jvm内存趋势")
-    @Parameters(value = {
-            @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
-            @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
-    })
-    public R<List<ListUsageTrendVO>> listMemoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
-                                                      @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return R.ok(sysActuatorService.listMemoryTrend(startTime, endTime));
-    }
-
-    @GetMapping(value = "/listHeapMemoryTrend")
-    @Operation(summary = "获取堆内存趋势")
-    @Parameters(value = {
-            @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
-            @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
-    })
-    public R<List<ListUsageTrendVO>> listHeapMemoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
-                                                         @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return R.ok(sysActuatorService.listHeapMemoryTrend(startTime, endTime));
-    }
-
-    @GetMapping(value = "/listMetaspaceMemoryTrend")
-    @Operation(summary = "获取元空间内存趋势")
-    @Parameters(value = {
-            @Parameter(name = "startTime", description = "开始日期", required = true, in = ParameterIn.QUERY),
-            @Parameter(name = "endTime", description = "结束日期", required = true, in = ParameterIn.QUERY)
-    })
-    public R<List<ListUsageTrendVO>> listMetaspaceMemoryTrend(@RequestParam(value = "startTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
-                                                         @RequestParam(value = "endTime") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return R.ok(sysActuatorService.listMetaspaceMemoryTrend(startTime, endTime));
+    @GetMapping(value = "/components")
+    @Operation(summary = "组件当前状态与最近的状态变更")
+    public R<ComponentOverviewVO> components() {
+        return R.ok(monitorService.getComponents());
     }
 }

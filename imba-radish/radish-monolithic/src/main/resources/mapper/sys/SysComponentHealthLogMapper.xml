@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysComponentHealthLogMapper">
+
+    <select id="selectRecent" resultType="SysComponentHealthLog">
+        select t1.component,
+               t1.component_name,
+               t1.status,
+               t1.detail,
+               t1.change_time
+        from sys_component_health_log t1
+        order by t1.change_time desc
+        limit #{limit}
+    </select>
+</mapper>

@@ -1,61 +1,60 @@
-export interface Metrics {
-    name: string;
-    description: string;
-    baseUnit: string;
-    measurements: {
-        statistic: string;
-        value: number;
-    }[];
-    availableTags: {}[];
+export interface MetricOverviewVO {
+  cpuCount?: number
+  heapMax?: number
+  diskTotal?: number
+  jvmVersion?: string
+  osName?: string
+  cpuUsage?: number
+  processCpuUsage?: number
+  heapUsed?: number
+  heapUsage?: number
+  nonheapUsed?: number
+  threadsLive?: number
+  threadsBlocked?: number
+  gcCount?: number
+  gcPauseMs?: number
+  qps?: number
+  p95Ms?: number
+  errorRate?: number
+  poolActive?: number
+  poolPending?: number
+  poolMax?: number
+  diskFree?: number
+  uptime?: number
+  sampleTime?: string
 }
 
-export interface Health {
-  status: string;
-  components?: Record<string, HealthComponent>;
+export interface TrendPointVO {
+  t: number
+  v: number
 }
 
-interface HealthComponent {
-  status: string;
-  details?: Record<string, any>;
+export interface TrendSeriesVO {
+  key: string
+  name: string
+  unit: string
+  points: TrendPointVO[]
 }
 
-export interface ListActuatorVO {
-    createTime?: string;
-    cpuUsage?: number;
-    cpuCount?: number;
-    memoryUsed?: number;
-    memoryMax?: number;
-    uptime?: number;
-    diskFree?: number;
-    diskTotal?: number;
-    healthDb?: string;
-    healthDiskSpace?: string;
-    healthMail?: string;
-    healthPing?: string;
-    healthRabbit?: string;
-    healthRedis?: string;
-    healthSsl?: string;
-    health?: string;
+export type ComponentState = 'UP' | 'DOWN' | 'DISABLED' | 'UNKNOWN'
+
+export interface ComponentStatusVO {
+  component: string
+  componentName: string
+  status: ComponentState | string
+  detail?: string
+  sinceTime?: string
+  lastCheckTime?: string
 }
 
-export interface ListActuatorPageRequest {
-    pageNum: number;
-    pageSize: number;
-    startTime?: string;
-    endTime?: string;
+export interface HealthChangeVO {
+  componentName: string
+  status: string
+  detail?: string
+  changeTime: string
 }
 
-export interface GetLatestActuatorMetricVO {
-    cpuCount: number;
-    cpuUsage: number;
-    memoryUsed: number;
-    memoryMax: number;
-    uptime: number;
-    diskFree: number;
-    diskTotal: number;
-}
-
-export interface ListUsageTrendVO {
-    createTime: string;
-    usageRate: number;
+export interface ComponentOverviewVO {
+  components: ComponentStatusVO[]
+  changes: HealthChangeVO[]
 }

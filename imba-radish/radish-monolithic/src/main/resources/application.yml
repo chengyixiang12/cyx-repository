@@ -16,6 +16,12 @@ spring:
   threads:
     virtual:
       enabled: true
+  task:
+    scheduling:
+      pool:
+        # 默认只有 1 个调度线程，聚合/清理一慢就会把 30 秒采样顶后，必须放大
+        size: 4
+      thread-name-prefix: radish-sched-
   ai:
     deepseek:
       api-key: ${DEEPSEEK_API_KEY}

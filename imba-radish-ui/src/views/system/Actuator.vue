@@ -1,906 +1,727 @@
 <template>
-  <div class="actuator-container container">
-    <!-- 顶部刷新信息 -->
-    <div class="refresh-info">
-      <div class="time-range-selector">
-        <span class="time-label">时间范围：</span>
-        <el-select v-model="quickTimeRange" class="quick-range-select" @change="handleQuickTimeRangeChange">
-          <el-option label="15分钟" :value="15" />
-          <el-option label="30分钟" :value="30" />
-          <el-option label="1小时" :value="60" />
-          <el-option label="6小时" :value="360" />
-          <el-option label="1天" :value="1440" />
-          <el-option label="7天" :value="10080" />
-        </el-select>
-        <span class="time-separator">-</span>
-        <el-date-picker v-model="startTime" type="datetime" placeholder="开始时间" class="time-picker"
-          :max="endTime ? dayjs(endTime).subtract(1, 'minute').toDate() : undefined" />
-        <span class="time-separator">至</span>
-        <el-date-picker v-model="endTime" type="datetime" placeholder="结束时间" class="time-picker"
-          :min="startTime ? dayjs(startTime).add(1, 'minute').toDate() : undefined" :max="dayjs().toDate()" />
-        <el-button type="primary" size="small" @click="queryData">
-          查询
+  <div class="monitor container">
+    <!-- 头部 -->
+    <div class="list-header">
+      <div class="header-title">
+        <span>系统监控</span>
+        <span class="status-pill" :class="overallLevel">{{ overallText }}</span>
+      </div>
+      <div class="right-header">
+        <el-radio-group v-model="range" size="small" @change="loadTrend">
+          <el-radio-button v-for="item in rangeOptions" :key="item.value" :value="item.value">
+            {{ item.label }}
+          </el-radio-button>
+        </el-radio-group>
+        <el-button type="primary" :loading="loading" @click="refreshAll">
+          <el-icon>
+            <Refresh />
+          </el-icon>
         </el-button>
       </div>
-      <el-button type="primary" @click="refreshData" :loading="loading">
-        <el-icon>
-          <Refresh />
-        </el-icon>
-      </el-button>
-      <span class="last-refresh">最后刷新：{{ lastRefreshTime }}</span>
     </div>
 
-    <!-- 指标监控 -->
-    <div class="metrics-grid">
-      <!-- CPU监控 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>CPU监控</span>
-            <el-tag v-if="loading" size="small">加载中...</el-tag>
+    <div class="monitor-body">
+      <!-- 应用指标 -->
+      <div class="section-title">
+        应用指标
+        <span class="section-hint">最近 30 秒窗口 · 每 30 秒自动刷新</span>
+      </div>
+      <div class="metric-grid">
+        <div v-for="card in appCards" :key="card.label" class="metric-card">
+          <div class="metric-label">{{ card.label }}</div>
+          <div class="metric-value" :class="card.level">
+            {{ card.value }}<span class="metric-unit">{{ card.unit }}</span>
           </div>
-        </template>
-        <div class="metric-content">
-          <el-progress type="circle" :percentage="Math.round(latestActuatorMetric.cpuUsage * 100)"
-            :color="getProgressColor(latestActuatorMetric.cpuUsage * 100)" :width="100" />
-          <div class="metric-info">
-            <div class="info-item">
-              <span class="label">CPU核数：</span>
-              <span class="value">{{ latestActuatorMetric.cpuCount }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">CPU使用率：</span>
-              <span class="value">{{ (latestActuatorMetric.cpuUsage * 100).toFixed(2) }}%</span>
-            </div>
+          <div class="metric-sub">{{ card.sub }}</div>
+        </div>
+      </div>
+
+      <!-- 资源 -->
+      <div class="section-title">资源</div>
+      <div class="resource-grid">
+        <div class="resource-card">
+          <div class="resource-head">
+            <span>CPU 使用率</span>
+            <span class="resource-meta">{{ overview.cpuCount }} 核</span>
+          </div>
+          <el-progress :percentage="clamp(overview.cpuUsage)" :color="progressColor(overview.cpuUsage)"
+            :stroke-width="8" :show-text="false" />
+          <div class="resource-foot">
+            宿主机 {{ fixed(overview.cpuUsage) }}% · 应用 {{ fixed(overview.processCpuUsage) }}%
           </div>
         </div>
-      </el-card>
 
-      <!-- 内存监控 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>内存监控</span>
-            <el-tag v-if="loading" size="small">加载中...</el-tag>
+        <div class="resource-card">
+          <div class="resource-head">
+            <span>堆内存</span>
+            <span class="resource-meta">{{ formatBytes(overview.heapMax) }}</span>
           </div>
-        </template>
-        <div class="metric-content">
-          <el-progress type="circle" :percentage="Math.round(memoryUsage)" :color="getProgressColor(memoryUsage)"
-            :width="100" />
-          <div class="metric-info">
-            <div class="info-item">
-              <span class="label">已用内存：</span>
-              <span class="value">{{ formatMemory(latestActuatorMetric.memoryUsed) }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">总内存：</span>
-              <span class="value">{{ formatMemory(latestActuatorMetric.memoryMax) }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">内存使用率：</span>
-              <span class="value">{{ memoryUsage.toFixed(2) }}%</span>
-            </div>
+          <el-progress :percentage="clamp(overview.heapUsage)" :color="progressColor(overview.heapUsage)"
+            :stroke-width="8" :show-text="false" />
+          <div class="resource-foot">
+            已用 {{ formatBytes(overview.heapUsed) }} · {{ fixed(overview.heapUsage) }}%
           </div>
         </div>
-      </el-card>
 
-      <!-- 磁盘监控 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>磁盘监控</span>
-            <el-tag v-if="loading" size="small">加载中...</el-tag>
+        <div class="resource-card">
+          <div class="resource-head">
+            <span>非堆内存</span>
+            <span class="resource-meta">元空间 + 类空间 + 代码缓存</span>
           </div>
-        </template>
-        <div class="metric-content">
-          <el-progress type="circle" :percentage="Math.round(diskUsage)" :color="getProgressColor(diskUsage)"
-            :width="100" />
-          <div class="metric-info">
-            <div class="info-item">
-              <span class="label">可用磁盘：</span>
-              <span class="value">{{ formatDisk(latestActuatorMetric.diskFree) }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">总磁盘：</span>
-              <span class="value">{{ formatDisk(latestActuatorMetric.diskTotal) }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">磁盘使用率：</span>
-              <span class="value">{{ diskUsage.toFixed(2) }}%</span>
-            </div>
+          <div class="resource-big">{{ formatBytes(overview.nonheapUsed) }}</div>
+          <div class="resource-foot">{{ overview.jvmVersion || '—' }}</div>
+        </div>
+
+        <div class="resource-card">
+          <div class="resource-head">
+            <span>线程</span>
+            <span class="resource-meta">阻塞 {{ overview.threadsBlocked ?? 0 }}</span>
+          </div>
+          <div class="resource-big">{{ overview.threadsLive ?? 0 }}</div>
+          <div class="resource-foot">
+            {{ overview.threadsBlocked ? '存在阻塞线程，注意排查' : '无阻塞线程' }}
           </div>
         </div>
-      </el-card>
 
-      <!-- 系统启动时间 -->
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        <template #header>
-          <div class="card-header">
-            <span>系统运行时长</span>
-            <el-tag v-if="loading" size="small">加载中...</el-tag>
+        <div class="resource-card">
+          <div class="resource-head">
+            <span>磁盘</span>
+            <span class="resource-meta">{{ formatBytes(overview.diskTotal) }}</span>
           </div>
-        </template>
-        <div class="uptime-content">
-          <div class="uptime-value">{{ uptimeFormatted }}</div>
-        </div>
-      </el-card>
-    </div>
-
-    <!-- 趋势图监控 -->
-    <el-card shadow="hover" :body-style="{ padding: '20px' }" class="trend-card">
-      <el-tabs v-model="activeTrendTab" type="border-card" @tab-change="handleTrendTabChange">
-        <el-tab-pane label="CPU使用率趋势" name="cpu">
-          <template #default>
-            <div ref="cpuChartRef" class="chart-container"></div>
-          </template>
-        </el-tab-pane>
-        <el-tab-pane label="内存使用率趋势" name="memory">
-          <template #default>
-            <div ref="memoryChartRef" class="chart-container"></div>
-          </template>
-        </el-tab-pane>
-      </el-tabs>
-    </el-card>
-
-    <!-- 组件状态 -->
-    <div class="status-card">
-      <el-card shadow="hover" :body-style="{ padding: '20px' }">
-        
-        <div class="status-info">
-          <div class="components-status">
-            <h3>组件状态</h3>
-            <div class="components-table-wrapper">
-              <el-table :data="healthHistory" border size="small" :loading="tableLoading" highlight-current-row>
-                <el-table-column prop="createTime" label="时间" min-width="180" align="center">
-                  <template #default="scope">
-                    {{ formatTableTime(scope.row.createTime) }}
-                  </template>
-                </el-table-column>
-                <el-table-column prop="health" label="服务器" min-width="100" align="center">
-                  <template #default="scope">
-                    <el-tag :type="scope.row.health === 'UP' ? 'success' : 'danger'" size="small">
-                      {{ scope.row.health === 'UP' ? '正常' : '异常' }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="healthDb" label="数据库" min-width="100" align="center">
-                  <template #default="scope">
-                    <el-tag :type="scope.row.healthDb === 'UP' ? 'success' : 'danger'" size="small">
-                      {{ scope.row.healthDb === 'UP' ? '正常' : '异常' }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="healthDiskSpace" label="磁盘空间" min-width="100" align="center">
-                  <template #default="scope">
-                    <el-tag :type="scope.row.healthDiskSpace === 'UP' ? 'success' : 'danger'" size="small">
-                      {{ scope.row.healthDiskSpace === 'UP' ? '正常' : '异常' }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="healthPing" label="系统响应" min-width="100" align="center">
-                  <template #default="scope">
-                    <el-tag :type="scope.row.healthPing === 'UP' ? 'success' : 'danger'" size="small">
-                      {{ scope.row.healthPing === 'UP' ? '正常' : '异常' }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="healthRabbit" label="RabbitMQ" min-width="100" align="center">
-                  <template #default="scope">
-                    <el-tag :type="scope.row.healthRabbit === 'UP' ? 'success' : 'danger'" size="small">
-                      {{ scope.row.healthRabbit === 'UP' ? '正常' : '异常' }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="healthRedis" label="Redis" min-width="100" align="center">
-                  <template #default="scope">
-                    <el-tag :type="scope.row.healthRedis === 'UP' ? 'success' : 'danger'" size="small">
-                      {{ scope.row.healthRedis === 'UP' ? '正常' : '异常' }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="healthSsl" label="SSL证书" min-width="100" align="center">
-                  <template #default="scope">
-                    <el-tag :type="scope.row.healthSsl === 'UP' ? 'success' : 'danger'" size="small">
-                      {{ scope.row.healthSsl === 'UP' ? '正常' : '异常' }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-            <div class="pagination-wrapper">
-              <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
-                :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-                @current-change="handlePageChange" @size-change="handleSizeChange" />
-            </div>
+          <el-progress :percentage="clamp(diskUsage)" :color="progressColor(diskUsage)" :stroke-width="8"
+            :show-text="false" />
+          <div class="resource-foot">
+            可用 {{ formatBytes(overview.diskFree) }} · {{ fixed(diskUsage) }}%
           </div>
         </div>
-      </el-card>
+
+        <div class="resource-card">
+          <div class="resource-head">
+            <span>运行时长</span>
+            <span class="resource-meta">{{ overview.osName || '—' }}</span>
+          </div>
+          <div class="resource-big">{{ formatUptime(overview.uptime) }}</div>
+          <div class="resource-foot">采集于 {{ overview.sampleTime || '—' }}</div>
+        </div>
+      </div>
+
+      <!-- 趋势 -->
+      <div class="chart-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <span>资源趋势</span>
+            <span class="panel-hint">CPU 与堆使用率（%）</span>
+          </div>
+          <div ref="resourceChartRef" class="chart"></div>
+          <div v-if="!hasResourceData" class="chart-empty">暂无数据</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span>请求趋势</span>
+            <span class="panel-hint">QPS（左轴）与 P95 延迟（右轴）</span>
+          </div>
+          <div ref="requestChartRef" class="chart"></div>
+          <div v-if="!hasRequestData" class="chart-empty">暂无数据</div>
+        </div>
+      </div>
+
+      <!-- 组件 -->
+      <div class="component-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <span>组件状态</span>
+            <span class="panel-hint">每 60 秒探测</span>
+          </div>
+          <div class="component-list">
+            <div v-for="item in components.components" :key="item.component" class="component-item">
+              <span class="lamp" :class="lampClass(item.status)"></span>
+              <span class="component-name">{{ item.componentName }}</span>
+              <span class="component-status" :class="lampClass(item.status)">
+                {{ statusText(item.status) }}
+              </span>
+              <span class="component-detail">{{ item.detail || '' }}</span>
+            </div>
+            <div v-if="components.components.length === 0" class="empty-text">暂无组件状态</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span>状态变更</span>
+            <span class="panel-hint">仅记录状态变化，正常时不产生记录</span>
+          </div>
+          <div class="change-list">
+            <div v-for="(item, index) in components.changes" :key="index" class="change-item">
+              <span class="lamp" :class="lampClass(item.status)"></span>
+              <span class="change-name">{{ item.componentName }}</span>
+              <span class="change-desc">{{ item.detail || statusText(item.status) }}</span>
+              <span class="change-time">{{ formatDateTime(item.changeTime) }}</span>
+            </div>
+            <div v-if="components.changes.length === 0" class="empty-text">近期没有状态变化</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, nextTick, reactive } from 'vue';
-import * as echarts from 'echarts';
-import dayjs from 'dayjs';
-import {
-  listActuatorPageApi,
-  getLatestActuatorMetricApi,
-  listCpuTrendApi,
-  listMemoryTrendApi,
-  listHeapMemoryTrendApi,
-  listMetaspaceMemoryTrendApi
-} from '@/api/actuator';
-import { Refresh } from '@element-plus/icons-vue';
-import type { GetLatestActuatorMetricVO, ListActuatorVO } from '@/types/actuator';
-import { showMessage } from '@/utils/message';
+<script lang="ts" setup>
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
+import * as echarts from 'echarts'
+import dayjs from 'dayjs'
+import { Refresh } from '@element-plus/icons-vue'
+import { getMonitorComponentsApi, getMonitorOverviewApi, getMonitorTrendApi } from '@/api/actuator'
+import type { ComponentOverviewVO, MetricOverviewVO, TrendSeriesVO } from '@/types/actuator'
 
-// 状态变量
-const loading = ref(false);
-const lastRefreshTime = ref('');
-const latestActuatorMetric = reactive<GetLatestActuatorMetricVO>({
-  cpuCount: 0,
-  cpuUsage: 0,
-  memoryUsed: 0,
-  memoryMax: 0,
-  uptime: 0,
-  diskFree: 0,
-  diskTotal: 0
-});
+const REFRESH_INTERVAL = 30_000
 
-const diskUsage = computed<number>(() => {
-  if (latestActuatorMetric.diskTotal === latestActuatorMetric.diskFree) return 0;
-  return Number((((latestActuatorMetric.diskTotal - latestActuatorMetric.diskFree) / latestActuatorMetric.diskTotal) * 100).toFixed(2));
-});
+const rangeOptions = [
+  { label: '15 分钟', value: '15m' },
+  { label: '1 小时', value: '1h' },
+  { label: '6 小时', value: '6h' },
+  { label: '1 天', value: '1d' },
+  { label: '7 天', value: '7d' },
+  { label: '30 天', value: '30d' }
+]
 
-// 图表相关
-const cpuChartRef = ref<HTMLElement | null>(null);
-const memoryChartRef = ref<HTMLElement | null>(null);
-let cpuChart: echarts.ECharts | null = null;
-let memoryChart: echarts.ECharts | null = null;
-const activeTrendTab = ref('cpu');
+const range = ref('15m')
+const loading = ref(false)
 
-// 时间范围选择（仅作用于图表）
-const startTime = ref<Date | null>(null);
-const endTime = ref<Date | null>(null);
-const quickTimeRange = ref<number>(15);
+const overview = reactive<MetricOverviewVO>({})
+const components = reactive<ComponentOverviewVO>({ components: [], changes: [] })
+const seriesList = ref<TrendSeriesVO[]>([])
 
-// 组件状态历史记录（直接使用 ListActuatorVO）
-const healthHistory = ref<ListActuatorVO[]>([]);
+const resourceChartRef = ref<HTMLElement | null>(null)
+const requestChartRef = ref<HTMLElement | null>(null)
+let resourceChart: echarts.ECharts | null = null
+let requestChart: echarts.ECharts | null = null
+let timer: number | null = null
 
-// 分页状态
-const pagination = ref({
-  current: 1,
-  size: 10,
-  total: 0
-});
+// ==================== 派生状态 ====================
 
-// 表格加载状态
-const tableLoading = ref(false);
+const diskUsage = computed(() => {
+  const total = overview.diskTotal ?? 0
+  const free = overview.diskFree ?? 0
+  if (total <= 0) return 0
+  return ((total - free) / total) * 100
+})
 
-// 计算属性
-const uptimeFormatted = computed(() => {
-  const seconds = latestActuatorMetric.uptime;
-  const days = Math.floor(seconds / (24 * 60 * 60));
-  const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
-  const minutes = Math.floor((seconds % (60 * 60)) / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${days}天 ${hours}小时 ${minutes}分钟 ${secs}秒`;
-});
+const overallLevel = computed(() => {
+  const items = components.components
+  if (items.length === 0) return 'unknown'
+  if (items.some(item => item.status === 'DOWN')) return 'down'
+  if (items.some(item => item.status === 'UNKNOWN')) return 'unknown'
+  return 'up'
+})
 
-const memoryUsage = computed<number>(() => {
-  if (latestActuatorMetric.memoryMax === 0) return 0;
-  return Number(((latestActuatorMetric.memoryUsed / latestActuatorMetric.memoryMax) * 100).toFixed(2));
-});
-
-// 方法
-const getProgressColor = (percentage: number) => {
-  if (percentage < 60) return '#67C23A';
-  if (percentage < 80) return '#E6A23C';
-  return '#F56C6C';
-};
-
-const formatMemory = (bytes: number) => {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
-const formatDisk = (bytes: number) => {
-  return formatMemory(bytes);
-};
-
-// 格式化时间为时分秒（HH:mm:ss）
-const formatTimeShort = (timeStr: string): string => {
-  try {
-    const date = new Date(timeStr);
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-  } catch {
-    return timeStr;
+const overallText = computed(() => {
+  const textMap: Record<string, string> = {
+    up: '整体正常',
+    down: '存在异常组件',
+    unknown: '状态待确认'
   }
-};
+  return textMap[overallLevel.value] || '状态待确认'
+})
 
-// 加载最新指标数据（使用getLatestActuatorMetricApi）
-const loadLatestMetrics = async () => {
+const appCards = computed(() => [
+  {
+    label: '请求 QPS',
+    value: fixed(overview.qps),
+    unit: '次/秒',
+    sub: '最近 30 秒',
+    level: ''
+  },
+  {
+    label: 'P95 延迟',
+    value: overview.p95Ms ?? 0,
+    unit: 'ms',
+    sub: (overview.p95Ms ?? 0) > 800 ? '超过 800ms 阈值' : '阈值 800ms',
+    level: (overview.p95Ms ?? 0) > 800 ? 'warning' : ''
+  },
+  {
+    label: '5xx 错误率',
+    value: fixed(overview.errorRate),
+    unit: '%',
+    sub: (overview.errorRate ?? 0) > 5 ? '错误率偏高' : '正常',
+    level: (overview.errorRate ?? 0) > 5 ? 'danger' : ''
+  },
+  {
+    label: '连接池等待',
+    value: overview.poolPending ?? 0,
+    unit: '个',
+    sub: `活跃 ${overview.poolActive ?? 0} / 上限 ${overview.poolMax ?? 0}`,
+    level: (overview.poolPending ?? 0) > 0 ? 'danger' : ''
+  },
+  {
+    label: 'GC 停顿',
+    value: overview.gcPauseMs ?? 0,
+    unit: 'ms',
+    sub: `最近 30 秒 ${overview.gcCount ?? 0} 次`,
+    level: (overview.gcPauseMs ?? 0) > 500 ? 'warning' : ''
+  }
+])
+
+const resourceSeries = computed(() => seriesList.value.filter(item => ['cpu_usage', 'heap_usage'].includes(item.key)))
+const requestSeries = computed(() => seriesList.value.filter(item => ['qps', 'p95_ms'].includes(item.key)))
+const hasResourceData = computed(() => resourceSeries.value.some(item => item.points.length > 0))
+const hasRequestData = computed(() => requestSeries.value.some(item => item.points.length > 0))
+
+// ==================== 数据加载 ====================
+
+const loadOverview = async () => {
+  const data = await getMonitorOverviewApi()
+  if (data) {
+    Object.assign(overview, data)
+  }
+}
+
+const loadComponents = async () => {
+  const data = await getMonitorComponentsApi()
+  if (data) {
+    components.components = data.components || []
+    components.changes = data.changes || []
+  }
+}
+
+const loadTrend = async () => {
+  const metrics = 'cpu_usage,heap_usage,qps,p95_ms'
+  seriesList.value = await getMonitorTrendApi(range.value, metrics)
+  await nextTick()
+  renderCharts()
+}
+
+const refreshAll = async () => {
+  loading.value = true
   try {
-    const metrics: GetLatestActuatorMetricVO = await getLatestActuatorMetricApi();
-    Object.assign(latestActuatorMetric, metrics);
+    await Promise.all([loadOverview(), loadComponents(), loadTrend()])
   } catch (error) {
-    console.error('获取最新指标数据失败:', error);
+    console.error('刷新监控数据失败:', error)
+  } finally {
+    loading.value = false
   }
-};
+}
 
-/**
- * 加载cpu趋势数据
- */
-const loadCpuTrend = async () => {
-  if (!startTime.value || !endTime.value) return;
-  const cpuTrend = await listCpuTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
-  // 更新图表数据（使用时分秒格式）
-  updateCpuChart(cpuTrend.map(item => formatTimeShort(item.createTime)), cpuTrend.map(item => Number((item.usageRate * 100).toFixed(2))));
-};
+// ==================== 图表 ====================
 
-/**
- * 加载内存趋势数据
- */
-const loadMemoryTrend = async () => {
-  if (!startTime.value || !endTime.value) return;
-  const memoryTrend = await listMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
-  
-  // 堆内存数据接口
-  const heapTrend = await listHeapMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
-  
-  // 元空间内存数据接口
-  const metaspaceTrend = await listMetaspaceMemoryTrendApi(formatDateTime(startTime.value), formatDateTime(endTime.value));
-  
-  // 更新图表数据（使用时分秒格式）
-  updateMemoryChart(
-    memoryTrend.map(item => formatTimeShort(item.createTime)),
-    memoryTrend.map(item => Number((item.usageRate * 100).toFixed(2))),
-    heapTrend.map(item => Number((item.usageRate * 100).toFixed(2))),
-    metaspaceTrend.map(item => Number((item.usageRate * 100).toFixed(2)))
-  );
-};
-
-// tab切换时卸载当前图表并加载目标图表
-const handleTrendTabChange = async (tabName: string) => {
-  // 等待DOM渲染完成
-  await nextTick();
-
-  if (tabName === 'memory') {
-    // 卸载CPU图表
-    if (cpuChart) {
-      cpuChart.dispose();
-      cpuChart = null;
-    }
-    // 加载内存图表
-    if (!memoryChart && memoryChartRef.value) {
-      memoryChart = echarts.init(memoryChartRef.value);
-      await loadMemoryTrend();
-      // 确保图表正确适应容器尺寸
-      setTimeout(() => {
-        memoryChart?.resize();
-      }, 100);
-    }
-  } else if (tabName === 'cpu') {
-    // 卸载内存图表
-    if (memoryChart) {
-      memoryChart.dispose();
-      memoryChart = null;
-    }
-    // 加载CPU图表
-    if (!cpuChart && cpuChartRef.value) {
-      cpuChart = echarts.init(cpuChartRef.value);
-      await loadCpuTrend();
-      // 确保图表正确适应容器尺寸
-      setTimeout(() => {
-        cpuChart?.resize();
-      }, 100);
-    }
+const renderCharts = () => {
+  if (resourceChartRef.value) {
+    resourceChart = resourceChart || echarts.init(resourceChartRef.value)
+    resourceChart.setOption(buildOption(resourceSeries.value, false), true)
   }
-};
+  if (requestChartRef.value) {
+    requestChart = requestChart || echarts.init(requestChartRef.value)
+    requestChart.setOption(buildOption(requestSeries.value, true), true)
+  }
+}
 
-// 更新CPU图表
-const updateCpuChart = async (times: string[], data: number[]) => {
-  if (!cpuChart) return;
+const buildOption = (list: TrendSeriesVO[], dualAxis: boolean): echarts.EChartsOption => {
+  const axisStyle = {
+    axisLine: { lineStyle: { color: '#E5E7EB' } },
+    axisTick: { show: false },
+    axisLabel: { color: '#8A8F99', fontSize: 11 }
+  }
 
-  const option = {
+  return {
+    grid: { left: 8, right: dualAxis ? 8 : 8, top: 34, bottom: 6, containLabel: true },
     tooltip: {
       trigger: 'axis',
-      formatter: '{b}: {c}%'
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '15%',
-      top: '8%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: times,
-      axisLabel: {
-        interval: Math.floor(times.length / 6)
-      }
-    },
-    yAxis: {
-      type: 'value',
-      min: 0,
-      max: 100,
-      interval: 20,
-      axisLabel: {
-        formatter: '{value}%',
-        margin: 10
-      },
-      splitNumber: 5,
-      axisTick: {
-        interval: 20
-      },
-      splitLine: {
-        lineStyle: {
-          width: 1
-        }
-      }
-    },
-    series: [{
-      data: data,
-      type: 'line',
-      smooth: true,
-      lineStyle: {
-        color: '#409EFF'
-      },
-      symbol: 'circle',
-      showSymbol: false,
-      symbolSize: 6
-    }]
-  };
-
-  cpuChart.setOption(option);
-};
-
-// 更新内存图表（支持内存使用率、堆内存和元空间内存三条折线）
-const updateMemoryChart = async (times: string[], memoryData: number[], heapData?: number[], metaspaceData?: number[]) => {
-  if (!memoryChart) return;
-
-  const series = [
-    {
-      name: '内存使用率',
-      data: memoryData,
-      type: 'line',
-      smooth: true,
-      lineStyle: { color: '#67C23A' },
-      symbol: 'circle',
-      showSymbol: false,
-      symbolSize: 6
-    }
-  ];
-
-  // 如果有堆内存数据，添加堆内存折线
-  if (heapData && heapData.length > 0) {
-    series.push({
-      name: '堆内存',
-      data: heapData,
-      type: 'line',
-      smooth: true,
-      lineStyle: { color: '#E6A23C' },
-      symbol: 'circle',
-      showSymbol: false,
-      symbolSize: 6
-    });
-  }
-
-  // 如果有元空间内存数据，添加元空间内存折线
-  if (metaspaceData && metaspaceData.length > 0) {
-    series.push({
-      name: '元空间',
-      data: metaspaceData,
-      type: 'line',
-      smooth: true,
-      lineStyle: { color: '#F56C6C' },
-      symbol: 'circle',
-      showSymbol: false,
-      symbolSize: 6
-    });
-  }
-
-  const hasHeapData = heapData && heapData.length > 0;
-  const hasMetaspaceData = metaspaceData && metaspaceData.length > 0;
-  
-  const legendData: string[] = ['内存使用率'];
-  if (hasHeapData) legendData.push('堆内存');
-  if (hasMetaspaceData) legendData.push('元空间');
-
-  const option = {
-    tooltip: {
-      trigger: 'axis',
+      axisPointer: { type: 'line', lineStyle: { color: '#C9CDD4' } },
       formatter: (params: any) => {
-        let result = params[0].name + '<br/>';
-        params.forEach((item: any) => {
-          result += `${item.marker} ${item.seriesName}: ${item.value}%<br/>`;
-        });
-        return result;
+        const rows = Array.isArray(params) ? params : [params]
+        if (rows.length === 0) return ''
+        const time = dayjs(rows[0].value[0]).format('MM-DD HH:mm:ss')
+        return [time, ...rows.map((row: any) => `${row.marker}${row.seriesName}：${row.value[1]}`)].join('<br/>')
       }
     },
     legend: {
-      data: legendData,
       top: 0,
-      right: 10
+      right: 0,
+      itemWidth: 12,
+      itemHeight: 8,
+      textStyle: { fontSize: 12, color: '#5F6570' }
     },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '15%',
-      top: hasHeapData || hasMetaspaceData ? '12%' : '8%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: times,
-      axisLabel: {
-        interval: Math.floor(times.length / 6)
-      }
-    },
-    yAxis: {
-      type: 'value',
-      min: 0,
-      max: 100,
-      interval: 20,
-      axisLabel: {
-        formatter: '{value}%',
-        margin: 10
-      },
-      splitNumber: 5,
-      axisTick: {
-        interval: 20
-      },
-      splitLine: {
-        lineStyle: {
-          width: 1
-        }
-      }
-    },
-    series
-  };
-
-  memoryChart.setOption(option);
-};
-
-// 快捷时间范围选择处理
-const handleQuickTimeRangeChange = (value: number) => {
-  const now = new Date();
-  const start = new Date(now.getTime() - value * 60 * 1000);
-  startTime.value = start;
-  endTime.value = now;
-};
-
-// 仅刷新图表数据（使用用户选择的时间范围）
-const queryData = async () => {
-  if (!startTime.value || !endTime.value) {
-    showMessage('请选择开始时间和结束时间', 'warning');
-    return;
+    xAxis: { type: 'time', ...axisStyle },
+    yAxis: dualAxis
+      ? [
+        { type: 'value', name: 'QPS', nameTextStyle: { color: '#8A8F99', fontSize: 11 }, splitLine: { lineStyle: { color: '#F1F2F4' } }, ...axisStyle },
+        { type: 'value', name: 'ms', nameTextStyle: { color: '#8A8F99', fontSize: 11 }, splitLine: { show: false }, ...axisStyle }
+      ]
+      : { type: 'value', splitLine: { lineStyle: { color: '#F1F2F4' } }, ...axisStyle },
+    series: list.map((item, index) => ({
+      name: item.name,
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      lineStyle: { width: 1.6 },
+      areaStyle: index === 0 ? { opacity: 0.08 } : undefined,
+      data: item.points.map(point => [point.t, point.v]),
+      yAxisIndex: dualAxis && index === 1 ? 1 : 0
+    }))
   }
+}
 
-  loadLatestMetrics();
+// ==================== 工具方法 ====================
 
-  // 强制重新加载当前激活的图表数据
-  if (activeTrendTab.value === 'cpu') {
-    await loadCpuTrend();
-  } else {
-    await loadMemoryTrend();
+const clamp = (value?: number) => Math.min(Math.max(Math.round(value ?? 0), 0), 100)
+
+const fixed = (value?: number, digits = 2) => (value === undefined || value === null ? '0' : Number(value).toFixed(digits))
+
+const progressColor = (value?: number) => {
+  const percent = value ?? 0
+  if (percent >= 85) return '#F56C6C'
+  if (percent >= 70) return '#E6A23C'
+  return '#4F6EF2'
+}
+
+const formatBytes = (bytes?: number) => {
+  if (!bytes || bytes <= 0) return '—'
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1)
+  return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`
+}
+
+const formatUptime = (seconds?: number) => {
+  const total = seconds ?? 0
+  const days = Math.floor(total / 86400)
+  const hours = Math.floor((total % 86400) / 3600)
+  const minutes = Math.floor((total % 3600) / 60)
+  if (days > 0) return `${days} 天 ${hours} 小时`
+  if (hours > 0) return `${hours} 小时 ${minutes} 分`
+  return `${minutes} 分`
+}
+
+const formatDateTime = (value?: string) => (value ? dayjs(value).format('MM-DD HH:mm:ss') : '—')
+
+const lampClass = (status: string) => {
+  if (status === 'UP') return 'up'
+  if (status === 'DOWN') return 'down'
+  if (status === 'DISABLED') return 'disabled'
+  return 'unknown'
+}
+
+const statusText = (status: string) => {
+  const textMap: Record<string, string> = {
+    UP: '正常',
+    DOWN: '异常',
+    DISABLED: '未启用',
+    UNKNOWN: '未知'
   }
+  return textMap[status] || status
+}
 
-  // 同时刷新表格数据
-  pagination.value.current = 1;
-  loadTableData();
-};
+// ==================== 生命周期 ====================
 
-const refreshData = async () => {
-  loading.value = true;
-  try {
-    // 重置时间为最近15分钟
-    const now = new Date();
-    const fifteenMinutesAgo = new Date(now.getTime() - 15 * 60 * 1000);
-    startTime.value = fifteenMinutesAgo;
-    endTime.value = now;
-    quickTimeRange.value = 15;
-
-    // 加载最新指标数据（CPU、内存、磁盘、启动时间）
-    loadLatestMetrics();
-    // 强制重新加载当前激活的图表数据
-    if (activeTrendTab.value === 'cpu') {
-      await loadCpuTrend();
-    } else {
-      await loadMemoryTrend();
-    }
-
-    // 更新最后刷新时间
-    lastRefreshTime.value = new Date().toLocaleString();
-    // 同时刷新表格数据
-    pagination.value.current = 1;
-    loadTableData();
-  } catch (error) {
-    console.error('获取监控数据失败:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// 设置默认时间范围为最近15分钟
-const setDefaultTimeRange = async () => {
-  const now = new Date();
-  const fifteenMinAgo = new Date(now.getTime() - 15 * 60 * 1000);
-
-  endTime.value = now;
-  startTime.value = fifteenMinAgo;
-};
-
-// 格式化日期时间为 ISO 8601 格式（使用 dayjs）
-const formatDateTime = (date: Date): string => {
-  return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
-};
-
-// 格式化表格时间
-const formatTableTime = (timeStr?: string): string => {
-  if (!timeStr) return '-';
-  try {
-    return dayjs(timeStr).format('YYYY-MM-DD HH:mm:ss');
-  } catch {
-    return timeStr;
-  }
-};
-
-// 加载分页表格数据
-const loadTableData = async () => {
-  tableLoading.value = true;
-  try {
-    const params: {
-      pageNum: number;
-      pageSize: number;
-      startTime?: string;
-      endTime?: string;
-    } = {
-      pageNum: pagination.value.current,
-      pageSize: pagination.value.size
-    };
-
-    if (startTime.value) {
-      params.startTime = formatDateTime(startTime.value);
-    }
-    if (endTime.value) {
-      params.endTime = formatDateTime(endTime.value);
-    }
-
-    const result = await listActuatorPageApi(params);
-    healthHistory.value = result.records || [];
-    pagination.value.total = result.total || 0;
-  } catch (error) {
-    console.error('获取组件状态分页数据失败:', error);
-  } finally {
-    tableLoading.value = false;
-  }
-};
-
-// 分页事件处理
-const handlePageChange = (page: number) => {
-  pagination.value.current = page;
-  loadTableData();
-};
-
-const handleSizeChange = (size: number) => {
-  pagination.value.size = size;
-  pagination.value.current = 1;
-  loadTableData();
-};
+const handleResize = () => {
+  resourceChart?.resize()
+  requestChart?.resize()
+}
 
 onMounted(async () => {
-  await setDefaultTimeRange();
-  handleTrendTabChange(activeTrendTab.value);
-  refreshData();
-  loadTableData();
-});
+  await refreshAll()
+  window.addEventListener('resize', handleResize)
+  timer = window.setInterval(() => {
+    loadOverview().catch(() => undefined)
+    loadComponents().catch(() => undefined)
+  }, REFRESH_INTERVAL)
+})
 
 onUnmounted(() => {
-  // 清除图表实例
-  cpuChart?.dispose();
-  memoryChart?.dispose();
-});
+  window.removeEventListener('resize', handleResize)
+  if (timer !== null) {
+    window.clearInterval(timer)
+  }
+  resourceChart?.dispose()
+  requestChart?.dispose()
+  resourceChart = null
+  requestChart = null
+})
 </script>
 
 <style scoped>
-.actuator-container {
+.monitor-body {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px 20px;
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  background-color: #fff;
+  gap: 14px;
 }
 
-h2 {
-  margin-bottom: 20px;
-  font-size: 20px;
-  font-weight: bold;
-  color: #303133;
+.status-pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
 }
 
-.status-card {
-  margin: 0 10px 10px 10px;
+.status-pill.up {
+  background: #EAF3DE;
+  color: #3B6D11;
 }
 
-.metrics-grid {
+.status-pill.down {
+  background: #FCEBEB;
+  color: #A32D2D;
+}
+
+.status-pill.unknown {
+  background: #F1EFE8;
+  color: #5F5E5A;
+}
+
+.section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--radish-text-primary);
+}
+
+.section-hint,
+.panel-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--radish-text-tertiary, #8A8F99);
+}
+
+.metric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 10px;
-  margin: 0 10px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
 }
 
-.metric-content {
+.metric-card {
+  background: var(--radish-bg-card);
+  border-radius: var(--radish-radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--radish-shadow-card);
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--radish-text-secondary);
+}
+
+.metric-value {
+  margin-top: 2px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--radish-text-primary);
+  line-height: 1.3;
+}
+
+.metric-value.warning {
+  color: #E6A23C;
+}
+
+.metric-value.danger {
+  color: #F56C6C;
+}
+
+.metric-unit {
+  margin-left: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--radish-text-tertiary, #8A8F99);
+}
+
+.metric-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--radish-text-tertiary, #8A8F99);
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.resource-card {
+  background: var(--radish-bg-card);
+  border-radius: var(--radish-radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--radish-shadow-card);
+}
+
+.resource-head {
   display: flex;
   align-items: center;
-  gap: 20px;
-}
-
-.metric-info {
-  flex: 1;
-}
-
-.info-item {
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--radish-text-primary);
   margin-bottom: 10px;
+}
+
+.resource-meta {
+  font-size: 12px;
+  color: var(--radish-text-tertiary, #8A8F99);
+}
+
+.resource-big {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--radish-text-primary);
+}
+
+.resource-foot {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--radish-text-secondary);
+}
+
+.chart-grid,
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.panel {
+  position: relative;
+  background: var(--radish-bg-card);
+  border-radius: var(--radish-radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--radish-shadow-card);
+}
+
+.panel-head {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--radish-text-primary);
 }
 
-.uptime-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0;
-}
-
-.uptime-value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #303133;
-}
-
-.trend-card {
-  margin: 10px;
-  flex-shrink: 0;
-}
-
-.trend-card :deep(.el-tabs__content) {
-  padding: 0;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status-info {
-  margin-top: 15px;
-}
-
-.label {
-  color: #606266;
-}
-
-.value {
-  font-weight: bold;
-  color: #303133;
-}
-
-.chart-container {
-  height: 40vh;
+.chart {
   width: 100%;
+  height: 220px;
 }
 
-.refresh-info {
+.chart-empty {
+  position: absolute;
+  inset: 80px 0 0;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  margin-bottom: 20px;
-  gap: 20px;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--radish-text-tertiary, #8A8F99);
+  pointer-events: none;
 }
 
-.time-range-selector {
+.component-list,
+.change-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.component-item {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 13px;
+  color: var(--radish-text-primary);
 }
 
-.time-label {
-  color: #606266;
-  font-size: 14px;
+.lamp {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #C0C4CC;
 }
 
-.quick-range-select {
-  width: 100px;
+.lamp.up {
+  background: #67C23A;
 }
 
-.time-picker {
-  width: 180px;
+.lamp.down {
+  background: #F56C6C;
 }
 
-.time-separator {
-  color: #909399;
-  font-size: 14px;
+.lamp.disabled {
+  background: #CBD0D8;
 }
 
-.last-refresh {
-  color: #909399;
-  font-size: 14px;
+.lamp.unknown {
+  background: #E6A23C;
 }
 
-.el-progress {
-  margin-top: 15px;
+.component-name {
+  width: 90px;
 }
 
-.components-status {
-  margin-top: 20px;
-  border-top: 1px solid #ebeef5;
-  padding-top: 15px;
+.component-status {
+  font-size: 12px;
+  color: #67C23A;
 }
 
-.components-status h3 {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #303133;
+.component-status.down {
+  color: #F56C6C;
 }
 
-.components-table-wrapper {
-  overflow-x: auto;
+.component-status.disabled {
+  color: var(--radish-text-tertiary, #8A8F99);
 }
 
-.components-table-wrapper :deep(.el-table) {
-  font-size: 14px;
+.component-status.unknown {
+  color: #E6A23C;
 }
 
-.components-table-wrapper :deep(.el-table th) {
-  background-color: #f5f7fa;
-  font-weight: 600;
-  color: #606266;
+.component-detail {
+  font-size: 12px;
+  color: var(--radish-text-tertiary, #8A8F99);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.pagination-wrapper {
-  margin-top: 15px;
+.change-item {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--radish-text-primary);
 }
 
-.component-details {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #606266;
-  line-height: 1.5;
+.change-name {
+  width: 90px;
 }
 
-.detail-item {
-  display: block;
-  margin-bottom: 5px;
+.change-desc {
+  flex: 1;
+  font-size: 12px;
+  color: var(--radish-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 响应式布局 */
-@media (max-width: 768px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
+.change-time {
+  font-size: 12px;
+  color: var(--radish-text-tertiary, #8A8F99);
+}
+
+.empty-text {
+  padding: 12px 0;
+  font-size: 12px;
+  color: var(--radish-text-tertiary, #8A8F99);
+}
+
+@media (max-width: 1400px) {
+  .metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .components-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-container {
-    height: 250px;
+  .resource-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 </style>

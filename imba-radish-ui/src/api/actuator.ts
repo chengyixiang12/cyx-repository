@@ -1,70 +1,28 @@
-import { GetLatestActuatorMetricVO, ListActuatorPageRequest, ListActuatorVO, ListUsageTrendVO } from '@/types/actuator';
-import { PaginatedData } from '@/types/api';
-import { get, post } from '@/utils/http';
+import { ComponentOverviewVO, MetricOverviewVO, TrendSeriesVO } from '@/types/actuator'
+import { get } from '@/utils/http'
 
 /**
- * 获取所有actuator信息
- * @param startTime 开始时间
- * @param endTime 结束时间
+ * 实时总览（后端读内存快照，不查库）
  */
-export async function listActuatorApi(startTime: string, endTime: string): Promise<ListActuatorVO[]> {
-    const res = await get<ListActuatorVO[]>('/actuator/listActuator', { params: { startTime, endTime }, flag: true });
-    return res.data;
+export async function getMonitorOverviewApi(): Promise<MetricOverviewVO> {
+  const res = await get<MetricOverviewVO>('/actuator/overview', { flag: true })
+  return res.data
 }
 
 /**
- * 获取actuator分页信息
- * @param data 分页参数
+ * 指标趋势
+ * @param range 时间范围：15m/1h/6h/1d/7d/30d
+ * @param metrics 指标标识，逗号分隔
  */
-export async function listActuatorPageApi(data: ListActuatorPageRequest): Promise<PaginatedData<ListActuatorVO>> {
-    const res = await post<PaginatedData<ListActuatorVO>>('/actuator/listActuatorPage', data, { flag: true });
-    return res.data;
+export async function getMonitorTrendApi(range: string, metrics: string): Promise<TrendSeriesVO[]> {
+  const res = await get<TrendSeriesVO[]>('/actuator/trend', { params: { range, metrics }, flag: true })
+  return res.data || []
 }
 
 /**
- * 获取最新actuator指标
+ * 组件当前状态与最近的状态变更
  */
-export async function getLatestActuatorMetricApi(): Promise<GetLatestActuatorMetricVO> {
-    const res = await get<GetLatestActuatorMetricVO>(`/actuator/getLatestActuatorMetric`, { flag: true });
-    return res.data;
-}
-
-/**
- * 获取cpu趋势
- * @param startTime 开始时间
- * @param endTime 结束时间
- */
-export async function listCpuTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
-    const res = await get<ListUsageTrendVO[]>(`/actuator/listCpuTrend`, { params: { startTime, endTime }, flag: true });
-    return res.data;
-}
-
-/**
- * 获取内存趋势
- * @param startTime 开始时间
- * @param endTime 结束时间
- */
-export async function listMemoryTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
-    const res = await get<ListUsageTrendVO[]>(`/actuator/listMemoryTrend`, { params: { startTime, endTime }, flag: true });
-    return res.data;
-}
-
-/**
- * 获取堆内存趋势
- * @param startTime 开始时间
- * @param endTime 结束时间
- */
-export async function listHeapMemoryTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
-    const res = await get<ListUsageTrendVO[]>(`/actuator/listHeapMemoryTrend`, { params: { startTime, endTime }, flag: true });
-    return res.data;
-}
-
-/**
- * 获取元空间内存趋势
- * @param startTime 开始时间
- * @param endTime 结束时间
- */
-export async function listMetaspaceMemoryTrendApi(startTime: string, endTime: string): Promise<ListUsageTrendVO[]> {
-    const res = await get<ListUsageTrendVO[]>(`/actuator/listMetaspaceMemoryTrend`, { params: { startTime, endTime }, flag: true });
-    return res.data;
+export async function getMonitorComponentsApi(): Promise<ComponentOverviewVO> {
+  const res = await get<ComponentOverviewVO>('/actuator/components', { flag: true })
+  return res.data
 }
