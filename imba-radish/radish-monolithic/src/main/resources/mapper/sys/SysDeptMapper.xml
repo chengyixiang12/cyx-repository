@@ -55,6 +55,7 @@
         WHERE sd.del_flag = '0'
           AND sd.id = #{id}
     </select>
+    <!-- ids 为空时导出全部部门 -->
     <select id="exportDept" parameterType="java.util.List" resultType="ExportDeptDto">
         SELECT
         sd.id,
@@ -67,10 +68,12 @@
         AND sda.del_flag = '0'
         WHERE
         sd.del_flag = '0'
-        AND sd.id IN
-        <foreach collection="ids" item="item" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        <if test="ids != null and ids.size() > 0">
+            AND sd.id IN
+            <foreach collection="ids" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <select id="getDepts" parameterType="GetDeptsDTO" resultType="GetDeptsVO">
         SELECT

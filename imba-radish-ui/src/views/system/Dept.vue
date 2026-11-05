@@ -269,14 +269,23 @@ const resetSearch = () => {
 
 // 导出部门
 const handleExport = async () => {
+  const ids = selectedRows.value.map(row => row.id)
   try {
-    const ids = selectedRows.value.length > 0
-      ? selectedRows.value.map(row => row.id)
-      : []
+    if (ids.length === 0) {
+      await ElMessageBox.confirm('未勾选任何部门，将导出全部部门。是否继续？', '导出部门', {
+        confirmButtonText: '导出全部',
+        cancelButtonText: '取消',
+        type: 'info'
+      })
+    }
     const { blob, filename } = await exportDept(ids, '部门数据')
     download(blob, filename)
+    ElMessage.success(ids.length > 0 ? '导出成功' : '已导出全部部门')
   } catch (error) {
-    console.error('导出部门失败:', error)
+    // confirm 取消会走进这里，只有非取消的才记录
+    if (error !== 'cancel' && (error as any)?.message !== 'cancel') {
+      console.error('导出部门失败:', error)
+    }
   }
 }
 

@@ -47,19 +47,33 @@ function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
 }
 
 // 错误统一处理
-function handleResponseError(error: any) {
+async function handleResponseError(error: any) {
+  let data = error.response?.data;
+
+  // blob 响应失败时，后端返回的是 JSON 错误体（被 axios 包成 Blob），
+  // 必须先解析出 msg/code，否则既弹不出提示、也走不到错误码处理
+  if (data instanceof Blob && data.type.includes('json')) {
+    try {
+      data = JSON.parse(await data.text());
+      error.response.data = data;
+    } catch {
+      // 解析失败则按原始错误处理
+      data = null;
+    }
+  }
+
   const apiError: ApiError = {
-    message: error.response?.data?.msg || error.message,
+    message: data?.msg || error.message,
     response: {
-      data: error.response?.data,
+      data,
       status: error.response?.status,
     },
     config: error.config,
     name: ''
   };
 
-  if (error.response?.data?.code) {
-    handleErrorCode(error.response.data);
+  if (data?.code) {
+    handleErrorCode(data);
   }
 
   return Promise.reject(apiError);
