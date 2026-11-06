@@ -16,21 +16,8 @@
         <relativePath/>
     </parent>
 
-    <!--
-        模块划分：
-          radish-common     公共库（R / 异常 / 常量 / 枚举 / 工具 / 注解）  —— 库，不可执行
-          radish-nacos      Nacos 注册与配置中心接入封装                   —— 库，不可执行
-          radish-gateway    API 网关 (:8080)
-          radish-system     系统设置服务 (:8082)
-          radish-business   业务服务 (:8083)
-          radish-monolithic 原单体，保留可独立运行 (:8081)
-    -->
     <modules>
         <module>radish-common</module>
-        <module>radish-nacos</module>
-        <module>radish-gateway</module>
-        <module>radish-system</module>
-        <module>radish-business</module>
         <module>radish-monolithic</module>
     </modules>
 
@@ -78,20 +65,6 @@
         <dependencies>
             <!-- ==================== BOM import（顺序即优先级）==================== -->
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${spring-cloud-alibaba.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>
                 <version>${spring.ai.version}</version>
@@ -103,26 +76,6 @@
             <dependency>
                 <groupId>com.soft</groupId>
                 <artifactId>radish-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.soft</groupId>
-                <artifactId>radish-nacos</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.soft</groupId>
-                <artifactId>radish-gateway</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.soft</groupId>
-                <artifactId>radish-system</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.soft</groupId>
-                <artifactId>radish-business</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
