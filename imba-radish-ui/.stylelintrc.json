@@ -1,0 +1,75 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recommended-vue"
+  ],
+  "rules": {
+    "color-no-hex": [
+      true,
+      {
+        "message": "禁止硬编码色值，请使用 theme.css 中的令牌：var(--radish-*)"
+      }
+    ],
+    "declaration-property-value-disallowed-list": [
+      {
+        "font-size": ["/^\\d+(\\.\\d+)?px$/"],
+        "border-radius": ["/^\\d+(\\.\\d+)?px( \\d+(\\.\\d+)?px)*$/"]
+      },
+      {
+        "message": "请使用令牌：font-size 用 var(--radish-font-*)，border-radius 用 var(--radish-radius-*)"
+      }
+    ],
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$",
+      {
+        "message": "类名请使用 kebab-case 或 BEM，如 list-page__header"
+      }
+    ],
+    "custom-property-pattern": null,
+    "selector-no-invalid": null,
+    "keyframes-name-pattern": null,
+    "media-feature-range-notation": null,
+    "shorthand-property-no-redundant-values": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "no-empty-source": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "color-function-alias-notation": null,
+    "selector-not-notation": null,
+    "custom-property-empty-line-before": null,
+    "color-hex-length": null,
+    "declaration-property-value-keyword-no-deprecated": null,
+    "value-keyword-case": null,
+    "length-zero-no-unit": null,
+    "font-family-name-quotes": null,
+    "import-notation": null,
+    "no-descending-specificity": null,
+    "no-duplicate-selectors": null,
+    "declaration-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "at-rule-empty-line-before": null,
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["deep", "global", "slotted"]
+      }
+    ],
+    "selector-pseudo-element-no-unknown": [
+      true,
+      {
+        "ignorePseudoElements": ["v-deep", "v-global", "v-slotted"]
+      }
+    ],
+    "property-no-vendor-prefix": null,
+    "value-no-vendor-prefix": null
+  },
+  "overrides": [
+    {
+      "files": ["**/theme.css"],
+      "rules": {
+        "color-no-hex": null
+      }
+    }
+  ]
+}

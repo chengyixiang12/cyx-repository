@@ -1,40 +1,26 @@
 <template>
-  <div class="container">
-    <!-- 头部 -->
-    <div class="list-header">
-      <div class="header-title">
-        <span>角色管理</span>
-      </div>
-      <div class="right-header">
-        <el-button type="primary" @click="handleAdd" class="add-button">
-          新增
-        </el-button>
-      </div>
-    </div>
+  <ListPage title="角色管理" :loading="loading" :count="roleList.length" :columns="8" :model="searchForm">
+    <template #actions>
+      <el-button type="primary" @click="handleAdd">新增</el-button>
+    </template>
 
-    <!-- 搜索条件 -->
-    <div class="search-container">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="关键字:">
-          <el-input v-model="searchForm.keyword" placeholder="角色名称/编码" clearable class="keyword-input" />
-        </el-form-item>
-        <el-form-item label="角色状态:">
-          <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
-            <el-option label="启用" :value="1" />
-            <el-option label="禁用" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button type="primary" @click="resetSearch">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <template #search>
+      <el-form-item label="关键字:">
+        <el-input v-model="searchForm.keyword" placeholder="角色名称/编码" clearable class="keyword-input" />
+      </el-form-item>
+      <el-form-item label="角色状态:">
+        <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
+          <el-option label="启用" :value="1" />
+          <el-option label="禁用" :value="0" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button type="primary" @click="resetSearch">重置</el-button>
+      </el-form-item>
+    </template>
 
-    <!-- 角色表格 -->
-    <div class="table-wrapper">
-      <TableSkeleton :loading="loading" :count="roleList.length" :columns="8" />
-      <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading && roleList.length > 0" height="calc(100vh - 325px)">
+    <el-table :data="roleList" border size="small" style="width: 100%" v-loading="loading && roleList.length > 0" height="100%">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -45,20 +31,17 @@
         <el-table-column prop="sortOrder" align="center" label="排序" min-width="70" sortable />
         <el-table-column prop="status" label="状态" align="center" min-width="80">
           <template #default="scope">
-            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" active-color="#13ce66"
-              inactive-color="#ff4949" @change="handleStatusChange(scope.row)" />
+            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" @change="handleStatusChange(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column prop="isDefault" label="默认角色" align="center" min-width="80">
           <template #default="scope">
-            <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" active-color="#13ce66"
-              inactive-color="#ff4949" @change="handleIsDefaultChange(scope.row)" />
+            <el-switch v-model="scope.row.isDefault" :active-value="1" :inactive-value="0" @change="handleIsDefaultChange(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column prop="fixRole" label="固定角色" align="center" min-width="80">
           <template #default="scope">
-            <el-switch v-model="scope.row.fixRole" :active-value="1" :inactive-value="0" active-color="#13ce66"
-              inactive-color="#ff4949" @change="handleFixRoleChange(scope.row)" />
+            <el-switch v-model="scope.row.fixRole" :active-value="1" :inactive-value="0" @change="handleFixRoleChange(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column label="操作" min-width="240" align="center">
@@ -84,16 +67,14 @@
             </div>
           </template>
         </el-table-column>
-      </el-table>
-    </div>
+    </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination">
+    <template #footer>
       <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
         :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
         @current-change="handlePageChange" @size-change="handleSizeChange" />
-    </div>
-  </div>
+    </template>
+  </ListPage>
 
   <!-- 新增角色弹窗 -->
   <role-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
@@ -113,7 +94,7 @@
 </template>
 
 <script lang="ts" setup>
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted } from 'vue'
 import { getRolesApi, addRoleApi, updateRoleApi, deleteRoleApi, enableRoleApi, forbiddenRoleApi, setDefaultRoleApi, setFixRoleApi, cancelFixRoleApi } from '@/api/role'
 import { updateRoleMenusApi, updateRolePermissionsApi } from '@/api/role'

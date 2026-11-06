@@ -1,24 +1,17 @@
 <template>
-  <div class="container">
-    <!-- 头部 -->
-    <div class="list-header">
-      <el-button type="primary" @click="goBack" class="go-back">
-        返回
-      </el-button>
-      <div class="header-title">
-        <span>{{ route.query.dictName }}</span>
-      </div>
-      <div class="right-header">
-        <el-button type="primary" @click="handleAddData" class="add-button">
-          新增
-        </el-button>
-      </div>
-    </div>
+  <ListPage :loading="loading" :count="dictDataList.length" :columns="7" :model="searchForm">
+    <template #prefix>
+      <el-button type="primary" @click="goBack">返回</el-button>
+    </template>
 
-    <!-- 搜索 -->
-    <div class="search-container">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="关键字:">
+    <template #title>{{ route.query.dictName }}</template>
+
+    <template #actions>
+      <el-button type="primary" @click="handleAddData">新增</el-button>
+    </template>
+
+    <template #search>
+      <el-form-item label="关键字:">
           <el-input v-model="searchForm.keyword" placeholder="标签/编码" clearable class="keyword-input" />
         </el-form-item>
         <el-form-item label="状态:">
@@ -31,14 +24,10 @@
           <el-button type="primary" @click="handleSearch">查询</el-button>
           <el-button type="primary" @click="resetSearch">重置</el-button>
         </el-form-item>
-      </el-form>
-    </div>
+    </template>
 
-    <!-- 数据表格 -->
-    <div class="table-wrapper">
-      <TableSkeleton :loading="loading" :count="dictDataList.length" :columns="7" />
-      <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading && dictDataList.length > 0"
-        :row-class-name="tableRowClassName" height="calc(100vh - 325px)">
+    <el-table :data="dictDataList" border size="small" style="width: 100%" v-loading="loading && dictDataList.length > 0"
+      :row-class-name="tableRowClassName" height="100%">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -76,16 +65,14 @@
             </div>
           </template>
         </el-table-column>
-      </el-table>
-    </div>
+    </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination">
+    <template #footer>
       <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
         layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
         @size-change="handleSizeChange" />
-    </div>
-  </div>
+    </template>
+  </ListPage>
 
   <!--新增弹窗-->
   <dict-data-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
@@ -96,7 +83,7 @@
 </template>
 
 <script lang="ts" setup>
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 

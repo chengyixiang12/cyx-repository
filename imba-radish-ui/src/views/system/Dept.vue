@@ -1,41 +1,29 @@
 <template>
-  <div class="container">
-    <!-- 头部 -->
-    <div class="list-header">
-      <div class="header-title">
-        <span>部门管理</span>
-      </div>
-      <div class="right-header">
-        <el-button type="primary" @click="handleAdd" class="add-button">
-          新增
-        </el-button>
-        <el-button type="primary" @click="handleExport" class="export-button">
-          导出
-        </el-button>
-      </div>
-    </div>
+  <ListPage title="部门管理" :loading="loading" :count="deptList.length" :columns="8" :model="searchForm">
+    <template #actions>
+      <el-button type="primary" @click="handleAdd" class="add-button">
+        新增
+      </el-button>
+      <el-button type="primary" @click="handleExport" class="export-button">
+        导出
+      </el-button>
+    </template>
 
-    <!-- 搜索条件 -->
-    <div class="search-container">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="关键字:">
-          <el-input v-model="searchForm.keyword" placeholder="部门名称/部门编号" clearable class="keyword-input" />
-        </el-form-item>
-        <el-form-item label="父级:">
-          <el-input v-model="searchForm.parent" placeholder="部门名称/部门编号" clearable class="keyword-input" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button type="primary" @click="resetSearch">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <template #search>
+      <el-form-item label="关键字:">
+        <el-input v-model="searchForm.keyword" placeholder="部门名称/部门编号" clearable class="keyword-input" />
+      </el-form-item>
+      <el-form-item label="父级:">
+        <el-input v-model="searchForm.parent" placeholder="部门名称/部门编号" clearable class="keyword-input" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button type="primary" @click="resetSearch">重置</el-button>
+      </el-form-item>
+    </template>
 
-    <!-- 部门表格 -->
-    <div class="table-wrapper">
-      <TableSkeleton :loading="loading" :count="deptList.length" :columns="8" />
-      <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading && deptList.length > 0" highlight-current-row
-        @selection-change="handleSelectionChange" height="calc(100vh - 325px)">
+    <el-table :data="deptList" border size="small" style="width: 100%" v-loading="loading && deptList.length > 0" highlight-current-row
+        @selection-change="handleSelectionChange" height="100%">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="序号" min-width="60" align="center" type="index" />
         <el-table-column prop="name" label="部门名称" show-overflow-tooltip min-width="150" align="center" />
@@ -56,15 +44,13 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
 
-    <!-- 分页 -->
-    <div class="pagination">
+    <template #footer>
       <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
         :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
         @current-change="handlePageChange" @size-change="handleSizeChange" />
-    </div>
-  </div>
+    </template>
+  </ListPage>
 
   <!-- 新增部门弹窗 -->
   <dept-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
@@ -76,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {

@@ -385,9 +385,9 @@ onUnmounted(() => {
 .welcome-card {
   margin-bottom: 16px;
   padding: 24px 32px;
-  border-radius: 12px;
-  background: linear-gradient(120deg, #4F6EF2 0%, #6A5AE0 55%, #8F5AE0 100%);
-  color: #fff;
+  border-radius: var(--radish-radius-xl);
+  background: var(--radish-grad-brand);
+  color: var(--radish-bg-card);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -402,25 +402,25 @@ onUnmounted(() => {
 
 .welcome-avatar {
   background: rgba(255, 255, 255, 0.25);
-  font-size: 22px;
+  font-size: var(--radish-font-2xl);
   flex-shrink: 0;
 }
 
 .welcome-text h2 {
   margin: 0 0 6px;
-  font-size: 20px;
+  font-size: var(--radish-font-xl);
   font-weight: 600;
 }
 
 .welcome-text p {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--radish-font-sm);
   opacity: 0.85;
 }
 
 .welcome-right {
   text-align: center;
-  color: #fff;
+  color: var(--radish-bg-card);
 }
 
 .welcome-date {
@@ -430,13 +430,15 @@ onUnmounted(() => {
 }
 
 .date-day {
+  /* 首页欢迎卡的日期大字, 属于展示型尺寸, 不入字号阶梯 */
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list */
   font-size: 40px;
   font-weight: 700;
   line-height: 1;
 }
 
 .date-detail {
-  font-size: 12px;
+  font-size: var(--radish-font-xs);
   line-height: 1.8;
   opacity: 0.85;
   text-align: left;
@@ -451,8 +453,8 @@ onUnmounted(() => {
 }
 
 .stat-card {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--radish-bg-card);
+  border-radius: var(--radish-radius);
   padding: 16px;
   display: flex;
   align-items: center;
@@ -468,30 +470,30 @@ onUnmounted(() => {
 .stat-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: var(--radish-radius-xl);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 16px;
-  font-size: 24px;
-  color: #fff;
+  font-size: var(--radish-font-2xl);
+  color: var(--radish-bg-card);
   flex-shrink: 0;
 }
 
 .stat-icon.bg-blue {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--radish-grad-welcome);
 }
 
 .stat-icon.bg-green {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  background: var(--radish-grad-mint);
 }
 
 .stat-icon.bg-purple {
-  background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+  background: var(--radish-grad-candy);
 }
 
 .stat-icon.bg-orange {
-  background: linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%);
+  background: var(--radish-grad-sunset);
 }
 
 .stat-content {
@@ -500,21 +502,21 @@ onUnmounted(() => {
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: var(--radish-font-2xl);
   font-weight: 600;
-  color: #303133;
+  color: var(--radish-text-primary);
 }
 
 .stat-unit {
   margin-left: 4px;
-  font-size: 12px;
+  font-size: var(--radish-font-xs);
   font-weight: 400;
-  color: #909399;
+  color: var(--radish-text-secondary);
 }
 
 .stat-label {
-  font-size: 13px;
-  color: #909399;
+  font-size: var(--radish-font-sm);
+  color: var(--radish-text-secondary);
   margin-top: 4px;
 }
 
@@ -541,9 +543,9 @@ onUnmounted(() => {
 }
 
 .card-hint {
-  font-size: 12px;
+  font-size: var(--radish-font-xs);
   font-weight: 400;
-  color: #909399;
+  color: var(--radish-text-secondary);
 }
 
 .trend-chart {
@@ -557,7 +559,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--radish-border-light);
 }
 
 .login-item:last-child {
@@ -569,22 +571,22 @@ onUnmounted(() => {
 }
 
 .login-device {
-  font-size: 13px;
-  color: #303133;
+  font-size: var(--radish-font-sm);
+  color: var(--radish-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .login-ip {
-  font-size: 12px;
-  color: #909399;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
   margin-top: 2px;
 }
 
 .login-time {
-  font-size: 12px;
-  color: #909399;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
   flex-shrink: 0;
   margin-left: 12px;
 }
@@ -597,28 +599,28 @@ onUnmounted(() => {
 
 .content-item {
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--radish-border-light);
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .content-item:hover {
-  background-color: #f5f7fa;
+  background-color: var(--radish-fill);
   padding-left: 8px;
 }
 
 .content-title {
-  font-size: 14px;
+  font-size: var(--radish-font-base);
   margin-bottom: 4px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #303133;
+  color: var(--radish-text-primary);
 }
 
 .content-time {
-  font-size: 12px;
-  color: #909399;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
 }
 
 /* ============ 空状态 ============ */
@@ -628,12 +630,12 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   padding: 40px 0;
-  color: #909399;
+  color: var(--radish-text-secondary);
 }
 
 .empty-icon {
   margin-bottom: 12px;
-  color: #c0c4cc;
+  color: var(--radish-text-placeholder);
 }
 
 /* ============ 详情对话框 ============ */
@@ -650,19 +652,19 @@ onUnmounted(() => {
 
 .detail-header h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--radish-font-lg);
 }
 
 .detail-time {
-  color: #909399;
+  color: var(--radish-text-secondary);
   margin-bottom: 16px;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
 }
 
 .detail-content {
   line-height: 1.8;
   white-space: pre-line;
-  color: #606266;
+  color: var(--radish-text-regular);
 }
 
 .dialog-footer {
@@ -684,12 +686,12 @@ onUnmounted(() => {
   .stat-icon {
     width: 40px;
     height: 40px;
-    font-size: 20px;
+    font-size: var(--radish-font-xl);
     margin-right: 12px;
   }
 
   .stat-value {
-    font-size: 20px;
+    font-size: var(--radish-font-xl);
   }
 
   .welcome-card {

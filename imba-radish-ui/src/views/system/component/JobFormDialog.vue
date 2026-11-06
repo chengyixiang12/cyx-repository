@@ -263,8 +263,8 @@ onMounted(() => {
 }
 
 .cron-preview {
-  font-size: 13px;
-  color: #909399;
+  font-size: var(--radish-font-sm);
+  color: var(--radish-text-secondary);
 }
 
 .json-input-wrapper {

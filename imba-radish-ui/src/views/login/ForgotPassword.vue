@@ -180,7 +180,7 @@ onUnmounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #EDF1FE 0%, #E4E9FD 45%, #F3F0FE 100%);
+  background: linear-gradient(135deg, var(--radish-primary-light-9) 0%, var(--radish-primary-light-8) 45%, var(--radish-deco-purple) 100%);
   padding: 20px;
 }
 
@@ -189,7 +189,7 @@ onUnmounted(() => {
   max-width: 420px;
   padding: 40px;
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radish-radius-xl);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
@@ -204,13 +204,13 @@ onUnmounted(() => {
 
 .forgot-header h2 {
   margin: 10px 0;
-  color: #303133;
-  font-size: 24px;
+  color: var(--radish-text-primary);
+  font-size: var(--radish-font-2xl);
 }
 
 .forgot-header p {
-  color: #909399;
-  font-size: 14px;
+  color: var(--radish-text-secondary);
+  font-size: var(--radish-font-base);
 }
 
 .captcha-wrapper {

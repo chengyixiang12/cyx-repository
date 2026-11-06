@@ -17,7 +17,7 @@
             <el-row :gutter="20" style="width: 100%;">
                 <el-col :span="24">
                     <div class="card-list">
-                        <el-card shadow="hover" v-for="(item, index) in visibleCards" :key="item.id" class="card-item" @click="goToDetail(item.id)">
+                        <el-card shadow="hover" v-for="item in visibleCards" :key="item.id" class="card-item" @click="goToDetail(item.id)">
                             <template #header>
                                 <div class="card-header">
                                     <span class="title">{{ item.title }}</span>
@@ -145,13 +145,13 @@ onMounted(() => {
 
 .card-container::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    border-radius: var(--radish-radius-sm);
 }
 
 .search-block {
-    background: #fff;
+    background: var(--radish-bg-card);
     padding: 10px;
-    border-radius: 4px;
+    border-radius: var(--radish-radius-sm);
 }
 
 .card-list {
@@ -184,8 +184,8 @@ onMounted(() => {
 .card-footer {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    color: #666;
+    font-size: var(--radish-font-xs);
+    color: var(--radish-text-regular);
 }
 
 .load-more-trigger {

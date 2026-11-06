@@ -85,8 +85,8 @@ const handleDropdownCommand = (command: string) => {
     align-items: center;
     justify-content: space-between;
     padding: 5px 5px 0;
-    background-color: #fff;
-    /* border-bottom: 1px solid #ebeef5; */
+    background-color: var(--radish-bg-card);
+    /* border-bottom: 1px solid var(--radish-border); */
 }
 
 .tabs-left {
@@ -98,18 +98,18 @@ const handleDropdownCommand = (command: string) => {
     display: flex;
     align-items: center;
     padding-left: 10px;
-    border-left: 1px solid #ebeef5;
+    border-left: 1px solid var(--radish-border);
 }
 
 .tabs-more-btn {
     padding: 4px 8px;
-    font-size: 14px;
-    color: #606266;
+    font-size: var(--radish-font-base);
+    color: var(--radish-text-regular);
     transition: color 0.2s;
 }
 
 .tabs-more-btn:hover {
-    color: #409eff;
+    color: var(--radish-primary);
 }
 
 /* ElTabs 本身背景透明去阴影 */
@@ -128,11 +128,11 @@ const handleDropdownCommand = (command: string) => {
 /* 每个 tab 的样式 */
 :deep(.el-tabs__item) {
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: var(--radish-font-xs);
     height: 32px;
     line-height: 32px;
-    color: #666;
-    background-color: #f4f4f5;
+    color: var(--radish-text-regular);
+    background-color: var(--radish-fill);
     transition: all 0.2s ease;
     margin-right: 2px;
     min-width: 60px;
@@ -144,27 +144,27 @@ const handleDropdownCommand = (command: string) => {
 
 /* 激活 tab */
 :deep(.el-tabs__item.is-active) {
-    background-color: #fff;
-    color: #409eff;
+    background-color: var(--radish-bg-card);
+    color: var(--radish-primary);
     font-weight: 500;
-    border-bottom: 2px solid #409eff;
+    border-bottom: 2px solid var(--radish-primary);
 }
 
 /* 悬浮 tab */
 :deep(.el-tabs__item:hover) {
-    background-color: #eaf4ff;
-    color: #409eff;
+    background-color: var(--radish-primary-light-9);
+    color: var(--radish-primary);
 }
 
 /* 关闭按钮样式 */
 :deep(.el-icon-close) {
-    font-size: 12px;
-    color: #bbb;
+    font-size: var(--radish-font-xs);
+    color: var(--radish-text-placeholder);
     margin-left: 4px;
     transition: color 0.2s;
 }
 
 :deep(.el-icon-close:hover) {
-    color: #f56c6c;
+    color: var(--radish-danger);
 }
 </style>

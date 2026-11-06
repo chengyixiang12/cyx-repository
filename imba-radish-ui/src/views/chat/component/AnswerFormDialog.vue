@@ -88,7 +88,7 @@ onMounted(() => {
 }
 .dialog-body-wrapper::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  border-radius: var(--radish-radius-sm);
 }
 
 .scrollable-form {

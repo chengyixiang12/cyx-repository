@@ -94,12 +94,12 @@ onUnmounted(() => {
 }
 
 .user-info-tip {
-  font-size: 16px;
-  color: #67c23a;
+  font-size: var(--radish-font-lg);
+  color: var(--radish-success);
   margin: 20px 0;
   padding: 10px;
-  background-color: #f0f9eb;
-  border-radius: 8px;
+  background-color: var(--radish-success-light);
+  border-radius: var(--radish-radius);
   display: inline-block;
 }
 
@@ -111,8 +111,8 @@ onUnmounted(() => {
 }
 
 .countdown-tip {
-  font-size: 14px;
-  color: #909399;
+  font-size: var(--radish-font-base);
+  color: var(--radish-text-secondary);
   margin-top: 16px;
 }
 

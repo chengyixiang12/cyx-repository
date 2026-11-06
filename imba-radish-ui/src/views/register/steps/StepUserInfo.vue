@@ -69,6 +69,6 @@ const goToLogin = () => {
 .login-link {
   margin-top: 10px;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
 }
 </style>

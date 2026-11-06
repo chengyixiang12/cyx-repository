@@ -32,39 +32,41 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f5f7fa;
+    background-color: var(--radish-fill);
   }
   
   .not-found-content {
     text-align: center;
     padding: 40px;
     background: white;
-    border-radius: 12px;
+    border-radius: var(--radish-radius-xl);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   
   .error-code {
-    font-size: 120px;
+    /* 404 巨型数字, 装饰性尺寸 */
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list */
+  font-size: 120px;
     font-weight: bold;
-    color: #f56c6c;
+    color: var(--radish-danger);
     line-height: 1;
     margin-bottom: 20px;
   }
   
   .error-message {
-    font-size: 24px;
-    color: #303133;
+    font-size: var(--radish-font-2xl);
+    color: var(--radish-text-primary);
     margin-bottom: 16px;
   }
   
   .error-desc {
-    font-size: 16px;
-    color: #909399;
+    font-size: var(--radish-font-lg);
+    color: var(--radish-text-secondary);
     margin-bottom: 24px;
   }
   
   .back-btn {
     padding: 12px 36px;
-    font-size: 16px;
+    font-size: var(--radish-font-lg);
   }
   </style>

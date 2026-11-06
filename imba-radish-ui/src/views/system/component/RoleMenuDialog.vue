@@ -129,8 +129,8 @@ const handleSubmit = () => {
 }
 
 .tree-tip {
-  font-size: 12px;
-  color: #909399;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
 }
 
 .tree-actions {
@@ -140,13 +140,13 @@ const handleSubmit = () => {
 
 .tree-count {
   margin-left: 8px;
-  font-size: 12px;
-  color: #606266;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-regular);
 }
 
 .tree-wrapper {
-  border: 1px solid #ebeef5;
-  border-radius: 8px;
+  border: 1px solid var(--radish-border);
+  border-radius: var(--radish-radius);
   padding: 8px;
   max-height: 55vh;
   overflow-y: auto;

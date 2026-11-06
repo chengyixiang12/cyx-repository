@@ -6,7 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "npm run lint:style && npm run lint:js",
+    "lint:style": "stylelint \"src/**/*.{vue,css}\"",
+    "lint:js": "eslint src",
+    "lint:fix": "stylelint \"src/**/*.{vue,css}\" --fix && eslint src --fix",
+    "format": "prettier --write \"src/**/*.{ts,vue,css}\""
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",

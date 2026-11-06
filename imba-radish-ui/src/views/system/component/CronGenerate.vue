@@ -323,12 +323,12 @@ onMounted(() => {
 
 .time-unit-selector :deep(.el-radio-button__inner) {
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
 }
 
 .config-options {
-  background-color: #f5f7fa;
-  border-radius: 6px;
+  background-color: var(--radish-fill);
+  border-radius: var(--radish-radius-sm);
   padding: 12px;
   margin-bottom: 15px;
   height: auto;
@@ -341,7 +341,7 @@ onMounted(() => {
   margin-bottom: 8px;
   padding: 6px 0;
   line-height: 1.4;
-  font-size: 13px;
+  font-size: var(--radish-font-sm);
 }
 
 .input-number {
@@ -367,8 +367,8 @@ onMounted(() => {
 }
 
 .section-title {
-  font-size: 14px;
-  color: #333;
+  font-size: var(--radish-font-base);
+  color: var(--radish-text-primary);
   margin: 0 0 12px 0;
   font-weight: 500;
 }
@@ -400,15 +400,15 @@ onMounted(() => {
 
 .run-time-list li {
   padding: 6px 0;
-  font-size: 13px;
-  color: #444;
+  font-size: var(--radish-font-sm);
+  color: var(--radish-text-regular);
   display: flex;
   align-items: center;
 }
 
 .time-icon {
   margin-right: 6px;
-  color: #4ecdc4;
+  color: var(--radish-deco-teal);
 }
 
 .drawer-footer {
@@ -418,8 +418,8 @@ onMounted(() => {
   right: 0;
   padding: 16px;
   text-align: right;
-  border-top: 1px solid #e8eaec;
-  background-color: #fff;
+  border-top: 1px solid var(--radish-border);
+  background-color: var(--radish-bg-card);
 }
 
 /* 响应式调整 */
@@ -432,7 +432,7 @@ onMounted(() => {
   .config-option {
     margin-bottom: 6px;
     padding: 5px 0;
-    font-size: 12px;
+    font-size: var(--radish-font-xs);
   }
 
   .input-number {
@@ -446,7 +446,7 @@ onMounted(() => {
 
   .value-checkbox {
     width: 36px;
-    font-size: 11px;
+    font-size: var(--radish-font-xs);
   }
 }
 
@@ -457,7 +457,7 @@ onMounted(() => {
   }
 
   .config-option {
-    font-size: 12px;
+    font-size: var(--radish-font-xs);
   }
 
   .input-number {
@@ -470,7 +470,7 @@ onMounted(() => {
   }
 
   ::v-deep .el-input-number__input {
-    font-size: 11px;
+    font-size: var(--radish-font-xs);
   }
 }
 </style>

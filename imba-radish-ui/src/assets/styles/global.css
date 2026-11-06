@@ -1,7 +1,7 @@
 /* 确保 html 和 body 可以产生滚动条 */
 html {
   overflow: auto;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
 }
 
 body {
@@ -11,13 +11,13 @@ body {
   overflow: auto;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: var(--radish-text-primary);
-  font-size: 14px;
+  font-size: var(--radish-font-base);
 }
 
 .el-select-dropdown__item {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 12px;
-  color: #303133;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-primary);
 }
 
 ::-webkit-scrollbar {
@@ -30,16 +30,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C9CDD4;
-  border-radius: 3px;
+  background: var(--radish-scrollbar);
+  border-radius: var(--radish-radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A9AEB8;
+  background: var(--radish-scrollbar-hover);
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: #86909C;
+  background: var(--radish-scrollbar-active);
 }
 
 ::-webkit-scrollbar-button {
@@ -89,16 +89,16 @@ body {
 }
 
 .main-left::-webkit-scrollbar-thumb {
-  background: #C9CDD4;
-  border-radius: 3px;
+  background: var(--radish-scrollbar);
+  border-radius: var(--radish-radius-sm);
 }
 
 .main-left::-webkit-scrollbar-thumb:hover {
-  background: #A9AEB8;
+  background: var(--radish-scrollbar-hover);
 }
 
 .main-left::-webkit-scrollbar-thumb:active {
-  background: #86909C;
+  background: var(--radish-scrollbar-active);
 }
 
 .list-header {
@@ -116,7 +116,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
+  font-size: var(--radish-font-md);
   font-weight: 600;
   color: var(--radish-text-primary);
 }
@@ -126,15 +126,8 @@ body {
   gap: 8px;
 }
 
-.search-container {
-  padding: 12px 14px;
-  background-color: var(--radish-bg-card);
-  border-radius: var(--radish-radius-lg);
-  margin: 10px 5px;
-  flex-shrink: 0;
-  box-shadow: var(--radish-shadow-card);
-}
-
+/* 列表页骨架(search-container / table-wrapper)已由 components/layout/ListPage.vue 接管,
+   这里只保留表单内部元素与操作列的公共样式 */
 .search-form {
   display: flex;
   flex-wrap: wrap;
@@ -148,18 +141,6 @@ body {
 
 .search-form .el-form-item {
   margin-bottom: 0;
-}
-
-.table-wrapper {
-  flex: 1;
-  min-height: 0;
-  background-color: var(--radish-bg-card);
-  border-radius: var(--radish-radius-lg);
-  margin: 0 5px;
-  overflow: hidden;
-  box-shadow: var(--radish-shadow-card);
-  /* 作为骨架屏的定位参照 */
-  position: relative;
 }
 
 .action-buttons-container {
@@ -213,7 +194,7 @@ body {
   background: linear-gradient(
     90deg,
     var(--radish-border-light) 25%,
-    #F7F8FA 37%,
+    var(--radish-fill) 37%,
     var(--radish-border-light) 63%
   );
   background-size: 400% 100%;
@@ -222,7 +203,7 @@ body {
 
 .sk-bar {
   height: 10px;
-  border-radius: 4px;
+  border-radius: var(--radish-radius-sm);
 }
 
 .sk-avatar {

@@ -356,12 +356,14 @@ watch(() => route.query.dialogueId, (val) => {
 .empty-logo {
   width: 64px;
   height: 64px;
+  /* 消息气泡: 最大圆角比卡片更大, 单独保留 */
+  /* stylelint-disable-next-line declaration-property-value-disallowed-list */
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
-  color: #fff;
+  font-size: var(--radish-font-3xl);
+  color: var(--radish-bg-card);
   background: linear-gradient(135deg, var(--radish-primary), var(--radish-primary-light-3));
   box-shadow: 0 8px 20px rgba(79, 110, 242, 0.35);
   margin-bottom: 20px;
@@ -369,14 +371,14 @@ watch(() => route.query.dialogueId, (val) => {
 
 .empty-title {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-size: var(--radish-font-xl);
   font-weight: 600;
   color: var(--radish-text-primary);
 }
 
 .empty-desc {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--radish-font-sm);
   color: var(--radish-text-secondary);
 }
 
@@ -388,7 +390,7 @@ watch(() => route.query.dialogueId, (val) => {
   gap: 6px;
   margin-bottom: 16px;
   padding: 6px 0;
-  font-size: 12px;
+  font-size: var(--radish-font-xs);
   color: var(--radish-text-secondary);
   cursor: pointer;
   user-select: none;
@@ -418,12 +420,12 @@ watch(() => route.query.dialogueId, (val) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: var(--radish-font-lg);
   margin-top: 2px;
 }
 
 .avatar.assistant {
-  color: #fff;
+  color: var(--radish-bg-card);
   background: linear-gradient(135deg, var(--radish-primary), var(--radish-primary-light-3));
   box-shadow: 0 2px 6px rgba(79, 110, 242, 0.3);
 }
@@ -440,15 +442,15 @@ watch(() => route.query.dialogueId, (val) => {
 
 .message-bubble {
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: var(--radish-radius-xl);
   word-break: break-word;
 }
 
 /* 用户消息: 主色实底气泡 */
 .user-bubble {
   background: var(--radish-primary);
-  color: #fff;
-  font-size: 14px;
+  color: var(--radish-bg-card);
+  font-size: var(--radish-font-base);
   line-height: 1.6;
   white-space: pre-wrap;
   border-bottom-right-radius: 4px;
@@ -479,7 +481,7 @@ watch(() => route.query.dialogueId, (val) => {
   padding: 14px 16px;
   background: var(--radish-bg-card);
   border: 1px solid var(--radish-border);
-  border-radius: 12px;
+  border-radius: var(--radish-radius-xl);
   border-bottom-left-radius: 4px;
 }
 
@@ -520,7 +522,7 @@ watch(() => route.query.dialogueId, (val) => {
   align-items: center;
   gap: 4px;
   padding: 4px 2px;
-  font-size: 12px;
+  font-size: var(--radish-font-xs);
   color: var(--radish-danger);
   cursor: pointer;
 }
@@ -530,7 +532,7 @@ watch(() => route.query.dialogueId, (val) => {
 }
 
 .error-tip .el-icon {
-  font-size: 14px;
+  font-size: var(--radish-font-base);
 }
 
 /* ---------- 输入区: 一体化卡片 ---------- */
@@ -555,7 +557,7 @@ watch(() => route.query.dialogueId, (val) => {
   border: none;
   box-shadow: none;
   background: transparent;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
   line-height: 1.6;
 }
 
@@ -565,14 +567,14 @@ watch(() => route.query.dialogueId, (val) => {
   bottom: 10px;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
-  font-size: 17px;
+  border-radius: var(--radish-radius-lg);
+  font-size: var(--radish-font-lg);
   padding: 0;
 }
 
 /* ---------- Markdown 定制 ---------- */
 :deep(.markdown-body) {
-  font-size: 14px;
+  font-size: var(--radish-font-base);
   line-height: 1.7;
   color: var(--radish-text-primary);
   background-color: transparent;
@@ -594,19 +596,19 @@ watch(() => route.query.dialogueId, (val) => {
 }
 
 :deep(.markdown-body h1) {
-  font-size: 19px;
+  font-size: var(--radish-font-xl);
   padding-bottom: 8px;
   border-bottom: 1px solid var(--radish-border-light);
 }
 
 :deep(.markdown-body h2) {
-  font-size: 17px;
+  font-size: var(--radish-font-lg);
   padding-bottom: 6px;
   border-bottom: 1px solid var(--radish-border-light);
 }
 
 :deep(.markdown-body h3) {
-  font-size: 15px;
+  font-size: var(--radish-font-md);
 }
 
 :deep(.markdown-body p) {
@@ -631,7 +633,7 @@ watch(() => route.query.dialogueId, (val) => {
   font-size: 0.9em;
   background-color: var(--radish-fill);
   border: 1px solid var(--radish-border-light);
-  border-radius: 4px;
+  border-radius: var(--radish-radius-sm);
   color: var(--radish-primary-dark-2);
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 }
@@ -640,7 +642,7 @@ watch(() => route.query.dialogueId, (val) => {
   padding: 12px 14px;
   margin-top: 8px;
   margin-bottom: 8px;
-  background-color: #282c34;
+  background-color: var(--radish-code-bg);
   border-radius: var(--radish-radius);
   overflow-x: auto;
   font-size: 0.9em;
@@ -651,7 +653,7 @@ watch(() => route.query.dialogueId, (val) => {
   background-color: transparent;
   border: none;
   border-radius: 0;
-  color: #abb2bf;
+  color: var(--radish-code-text);
 }
 
 :deep(.markdown-body blockquote) {

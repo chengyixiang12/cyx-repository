@@ -292,7 +292,7 @@ onMounted(() => {
 .profile-container {
   padding: 20px;
   height: 100%;
-  background-color: #f5f7fa;
+  background-color: var(--radish-fill);
 }
 
 .profile-card {
@@ -300,7 +300,7 @@ onMounted(() => {
 }
 
 .card-header {
-  font-size: 18px;
+  font-size: var(--radish-font-xl);
   font-weight: bold;
 }
 
@@ -314,7 +314,7 @@ onMounted(() => {
 }
 
 .user-avatar {
-  border: 2px solid #eaeaea;
+  border: 2px solid var(--radish-border);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
@@ -326,8 +326,8 @@ onMounted(() => {
 }
 
 .avatar-tip {
-  font-size: 12px;
-  color: #999;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
   margin: 0;
 }
 

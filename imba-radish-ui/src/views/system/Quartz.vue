@@ -1,38 +1,26 @@
 <template>
-  <div class="container">
-    <!-- 头部 -->
-    <div class="list-header">
-      <div class="header-title">
-        <span>定时任务</span>
-      </div>
-      <div class="right-header">
-        <el-button type="primary" @click="handleAdd">新增</el-button>
-      </div>
-    </div>
+  <ListPage title="定时任务" :loading="loading" :count="jobList.length" :columns="9" :model="searchForm">
+    <template #actions>
+      <el-button type="primary" @click="handleAdd">新增</el-button>
+    </template>
 
-    <!-- 搜索条件 -->
-    <div class="search-container">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="关键字:">
-          <el-input v-model="searchForm.keyword" placeholder="任务名称/任务组" clearable class="keyword-input" />
-        </el-form-item>
-        <el-form-item label="任务状态:">
-          <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
-            <el-option label="启用" :value="1" />
-            <el-option label="暂停" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button type="primary" @click="resetSearch">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <template #search>
+      <el-form-item label="关键字:">
+        <el-input v-model="searchForm.keyword" placeholder="任务名称/任务组" clearable class="keyword-input" />
+      </el-form-item>
+      <el-form-item label="任务状态:">
+        <el-select v-model="searchForm.status" placeholder="请选择" clearable style="width: 100px">
+          <el-option label="启用" :value="1" />
+          <el-option label="暂停" :value="0" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button type="primary" @click="resetSearch">重置</el-button>
+      </el-form-item>
+    </template>
 
-    <!-- 任务表格 -->
-    <div class="table-wrapper">
-      <TableSkeleton :loading="loading" :count="jobList.length" :columns="9" />
-      <el-table :data="jobList" border size="small" style="width: 100%" v-loading="loading && jobList.length > 0" height="calc(100vh - 325px)">
+    <el-table :data="jobList" border size="small" style="width: 100%" v-loading="loading && jobList.length > 0" height="100%">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -94,15 +82,13 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
 
-    <!-- 分页 -->
-    <div class="pagination">
+    <template #footer>
       <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
         :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
         @current-change="handlePageChange" @size-change="handleSizeChange" />
-    </div>
-  </div>
+    </template>
+  </ListPage>
 
   <!-- 新增任务弹窗 -->
   <job-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible"
@@ -114,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted } from 'vue'
 import JobFormDialog from './component/JobFormDialog.vue'
 import { getQuartzTasksApi, createJobApi, startJobApi, stopJobApi, editJobApi, deleteJobApi, execImmediately } from '@/api/quartz'

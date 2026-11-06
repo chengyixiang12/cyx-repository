@@ -1,20 +1,15 @@
 <template>
-    <div class="container">
-        <!-- 头部: 返回按钮统一在左上角 -->
-        <div class="list-header">
-            <div class="header-title">
-                <el-button link @click="goBack" class="go-back">
-                    <el-icon><ArrowLeft /></el-icon>返回
-                </el-button>
-                <el-divider direction="vertical" />
-                <span>执行记录</span>
-            </div>
-        </div>
+  <ListPage :loading="loading" :count="tableData.length" :columns="9" :model="searchForm">
+    <template #prefix>
+      <el-button link @click="goBack">
+        <el-icon><ArrowLeft /></el-icon>返回
+      </el-button>
+    </template>
 
-        <!-- 搜索条件区域 -->
-        <div class="search-container">
-            <el-form :model="searchForm" inline class="search-form">
-                <el-form-item label="模糊查询">
+    <template #title>执行记录</template>
+
+    <template #search>
+      <el-form-item label="模糊查询">
                     <el-input v-model="searchForm.keyword" placeholder="请输入任务名称/任务组" clearable class="keyword-input" />
                 </el-form-item>
                 <el-form-item label="执行时间">
@@ -24,14 +19,10 @@
                 <el-form-item>
                     <el-button type="primary" @click="handleSearch">查询</el-button>
                     <el-button type="primary" @click="handleReset">重置</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+      </el-form-item>
+    </template>
 
-        <!-- 数据列表区域 -->
-        <div class="table-wrapper">
-            <TableSkeleton :loading="loading" :count="tableData.length" :columns="9" />
-            <el-table v-loading="loading && tableData.length > 0" :data="tableData" border size="small" style="width: 100%" height="calc(100vh - 325px)">
+    <el-table v-loading="loading && tableData.length > 0" :data="tableData" border size="small" style="width: 100%" height="100%">
                 <el-table-column type="index" label="序号" min-width="50" align="center" />
                 <el-table-column prop="jobName" label="任务名称" min-width="120" show-overflow-tooltip />
                 <el-table-column prop="jobType" label="任务类型" min-width="120" />
@@ -61,30 +52,28 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </div>
 
-        <!-- 分页 -->
-        <div class="pagination">
-            <el-pagination v-model:current-page="pagination.pageNum" v-model:page-size="pagination.pageSize"
-                :page-sizes="[10, 20, 50, 100]" :total="pagination.total"
-                layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange"
-                @current-change="handlePageChange" />
-        </div>
+    <template #footer>
+      <el-pagination v-model:current-page="pagination.pageNum" v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]" :total="pagination.total"
+        layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange"
+        @current-change="handlePageChange" />
+    </template>
+  </ListPage>
 
-        <!-- 执行日志弹窗 -->
-        <el-dialog v-model="logDialogVisible" title="执行日志" width="800px">
-            <pre class="log-content">{{ currentLog }}</pre>
-        </el-dialog>
+  <!-- 执行日志弹窗 -->
+  <el-dialog v-model="logDialogVisible" title="执行日志" width="800px">
+    <pre class="log-content">{{ currentLog }}</pre>
+  </el-dialog>
 
-        <!-- 任务执行参数弹窗 -->
-        <el-dialog v-model="paramsDialogVisible" title="任务执行参数" width="600px">
-            <pre class="params-content">{{ currentParams }}</pre>
-        </el-dialog>
-    </div>
+  <!-- 任务执行参数弹窗 -->
+  <el-dialog v-model="paramsDialogVisible" title="任务执行参数" width="600px">
+    <pre class="params-content">{{ currentParams }}</pre>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { getLogDetailApi, getQuartzRecordListApi } from '@/api/quartzRecord'
 import { GetQuartzRecordListVo } from '@/types/quartzRecord'
 import { ref, reactive, onMounted } from 'vue'
@@ -200,7 +189,7 @@ onMounted(() => {
 <style scoped>
 /* 返回按钮: 统一左上角, link 风格 */
 .go-back {
-    font-size: 14px;
+    font-size: var(--radish-font-base);
     color: var(--radish-text-regular);
 }
 
@@ -217,10 +206,10 @@ onMounted(() => {
     max-height: 400px;
     overflow: auto;
     padding: 15px;
-    background-color: #f5f7fa;
-    border-radius: 4px;
+    background-color: var(--radish-fill);
+    border-radius: var(--radish-radius-sm);
     font-family: monospace;
-    font-size: 12px;
+    font-size: var(--radish-font-xs);
     line-height: 1.6;
 }
 </style>

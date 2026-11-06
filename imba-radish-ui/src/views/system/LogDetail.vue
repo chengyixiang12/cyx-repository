@@ -108,7 +108,7 @@ onMounted(() => {
 <style scoped>
 /* 返回按钮: 统一左上角, link 风格 */
 .go-back {
-    font-size: 14px;
+    font-size: var(--radish-font-base);
     color: var(--radish-text-regular);
 }
 
@@ -155,7 +155,7 @@ onMounted(() => {
 .field-label {
     font-weight: 600;
     color: var(--radish-text-secondary);
-    font-size: 14px;
+    font-size: var(--radish-font-base);
 }
 
 .field-label::after {
@@ -164,7 +164,7 @@ onMounted(() => {
 
 .field-value {
     color: var(--radish-text-primary);
-    font-size: 14px;
+    font-size: var(--radish-font-base);
     line-height: 1.5;
     word-break: break-all;
 }
@@ -191,7 +191,7 @@ onMounted(() => {
     white-space: pre-wrap;
     word-break: break-word;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
+    font-size: var(--radish-font-sm);
     line-height: 1.6;
     max-height: 420px;
     overflow-y: auto;

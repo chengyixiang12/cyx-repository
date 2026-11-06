@@ -55,7 +55,7 @@ export class RSAUtil {
         : forge.util.bytesToHex(encrypted);
 
     } catch (error) {
-      throw new Error(`RSA encryption failed: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(`RSA encryption failed: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     }
   }
 

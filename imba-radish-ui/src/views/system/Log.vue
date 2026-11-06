@@ -1,41 +1,26 @@
 <template>
-    <div class="container">
-        <!-- 头部 -->
-        <div class="list-header">
-            <div class="header-title">
-                <span>日志管理</span>
-            </div>
-            <div class="right-header">
-            </div>
-        </div>
+    <ListPage title="日志管理" :loading="loading" :count="logList.length" :columns="10" :model="searchForm">
+    <template #search>
+      <el-form-item label="关键字:">
+          <el-input v-model="searchForm.keyword" placeholder="模块名称/请求ip/访问路径" clearable
+              class="keyword-input" />
+      </el-form-item>
+      <el-form-item label="日志级别:">
+          <el-select v-model="searchForm.logLevel" placeholder="请选择" clearable
+              style="width: 100px">
+              <el-option label="普通" :value="1" />
+              <el-option label="警告" :value="2" />
+              <el-option label="错误" :value="3" />
+          </el-select>
+      </el-form-item>
 
-        <!-- 搜索条件 -->
-        <div class="search-container">
-            <el-form :inline="true" :model="searchForm" class="search-form">
-                <el-form-item label="关键字:">
-                    <el-input v-model="searchForm.keyword" placeholder="模块名称/请求ip/访问路径" clearable
-                        class="keyword-input" />
-                </el-form-item>
-                <el-form-item label="日志级别:">
-                    <el-select v-model="searchForm.logLevel" placeholder="请选择" clearable
-                        style="width: 100px">
-                        <el-option label="普通" :value="1" />
-                        <el-option label="警告" :value="2" />
-                        <el-option label="错误" :value="3" />
-                    </el-select>
-                </el-form-item>
+      <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button type="primary" @click="resetSearch">重置</el-button>
+      </el-form-item>
+    </template>
 
-                <el-form-item>
-                    <el-button type="primary" @click="handleSearch">查询</el-button>
-                    <el-button type="primary" @click="resetSearch">重置</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
-
-        <!-- 日志表格 -->
-        <div class="table-wrapper">
-            <TableSkeleton :loading="loading" :count="logList.length" :columns="10" />
-            <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading && logList.length > 0" height="calc(100vh - 325px)">
+    <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading && logList.length > 0" height="100%">
                 <el-table-column label="序号" min-width="50" align="center">
                     <template #default="scope">
                         {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -79,20 +64,18 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </div>
 
-        <!-- 分页 -->
-        <div class="pagination">
-            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize"
-                :total="total" :page-sizes="[10, 20, 50, 100]"
-                layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
-                @size-change="handleSizeChange" />
-        </div>
-    </div>
+    <template #footer>
+      <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize"
+          :total="total" :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
+          @size-change="handleSizeChange" />
+    </template>
+  </ListPage>
 </template>
 
 <script lang="ts" setup>
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted } from 'vue'
 import { getLogsApi, deleteLogApi } from '@/api/log'
 import type { LogsRequest, LogsVo } from '@/types/log'

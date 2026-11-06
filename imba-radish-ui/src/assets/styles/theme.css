@@ -24,6 +24,9 @@
   --radish-text-primary:   #1F2D3D;  /* 标题 */
   --radish-text-regular:   #4E5969;  /* 正文 */
   --radish-text-secondary: #86909C;  /* 辅助 */
+  --radish-text-placeholder: #C0C4CC; /* 占位符/禁用 */
+  --radish-success-light: #F0F9EB;   /* 成功提示底 */
+  --radish-danger-light:  #FCEBEB;   /* 危险提示底 */
   --radish-border:         #E5E6EB;  /* 分割线 */
   --radish-border-light:   #F0F1F3;  /* 次级分割线 */
   --radish-fill:           #F7F8FA;  /* 填充底色 */
@@ -64,6 +67,32 @@
   /* ---------- 动效 ---------- */
   --radish-transition: 0.2s ease;
 
+  /* ---------- 滚动条 ---------- */
+  --radish-scrollbar: #C9CDD4;
+  --radish-scrollbar-hover: #A9AEB8;
+  --radish-scrollbar-active: #86909C;
+
+  /* ---------- 品牌装饰渐变 (登录页/首页欢迎卡) ---------- */
+  --radish-grad-welcome: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+  --radish-grad-mint: linear-gradient(135deg, #11998E 0%, #38EF7D 100%);
+  --radish-grad-sunset: linear-gradient(135deg, #F7B733 0%, #FC4A1A 100%);
+  --radish-grad-candy: linear-gradient(135deg, #A18CD1 0%, #FBC2EB 100%);
+  --radish-grad-violet: linear-gradient(135deg, #8F5AE0 0%, #6A5AE0 100%);
+  --radish-grad-brand: linear-gradient(120deg, var(--radish-primary) 0%, #6A5AE0 55%, #8F5AE0 100%);
+  --radish-deco-purple: #F3F0FE;
+  --radish-deco-teal: #4ECDC4;   /* 登录/注册页装饰浅紫 */
+
+  /* ---------- 组件健康状态胶囊 (系统监控) ---------- */
+  --radish-status-up-bg: #EAF3DE;
+  --radish-status-up-text: #3B6D11;
+  --radish-status-down-text: #A32D2D;
+  --radish-status-unknown-bg: #F1EFE8;
+  --radish-status-unknown-text: #5F5E5A;
+
+  /* ---------- 代码块 (AI 对话 Markdown 高亮) ---------- */
+  --radish-code-bg: #282C34;
+  --radish-code-text: #ABB2BF;
+
   /* ---------- 布局 ---------- */
   --radish-header-height: 56px;
   --radish-footer-height: 36px;
@@ -72,6 +101,7 @@
   --radish-radius: 8px;
   --radish-radius-lg: 10px;
   --radish-radius-xl: 12px;
+  --radish-radius-round: 999px;  /* 胶囊/圆形 */
   --radish-shadow-card: 0 1px 2px rgba(31, 45, 61, 0.04), 0 2px 8px rgba(31, 45, 61, 0.06);
   --radish-shadow-pop: 0 4px 16px rgba(31, 45, 61, 0.12);
 
@@ -170,6 +200,12 @@
 /* 标签页: 激活项带主色胶囊底 */
 .el-tabs__item.is-active {
   font-weight: 600;
+}
+
+/* 开关: 开启绿 / 关闭红, 全站统一, 组件上不要再写 active-color */
+.el-switch {
+  --el-switch-on-color: var(--radish-success);
+  --el-switch-off-color: var(--radish-danger);
 }
 
 /* 下拉菜单 / 气泡: 阴影柔和 */

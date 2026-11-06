@@ -136,7 +136,7 @@ function createRouteFromMenu(menu: MenuItem, parentPath = ''): RouteRecordRaw {
   }
 
   // 确保 path 为相对片段（去除前后斜杠），这样才能正确拼接在父级路由下
-  let cleanPath = menu.path.replace(/^\/|\/$/g, '')
+  const cleanPath = menu.path.replace(/^\/|\/$/g, '')
   // 可以保留一个前导/用于显示，但实际注册路由时使用相对路径更安全
   // 这里根据业务习惯：如果是根级菜单可能期望绝对路径，但作为 MainLayout 的子路由必须相对。
   // 我们统一处理为相对路径，由 addDynamicRoutes 添加到 MainLayout 时自动拼接。

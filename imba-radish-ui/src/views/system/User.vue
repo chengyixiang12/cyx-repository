@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <div class="page-layout">
+  <ListPage title="用户管理" :loading="loading" :count="userList.length" :columns="11" :model="searchForm">
+    <template #aside>
       <!-- 左侧组织架构树: 可收起面板 -->
       <aside class="tree-panel" :class="{ 'is-collapsed': isTreeCollapsed }">
         <template v-if="!isTreeCollapsed">
@@ -44,25 +44,14 @@
           <span class="tree-collapsed-label">组织架构</span>
         </div>
       </aside>
+    </template>
 
-      <!-- 右侧用户表格 -->
-      <section class="user-right-container">
-          <!-- 头部 -->
-          <div class="list-header">
-            <div class="header-title">
-              <span>用户管理</span>
-            </div>
-            <div class="right-header">
-              <el-button type="primary" @click="handleAdd">
-                新增
-              </el-button>
-            </div>
-          </div>
+    <template #actions>
+      <el-button type="primary" @click="handleAdd">新增</el-button>
+    </template>
 
-          <!-- 搜索条件 -->
-          <div class="search-container">
-            <el-form :inline="true" :model="searchForm" class="search-form">
-              <el-form-item label="关键字:">
+    <template #search>
+      <el-form-item label="关键字:">
                 <el-input v-model="searchForm.nameLikeQry" placeholder="用户名/昵称" clearable class="keyword-input" />
               </el-form-item>
               <el-form-item label="状态:">
@@ -81,13 +70,9 @@
                 <el-button type="primary" @click="handleSearch">查询</el-button>
                 <el-button type="primary" @click="resetSearch">重置</el-button>
               </el-form-item>
-            </el-form>
-          </div>
+    </template>
 
-          <!-- 用户表格 -->
-          <div class="table-wrapper">
-            <TableSkeleton :loading="loading" :count="userList.length" :columns="11" avatar />
-            <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading && userList.length > 0" height="calc(100vh - 325px)">
+    <el-table :data="userList" border size="small" style="width: 100%" v-loading="loading && userList.length > 0" height="100%">
               <el-table-column label="序号" min-width="50" align="center">
                 <template #default="scope">
                   {{ (pagination.current - 1) * pagination.size + scope.$index + 1 }}
@@ -164,18 +149,14 @@
                   </div>
                 </template>
               </el-table-column>
-            </el-table>
-          </div>
+    </el-table>
 
-          <!-- 分页 -->
-          <div class="pagination">
-            <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
-              :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handlePageChange" @size-change="handleSizeChange" />
-          </div>
-      </section>
-    </div>
-  </div>
+    <template #footer>
+      <el-pagination :current-page="pagination.current" :page-size="pagination.size" :total="pagination.total"
+        :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
+        @current-change="handlePageChange" @size-change="handleSizeChange" />
+    </template>
+  </ListPage>
 
   <user-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" :deptTree="deptTree"
     @submit="handleAddSubmit" />
@@ -186,7 +167,7 @@
 </template>
 
 <script lang="ts" setup>
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted, nextTick, computed } from 'vue'
 import { getDeptTreeApi } from '@/api/dept'
 import {
@@ -424,14 +405,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 页面布局: 左树右表, 弹性分栏 */
-.page-layout {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  gap: 12px;
-}
-
 /* ---------- 左侧组织架构面板: 可收起 ---------- */
 .tree-panel {
   width: 230px;
@@ -464,7 +437,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
   font-weight: 600;
   color: var(--radish-text-primary);
   white-space: nowrap;
@@ -472,7 +445,7 @@ onMounted(() => {
 
 .tree-header-title .el-icon {
   color: var(--radish-primary);
-  font-size: 16px;
+  font-size: var(--radish-font-lg);
 }
 
 /* 收起/展开按钮 */
@@ -528,12 +501,12 @@ onMounted(() => {
   align-items: center;
   gap: 6px;
   min-width: 0;
-  font-size: 13px;
+  font-size: var(--radish-font-sm);
 }
 
 .tree-node-icon {
   flex-shrink: 0;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
   color: var(--radish-text-secondary);
   transition: color 0.15s;
 }
@@ -559,35 +532,26 @@ onMounted(() => {
 }
 
 .tree-collapsed-bar .tree-toggle-btn {
-  font-size: 16px;
+  font-size: var(--radish-font-lg);
 }
 
 .tree-collapsed-label {
   writing-mode: vertical-lr;
   letter-spacing: 5px;
-  font-size: 12px;
+  font-size: var(--radish-font-xs);
   color: var(--radish-text-secondary);
   user-select: none;
 }
 
 /* ---------- 右侧用户容器 ---------- */
-.user-right-container {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  border-radius: var(--radish-radius);
-  box-shadow: var(--radish-shadow-card);
-}
-
 /* 设备在线状态标签: 在线时可点击强制下线 */
 .device-tag {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 12px;
+  border-radius: var(--radish-radius-round);
+  font-size: var(--radish-font-xs);
   user-select: none;
   transition: all 0.2s;
 }
@@ -599,28 +563,28 @@ onMounted(() => {
 }
 
 .device-tag.is-online {
-  background: #E8FFEA;
-  color: #00B42A;
+  background: var(--radish-success-light);
+  color: var(--radish-success);
   cursor: pointer;
 }
 
 .device-tag.is-online .dot {
-  background: #00B42A;
+  background: var(--radish-success);
 }
 
 .device-tag.is-online:hover {
-  background: #00B42A;
-  color: #fff;
+  background: var(--radish-success);
+  color: var(--radish-bg-card);
   box-shadow: 0 2px 6px rgba(0, 180, 42, 0.35);
 }
 
 .device-tag.is-offline {
-  background: #F2F3F5;
-  color: #86909C;
+  background: var(--radish-bg-page);
+  color: var(--radish-text-secondary);
   cursor: not-allowed;
 }
 
 .device-tag.is-offline .dot {
-  background: #C0C4CC;
+  background: var(--radish-text-placeholder);
 }
 </style>

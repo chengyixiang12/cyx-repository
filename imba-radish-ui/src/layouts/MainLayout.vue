@@ -421,7 +421,7 @@ onMounted(() => {
 
 .footer-content {
     text-align: center;
-    font-size: 12px;
+    font-size: var(--radish-font-xs);
     color: var(--radish-text-secondary);
 }
 
@@ -449,7 +449,7 @@ onMounted(() => {
 }
 
 .system-name {
-    font-size: 17px;
+    font-size: var(--radish-font-lg);
     font-weight: 700;
     color: var(--radish-text-primary);
     letter-spacing: 0.5px;
@@ -461,7 +461,7 @@ onMounted(() => {
     align-items: center;
     cursor: pointer;
     padding: 6px 12px;
-    border-radius: 999px;
+    border-radius: var(--radish-radius-round);
     transition: background 0.25s;
 }
 
@@ -471,7 +471,7 @@ onMounted(() => {
 
 .user-name {
     margin-left: 10px;
-    font-size: 14px;
+    font-size: var(--radish-font-base);
     color: var(--radish-text-primary);
 }
 
@@ -505,7 +505,7 @@ onMounted(() => {
 /* ---------- 顶栏图标 ---------- */
 .home-icon {
     margin-right: 16px;
-    font-size: 20px;
+    font-size: var(--radish-font-xl);
     cursor: pointer;
     transition: color 0.25s;
     color: var(--radish-text-regular);
@@ -526,7 +526,7 @@ onMounted(() => {
 
 /* 消息图标基础样式 */
 .message-icon {
-    font-size: 20px;
+    font-size: var(--radish-font-xl);
     color: var(--radish-text-regular);
     cursor: pointer;
     transition: color 0.25s;
@@ -567,7 +567,7 @@ onMounted(() => {
 
 .collapse-icon {
     margin-right: 15px;
-    font-size: 20px;
+    font-size: var(--radish-font-xl);
     cursor: pointer;
     transition: color 0.25s;
     color: var(--radish-text-regular);

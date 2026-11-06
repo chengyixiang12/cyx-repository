@@ -104,7 +104,6 @@ const formRules = {
   ]
 }
 
-const deptTree = ref<DeptTreeVo[]>([])
 const roleOptions = ref<GetRoleSelectVo[]>([])
 
 const handleClose = () => {
@@ -157,7 +156,6 @@ const filterNode = (value: string, data: DeptTreeVo) => {
 }
 
 onMounted(async () => {
-  deptTree.value = props.deptTree
   await loadRoles()
   if (props.userId) {
     await getUserById(props.userId)

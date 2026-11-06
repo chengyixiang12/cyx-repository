@@ -1,22 +1,11 @@
 <template>
-  <div class="container">
-    <!-- 头部 -->
-    <div class="list-header">
-      <div class="header-title">
-        <span>密钥管理</span>
-      </div>
-      <div class="right-header">
-        <el-button type="primary" @click="handleOpenGenerateDialog">
-          生成密钥
-        </el-button>
-      </div>
-    </div>
+  <ListPage title="密钥管理" :loading="loading" :count="keyList.length" :columns="8">
+    <template #actions>
+      <el-button type="primary" @click="handleOpenGenerateDialog">生成密钥</el-button>
+    </template>
 
-    <!-- 密钥表格 -->
-    <div class="table-wrapper">
-      <TableSkeleton :loading="loading" :count="keyList.length" :columns="8" />
-      <el-table :data="keyList" border size="small" style="width: 100%" v-loading="loading && keyList.length > 0"
-        height="calc(100vh - 270px)" :row-class-name="tableRowClassName">
+    <el-table :data="keyList" border size="small" style="width: 100%" v-loading="loading && keyList.length > 0"
+      height="100%" :row-class-name="tableRowClassName">
         <el-table-column label="序号" min-width="50" align="center">
           <template #default="scope">
             {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -37,11 +26,11 @@
         <el-table-column label="密钥" align="center" show-overflow-tooltip min-width="300">
           <template #default="scope">
             <el-tag v-if="scope.row.secretType === '1' && scope.row.publicKey"
-              type="info" style="font-family: monospace; font-size: 12px; max-width: 280px; overflow: hidden; text-overflow: ellipsis;">
+              type="info" style="font-family: monospace; font-size: var(--radish-font-xs); max-width: 280px; overflow: hidden; text-overflow: ellipsis;">
               {{ scope.row.publicKey }}
             </el-tag>
             <el-tag v-else-if="scope.row.secretType === '2' && scope.row.privateKey"
-              type="warning" style="font-family: monospace; font-size: 12px; max-width: 280px; overflow: hidden; text-overflow: ellipsis;">
+              type="warning" style="font-family: monospace; font-size: var(--radish-font-xs); max-width: 280px; overflow: hidden; text-overflow: ellipsis;">
               {{ scope.row.privateKey }}
             </el-tag>
             <span v-else class="no-key">未生成</span>
@@ -62,47 +51,45 @@
             </el-popconfirm>
           </template>
         </el-table-column>
-      </el-table>
-    </div>
+    </el-table>
 
-    <!-- 分页 -->
-    <div class="pagination">
+    <template #footer>
       <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize" :total="total"
         :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
         @current-change="handlePageChange" @size-change="handleSizeChange" />
-    </div>
+    </template>
+  </ListPage>
 
-    <!-- 生成密钥对话框 -->
-    <el-dialog v-model="dialogVisible" title="生成密钥" width="480px" :close-on-click-modal="false">
-      <el-form ref="formRef" :model="generateForm" :rules="formRules" label-width="100px">
-        <el-form-item label="密钥类型" prop="type">
-          <el-select v-model="generateForm.type" placeholder="请选择密钥类型" style="width: 100%">
-            <el-option v-for="(label, key) in typeMap" :key="key" :label="label" :value="key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="算法" prop="secretType">
-          <el-radio-group v-model="generateForm.secretType">
-            <el-radio v-for="opt in SECRET_TYPE_OPTIONS" :key="opt.value" :value="opt.value">
-              {{ opt.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="描述" prop="description">
-          <el-input v-model="generateForm.description" placeholder="可选：输入描述信息" maxlength="200" show-word-limit />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="generating" @click="handleGenerate">
-          确认生成
-        </el-button>
-      </template>
-    </el-dialog>
-  </div>
+  <!-- 生成密钥对话框 -->
+  <el-dialog v-model="dialogVisible" title="生成密钥" width="480px" :close-on-click-modal="false">
+    <el-form ref="formRef" :model="generateForm" :rules="formRules" label-width="100px">
+      <el-form-item label="密钥类型" prop="type">
+        <el-select v-model="generateForm.type" placeholder="请选择密钥类型" style="width: 100%">
+          <el-option v-for="(label, key) in typeMap" :key="key" :label="label" :value="key" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="算法" prop="secretType">
+        <el-radio-group v-model="generateForm.secretType">
+          <el-radio v-for="opt in SECRET_TYPE_OPTIONS" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
+          </el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="描述" prop="description">
+        <el-input v-model="generateForm.description" placeholder="可选：输入描述信息" maxlength="200" show-word-limit />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="dialogVisible = false">取消</el-button>
+      <el-button type="primary" :loading="generating" @click="handleGenerate">
+        确认生成
+      </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import TableSkeleton from '@/components/skeleton/TableSkeleton.vue'
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted, reactive } from 'vue'
 import { getSecretKeyListApi, generateKeyApi } from '@/api/secretKey'
 import type { GetSecretKeyListRequest, SysSecretKeyVo, GenerateKeyRequest } from '@/types/secretKey'
@@ -200,7 +187,7 @@ onMounted(() => {
 
 <style scoped>
 .no-key {
-  color: #999;
-  font-size: 12px;
+  color: var(--radish-text-secondary);
+  font-size: var(--radish-font-xs);
 }
 </style>

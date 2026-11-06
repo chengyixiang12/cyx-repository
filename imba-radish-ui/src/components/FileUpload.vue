@@ -165,6 +165,6 @@ const customChunkUpload = async (options: any) => {
 }
 
 :deep(.el-dialog__title) {
-  font-size: 16px !important;
+  font-size: var(--radish-font-lg) !important;
 }
 </style>
