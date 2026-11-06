@@ -45,13 +45,13 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
     private final AESUtil aesUtil;
 
-    @Cacheable(cacheNames = "cyx:rsa:public", key = "#type")
+    @Cacheable(cacheNames = "radish:rsa:public", key = "#type")
     @Override
     public String getPublicKey(Integer type) {
         return sysSecretKeyMapper.getPublicKey(type);
     }
 
-    @Cacheable(cacheNames = "cyx:rsa:private", key = "#type")
+    @Cacheable(cacheNames = "radish:rsa:private", key = "#type")
     @Override
     public String getPrivateKey(Integer type) {
         return sysSecretKeyMapper.getPrivateKey(type);

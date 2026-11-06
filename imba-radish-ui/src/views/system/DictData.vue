@@ -1,7 +1,9 @@
 <template>
   <ListPage :loading="loading" :count="dictDataList.length" :columns="7" :model="searchForm">
     <template #prefix>
-      <el-button type="primary" @click="goBack">返回</el-button>
+      <el-button link @click="goBack">
+        <el-icon><ArrowLeft /></el-icon>返回
+      </el-button>
     </template>
 
     <template #title>{{ route.query.dictName }}</template>
@@ -85,6 +87,7 @@
 <script lang="ts" setup>
 import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted } from 'vue'
+import { ArrowLeft } from '@element-plus/icons-vue'
 import { useRouter, useRoute } from 'vue-router'
 
 import type { DictDatasRequest, DictDatasVo, SaveDictDataRequest } from '@/types/dictData'
