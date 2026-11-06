@@ -1,7 +1,6 @@
 package com.soft.sys.core.conf;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.springframework.amqp.support.converter.JacksonJsonMessageConverter;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +11,6 @@ import tools.jackson.databind.ext.javatime.deser.LocalTimeDeserializer;
 import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
 import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
 import tools.jackson.databind.ext.javatime.ser.LocalTimeSerializer;
-import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
 import java.time.LocalDate;
@@ -62,11 +60,6 @@ public class JacksonConfig {
                 .defaultTimeZone(TimeZone.getTimeZone(DEFAULT_TIME_ZONE))
                 // 全局 Java 时间格式，替代字段上的 @JsonFormat
                 .addModule(javaTimeModule());
-    }
-
-    @Bean
-    public JacksonJsonMessageConverter jacksonJsonMessageConverter(JsonMapper jsonMapper) {
-        return new JacksonJsonMessageConverter(jsonMapper);
     }
 
     /**

@@ -9,7 +9,7 @@ import com.soft.sys.core.handle.LogoutAfterSuccessHandler;
 import com.soft.sys.properties.AuthorizationIgnoreProperty;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.properties.RateLimitProperty;
-import com.soft.sys.rabbitmq.producer.SysLogProduce;
+import com.soft.sys.event.SysLogPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +52,7 @@ public class SecurityConfig {
     private final AuthorizationIgnoreProperty authorizationIgnoreProperty;
     private final RateLimitProperty rateLimitProperty;
     private final RadishProperty radishProperty;
-    private final SysLogProduce sysLogProduce;
+    private final SysLogPublisher sysLogProduce;
     private final PathMatcher pathMatcher;
 
     /**

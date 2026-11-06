@@ -6,7 +6,7 @@ import com.soft.common.constants.RegexConstant;
 import com.soft.common.annotation.AccessControl;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.properties.RadishProperty;
-import com.soft.sys.rabbitmq.producer.EmailProduce;
+import com.soft.sys.event.EmailPublisher;
 import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysUsersService;
 import com.soft.common.utils.CommonUtil;
@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class MessageController {
 
-    private final EmailProduce emailProduce;
+    private final EmailPublisher emailProduce;
 
     private final RedisTemplate<String, Object> redisTemplate;
 

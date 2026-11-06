@@ -7,7 +7,7 @@ import com.soft.common.resultapi.R;
 import com.soft.sys.enums.LogLevelEnum;
 import com.soft.sys.model.dto.LogDTO;
 import com.soft.sys.properties.RadishProperty;
-import com.soft.sys.rabbitmq.producer.SysLogProduce;
+import com.soft.sys.event.SysLogPublisher;
 import com.soft.sys.utils.SecurityUtil;
 import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +49,7 @@ public class SysLogAspect {
 
     private final RadishProperty radishProperty;
 
-    private final SysLogProduce sysLogProduce;
+    private final SysLogPublisher sysLogProduce;
 
     private final SecurityUtil securityUtil;
 

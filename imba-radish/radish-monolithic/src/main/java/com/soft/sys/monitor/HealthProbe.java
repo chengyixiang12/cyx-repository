@@ -39,7 +39,6 @@ public class HealthProbe {
     private static final List<ComponentDef> COMPONENTS = List.of(
             new ComponentDef("db", "数据库"),
             new ComponentDef("redis", "Redis"),
-            new ComponentDef("rabbit", "RabbitMQ"),
             new ComponentDef("diskSpace", "磁盘空间"),
             new ComponentDef("ssl", "SSL 证书")
     );

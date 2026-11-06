@@ -23,7 +23,7 @@ import com.soft.sys.model.request.SaveUserDTO;
 import com.soft.sys.model.vo.GetUserVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.model.vo.UsersVO;
-import com.soft.sys.rabbitmq.producer.EmailProduce;
+import com.soft.sys.event.EmailPublisher;
 import com.soft.sys.service.*;
 import com.soft.common.utils.CommonUtil;
 import com.soft.common.utils.RSAUtil;
@@ -73,7 +73,7 @@ public class SysUsersServiceImpl extends ServiceImpl<SysUsersMapper, SysUser> im
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final EmailProduce emailProduce;
+    private final EmailPublisher emailProduce;
 
     private final ForceOfflineService forceOfflineService;
 

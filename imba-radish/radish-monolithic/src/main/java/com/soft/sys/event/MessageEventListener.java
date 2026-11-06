@@ -1,35 +1,30 @@
-package com.soft.sys.rabbitmq.consumer;
+package com.soft.sys.event;
 
-import com.rabbitmq.client.Channel;
-import com.soft.common.constants.RabbitmqConstant;
+import com.soft.sys.model.dto.EmailDTO;
 import com.soft.sys.model.dto.LogDTO;
-import com.soft.sys.model.dto.rabbitmq.EmailDTO;
 import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.service.SysLogService;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.boot.mail.autoconfigure.MailProperties;
+import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Optional;
 
 /**
- * @Author: cyx
- * @Description:
- * @DateTime: 2024/11/15 19:20
- **/
-
+ * 异步消息监听器，替代原 RabbitMQ 消费者。
+ *
+ * @author cyx
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MessageConsume {
+public class MessageEventListener {
 
     private final MailProperties mailProperties;
 
@@ -40,12 +35,11 @@ public class MessageConsume {
     private final SysLogService sysLogService;
 
     /**
-     * 发送验证码
-     * @param emailDto
+     * 发送验证码邮件
      */
-    @RabbitListener(queues = RabbitmqConstant.Topic.QUEUE_SEND_EMAIL)
-    public void sendCaptcha(EmailDTO emailDto, Channel channel,
-                            @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
+    @Async
+    @EventListener
+    public void sendCaptcha(EmailDTO emailDto) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -54,28 +48,23 @@ public class MessageConsume {
             helper.setSubject(radishProperty.getCaptcha().getTopic());
             helper.setText(emailDto.getContent(), true);
             javaMailSender.send(mimeMessage);
-            channel.basicAck(deliveryTag, false);
             log.info("邮件发送成功");
         } catch (Exception e) {
             log.warn("邮件发送失败");
             log.error(e.getMessage(), e);
-            channel.basicNack(deliveryTag, false, false);
         }
     }
 
     /**
-     * 保存日志
-     * @param logDto
+     * 保存系统日志
      */
-    @RabbitListener(queues = RabbitmqConstant.Direct.QUEUE_ONE)
-    public void saveSysLog(LogDTO logDto, Channel channel,
-                           @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
+    @Async
+    @EventListener
+    public void saveSysLog(LogDTO logDto) {
         try {
             sysLogService.saveLog(logDto);
-            channel.basicAck(deliveryTag, false);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            channel.basicNack(deliveryTag, false, false);
         }
     }
 }

@@ -9,7 +9,7 @@ import com.soft.common.utils.CommonUtil;
 import com.soft.sys.enums.LogLevelEnum;
 import com.soft.sys.model.dto.LogDTO;
 import com.soft.sys.properties.RadishProperty;
-import com.soft.sys.rabbitmq.producer.SysLogProduce;
+import com.soft.sys.event.SysLogPublisher;
 import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -57,11 +57,11 @@ public class LoginLogFilter extends OncePerRequestFilter {
     private static final Set<String> SENSITIVE_FIELDS = Set.of(
             "password", "graphicsCaptcha", "emailCaptcha", "verificationCode", "fingerprint");
 
-    private final SysLogProduce sysLogProduce;
+    private final SysLogPublisher sysLogProduce;
 
     private final RadishProperty radishProperty;
 
-    public LoginLogFilter(SysLogProduce sysLogProduce, RadishProperty radishProperty) {
+    public LoginLogFilter(SysLogPublisher sysLogProduce, RadishProperty radishProperty) {
         this.sysLogProduce = sysLogProduce;
         this.radishProperty = radishProperty;
     }

@@ -1,9 +1,9 @@
-package com.soft.sys.model.dto.rabbitmq;
+package com.soft.sys.model.dto;
 
 import lombok.Data;
 
 /**
- * MQ 消息体需保证有无参构造器，否则 Jackson 反序列化会失败。
+ * 邮件发送事件载荷。
  *
  * @author cyq
  * @date 2025/12/20

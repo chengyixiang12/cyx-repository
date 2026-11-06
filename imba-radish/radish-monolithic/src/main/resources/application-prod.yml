@@ -58,12 +58,6 @@ spring:
     # 自动生成flyway_schema_history表
     baseline-on-migrate: false
     locations: classpath:db/migration
-  rabbitmq:
-    host: ${RABBIT_MQ_HOST}
-    port: ${RABBIT_MQ_PORT}
-    username: ${RABBIT_MQ_USERNAME}
-    password: ${RABBIT_MQ_PASSWORD}
-    virtual-host: /
   jmx:
     # 启动JMX监控，jconsole
     enabled: true
