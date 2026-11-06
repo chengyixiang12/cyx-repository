@@ -49,7 +49,7 @@
         <el-container class="page-body">
             <!-- 左侧菜单栏 -->
             <el-aside :width="isCollapsed ? '64px' : '200px'" class="main-left">
-                <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#ffffff"
+                <el-menu router :default-active="$route.path" :unique-opened="true" background-color="transparent"
                     text-color="#4E5969" active-text-color="#4F6EF2" :collapse="isCollapsed"
                     :collapse-transition="false">
                     <template v-for="menu in menuList" :key="menu.path">
@@ -320,15 +320,20 @@ const initWebsocket = async () => {
     };
 }
 
-// 获取用户头像
+// 获取用户头像（静默：文件可能已被删除，失败时回退为默认头像，不打断页面）
 const getAvatar = async () => {
     const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
     if (!userInfo.avatar) {
         avatarUrl.value = ''
         return
     }
-    const res = await downloadFileApi(userInfo.avatar)
-    avatarUrl.value = URL.createObjectURL(res)
+    try {
+        const res = await downloadFileApi(userInfo.avatar, true)
+        avatarUrl.value = URL.createObjectURL(res)
+    } catch (error) {
+        console.warn('头像加载失败，文件可能已被删除:', error)
+        avatarUrl.value = ''
+    }
 }
 
 onMounted(() => {
@@ -347,23 +352,23 @@ onMounted(() => {
     background: var(--radish-bg-page);
 }
 
-/* ---------- 顶栏: 白底 + 细分割线 ---------- */
+/* ---------- 顶栏: 微灰白底 + 清晰分割线 ---------- */
 .page-header {
     height: var(--radish-header-height);
-    background: var(--radish-bg-card);
+    background: var(--radish-bg-bar);
     color: var(--radish-text-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    border-bottom: 1px solid var(--radish-border-light);
+    border-bottom: 1px solid var(--radish-border);
 }
 
-/* ---------- 侧边栏: 白底, 菜单项胶囊化 ---------- */
+/* ---------- 侧边栏: 微灰白底, 与内容区靠色阶+分割线区分 ---------- */
 /* 滚动逻辑在 global.css: .main-left 定位容器 + 顶层菜单绝对定位自行滚动 */
 .main-left {
-    background: var(--radish-bg-card);
-    border-right: 1px solid var(--radish-border-light);
+    background: var(--radish-bg-bar);
+    border-right: 1px solid var(--radish-border);
 }
 
 .main-right-wrapper {
@@ -406,12 +411,12 @@ onMounted(() => {
 /* ---------- 页脚 ---------- */
 .page-footer {
     height: var(--radish-footer-height);
-    background: var(--radish-bg-card);
+    background: var(--radish-bg-bar);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 20px;
-    border-top: 1px solid var(--radish-border-light);
+    border-top: 1px solid var(--radish-border);
 }
 
 .footer-content {
@@ -489,7 +494,7 @@ onMounted(() => {
 
 :deep(.el-menu-item:hover),
 :deep(.el-sub-menu__title:hover) {
-    background: var(--radish-fill);
+    background: var(--radish-border-light);
 }
 
 :deep(.el-menu-item.is-active) {

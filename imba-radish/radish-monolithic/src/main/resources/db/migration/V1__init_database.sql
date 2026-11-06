@@ -992,66 +992,6 @@ VALUES(1984481955388682242, 1984481955388682242, '2024-10-24 07:25:34', 19844819
 INSERT INTO sys_user
 (id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
 VALUES(1984583825226477570, 1984481955388682242, '2025-11-01 19:30:30', 1984583825226477570, '2026-04-16 20:37:27', '0', 'radish', '$2a$10$wJ3aGId3/NhXiHtOJ6OBPuImLA1LByIO6t7p4vASyd9KBa5ejKeTO', '萝卜', '2@qq.com', '', 1, 1, 1, 1, 1984583320156778498, 2044757035367112706);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2002379807972450306, 1984481955388682242, '2025-12-20 22:05:23', 1984481955388682242, '2026-05-08 17:58:35', '0', 'yys1999', '$2a$10$2Ok21kIYYbrkm4KJtGteuuKAoB1d0X2DW8tlrMYtK29jcgNWUEvx.', '杨永胜', '2210263330@qq.com', '', 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2004934672951070721, 1984481955388682242, '2025-12-27 23:17:31', 1984481955388682242, '2025-12-27 23:48:38', '1', '1', '$2a$10$zZdAiavPptGm5XD5270uZeXLsiIyjJHAYLJg/P4iZr8wvp6eFD3s2', '1', '132354232@qq.com', '', 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038556764151513090, 1984481955388682242, '2026-03-30 17:59:42', 1984481955388682242, '2026-03-30 17:59:42', '0', 'demo99', '$2a$10$yKe654Ba7e0MeBpYnCSH7.aCJmdrLMHWMDguZ6mxEto.7wimkZ2xK', 'demo99', '2763853225@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038563923576782850, 1984481955388682242, '2026-03-30 18:28:09', 1984481955388682242, '2026-03-30 18:28:09', '0', 'wujiawei', '$2a$10$7QF1kI.GWFKME92J5tCw0OMLFHP1.0CIo/JetufeahAq2zgZyR1gW', 'wujiawei', 'wjw123145@gmail.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038573781797601281, 1984481955388682242, '2026-03-30 19:07:19', 1984481955388682242, '2026-03-30 19:07:19', '0', 'ZBL', '$2a$10$3mGceyoz0xfAAEsRp791KuBzxg6oWTznf2E5R/E.xSvHFm.wAmVle', 'ZBL', 'zhaobolesunny@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038610137609437186, 1984481955388682242, '2026-03-30 21:31:47', 1984481955388682242, '2026-03-30 21:31:47', '0', 'yangyu91', '$2a$10$X/FjSo63qQctE1WAT0rz0.zmV1qHAN6ac254z6Aa7jortENEVnbLi', 'yy', 'yangyu788018@gmail.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038611875334750210, 1984481955388682242, '2026-03-30 21:38:41', 1984481955388682242, '2026-03-30 21:38:41', '0', 'test123', '$2a$10$2YSzt8agydJR03AQWnCoqeQKg1XhtM.Ks1hFFlWJrCI32SEuhaLYy', '', 'hotipo8759@flownue.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038616250476167169, 1984481955388682242, '2026-03-30 21:56:04', 2038616250476167169, '2026-05-10 17:48:46', '0', '123456', '$2a$10$O2hH6Ve4Ph181Zh5h77r8OWEodhUnJLa.YZvzOkqo.Io/NaHT49Y2', '123456', '146151173', NULL, 1, 0, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038635037313236994, 1984481955388682242, '2026-03-30 23:10:44', 1984481955388682242, '2026-03-30 23:10:44', '0', 'caleb', '$2a$10$ed8e/hh10xegzvug43jioe7cqVuJphqg0I.Zvapl/wFO1IYDbLSqy', 'caleb', 'chenjibzh@163.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038645184941031425, 1984481955388682242, '2026-03-30 23:51:03', 1984481955388682242, '2026-03-30 23:51:03', '0', '1919722231', '$2a$10$MGmTBhbLUusHwRhnX8Fh1.K2NA7VO6uHKyCXK/oPX5SCOn9YYBE/u', 'nan', '1919722231@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038670616264474626, 1984481955388682242, '2026-03-31 01:32:06', 1984481955388682242, '2026-03-31 01:32:06', '0', '666', '$2a$10$cmSQP6vJaR2JGqsxm5MDvuJ7xjq6oNAp3P/OucHVa0lP7wT45iLyO', '666', '3031350270@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038790741596602369, 1984481955388682242, '2026-03-31 09:29:26', 1984481955388682242, '2026-03-31 09:29:26', '0', 'qqq', '$2a$10$zt0DDjLPfctsJ0FZZ9YJse07YQ54anb4mO4oq9zvVbBkOkGwEF3fm', 'qqq', '943948104@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038806523890139137, 1984481955388682242, '2026-03-31 10:32:09', 1984481955388682242, '2026-03-31 10:32:09', '0', 'zhaoyang', '$2a$10$1WvOeQQZ8Ro.3AllaOzKPuij6jOuRqLHFqknsKA8s0kbBBuYn6hkW', 'zhaoyang', '965052722@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2038935426344452097, 1984481955388682242, '2026-03-31 19:04:22', 1984481955388682242, '2026-03-31 19:04:22', '0', 'jascb', '$2a$10$AaFmR7qpe43Q0KC/dGiM1ekK9z1IYdMcFD7Ks0Ipdnl1Ck2wuVuFG', 'jascb', '2772625280@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2039142773356535809, 1984481955388682242, '2026-04-01 08:48:17', 1984481955388682242, '2026-04-01 08:48:17', '0', 'modify', '$2a$10$zLqeKtxvikUN2cfmJex0EOXbbnnkJSpCTI1m8xTEzuIU3Irmx2Ncy', 'modify', 'gayati7976@nexafilm.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2044337732946800642, 1984481955388682242, '2026-04-15 16:51:12', 1984481955388682242, '2026-04-15 16:51:12', '0', 'moque', '$2a$10$af/VN/ykk5ztAjOJShfUc.U9.OhYOuuYn7S/uX5VCPVn6NKtimbkm', '', '1844722032@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2044433541147176962, 1984481955388682242, '2026-04-15 23:11:55', 1984481955388682242, '2026-04-15 23:11:55', '0', 'aquarius', '$2a$10$61WpjME6ZjkiGbL3gLWXGOmjG4O61DNo2K9xABRF1iVuXax32phW.', 'aquarius', '1015772292@qq.com', NULL, 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2053673508747608065, 1984481955388682242, '2026-05-11 11:08:15', 1984481955388682242, '2026-05-11 11:08:15', '0', 'test1', '$2a$10$f5OpL2zpprMKeVPY7jDwEuDgX3bQRsfOPyOuRRxioQvplSe6jwbei', 'test1', '1@qq.com', '', 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2053673771524947969, 1984481955388682242, '2026-05-11 11:09:17', 1984481955388682242, '2026-05-11 11:09:17', '0', 'test2', '$2a$10$HQUUzSht.0okAiCVkg393u.12XeUpx8hAS81lxncrvElmeI8FdOH2', 'test2', '3@qq.com', '', 1, 1, 1, 1, 1984483212773847041, NULL);
-INSERT INTO sys_user
-(id, create_by, create_time, update_by, update_time, del_flag, username, password, nickname, email, phone, enabled, account_non_locked, credentials_non_expired, account_non_expired, dept_id, avatar)
-VALUES(2053673837916585985, 1984481955388682242, '2026-05-11 11:09:33', 1984481955388682242, '2026-05-11 11:09:33', '0', 'test3', '$2a$10$SPsW/zXLM2v85NiiUZ9sReU/21SxlRYMdnaAFtKdQkmLHzKPiGwyi', 'test3', '4@qq.com', '', 1, 1, 1, 1, 1984483212773847041, NULL);
 
 INSERT INTO sys_user_role
 (role_id, user_id)

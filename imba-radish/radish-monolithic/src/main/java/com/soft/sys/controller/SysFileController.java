@@ -96,6 +96,23 @@ public class SysFileController {
             throw new GlobalException("不存在的文件");
         }
 
+        // 数据库有记录但存储介质里的对象可能已被删除（例如在文件管理里删掉了头像文件）。
+        // 必须在写响应头之前校验：一旦进入流式写出阶段，异常无法再转成正常的 JSON 错误响应，
+        // 客户端只能拿到断流或 500。
+        Integer locationCode = fileDetail.getLocation();
+        if (BaseConstant.Minio.MINIO.equals(locationCode)) {
+            if (!minioUtil.exists(fileDetail.getObjectKey())) {
+                throw new GlobalException("文件不存在或已被删除");
+            }
+        } else if (BaseConstant.Minio.DISK.equals(locationCode)) {
+            File diskFile = new File(bigfileLocation + File.separator + fileDetail.getObjectKey());
+            if (!diskFile.exists()) {
+                throw new GlobalException("文件不存在或已被删除");
+            }
+        } else {
+            throw new GlobalException("文件存储位置异常");
+        }
+
         try {
             // 设置响应头
             String mimeType = Files.probeContentType(Path.of(fileDetail.getOriginalName()));

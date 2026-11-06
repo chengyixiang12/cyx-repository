@@ -332,14 +332,14 @@ const markTodoComplete = () => {
   }
 }
 
-// 获取用户头像
+// 获取用户头像（静默：文件可能已被删除，失败时回退为默认头像）
 const getAvatar = async () => {
   if (!userInfo.avatar) return
   try {
-    const res = await downloadFileApi(userInfo.avatar)
+    const res = await downloadFileApi(userInfo.avatar, true)
     avatarUrl.value = URL.createObjectURL(res)
   } catch (error) {
-    console.error('获取头像失败:', error);
+    console.warn('头像加载失败，文件可能已被删除:', error);
   }
 }
 

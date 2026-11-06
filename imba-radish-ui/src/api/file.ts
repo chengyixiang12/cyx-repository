@@ -51,11 +51,12 @@ export async function deleteFileApi(id: string): Promise<void> {
 
 /**
  * 下载文件
- * @param id 
- * @returns 
+ * @param id 文件主键
+ * @param silent 静默模式：失败时不弹全局错误提示（用于头像等背景加载场景）
+ * @returns
  */
-export async function downloadFileApi(id: string): Promise<Blob> {
-  const blob = await getBlob<Blob>('/file/downloadFile', { flag: true, params: { id }});
+export async function downloadFileApi(id: string, silent = false): Promise<Blob> {
+  const blob = await getBlob<Blob>('/file/downloadFile', { flag: true, params: { id }, silent });
   return blob;
 }
 

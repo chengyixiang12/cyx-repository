@@ -49,6 +49,8 @@ function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
 // 错误统一处理
 async function handleResponseError(error: any) {
   let data = error.response?.data;
+  // 静默请求（如背景加载头像）失败时不弹全局提示、也不触发错误码弹窗
+  const silent = error.config?.silent === true;
 
   // blob 响应失败时，后端返回的是 JSON 错误体（被 axios 包成 Blob），
   // 必须先解析出 msg/code，否则既弹不出提示、也走不到错误码处理
@@ -73,20 +75,23 @@ async function handleResponseError(error: any) {
   };
 
   if (data?.code) {
-    handleErrorCode(data);
+    handleErrorCode(data, silent);
   }
 
   return Promise.reject(apiError);
 }
 
 // 错误码处理
-function handleErrorCode(data: ApiResponse) {
+function handleErrorCode(data: ApiResponse, silent = false) {
   const authErrorCodes = [10003, 10005, 10006];
   if (authErrorCodes.includes(data.code)) {
+    // 认证失效属于全局状态，即使静默请求也必须处理
     clearCache();
     router.push('/login');
   }
-  showCustomMessage(data.msg, data.code)
+  if (!silent) {
+    showCustomMessage(data.msg, data.code)
+  }
 }
 
 // 核心请求方法
@@ -118,6 +123,8 @@ async function request<T = any>(
       // 其他 axios 标准配置（如 responseType/timeout 等）
       responseType: axiosConfig.responseType,
       timeout: axiosConfig.timeout,
+      // 透传 silent，供响应拦截器判断是否需要全局错误提示
+      ...(silent !== undefined && { silent }),
     };
 
     // 3. 发送请求

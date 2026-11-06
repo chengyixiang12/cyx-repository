@@ -143,6 +143,31 @@ public class MinioUtil {
     }
 
     /**
+     * 判断对象是否存在
+     * <p>
+     * 下载前的预检：若对象已被删除（如用户在文件管理里删掉了头像文件），
+     * 必须在设置响应头之前就发现，否则异常会发生在流式写出阶段，只能以断流/500 收场。
+     *
+     * @param objectKey 对象键
+     * @return true-存在
+     */
+    public boolean exists(String objectKey) {
+        try {
+            minioClient.statObject(StatObjectArgs.builder()
+                    .bucket(minioProperty.getDefaultBucket())
+                    .object(objectKey)
+                    .build());
+            return true;
+        } catch (ErrorResponseException e) {
+            // 对象不存在时 MinIO 返回 NoSuchKey，属于预期情况，不记错误
+            return false;
+        } catch (Exception e) {
+            log.warn("检查 MinIO 对象是否存在失败, objectKey={}", objectKey, e);
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    /**
      * 删除文件
      * @param objectKey
      */

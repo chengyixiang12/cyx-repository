@@ -215,10 +215,11 @@ const uploadAvatar = async (options: any) => {
   avatarUrl.value = URL.createObjectURL(file)
 }
 
-// 删除头像
+// 删除头像：仅清空引用与预览，点击「保存信息」后才会真正写库
 const removeAvatar = () => {
   avatarUrl.value = ''
-  showMessage('头像已删除', 'success')
+  profileForm.value.avatar = null
+  showMessage('头像已移除，保存信息后生效', 'success')
 }
 
 // 更新用户信息
@@ -254,21 +255,30 @@ const resetPasswordForm = (formEl: FormInstance | undefined) => {
   formEl.resetFields()
 }
 
-// 获取用户信息
+// 获取用户信息：头像加载独立处理，避免头像文件丢失时整页初始化被判为失败
 const getUserInfo = async () => {
   const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
   try {
     const res = await getUserApi(userInfo.id)
     profileForm.value = res
-
-    if (!res.avatar) {
-      avatarUrl.value = ''
-      return
-    }
-    const blob = await downloadFileApi(res.avatar)
-    avatarUrl.value = URL.createObjectURL(blob)
   } catch (error) {
     ElMessage.error('获取用户信息失败')
+    return
+  }
+  await loadAvatar(profileForm.value.avatar)
+}
+
+// 加载头像：文件可能已被删除（服务端会返回错误），此处静默降级为默认头像
+const loadAvatar = async (fileId?: string | null) => {
+  avatarUrl.value = ''
+  if (!fileId) return
+  try {
+    const blob = await downloadFileApi(fileId, true)
+    avatarUrl.value = URL.createObjectURL(blob)
+  } catch (error) {
+    console.warn('头像加载失败，文件可能已被删除:', error)
+    // 清掉失效的头像引用，避免保存资料时把悬空的文件 id 再写回数据库
+    profileForm.value.avatar = null
   }
 }
 
