@@ -115,6 +115,7 @@ import { getPublicKeyApi } from '@/api/auth'
 import { RSAUtil } from '@/utils/rsa'
 import { calculateFileMd5 } from '@/utils/filemd5'
 import { showMessage } from '@/utils/message'
+import { useAvatar } from '@/composables/useAvatar'
 
 // 定义表单引用
 const basicFormRef = ref<FormInstance>()
@@ -136,6 +137,8 @@ const profileForm = ref<GetUserVo>({
 })
 
 const avatarUrl = ref('');
+// 全局头像状态：保存资料后调用 refreshAvatar 让顶栏/首页立即同步
+const { refreshAvatar } = useAvatar()
 
 // 密码修改表单
 const passwordForm = reactive({
@@ -231,6 +234,18 @@ const updateProfile = async () => {
     phone: profileForm.value.phone,
     avatar: profileForm.value.avatar
   })
+  // 同步 sessionStorage（登录时写入的那份缓存），否则顶栏要重新登录才能看到新头像
+  const cached = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
+  sessionStorage.setItem('userInfo', JSON.stringify({
+    ...cached,
+    nickname: profileForm.value.nickname,
+    email: profileForm.value.email,
+    phone: profileForm.value.phone,
+    avatar: profileForm.value.avatar
+  }))
+  // 刷新全局头像状态，顶栏/首页立即生效
+  await refreshAvatar()
+  showMessage('保存成功', 'success')
 }
 
 // 修改密码

@@ -129,10 +129,10 @@ import { CachedTabsType } from '@/types/layout'
 import { getWebSocketInstance } from '@/utils/websocket'
 import { showMessage } from '@/utils/message'
 import { WebsocketMessage } from '@/utils/websocketManager'
-import { downloadFileApi } from '@/api/file';
+import { useAvatar } from '@/composables/useAvatar';
 
 const router = useRouter()
-const avatarUrl = ref('')
+const { avatarUrl, refreshAvatar } = useAvatar()
 const route = useRoute()
 const isCollapsed = ref(false)
 // 未读消息数
@@ -320,28 +320,12 @@ const initWebsocket = async () => {
     };
 }
 
-// 获取用户头像（静默：文件可能已被删除，失败时回退为默认头像，不打断页面）
-const getAvatar = async () => {
-    const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
-    if (!userInfo.avatar) {
-        avatarUrl.value = ''
-        return
-    }
-    try {
-        const res = await downloadFileApi(userInfo.avatar, true)
-        avatarUrl.value = URL.createObjectURL(res)
-    } catch (error) {
-        console.warn('头像加载失败，文件可能已被删除:', error)
-        avatarUrl.value = ''
-    }
-}
-
 onMounted(() => {
     loadMenu();
     getMessageNum();
     existDashboard();
     initWebsocket();
-    getAvatar();
+    refreshAvatar();
 })
 </script>
 

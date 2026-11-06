@@ -172,15 +172,15 @@ import dayjs from 'dayjs'
 import { Bell, Clock, CircleCheck } from '@element-plus/icons-vue'
 import { showMessage } from '@/utils/message';
 import ListSkeleton from '@/components/skeleton/ListSkeleton.vue'
-import { downloadFileApi } from '@/api/file';
 import { getDashboardStatsApi, getRecentLoginsApi } from '@/api/dashboard';
 import { getMonitorTrendApi } from '@/api/actuator';
 import type { RecentLogin } from '@/types/dashboard';
+import { useAvatar } from '@/composables/useAvatar';
 
 // 用户信息
 const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
 const nickname = ref(userInfo.nickname ?? '用户');
-const avatarUrl = ref('');
+const { avatarUrl, refreshAvatar } = useAvatar();
 
 // 加载状态
 const loading = ref(false);
@@ -332,16 +332,7 @@ const markTodoComplete = () => {
   }
 }
 
-// 获取用户头像（静默：文件可能已被删除，失败时回退为默认头像）
-const getAvatar = async () => {
-  if (!userInfo.avatar) return
-  try {
-    const res = await downloadFileApi(userInfo.avatar, true)
-    avatarUrl.value = URL.createObjectURL(res)
-  } catch (error) {
-    console.warn('头像加载失败，文件可能已被删除:', error);
-  }
-}
+// 头像加载走全局共享状态（useAvatar），更换头像后自动同步
 
 // 加载首页数据
 const loadData = async () => {
@@ -361,7 +352,7 @@ const loadData = async () => {
 }
 
 onMounted(() => {
-  getAvatar();
+  refreshAvatar();
   loadData();
   window.addEventListener('resize', handleResize);
 })

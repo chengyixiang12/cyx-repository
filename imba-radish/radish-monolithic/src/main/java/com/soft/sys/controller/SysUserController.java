@@ -240,6 +240,6 @@ public class SysUserController {
         sysUser.setAvatar(request.getAvatar());
 
         sysUsersService.updateById(sysUser);
-        return R.ok();
+        return R.ok("保存成功", null);
     }
 }
