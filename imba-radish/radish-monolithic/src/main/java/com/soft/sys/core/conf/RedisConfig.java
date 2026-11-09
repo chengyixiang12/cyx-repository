@@ -3,6 +3,7 @@ package com.soft.sys.core.conf;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.data.redis.health.DataRedisHealthIndicator;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -37,6 +38,23 @@ public class RedisConfig {
         template.setHashKeySerializer(new StringRedisSerializer());
 
         return template;
+    }
+
+    /**
+     * 显式声明命令式 Redis 健康检查。
+     * <p>Spring Boot 4 的 {@code DataRedisReactiveHealthContributorAutoConfiguration}（reactive 侧）
+     * 与 {@code DataRedisHealthContributorAutoConfiguration}（命令式侧）的 bean 方法同名
+     * {@code redisHealthContributor}，且命令式被声明为 after reactive：reactive 侧先注册后，
+     * 命令式侧因 {@code @ConditionalOnMissingBean(names = "redisHealthContributor")} 让位；
+     * 而 {@code ReactiveHealthIndicator} 并不是 {@code HealthContributor}，
+     * 进不了 {@code HealthContributorRegistry}——表现为 {@code registry.getContributor("redis")}
+     * 返回 null，监控页 Redis 永远显示「未启用」。
+     * 此处手动注册命令式检查，两个自动配置都会因此让位。</p>
+     */
+    @Bean
+    @ConditionalOnMissingBean(name = "redisHealthIndicator")
+    public DataRedisHealthIndicator redisHealthIndicator(RedisConnectionFactory connectionFactory) {
+        return new DataRedisHealthIndicator(connectionFactory);
     }
 
     @Bean
