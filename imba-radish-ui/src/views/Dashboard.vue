@@ -19,49 +19,75 @@
       </div>
     </div>
 
-    <!-- 统计卡片 -->
-    <div class="stats-row">
-      <div v-for="card in statCards" :key="card.label" class="stat-card">
-        <div class="stat-icon" :class="card.bgClass">
-          <el-icon :size="24">
-            <component :is="card.icon" />
-          </el-icon>
+    <!-- 快捷入口：取自当前用户的菜单，天然按权限过滤 -->
+    <el-card shadow="hover" class="section-card">
+      <template #header>
+        <div class="card-header">
+          <span>快捷入口</span>
+          <span class="card-hint">仅展示当前账号有权访问的功能</span>
         </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ card.value }}<span v-if="card.unit" class="stat-unit">{{ card.unit }}</span></div>
-          <div class="stat-label">{{ card.label }}</div>
-        </div>
+      </template>
+      <div class="quick-grid">
+        <button v-for="item in quickEntries" :key="item.path" type="button" class="quick-item"
+          @click="goTo(item.path)">
+          <span class="quick-icon">
+            <el-icon :size="20">
+              <component :is="item.icon" />
+            </el-icon>
+          </span>
+          <span class="quick-name">{{ item.name }}</span>
+        </button>
       </div>
-    </div>
+    </el-card>
 
-    <!-- 迷你趋势图 + 最近登录 -->
-    <el-row :gutter="20" class="content-row">
-      <el-col :span="14">
+    <!-- 最近对话 + 最近登录（均为当前登录人自己的数据） -->
+    <el-row :gutter="16" class="content-row">
+      <el-col :xs="24" :sm="24" :md="12">
         <el-card shadow="hover" class="fill-card">
           <template #header>
             <div class="card-header">
-              <span>请求趋势</span>
-              <span class="card-hint">最近 1 小时 QPS</span>
+              <span>最近对话</span>
+              <el-button v-if="historyPath" type="primary" size="small" plain @click="goHistory">
+                查看全部
+              </el-button>
             </div>
           </template>
-          <div ref="trendChartRef" class="trend-chart"></div>
+          <ListSkeleton :loading="loading" :count="recentDialogues.length" />
+          <div v-if="!loading && recentDialogues.length === 0" class="empty-state">
+            <el-icon size="48" class="empty-icon">
+              <ChatDotSquare />
+            </el-icon>
+            <p>暂无对话记录</p>
+            <el-button v-if="chatPath" type="primary" size="small" plain @click="startNewChat">
+              开始新对话
+            </el-button>
+          </div>
+          <div v-else-if="!loading" class="content-list">
+            <div v-for="item in recentDialogues" :key="item.id" class="content-item"
+              @click="openDialogue(item.id)">
+              <div class="content-title">{{ item.title || '未命名对话' }}</div>
+              <div class="content-time">{{ formatTime(item.createTime) }}</div>
+            </div>
+          </div>
         </el-card>
       </el-col>
 
-      <el-col :span="10">
+      <el-col :xs="24" :sm="24" :md="12">
         <el-card shadow="hover" class="fill-card">
           <template #header>
             <div class="card-header">
               <span>最近登录</span>
+              <span class="card-hint">仅本人可见</span>
             </div>
           </template>
-          <div v-if="recentLogins.length === 0" class="empty-state">
+          <ListSkeleton :loading="loading" :count="recentLogins.length" />
+          <div v-if="!loading && recentLogins.length === 0" class="empty-state">
             <el-icon size="48" class="empty-icon">
               <Clock />
             </el-icon>
             <p>暂无登录记录</p>
           </div>
-          <div v-else class="content-list">
+          <div v-else-if="!loading" class="content-list">
             <div v-for="(item, index) in recentLogins" :key="index" class="login-item">
               <div class="login-main">
                 <div class="login-device">{{ item.osBrowserInfo || '未知设备' }}</div>
@@ -70,303 +96,168 @@
               <div class="login-time">{{ formatTime(item.loginTime) }}</div>
             </div>
           </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- 公告 + 待办 -->
-    <el-row :gutter="20" class="content-row">
-      <el-col :span="12">
-        <el-card shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>系统公告</span>
-              <el-button type="primary" size="small">查看全部</el-button>
-            </div>
-          </template>
-          <ListSkeleton :loading="loading" :count="announcements.length" />
-          <div v-if="!loading && announcements.length === 0" class="empty-state">
-            <el-icon size="48" class="empty-icon">
-              <Bell />
+          <div v-if="!loading && recentLogins.length > 0" class="security-tip">
+            <el-icon class="security-icon">
+              <Lock />
             </el-icon>
-            <p>暂无公告</p>
-          </div>
-          <div v-else-if="!loading" class="content-list">
-            <div v-for="item in announcements" :key="item.id" class="content-item"
-              @click="showAnnouncementDetail(item)">
-              <div class="content-title">{{ item.title }}</div>
-              <div class="content-time">{{ formatTime(item.publishTime) }}</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :span="12">
-        <el-card shadow="hover">
-          <template #header>
-            <div class="card-header">
-              <span>我的待办</span>
-              <el-button type="primary" size="small">查看全部</el-button>
-            </div>
-          </template>
-          <ListSkeleton :loading="loading" :count="todos.length" />
-          <div v-if="!loading && todos.length === 0" class="empty-state">
-            <el-icon size="48" class="empty-icon">
-              <CircleCheck />
-            </el-icon>
-            <p>暂无待办</p>
-          </div>
-          <div v-else-if="!loading" class="content-list">
-            <div v-for="item in todos" :key="item.id" class="content-item" @click="showTodoDetail(item)">
-              <div class="content-title">
-                <el-tag :type="item.status === '已完成' ? 'success' : 'warning'" size="small">
-                  {{ item.status }}
-                </el-tag>
-                {{ item.title }}
-              </div>
-              <div class="content-time">截止: {{ formatTime(item.deadline) }}</div>
-            </div>
+            <span class="security-text">若以上登录不是您本人操作，请尽快修改密码</span>
+            <el-button type="primary" size="small" plain @click="goTo('/profile')">去修改</el-button>
           </div>
         </el-card>
       </el-col>
     </el-row>
-
-    <!-- 公告详情对话框 -->
-    <el-dialog v-model="announcementDetailVisible" title="公告详情" width="500px">
-      <div class="detail-info">
-        <h3>{{ currentAnnouncement.title }}</h3>
-        <div class="detail-time">发布时间：{{ formatTime(currentAnnouncement.publishTime) }}</div>
-        <div class="detail-content">{{ currentAnnouncement.content }}</div>
-      </div>
-    </el-dialog>
-
-    <!-- 待办详情对话框 -->
-    <el-dialog v-model="todoDetailVisible" title="待办详情" width="500px">
-      <div class="detail-info">
-        <div class="detail-header">
-          <h3>{{ currentTodo.title }}</h3>
-          <el-tag :type="currentTodo.status === '已完成' ? 'success' : 'warning'">
-            {{ currentTodo.status }}
-          </el-tag>
-        </div>
-        <div class="detail-time">截止时间：{{ formatTime(currentTodo.deadline) }}</div>
-        <div class="detail-content">{{ currentTodo.description }}</div>
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="todoDetailVisible = false">关闭</el-button>
-          <el-button type="primary" v-if="currentTodo.status !== '已完成'" @click="markTodoComplete">
-            标记完成
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { UserInfoVo } from '@/types/login';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
-import * as echarts from 'echarts'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
-import { Bell, Clock, CircleCheck } from '@element-plus/icons-vue'
-import { showMessage } from '@/utils/message';
+import { ChatDotSquare, Clock, Lock } from '@element-plus/icons-vue'
+import type { UserInfoVo } from '@/types/login'
+import type { MenuItem } from '@/types/menu'
+import type { RecentDialogue, RecentLogin } from '@/types/dashboard'
 import ListSkeleton from '@/components/skeleton/ListSkeleton.vue'
-import { getDashboardStatsApi, getRecentLoginsApi } from '@/api/dashboard';
-import { getMonitorTrendApi } from '@/api/actuator';
-import type { RecentLogin } from '@/types/dashboard';
-import { useAvatar } from '@/composables/useAvatar';
+import { getLeftMenusApi, getRecentLoginsApi, getRecentDialoguesApi } from '@/api/dashboard'
+import { showMessage } from '@/utils/message'
+import { useAvatar } from '@/composables/useAvatar'
+
+interface QuickEntry {
+  name: string
+  path: string
+  icon: string
+}
+
+const router = useRouter()
 
 // 用户信息
-const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
-const nickname = ref(userInfo.nickname ?? '用户');
-const { avatarUrl, refreshAvatar } = useAvatar();
+const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
+const nickname = ref(userInfo.nickname ?? '用户')
+const { avatarUrl, refreshAvatar } = useAvatar()
 
-// 加载状态
-const loading = ref(false);
+const loading = ref(false)
 
 // ==================== 欢迎卡片 ====================
 
-const weekTextMap = ['日', '一', '二', '三', '四', '五', '六'];
+const weekTextMap = ['日', '一', '二', '三', '四', '五', '六']
 
 const greeting = computed(() => {
-  const hour = dayjs().hour();
-  if (hour < 6) return '夜深了';
-  if (hour < 9) return '早上好';
-  if (hour < 12) return '上午好';
-  if (hour < 14) return '中午好';
-  if (hour < 18) return '下午好';
-  return '晚上好';
-});
-
-const currentDate = computed(() => dayjs().format('YYYY年MM月DD日'));
-const nowDay = computed(() => dayjs().format('DD'));
-const nowMonth = computed(() => `${dayjs().month() + 1} 月`);
-const nowWeek = computed(() => `星期${weekTextMap[dayjs().day()]}`);
-
-// ==================== 统计卡片 ====================
-
-const stats = ref({ userCount: 0, fileCount: 0, jobCount: 0, qps: 0 });
-
-const statCards = computed(() => [
-  { label: '用户总数', value: stats.value.userCount ?? 0, unit: '', icon: 'Coin', bgClass: 'bg-blue' },
-  { label: '文件总数', value: stats.value.fileCount ?? 0, unit: '', icon: 'Folder', bgClass: 'bg-green' },
-  { label: '当前 QPS', value: (stats.value.qps ?? 0).toFixed(2), unit: '次/秒', icon: 'DataLine', bgClass: 'bg-orange' },
-  { label: '定时任务', value: stats.value.jobCount ?? 0, unit: '', icon: 'Timer', bgClass: 'bg-purple' }
-]);
-
-// ==================== 迷你趋势图 ====================
-
-const trendChartRef = ref<HTMLElement | null>(null);
-let trendChart: echarts.ECharts | null = null;
-
-const renderTrendChart = async () => {
-  try {
-    const seriesList = await getMonitorTrendApi('1h', 'qps');
-    const points = seriesList?.[0]?.points ?? [];
-    await nextTick();
-    if (!trendChartRef.value) return;
-    trendChart = trendChart || echarts.init(trendChartRef.value);
-    trendChart.setOption({
-      grid: { left: 8, right: 8, top: 16, bottom: 6, containLabel: true },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'line', lineStyle: { color: '#C9CDD4' } },
-        formatter: (params: any) => {
-          const rows = Array.isArray(params) ? params : [params];
-          if (rows.length === 0) return '';
-          const time = dayjs(rows[0].value[0]).format('HH:mm:ss');
-          return `${time}<br/>${rows[0].marker}QPS：${rows[0].value[1]}`;
-        }
-      },
-      xAxis: {
-        type: 'time',
-        axisLine: { lineStyle: { color: '#E5E7EB' } },
-        axisTick: { show: false },
-        axisLabel: { color: '#8A8F99', fontSize: 11 }
-      },
-      yAxis: {
-        type: 'value',
-        minInterval: 1,
-        splitLine: { lineStyle: { color: '#F1F2F4' } },
-        axisLabel: { color: '#8A8F99', fontSize: 11 }
-      },
-      series: [{
-        name: 'QPS',
-        type: 'line',
-        smooth: true,
-        showSymbol: false,
-        lineStyle: { width: 1.6, color: '#4F6EF2' },
-        areaStyle: { opacity: 0.12, color: '#4F6EF2' },
-        data: points.map((point: { t: number; v: number }) => [point.t, point.v])
-      }]
-    }, true);
-  } catch (error) {
-    console.error('加载趋势图失败:', error);
-  }
-};
-
-const handleResize = () => {
-  trendChart?.resize();
-};
-
-// ==================== 最近登录 ====================
-
-const recentLogins = ref<RecentLogin[]>([]);
-
-// ==================== 公告相关（待接真实接口） ====================
-
-const announcements = ref([
-  { id: 1, title: '系统维护通知', content: '系统将于本周五凌晨2:00-4:00进行维护升级，请提前保存好您的工作内容。升级期间系统将无法访问，给您带来的不便敬请谅解。', publishTime: '2023-05-10 09:00:00' },
-  { id: 2, title: '新功能上线', content: '新增数据导出功能，支持Excel和PDF格式导出，欢迎使用并提供宝贵意见。', publishTime: '2023-05-08 14:30:00' },
-  { id: 3, title: '五一假期安排', content: '五一假期期间客服服务时间调整为9:00-18:00，紧急问题请联系值班电话：13800138000。', publishTime: '2023-04-28 16:00:00' }
-])
-
-const announcementDetailVisible = ref(false)
-const currentAnnouncement = ref({
-  id: 0,
-  title: '',
-  content: '',
-  publishTime: ''
+  const hour = dayjs().hour()
+  if (hour < 6) return '夜深了'
+  if (hour < 9) return '早上好'
+  if (hour < 12) return '上午好'
+  if (hour < 14) return '中午好'
+  if (hour < 18) return '下午好'
+  return '晚上好'
 })
 
-// ==================== 待办事项相关（待接真实接口） ====================
+const currentDate = computed(() => dayjs().format('YYYY年MM月DD日'))
+const nowDay = computed(() => dayjs().format('DD'))
+const nowMonth = computed(() => `${dayjs().month() + 1} 月`)
+const nowWeek = computed(() => `星期${weekTextMap[dayjs().day()]}`)
 
-const todos = ref([
-  { id: 1, title: '完成项目报告', deadline: '2023-05-15 18:00:00', status: '未完成', description: '需要完成季度项目总结报告，包括项目进度、问题和下一步计划' },
-  { id: 2, title: '参加团队会议', deadline: '2023-05-12 10:00:00', status: '已完成', description: '每周团队例会，需要准备上周工作汇报和本周计划' },
-  { id: 3, title: '提交周工作计划', deadline: '2023-05-08 17:00:00', status: '未完成', description: '向主管提交下周工作计划，包括主要任务和时间安排' }
-])
+// ==================== 快捷入口 ====================
 
-const todoDetailVisible = ref(false)
-const currentTodo = ref({
-  id: 0,
-  title: '',
-  deadline: '',
-  status: '',
-  description: ''
+const menuList = ref<MenuItem[]>([])
+
+// 菜单里可能配置了前端尚未实现的页面，快捷入口只保留真实存在的组件
+const viewModules = import.meta.glob('../views/**/*.vue')
+const hasView = (component?: string) =>
+  !!component && !!viewModules[`../views/${component.replace(/\\/g, '/')}.vue`]
+
+// 菜单是后端按角色返回的，只从这里取入口，避免首页绕过菜单权限
+const collectLeafMenus = (menus: MenuItem[]): MenuItem[] =>
+  menus.flatMap(menu => {
+    const children = menu.children?.length ? collectLeafMenus(menu.children) : []
+    return menu.path && hasView(menu.component) ? [menu, ...children] : children
+  })
+
+const menuEntries = computed<QuickEntry[]>(() =>
+  collectLeafMenus(menuList.value)
+    .filter(menu => Number(menu.visible) === 1 && menu.path.startsWith('/'))
+    .map(menu => ({ name: menu.name, path: menu.path, icon: menu.icon || 'Menu' }))
+)
+
+const quickEntries = computed<QuickEntry[]>(() => {
+  // 个人中心是静态路由，所有登录用户都可访问
+  const fixed: QuickEntry = { name: '个人中心', path: '/profile', icon: 'User' }
+  const seen = new Set<string>([fixed.path])
+  const rest: QuickEntry[] = []
+  for (const item of menuEntries.value) {
+    if (seen.has(item.path)) continue
+    seen.add(item.path)
+    rest.push(item)
+  }
+  return [fixed, ...rest].slice(0, 8)
 })
 
-// ==================== 方法 ====================
+// AI 相关入口是否存在，取决于当前账号的菜单权限
+const chatPath = computed(() => menuEntries.value.some(item => item.path === '/dialog') ? '/dialog' : null)
+const historyPath = computed(() => menuEntries.value.some(item => item.path === '/answerHistory') ? '/answerHistory' : null)
 
-const formatTime = (time: string) => {
-  return dayjs(time).format('YYYY-MM-DD HH:mm')
+// ==================== 最近对话 / 最近登录 ====================
+
+const recentDialogues = ref<RecentDialogue[]>([])
+const recentLogins = ref<RecentLogin[]>([])
+
+const formatTime = (time: string) => dayjs(time).format('YYYY-MM-DD HH:mm')
+
+const goTo = (path: string) => {
+  router.push(path)
 }
 
-const showAnnouncementDetail = (item: any) => {
-  currentAnnouncement.value = { ...item }
-  announcementDetailVisible.value = true
+const goHistory = () => {
+  if (historyPath.value) router.push(historyPath.value)
 }
 
-const showTodoDetail = (item: any) => {
-  currentTodo.value = { ...item }
-  todoDetailVisible.value = true
+const startNewChat = () => {
+  if (chatPath.value) router.push(chatPath.value)
 }
 
-const markTodoComplete = () => {
-  const todo = todos.value.find(t => t.id === currentTodo.value.id);
-  if (todo) {
-    todo.status = '已完成';
-    currentTodo.value.status = '已完成';
-    showMessage('已标记为完成', 'success');
+const openDialogue = (id: number) => {
+  if (!chatPath.value) {
+    showMessage('当前账号暂无 AI 对话权限', 'warning')
+    return
   }
+  router.push({ path: chatPath.value, query: { dialogueId: String(id) } })
 }
 
-// 头像加载走全局共享状态（useAvatar），更换头像后自动同步
-
-// 加载首页数据
+// 三个请求互不阻塞，任一失败不影响其余板块
 const loadData = async () => {
-  loading.value = true;
-  try {
-    await Promise.all([getDashboardStatsApi(), getRecentLoginsApi()])
-      .then(([statsRes, loginsRes]) => {
-        stats.value = statsRes;
-        recentLogins.value = loginsRes;
-      });
-    await renderTrendChart();
-  } catch (error) {
-    console.error('加载首页数据失败:', error);
-  } finally {
-    loading.value = false;
+  loading.value = true
+  const [loginsRes, dialoguesRes, menusRes] = await Promise.allSettled([
+    getRecentLoginsApi(),
+    getRecentDialoguesApi(),
+    getLeftMenusApi()
+  ])
+
+  if (loginsRes.status === 'fulfilled') {
+    recentLogins.value = loginsRes.value
+  } else {
+    console.error('加载最近登录失败:', loginsRes.reason)
   }
+  if (dialoguesRes.status === 'fulfilled') {
+    recentDialogues.value = dialoguesRes.value
+  } else {
+    console.error('加载最近对话失败:', dialoguesRes.reason)
+  }
+  if (menusRes.status === 'fulfilled') {
+    menuList.value = menusRes.value || []
+  } else {
+    console.error('加载快捷入口失败:', menusRes.reason)
+  }
+  loading.value = false
 }
 
 onMounted(() => {
-  refreshAvatar();
-  loadData();
-  window.addEventListener('resize', handleResize);
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize);
-  trendChart?.dispose();
-  trendChart = null;
+  refreshAvatar()
+  loadData()
 })
 </script>
 
 <style scoped>
 .dashboard-container {
-  padding: 16px;
+  padding: var(--radish-space-4);
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 120px);
@@ -374,33 +265,33 @@ onUnmounted(() => {
 
 /* ============ 欢迎卡片 ============ */
 .welcome-card {
-  margin-bottom: 16px;
-  padding: 24px 32px;
+  margin-bottom: var(--radish-space-4);
+  padding: var(--radish-space-6) var(--radish-space-8);
   border-radius: var(--radish-radius-xl);
   background: var(--radish-grad-brand);
   color: var(--radish-bg-card);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 8px 20px rgba(79, 110, 242, 0.25);
+  box-shadow: var(--radish-shadow-pop);
 }
 
 .welcome-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--radish-space-4);
 }
 
 .welcome-avatar {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--radish-primary-dark-2);
   font-size: var(--radish-font-2xl);
   flex-shrink: 0;
 }
 
 .welcome-text h2 {
-  margin: 0 0 6px;
+  margin: 0 0 var(--radish-space-2);
   font-size: var(--radish-font-xl);
-  font-weight: 600;
+  font-weight: var(--radish-weight-semibold);
 }
 
 .welcome-text p {
@@ -417,7 +308,7 @@ onUnmounted(() => {
 .welcome-date {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--radish-space-3);
 }
 
 .date-day {
@@ -435,90 +326,64 @@ onUnmounted(() => {
   text-align: left;
 }
 
-/* ============ 统计卡片 ============ */
-.stats-row {
-  margin-bottom: 16px;
+/* ============ 快捷入口 ============ */
+.section-card {
+  margin-bottom: var(--radish-space-4);
+}
+
+.quick-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--radish-space-3);
+  padding: var(--radish-space-2);
 }
 
-.stat-card {
-  background: var(--radish-bg-card);
-  border-radius: var(--radish-radius);
-  padding: 16px;
+.quick-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s, box-shadow 0.3s;
+  gap: var(--radish-space-2);
+  padding: var(--radish-space-3) var(--radish-space-2);
+  border: 1px solid var(--radish-border-light);
+  border-radius: var(--radish-radius);
+  background: var(--radish-bg-card);
+  color: var(--radish-text-regular);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--radish-transition), background var(--radish-transition);
 }
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+.quick-item:hover {
+  border-color: var(--radish-primary-light-7);
+  background: var(--radish-primary-light-9);
 }
 
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radish-radius-xl);
+.quick-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radish-radius-round);
+  background: var(--radish-primary-light-9);
+  color: var(--radish-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 16px;
-  font-size: var(--radish-font-2xl);
-  color: var(--radish-bg-card);
   flex-shrink: 0;
 }
 
-.stat-icon.bg-blue {
-  background: var(--radish-grad-welcome);
-}
-
-.stat-icon.bg-green {
-  background: var(--radish-grad-mint);
-}
-
-.stat-icon.bg-purple {
-  background: var(--radish-grad-candy);
-}
-
-.stat-icon.bg-orange {
-  background: var(--radish-grad-sunset);
-}
-
-.stat-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.stat-value {
-  font-size: var(--radish-font-2xl);
-  font-weight: 600;
-  color: var(--radish-text-primary);
-}
-
-.stat-unit {
-  margin-left: 4px;
-  font-size: var(--radish-font-xs);
-  font-weight: 400;
-  color: var(--radish-text-secondary);
-}
-
-.stat-label {
+.quick-name {
   font-size: var(--radish-font-sm);
-  color: var(--radish-text-secondary);
-  margin-top: 4px;
+  color: var(--radish-text-primary);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 /* ============ 内容区域 ============ */
 .content-row {
   flex: 1;
   min-height: 0;
-}
-
-.content-row + .content-row {
-  margin-top: 16px;
 }
 
 .fill-card {
@@ -529,19 +394,14 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 500;
-  padding: 8px 0;
+  font-weight: var(--radish-weight-medium);
+  padding: var(--radish-space-2) 0;
 }
 
 .card-hint {
   font-size: var(--radish-font-xs);
-  font-weight: 400;
+  font-weight: var(--radish-weight-normal);
   color: var(--radish-text-secondary);
-}
-
-.trend-chart {
-  width: 100%;
-  height: 240px;
 }
 
 /* ============ 最近登录 ============ */
@@ -549,7 +409,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  padding: var(--radish-space-3) 0;
   border-bottom: 1px solid var(--radish-border-light);
 }
 
@@ -572,41 +432,64 @@ onUnmounted(() => {
 .login-ip {
   font-size: var(--radish-font-xs);
   color: var(--radish-text-secondary);
-  margin-top: 2px;
+  margin-top: var(--radish-space-1);
 }
 
 .login-time {
   font-size: var(--radish-font-xs);
   color: var(--radish-text-secondary);
   flex-shrink: 0;
-  margin-left: 12px;
+  margin-left: var(--radish-space-3);
+}
+
+.security-tip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--radish-space-2);
+  margin-top: var(--radish-space-3);
+  padding: var(--radish-space-3);
+  border-radius: var(--radish-radius);
+  background: var(--radish-fill);
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
+}
+
+.security-icon {
+  color: var(--radish-warning);
+  flex-shrink: 0;
+}
+
+.security-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .content-list {
-  padding: 8px;
+  padding: var(--radish-space-2);
   max-height: 300px;
   overflow-y: auto;
 }
 
 .content-item {
-  padding: 12px 0;
+  padding: var(--radish-space-3) 0;
   border-bottom: 1px solid var(--radish-border-light);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background var(--radish-transition), padding var(--radish-transition);
 }
 
 .content-item:hover {
   background-color: var(--radish-fill);
-  padding-left: 8px;
+  padding-left: var(--radish-space-2);
 }
 
 .content-title {
   font-size: var(--radish-font-base);
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-bottom: var(--radish-space-1);
   color: var(--radish-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .content-time {
@@ -620,77 +503,37 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 0;
+  gap: var(--radish-space-2);
+  padding: var(--radish-space-8) 0;
   color: var(--radish-text-secondary);
+}
+
+.empty-state p {
+  margin: 0;
 }
 
 .empty-icon {
-  margin-bottom: 12px;
   color: var(--radish-text-placeholder);
 }
 
-/* ============ 详情对话框 ============ */
-.detail-info {
-  padding: 8px 0;
-}
-
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.detail-header h3 {
-  margin: 0;
-  font-size: var(--radish-font-lg);
-}
-
-.detail-time {
-  color: var(--radish-text-secondary);
-  margin-bottom: 16px;
-  font-size: var(--radish-font-base);
-}
-
-.detail-content {
-  line-height: 1.8;
-  white-space: pre-line;
-  color: var(--radish-text-regular);
-}
-
-.dialog-footer {
-  text-align: right;
-}
-
 /* ============ 响应式 ============ */
-@media (max-width: 1200px) {
-  .stats-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media screen and (max-width: 992px) {
+  .fill-card {
+    margin-bottom: var(--radish-space-4);
   }
 }
 
 @media screen and (max-width: 768px) {
-  .stat-card {
-    padding: 12px;
-  }
-
-  .stat-icon {
-    width: 40px;
-    height: 40px;
-    font-size: var(--radish-font-xl);
-    margin-right: 12px;
-  }
-
-  .stat-value {
-    font-size: var(--radish-font-xl);
-  }
-
   .welcome-card {
-    padding: 16px 20px;
+    padding: var(--radish-space-4) var(--radish-space-5);
   }
 
   .welcome-date {
     display: none;
+  }
+
+  .quick-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 </style>

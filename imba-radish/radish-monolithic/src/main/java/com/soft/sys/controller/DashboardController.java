@@ -1,7 +1,7 @@
 package com.soft.sys.controller;
 
 import com.soft.common.resultapi.R;
-import com.soft.sys.model.vo.DashboardStatsVO;
+import com.soft.sys.model.vo.RecentDialogueVO;
 import com.soft.sys.model.vo.RecentLoginVO;
 import com.soft.sys.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author cyx
- * @description 首页数据
+ * @description 首页数据（仅返回当前登录人自己的数据，不含全站统计）
  * @date 2026-11-05
  */
 @RestController
@@ -30,15 +30,15 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    @GetMapping(value = "/stats")
-    @Operation(summary = "首页统计数据：用户/文件/定时任务总数 + 当前QPS")
-    public R<DashboardStatsVO> stats() {
-        return R.ok(dashboardService.getStats());
-    }
-
     @GetMapping(value = "/recentLogins")
     @Operation(summary = "当前用户最近5次登录记录")
     public R<List<RecentLoginVO>> recentLogins() {
         return R.ok(dashboardService.getRecentLogins());
+    }
+
+    @GetMapping(value = "/recentDialogues")
+    @Operation(summary = "当前用户最近5条对话（强制按登录人过滤，管理员也不跨用户）")
+    public R<List<RecentDialogueVO>> recentDialogues() {
+        return R.ok(dashboardService.getRecentDialogues());
     }
 }

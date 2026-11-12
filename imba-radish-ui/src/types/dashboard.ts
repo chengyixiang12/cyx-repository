@@ -1,17 +1,6 @@
 /**
- * 首页数据类型
+ * 首页数据类型（全部为当前登录人的个人数据）
  */
-
-export interface DashboardStats {
-  /** 用户总数 */
-  userCount: number
-  /** 文件总数 */
-  fileCount: number
-  /** 定时任务总数 */
-  jobCount: number
-  /** 当前 QPS（次/秒） */
-  qps: number
-}
 
 export interface RecentLogin {
   /** 登录时间 */
@@ -20,4 +9,13 @@ export interface RecentLogin {
   ipAddress: string
   /** 操作系统/浏览器信息 */
   osBrowserInfo: string
+}
+
+export interface RecentDialogue {
+  /** 对话 ID */
+  id: number
+  /** 对话标题 */
+  title: string
+  /** 创建时间 */
+  createTime: string
 }
