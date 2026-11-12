@@ -17,6 +17,15 @@
                         <span v-if="unreadCount > 0" class="message-dot"></span>
                     </el-icon>
                 </div>
+                <el-tooltip :content="uploadTooltip" placement="bottom" effect="light">
+                    <div class="upload-entry" @click="togglePanel">
+                        <el-badge v-if="taskCount > 0" :value="taskCount" :max="99" type="primary"
+                            class="upload-entry__badge" />
+                        <el-icon class="upload-icon">
+                            <Upload />
+                        </el-icon>
+                    </div>
+                </el-tooltip>
                 <el-tooltip content="首页" placement="bottom" effect="light">
                     <el-icon class="home-icon" @click="goHome">
                         <HomeFilled />
@@ -102,6 +111,9 @@
                 </el-footer>
             </el-container>
         </el-container>
+
+        <!-- 全局上传任务面板：关闭后仍可从顶栏图标重新打开，切页面不丢任务 -->
+        <upload-task-panel />
     </el-container>
 </template>
 
@@ -114,7 +126,8 @@ import {
     Expand,
     Fold,
     HomeFilled,
-    Bell
+    Bell,
+    Upload
 } from '@element-plus/icons-vue'
 import { clearCache } from '../utils/clearCache'
 import { UserInfoVo } from '@/types/login'
@@ -130,9 +143,16 @@ import { getWebSocketInstance } from '@/utils/websocket'
 import { showMessage } from '@/utils/message'
 import { WebsocketMessage } from '@/utils/websocketManager'
 import { useAvatar } from '@/composables/useAvatar';
+import { useUploadTasks } from '@/composables/useUploadTasks'
+import UploadTaskPanel from '@/components/UploadTaskPanel.vue'
 
 const router = useRouter()
 const { avatarUrl, refreshAvatar } = useAvatar()
+// 顶栏图标 / 徽章 / 全局任务面板共用同一份上传队列
+const { taskCount, activeTaskCount, togglePanel, resetUploadTasks } = useUploadTasks()
+const uploadTooltip = computed(() =>
+    activeTaskCount.value > 0 ? `上传任务（${activeTaskCount.value} 个进行中）` : '上传任务'
+)
 const route = useRoute()
 const isCollapsed = ref(false)
 // 未读消息数
@@ -241,6 +261,8 @@ const goProfile = () => {
 
 // 退出登录
 const logout = () => {
+    // 清空上传队列，避免下一个账号看到上一账号的文件名与任务
+    resetUploadTasks();
     const ws = getWebSocketInstance();
     ws.close();
     logouted().then(() => {
@@ -308,6 +330,7 @@ const initWebsocket = async () => {
     const ws = getWebSocketInstance();
     ws.connect(token);
     ws.onForceLogout = (data: WebsocketMessage) => {
+        resetUploadTasks()
         clearCache()
         router.push('/login')
         showMessage(data.msg, 'warning')
@@ -487,6 +510,30 @@ onMounted(() => {
 }
 
 /* ---------- 顶栏图标 ---------- */
+/* 上传入口: Badge 数字在图标左侧, 点击整块切换任务面板 */
+.upload-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--radish-space-2);
+    margin-right: 16px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.upload-entry__badge {
+    flex-shrink: 0;
+}
+
+.upload-icon {
+    font-size: var(--radish-font-xl);
+    color: var(--radish-text-regular);
+    transition: color 0.25s;
+}
+
+.upload-entry:hover .upload-icon {
+    color: var(--radish-primary);
+}
+
 .home-icon {
     margin-right: 16px;
     font-size: var(--radish-font-xl);
