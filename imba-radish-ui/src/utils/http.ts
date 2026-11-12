@@ -123,6 +123,9 @@ async function request<T = any>(
       // 其他 axios 标准配置（如 responseType/timeout 等）
       responseType: axiosConfig.responseType,
       timeout: axiosConfig.timeout,
+      // 分片上传需要真实取消在途请求 + 逐分片上报字节进度
+      signal: axiosConfig.signal,
+      onUploadProgress: axiosConfig.onUploadProgress,
       // 透传 silent，供响应拦截器判断是否需要全局错误提示
       ...(silent !== undefined && { silent }),
     };

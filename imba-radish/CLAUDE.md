@@ -86,8 +86,9 @@ mvn test -Dtest=YourTestClass -DfailIfNoTests=false
 | `com.soft.sys.websocket` | WebSocket subsystem with registry pattern (see below). Sub-packages: `api/`, `handler/`, `interceptor/`, `receive/`, `registry/`, `send/`, `session/`. |
 | `com.soft.sys.rabbitmq` | RabbitMQ producers (`EmailProduce`, `SysLogProduce`) and consumer (`MessageConsume`). |
 | `com.soft.sys.quartz` | Quartz jobs (`ClearDeletedFile`, `NmapScanScheduler`, `UpdatePrimaryKey`) and listeners (`LoggingJobListener`, `QuartzAppender`). |
-| `com.soft.sys.async` | Async operations: `FileUploadAsync` (background file upload processing), `SendPingAsync` (WebSocket PING via virtual threads). |
-| `com.soft.sys.schedule` | Scheduled tasks: `ActuatorMetric` (system health data collection every 30s), `WebSocketHeardHeatTimer` (PING heartbeat every 30s via virtual threads). |
+| `com.soft.sys.async` | Async operations: `FileDeleteAsync` (background MinIO object cleanup), `SendPingAsync` (WebSocket PING via virtual threads). |
+| `com.soft.sys.schedule` | Scheduled tasks: `ActuatorMetric` (system health data collection every 30s), `WebSocketHeardHeatTimer` (PING heartbeat every 30s via virtual threads), `ChunkCleanupJob` (hourly TTL sweep of orphaned upload chunk dirs). |
+| `com.soft.sys.file` | `ChunkStorage`: user-scoped upload chunk dirs under `${tmp.path}/upload-chunks/{userId}/{md5}`, atomic `.part` → final move, resume progress validation, merge into a fixed `merged.tmp` name. |
 | `com.soft.common.resultapi.R<T>` | **已迁至 radish-common**。Unified REST response: `{timestamp, code, msg, data, extra}`. Factory methods: `R.ok(data)`, `R.fail(msg)`. |
 | `com.soft.common.exception` | **已迁至 radish-common**。`GlobalException`. |
 | `com.soft.sys.properties` | `@ConfigurationProperties` classes bound to structured YAML config under `radish.*`, `websocket.*` (`WebSocketProperty`), `rate-limit.*`, `minio.*`, `web-client.*`, `spring.security.permit.*`. |

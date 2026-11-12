@@ -30,7 +30,7 @@ public interface SysFileService extends IService<SysFile> {
 
     String getFileUrl(Long id, String isInline);
 
-    UploadFileVO mergeChunk(File fileTemp, String fileMd5);
+    UploadFileVO mergeChunk(File fileTemp, String fileMd5, String originalName);
 
     String getFileByMd5(String fileMd5, String fileName);
 

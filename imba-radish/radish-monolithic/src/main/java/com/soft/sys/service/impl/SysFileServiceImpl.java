@@ -5,13 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.soft.sys.async.FileDeleteAsync;
-import com.soft.sys.async.FileUploadAsync;
 import com.soft.common.constants.BaseConstant;
 import com.soft.common.constants.DictConstant;
 import com.soft.common.constants.RedisConstant;
-import com.soft.sys.entity.SysFile;
 import com.soft.common.exception.GlobalException;
+import com.soft.sys.async.FileDeleteAsync;
+import com.soft.sys.entity.SysFile;
 import com.soft.sys.mapper.SysFileMapper;
 import com.soft.sys.model.dto.FileDetailDTO;
 import com.soft.sys.model.dto.FileHashDTO;
@@ -22,6 +21,7 @@ import com.soft.sys.model.vo.UploadFileVO;
 import com.soft.sys.properties.MinioProperty;
 import com.soft.sys.service.SysDictDataService;
 import com.soft.sys.service.SysFileService;
+import com.soft.sys.utils.FileNameUtil;
 import com.soft.sys.utils.MinioUtil;
 import com.soft.sys.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,6 +54,10 @@ import java.util.regex.Pattern;
 public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         implements SysFileService {
 
+    /** 分段锁：秒传/合并的"查重 + 落库"必须互斥，否则并发会产生重复记录或重复写 MinIO */
+    private static final int LOCK_STRIPES = 64;
+    private final Object[] uploadLocks = createUploadLocks();
+
     private final SysFileMapper sysFileMapper;
 
     private final MinioUtil minioUtil;
@@ -67,47 +70,62 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final FileUploadAsync fileUploadAsync;
-
     private final FileDeleteAsync fileDeleteAsync;
+
+    private static Object[] createUploadLocks() {
+        Object[] stripes = new Object[LOCK_STRIPES];
+        for (int i = 0; i < LOCK_STRIPES; i++) {
+            stripes[i] = new Object();
+        }
+        return stripes;
+    }
+
+    private Object uploadLock(String key) {
+        return uploadLocks[Math.floorMod(key.hashCode(), uploadLocks.length)];
+    }
 
     @Override
     public UploadFileVO uploadFile(MultipartFile multipartFile, String fileMd5) {
-        UploadFileVO uploadFileVo = new UploadFileVO();
-        SysFile sysFile = new SysFile();
-        String originalFilename = multipartFile.getOriginalFilename();
-        if (StringUtils.isBlank(originalFilename)) {
-            throw new GlobalException("文件名不能为空");
-        }
-
-        try {
-            FileHashDTO fileHashDto = sysFileMapper.getFileByHash(fileMd5);
-            if (fileHashDto != null) {
-                BeanUtils.copyProperties(fileHashDto, sysFile);
-            } else {
-                long fileSize = multipartFile.getSize();
-                String fileSuffix = originalFilename.substring(originalFilename.lastIndexOf("."));
-                String fileKey = IdUtil.fastSimpleUUID();
-                String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
-
-                minioUtil.upload(multipartFile.getInputStream(), fileSize, objectKey);
-
-                sysFile.setFileKey(fileKey);
-                sysFile.setFileSuffix(fileSuffix);
-                sysFile.setLocation(BaseConstant.Minio.MINIO);
-                sysFile.setBucket(minioProperty.getDefaultBucket());
-                sysFile.setObjectKey(objectKey);
-                sysFile.setOriginalName(originalFilename);
-                sysFile.setFileSize(fileSize);
-                sysFile.setFileHash(fileMd5);
+        String originalName = FileNameUtil.sanitize(multipartFile.getOriginalFilename());
+        Long userId = securityUtil.getUserInfo().getId();
+        String lockKey = userId + ":" + fileMd5 + ":" + originalName;
+        synchronized (uploadLock(lockKey)) {
+            // 幂等：同一用户、同一内容、同一文件名重复上传直接返回已有记录
+            Long existingId = sysFileMapper.getFileIdByHashAndOwner(fileMd5, originalName, userId);
+            if (existingId != null) {
+                return buildUploadVO(existingId, originalName);
             }
-            sysFileMapper.insert(sysFile);
-            uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
-            uploadFileVo.setFileName(sysFile.getOriginalName());
-
-            return uploadFileVo;
-        } catch (IOException e) {
-            throw new GlobalException(e.getLocalizedMessage());
+            try {
+                FileHashDTO fileHashDto = sysFileMapper.getFileByHash(fileMd5);
+                // 哈希命中但 MinIO 对象已被清理时不能复用，否则会写入一条下载不到的记录
+                if (fileHashDto != null && !minioUtil.exists(fileHashDto.getObjectKey())) {
+                    fileHashDto = null;
+                }
+                SysFile sysFile = new SysFile();
+                if (fileHashDto != null) {
+                    BeanUtils.copyProperties(fileHashDto, sysFile);
+                } else {
+                    long fileSize = multipartFile.getSize();
+                    String fileSuffix = FileNameUtil.suffixOf(originalName);
+                    String fileKey = IdUtil.fastSimpleUUID();
+                    String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
+                    // 先写对象存储，成功后再落库
+                    minioUtil.upload(multipartFile.getInputStream(), fileSize, objectKey);
+                    sysFile.setFileKey(fileKey);
+                    sysFile.setFileSuffix(fileSuffix);
+                    sysFile.setLocation(BaseConstant.Minio.MINIO);
+                    sysFile.setBucket(minioProperty.getDefaultBucket());
+                    sysFile.setObjectKey(objectKey);
+                    sysFile.setFileSize(fileSize);
+                    sysFile.setFileHash(fileMd5);
+                }
+                sysFile.setOriginalName(originalName);
+                sysFile.setId(null);
+                sysFileMapper.insert(sysFile);
+                return buildUploadVO(sysFile.getId(), originalName);
+            } catch (IOException e) {
+                throw new GlobalException(e.getLocalizedMessage());
+            }
         }
     }
 
@@ -215,47 +233,92 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
         }
     }
 
+    /**
+     * 合并后的文件入库。
+     * 与旧实现的关键差别：不再 @Async 后台传 MinIO，而是同步上传成功并确认对象存在后才 insert，
+     * 否则列表里会出现"能看不能下载"的幽灵文件。
+     */
     @Override
-    public UploadFileVO mergeChunk(File fileTemp, String fileMd5) {
-        String fileName = fileTemp.getName();
-        String fileKey = IdUtil.fastSimpleUUID();
-        String fileSuffix = fileName.substring(fileName.lastIndexOf("."));
+    public UploadFileVO mergeChunk(File fileTemp, String fileMd5, String originalName) {
         long fileSize = fileTemp.length();
-        String objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
+        Long userId = securityUtil.getUserInfo().getId();
+        String lockKey = userId + ":" + fileMd5 + ":" + originalName;
+        synchronized (uploadLock(lockKey)) {
+            Long existingId = sysFileMapper.getFileIdByHashAndOwner(fileMd5, originalName, userId);
+            if (existingId != null) {
+                return buildUploadVO(existingId, originalName);
+            }
 
-        SysFile sysFile = new SysFile();
-        sysFile.setFileKey(fileKey);
-        sysFile.setFileSuffix(fileSuffix);
-        sysFile.setLocation(BaseConstant.Minio.MINIO);
-        sysFile.setBucket(minioProperty.getDefaultBucket());
-        sysFile.setObjectKey(objectKey);
-        sysFile.setOriginalName(fileName);
-        sysFile.setFileSize(fileSize);
-        sysFile.setFileSize(fileSize);
-        sysFile.setFileHash(fileMd5);
-        sysFileMapper.insert(sysFile);
+            String fileKey = IdUtil.fastSimpleUUID();
+            String fileSuffix = FileNameUtil.suffixOf(originalName);
+            String objectKey;
+            FileHashDTO sameHash = sysFileMapper.getFileByHash(fileMd5);
+            if (sameHash != null && minioUtil.exists(sameHash.getObjectKey())) {
+                // 并发下另一个任务已把同一内容写完，复用对象即可
+                objectKey = sameHash.getObjectKey();
+            } else {
+                objectKey = minioUtil.getObjectKey(fileKey, fileSuffix);
+                try (InputStream is = Files.newInputStream(fileTemp.toPath())) {
+                    minioUtil.upload(is, fileSize, objectKey);
+                } catch (IOException e) {
+                    throw new GlobalException("文件写入存储失败：" + e.getMessage());
+                }
+                if (!minioUtil.exists(objectKey)) {
+                    minioUtil.delete(objectKey);
+                    throw new GlobalException("文件存储校验失败，请重试");
+                }
+            }
 
-        fileUploadAsync.fileUpload(fileTemp, objectKey, fileSize);
-
-        UploadFileVO uploadFileVo = new UploadFileVO();
-        uploadFileVo.setFileName(fileName);
-        uploadFileVo.setFileId(String.valueOf(sysFile.getId()));
-
-        return uploadFileVo;
+            SysFile sysFile = new SysFile();
+            sysFile.setFileKey(fileKey);
+            sysFile.setFileSuffix(fileSuffix);
+            sysFile.setLocation(BaseConstant.Minio.MINIO);
+            sysFile.setBucket(minioProperty.getDefaultBucket());
+            sysFile.setObjectKey(objectKey);
+            sysFile.setOriginalName(originalName);
+            sysFile.setFileSize(fileSize);
+            sysFile.setFileHash(fileMd5);
+            sysFileMapper.insert(sysFile);
+            return buildUploadVO(sysFile.getId(), originalName);
+        }
     }
 
+    /**
+     * 秒传：命中同一内容时按「当前用户 + 当前文件名」复用已有记录，
+     * 避免重复点击/并发产生重复行；同时保留每个用户各自的文件名。
+     */
     @Override
-    public String getFileByMd5(String fileMd5, String fileName) {
-        SysFile sysFile = sysFileMapper.getFileByMd5(fileMd5);
-        if (sysFile == null) {
-            return null;
+    public String getFileByMd5(String fileMd5, String originalName) {
+        Long userId = securityUtil.getUserInfo().getId();
+        String lockKey = userId + ":" + fileMd5 + ":" + originalName;
+        synchronized (uploadLock(lockKey)) {
+            Long existingId = sysFileMapper.getFileIdByHashAndOwner(fileMd5, originalName, userId);
+            if (existingId != null) {
+                return String.valueOf(existingId);
+            }
+            SysFile source = sysFileMapper.getFileByMd5(fileMd5);
+            // 对象已被删除时不能秒传，让前端走正常上传重新写入存储
+            if (source == null || !minioUtil.exists(source.getObjectKey())) {
+                return null;
+            }
+            SysFile sysFile = new SysFile();
+            sysFile.setFileKey(source.getFileKey());
+            sysFile.setFileSuffix(source.getFileSuffix());
+            sysFile.setLocation(source.getLocation());
+            sysFile.setBucket(source.getBucket());
+            sysFile.setObjectKey(source.getObjectKey());
+            sysFile.setFileSize(source.getFileSize());
+            sysFile.setFileHash(fileMd5);
+            sysFile.setOriginalName(originalName);
+            sysFileMapper.insert(sysFile);
+            return String.valueOf(sysFile.getId());
         }
-        sysFile.setOriginalName(fileName);
-        sysFileMapper.insert(sysFile);
-        return String.valueOf(sysFile.getId());
+    }
+
+    private UploadFileVO buildUploadVO(Long id, String originalName) {
+        UploadFileVO vo = new UploadFileVO();
+        vo.setFileName(originalName);
+        vo.setFileId(String.valueOf(id));
+        return vo;
     }
 }
-
-
-
-

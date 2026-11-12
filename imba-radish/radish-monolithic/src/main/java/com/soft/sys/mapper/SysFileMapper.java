@@ -28,6 +28,11 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
                                @Param("userId") Long userId);
 
     SysFile getFileByMd5(@Param("fileMd5") String fileMd5);
+
+    /** 秒传/合并幂等：查当前用户是否已用同名上传过同一内容 */
+    Long getFileIdByHashAndOwner(@Param("fileMd5") String fileMd5,
+                                 @Param("originalName") String originalName,
+                                 @Param("userId") Long userId);
 }
 
 

@@ -1,20 +1,22 @@
 package com.soft.sys.controller;
 
-import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RegexConstant;
 import com.soft.common.annotation.LogIgnore;
 import com.soft.common.annotation.SysLock;
 import com.soft.common.annotation.SysLog;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.constants.RegexConstant;
 import com.soft.common.enums.LogModuleEnum;
 import com.soft.common.exception.GlobalException;
+import com.soft.common.resultapi.R;
+import com.soft.sys.file.ChunkStorage;
 import com.soft.sys.model.dto.FileDetailDTO;
 import com.soft.sys.model.request.FilesDTO;
+import com.soft.sys.model.vo.ChunkProgressVO;
 import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.model.vo.UploadFileVO;
-import com.soft.sys.model.vo.ChunkProgressVO;
-import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysFileService;
+import com.soft.sys.utils.FileNameUtil;
 import com.soft.sys.utils.MinioUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,7 +28,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -38,25 +39,20 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @Author: cyx
  * @Description:
  * @DateTime: 2024/10/26 15:22
  **/
-
 @RestController
 @RequestMapping(value = "/file")
 @Tag(name = "文件")
@@ -65,27 +61,33 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SysFileController {
 
+    /** 单分片允许范围，与 spring.servlet.multipart.max-request-size 保持一致 */
+    private static final long MIN_CHUNK_SIZE = 1024L * 1024L;
+    private static final long MAX_CHUNK_SIZE = 12L * 1024 * 1024L;
+
     @Value(value = "${storage.big-file.location}")
     private String bigfileLocation;
 
-    @Value(value = "${tmp.path}")
-    private String tmp;
+    @Value(value = "${radish.upload.max-total-file-size:2147483648}")
+    private long maxTotalFileSize;
 
     private final SysFileService sysFileService;
 
     private final MinioUtil minioUtil;
 
+    private final ChunkStorage chunkStorage;
 
     @PostMapping(value = "/upload")
     @Operation(summary = "上传文件")
     @SysLog(value = "上传文件", module = LogModuleEnum.FILE)
     public R<UploadFileVO> uploadFile(@RequestParam(value = "multipartFile", required = false) @NotNull(message = "文件不能为空") @LogIgnore MultipartFile multipartFile,
-                                      @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "fileMd5不能为空") String fileMd5) {
+                                      @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "fileMd5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5) {
         UploadFileVO uploadFileVo = sysFileService.uploadFile(multipartFile, fileMd5);
-        return R.ok("上传成功", uploadFileVo);
+        // 不带 msg：批量上传由任务面板逐条展示结果，头像上传由页面自行提示
+        return R.ok(uploadFileVo);
     }
 
-    @GetMapping (value = "/downloadFile")
+    @GetMapping(value = "/downloadFile")
     @Operation(summary = "下载文件")
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public ResponseEntity<StreamingResponseBody> downloadFile(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
@@ -114,20 +116,17 @@ public class SysFileController {
         }
 
         try {
-            // 设置响应头
             String mimeType = Files.probeContentType(Path.of(fileDetail.getOriginalName()));
-            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build()); // 设置文件名
+            headers.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode(fileDetail.getOriginalName(), StandardCharsets.UTF_8)).build());
             headers.setContentType(MediaType.parseMediaType(mimeType != null ? mimeType : MediaType.APPLICATION_OCTET_STREAM_VALUE));
             headers.setContentLength(fileDetail.getFileSize());
 
-            //流式传输
             StreamingResponseBody responseBody = outputStream -> {
                 byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
                 int bytesRead;
                 InputStream is;
                 File file;
 
-                // 根据存储位置来获取文件源
                 if (BaseConstant.Minio.MINIO.equals(fileDetail.getLocation())) {
                     is = minioUtil.download(fileDetail.getObjectKey());
                 } else if (BaseConstant.Minio.DISK.equals(fileDetail.getLocation())) {
@@ -135,7 +134,7 @@ public class SysFileController {
                     if (!file.exists()) {
                         throw new GlobalException("资源不存在");
                     }
-                    is = new FileInputStream(file);
+                    is = new java.io.FileInputStream(file);
                 } else {
                     throw new GlobalException("资源不存在");
                 }
@@ -147,7 +146,6 @@ public class SysFileController {
                 is.close();
             };
 
-            // 返回文件内容
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(responseBody);
@@ -172,28 +170,8 @@ public class SysFileController {
     @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
     public R<Object> cancelChunk(
             @RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5) {
-
-        File chunkDir = new File(tmp + File.separator + fileMd5);
-
-        if (!chunkDir.exists()) {
-            return R.ok("分片已清空", null);
-        }
-
-        File[] files = chunkDir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (!file.delete()) {
-                    log.warn("分片删除失败：{}", file.getAbsolutePath());
-                }
-            }
-        }
-
-        if (!chunkDir.delete()) {
-            log.warn("分片目录删除失败：{}", chunkDir.getAbsolutePath());
-            return R.fail("分片删除失败");
-        }
-
-        return R.ok("分片已清空", null);
+        chunkStorage.deleteChunks(fileMd5);
+        return R.ok();
     }
 
     @PostMapping(value = "/getFiles")
@@ -233,118 +211,68 @@ public class SysFileController {
     public R<Object> uploadChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
                                  @RequestParam(value = "chunkIndex", required = false) @NotNull(message = "索引不能为空") Integer chunkIndex,
                                  @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") @LogIgnore MultipartFile chunk) throws IOException {
-
-        File chunkDir = new File(tmp + File.separator + fileMd5);
-        if (!chunkDir.exists() && !chunkDir.mkdirs()) {
-            return R.fail("分片目录创建失败");
+        if (chunkIndex == null || chunkIndex < 0 || chunkIndex >= (maxTotalFileSize + MIN_CHUNK_SIZE - 1) / MIN_CHUNK_SIZE) {
+            throw new GlobalException("分片索引不合法");
         }
-
-        File chunkFile = new File(chunkDir, chunkIndex.toString());
-
-        // 幂等：分片已存在且有效则跳过
-        if (chunkFile.exists() && chunkFile.length() > 0) {
-            log.debug("分片已存在，跳过：fileMd5={}, chunkIndex={}", fileMd5, chunkIndex);
-            return R.ok();
+        if (chunk.isEmpty() || chunk.getSize() > MAX_CHUNK_SIZE) {
+            throw new GlobalException("分片大小不合法");
         }
-
-        chunk.transferTo(chunkFile);
+        chunkStorage.writeChunk(fileMd5, chunkIndex, chunk);
         return R.ok();
     }
 
     @GetMapping(value = "/getUploadProgress")
     @Operation(summary = "查询分片上传进度")
-    @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY)
-    public R<ChunkProgressVO> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5) {
-
-        File chunkDir = new File(tmp + File.separator + fileMd5);
+    @Parameters({
+            @Parameter(name = "fileMd5", description = "文件MD5", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "fileSize", description = "文件总大小（字节）", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "chunkSize", description = "分片大小（字节）", required = true, in = ParameterIn.QUERY)
+    })
+    public R<ChunkProgressVO> getUploadProgress(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
+                                                 @RequestParam(value = "fileSize", required = false) @NotNull(message = "文件大小不能为空") Long fileSize,
+                                                 @RequestParam(value = "chunkSize", required = false) @NotNull(message = "分片大小不能为空") Long chunkSize) {
+        validateFileParams(fileSize, chunkSize);
         ChunkProgressVO vo = new ChunkProgressVO();
-
-        if (!chunkDir.exists() || !chunkDir.isDirectory()) {
-            vo.setUploadedIndices(new ArrayList<>());
-            return R.ok(vo);
-        }
-
-        List<Integer> indices = getIndices(chunkDir);
-
+        List<Integer> indices = chunkStorage.uploadedIndices(fileMd5, fileSize, chunkSize);
         vo.setUploadedIndices(indices);
         return R.ok(vo);
     }
 
     /**
-     * 获取已上传的分片索引
-     * @param chunkDir
-     * @return
+     * 合并分片。
+     * 从 GET 改为 POST（原实现用有副作用的 GET，浏览器/代理缓存和预取都可能重复触发），
+     * 并按 md5 加锁保证并发幂等：MinIO 上传成功并落库后才删除分片目录，失败保留分片可重试。
      */
-    private static @NonNull List<Integer> getIndices(File chunkDir) {
-        File[] files = chunkDir.listFiles();
-        List<Integer> indices = new ArrayList<>();
-
-        if (files != null) {
-            for (File file : files) {
-                // 只统计有效分片：是文件、大小>0、文件名为纯数字
-                if (file.isFile() && file.length() > 0) {
-                    try {
-                        indices.add(Integer.parseInt(file.getName()));
-                    } catch (NumberFormatException ignored) {
-                        // 跳过非数字文件名（如合并产生的临时文件）
-                    }
-                }
-            }
-        }
-        return indices;
-    }
-
-    @GetMapping(value = "/mergeChunk")
+    @PostMapping(value = "/mergeChunk")
     @Operation(summary = "合并分片")
-    public R<Object> mergeChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
-                                @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName,
-                                @RequestParam(value = "total", required = false) @NotNull(message = "分片总数不能为空") Integer total) {
-        File chunkDir = new File(tmp + File.separator + fileMd5);
-        File[] allFiles = chunkDir.listFiles();
-
-        if (allFiles == null || allFiles.length == 0) {
-            return R.fail("分片未找到");
+    public R<UploadFileVO> mergeChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
+                                      @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName,
+                                      @RequestParam(value = "total", required = false) @NotNull(message = "分片总数不能为空") Integer total,
+                                      @RequestParam(value = "fileSize", required = false) @NotNull(message = "文件大小不能为空") Long fileSize,
+                                      @RequestParam(value = "chunkSize", required = false) @NotNull(message = "分片大小不能为空") Long chunkSize) {
+        validateFileParams(fileSize, chunkSize);
+        long expectedTotal = (fileSize + chunkSize - 1) / chunkSize;
+        if (total == null || total <= 0 || total != expectedTotal) {
+            throw new GlobalException("分片数量不合法");
         }
+        String originalName = FileNameUtil.sanitize(fileName);
 
-        // 只取纯数字文件名的有效分片，排除非分片文件（如之前合并产生的临时文件）
-        Map<String, File> chunkMap = Arrays.stream(allFiles)
-                .filter(f -> f.isFile() && f.getName().matches("\\d+"))
-                .collect(Collectors.toMap(File::getName, Function.identity()));
-
-        // 逐一校验：每个索引对应的分片都存在且非空
-        for (int i = 0; i < total; i++) {
-            File chunk = chunkMap.get(String.valueOf(i));
-            if (chunk == null || !chunk.exists() || chunk.length() <= 0) {
-                return R.fail("分片缺失，缺少索引：" + i);
+        synchronized (chunkStorage.lock(chunkStorage.chunkDir(fileMd5))) {
+            try {
+                File merged = chunkStorage.merge(fileMd5, total, fileSize, chunkSize).toFile();
+                UploadFileVO vo = sysFileService.mergeChunk(merged, fileMd5, originalName);
+                // 走到这里说明 MinIO 已确认可下载、数据库记录已落库，分片可以安全删除
+                chunkStorage.deleteChunks(fileMd5);
+                // 不带 msg：批量上传时任务面板已经逐条展示结果，避免弹一屏重复 toast
+                return R.ok(vo);
+            } catch (IOException e) {
+                chunkStorage.deleteMerged(fileMd5);
+                throw new GlobalException("分片合并失败：" + e.getMessage());
+            } catch (RuntimeException e) {
+                // 只删合并产物，保留分片，前端"重试"无需重传
+                chunkStorage.deleteMerged(fileMd5);
+                throw e;
             }
-        }
-
-        File fileTemp = new File(chunkDir, fileName);
-        try (FileOutputStream os = new FileOutputStream(fileTemp);
-                FileChannel out = os.getChannel()) {
-            if (!fileTemp.exists()) {
-                boolean flag = fileTemp.createNewFile();
-                if (!flag) {
-                    return R.fail("文件缓存创建失败");
-                }
-            }
-            for (int i = 0; i < total; i++) {
-                File chunk = chunkMap.get(String.valueOf(i));
-                try (FileInputStream is = new FileInputStream(chunk);
-                     FileChannel in = is.getChannel()) {
-                    // 零拷贝传输
-                    in.transferTo(0, in.size(), out);
-                } catch (IOException e) {
-                    throw new GlobalException(e.getMessage());
-                }
-                chunk.delete();
-            }
-
-            UploadFileVO uploadFileVo = sysFileService.mergeChunk(fileTemp, fileMd5);
-
-            return R.ok("上传成功", uploadFileVo);
-        } catch (IOException e) {
-            throw new GlobalException(e);
         }
     }
 
@@ -352,7 +280,16 @@ public class SysFileController {
     @Operation(summary = "根据md5获取文件")
     public R<String> getFileByMd5(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "md5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
                                   @RequestParam(value = "fileName", required = false) @NotBlank(message = "文件名不能为空") String fileName) {
-        String id = sysFileService.getFileByMd5(fileMd5, fileName);
+        String id = sysFileService.getFileByMd5(fileMd5, FileNameUtil.sanitize(fileName));
         return R.ok(id);
+    }
+
+    private void validateFileParams(Long fileSize, Long chunkSize) {
+        if (fileSize == null || fileSize <= 0 || fileSize > maxTotalFileSize) {
+            throw new GlobalException("文件大小超出限制");
+        }
+        if (chunkSize == null || chunkSize < MIN_CHUNK_SIZE || chunkSize > MAX_CHUNK_SIZE) {
+            throw new GlobalException("分片大小不合法");
+        }
     }
 }

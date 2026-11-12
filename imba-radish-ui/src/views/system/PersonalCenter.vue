@@ -216,6 +216,8 @@ const uploadAvatar = async (options: any) => {
   profileForm.value.avatar = res.fileId
   // 上传成功后立即显示头像
   avatarUrl.value = URL.createObjectURL(file)
+  // 上传接口不再返回 msg 以避免批量上传刷屏，这里单独给头像一个提示
+  showMessage('头像上传成功，保存信息后生效', 'success')
 }
 
 // 删除头像：仅清空引用与预览，点击「保存信息」后才会真正写库

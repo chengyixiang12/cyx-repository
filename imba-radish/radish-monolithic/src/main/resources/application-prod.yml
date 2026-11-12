@@ -2,8 +2,8 @@ spring:
   servlet:
     multipart:
       location: /tmp
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 12MB
+      max-request-size: 12MB
       file-size-threshold: 1MB
   datasource:
     dynamic:
@@ -195,6 +195,16 @@ radish:
     max-retry: 5
     #重试间隔时间（毫秒）
     retry-interval-time: 2000
+  upload:
+    # 单文件上限（字节）2GB，必须与前端 MAX_FILE_SIZE、nginx client_max_body_size 对齐
+    max-total-file-size: 2147483648
+    # 未完成分片保留时长（小时）：留一段时间用于断点续传，超时由 ChunkCleanupJob 回收
+    chunk-ttl-hours: 24
+    # 清理任务执行间隔 / 启动后的首次延迟（毫秒）
+    cleanup-interval-ms: 3600000
+    cleanup-initial-delay-ms: 60000
+    # 是否顺带清理改造前遗留的 tmp/{md5} 孤儿分片目录
+    cleanup-legacy: true
   log:
     # 是否开启日志记录
     enable: true

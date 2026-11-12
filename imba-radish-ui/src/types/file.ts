@@ -19,6 +19,7 @@ export interface FilesRequest {
 }
 
 export interface ChunkProgressVo {
+    /** 校验过长度、可安全续传的分片索引 */
     uploadedIndices: number[];
-    uploadedCount: number;
+    uploadedCount?: number;
 }

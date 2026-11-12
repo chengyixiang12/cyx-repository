@@ -1,6 +1,29 @@
+import type { AxiosProgressEvent } from 'axios'
 import { post, get, del, getBlob } from '@/utils/http';
 import { ChunkProgressVo, FilesRequest, FilesVo, UploadFileVo } from '@/types/file';
 import { PaginatedData } from '@/types/api';
+
+/** 单个分片 / 小文件 / 合并的超时都要比全局 60s 长，慢网络下 5MB 分片很容易超时 */
+const CHUNK_TIMEOUT = 5 * 60 * 1000;
+const FILE_TIMEOUT = 10 * 60 * 1000;
+// 合并是同步写 MinIO，2GB 文件可能要跑几分钟
+const MERGE_TIMEOUT = 30 * 60 * 1000;
+
+export interface UploadRequestOptions {
+  signal?: AbortSignal;
+  /** 已上传字节数（由 axios 的 onUploadProgress 提供） */
+  onUploadProgress?: (loaded: number) => void;
+  timeout?: number;
+}
+
+export interface MergeChunkParams {
+  fileMd5: string;
+  fileName: string;
+  total: number;
+  fileSize: number;
+  chunkSize: number;
+  signal?: AbortSignal;
+}
 
 /**
  * 根据id获取文件
@@ -13,11 +36,16 @@ export async function getFileByIdApi(id: string): Promise<Blob> {
 }
 
 /**
- * 上传文件
- * @param params 
+ * 上传文件（小文件直传）
  */
-export async function uploadFileApi(params: FormData): Promise<UploadFileVo> {
-  const res = await post<UploadFileVo>('/file/upload', params, { flag: true, headers: { 'Content-Type': 'multipart/form-data'} })
+export async function uploadFileApi(params: FormData, options: UploadRequestOptions = {}): Promise<UploadFileVo> {
+  const res = await post<UploadFileVo>('/file/upload', params, {
+    flag: true,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: options.timeout ?? FILE_TIMEOUT,
+    signal: options.signal,
+    onUploadProgress: (event: AxiosProgressEvent) => options.onUploadProgress?.(event.loaded ?? 0)
+  })
   return res.data;
 }
 
@@ -61,24 +89,29 @@ export async function downloadFileApi(id: string, silent = false): Promise<Blob>
 }
 
 /**
- * 上传分片
- * @param fileMd5 
- * @param chunkIndex 
- * @param chunk 
- * @returns 
+ * 上传单个分片
  */
-export async function uploadChunkApi(formData: FormData) {
-  await post<any>('/file/uploadChunk', formData, { flag: true, headers: { 'Content-Type': 'multipart/form-data'} });
+export async function uploadChunkApi(formData: FormData, options: UploadRequestOptions = {}): Promise<void> {
+  await post<void>('/file/uploadChunk', formData, {
+    flag: true,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: options.timeout ?? CHUNK_TIMEOUT,
+    signal: options.signal,
+    onUploadProgress: (event: AxiosProgressEvent) => options.onUploadProgress?.(event.loaded ?? 0)
+  })
 }
 
 /**
- * 合并分片
- * @param fileMd5 
- * @param fileName 
- * @param total 
+ * 合并分片（后端已改为 POST，副作用接口不再用 GET）
  */
-export async function mergeChunkApi(fileMd5: string, fileName: string, total: number): Promise<UploadFileVo> {
-  const res = await get<UploadFileVo>('/file/mergeChunk', { flag: true, params: { fileMd5, fileName, total}});
+export async function mergeChunkApi(params: MergeChunkParams): Promise<UploadFileVo> {
+  const { signal, ...query } = params
+  const res = await post<UploadFileVo>('/file/mergeChunk', undefined, {
+    flag: true,
+    params: query,
+    timeout: MERGE_TIMEOUT,
+    signal
+  })
   return res.data;
 }
 
@@ -94,13 +127,10 @@ export async function getFileUrlApi(id: string, isInline: string): Promise<strin
 }
 
 /**
- * 根据md5获取文件
- * @param fileMd5 
- * @param fileName 
- * @returns 
+ * 根据md5获取文件（秒传）；命中时返回文件 id，未命中返回 null
  */
-export async function getFileByMd5Api(fileMd5: string, fileName: string): Promise<string> {
-  const res = await get<string>('/file/getFileByMd5', { flag: true, params: { fileMd5, fileName }});
+export async function getFileByMd5Api(fileMd5: string, fileName: string, signal?: AbortSignal): Promise<string | null> {
+  const res = await get<string | null>('/file/getFileByMd5', { flag: true, params: { fileMd5, fileName }, signal });
   return res.data;
 }
 
@@ -116,19 +146,25 @@ export async function existFileApi(fileMd5: string, fileName: string): Promise<b
 }
 
 /**
- * 获取上传进度
- * @param fileMd5 
- * @returns 
+ * 查询可续传的分片；带 fileSize/chunkSize，后端会校验分片长度，损坏的旧分片不会被算作已完成
  */
-export async function getUploadProgressApi(fileMd5: string): Promise<ChunkProgressVo> {
-  const res = await get<ChunkProgressVo>('/file/getUploadProgress', { flag: true, params: { fileMd5 }});
+export async function getUploadProgressApi(
+  fileMd5: string,
+  fileSize: number,
+  chunkSize: number,
+  signal?: AbortSignal
+): Promise<ChunkProgressVo> {
+  const res = await get<ChunkProgressVo>('/file/getUploadProgress', {
+    flag: true,
+    params: { fileMd5, fileSize, chunkSize },
+    signal
+  });
   return res.data;
 }
 
 /**
- * 取消分片上传
- * @param fileMd5  
+ * 取消上传时清理服务端已落盘的分片（失败也无所谓，服务端 TTL 会兜底回收）
  */
 export async function cancelChunkApi(fileMd5: string): Promise<void> {
-  await del('/file/cancelChunk', null, { params: { fileMd5 }, flag: true })
+  await del('/file/cancelChunk', null, { params: { fileMd5 }, flag: true, silent: true })
 }
