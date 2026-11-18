@@ -32,7 +32,6 @@
         <knife4j.version>4.6.0</knife4j.version>
         <hutool.version>5.8.43</hutool.version>
         <fastjson.version>2.0.53</fastjson.version>
-        <javax.version>2.3.1</javax.version>
         <agent.version>1.21</agent.version>
         <tika.version>3.2.3</tika.version>
         <kaptcha.vesion>2.3.2</kaptcha.vesion>
@@ -47,20 +46,8 @@
         <okhttp.version>4.12.0</okhttp.version>
         <jackson-databind.version>3.1.5</jackson-databind.version>
         <swagger-annotations.version>2.2.38</swagger-annotations.version>
-        <!-- 微服务组件版本。注意 Spring Cloud Alibaba 2025.1.0.0 已移除 bootstrap
-             支持，配置中心须用 spring.config.import: nacos:... 接入 -->
-        <spring-cloud.version>2025.1.0</spring-cloud.version>
-        <spring-cloud-alibaba.version>2025.1.0.0</spring-cloud-alibaba.version>
     </properties>
 
-    <!--
-        说明：本 BOM 只声明「版本」，不引入依赖。
-        各子模块按需在 <dependencies> 中声明（不写 version）。
-
-        Spring Boot 已管理的依赖（spring-boot-starter-* / HikariCP / mysql-connector-j /
-        postgresql / hibernate-validator / micrometer-core / lombok / spring-webflux /
-        reactor-netty-http 等）无需在此列出，直接 version-less 引用即可。
-    -->
     <dependencyManagement>
         <dependencies>
             <!-- ==================== BOM import（顺序即优先级）==================== -->
@@ -376,12 +363,6 @@
     </repositories>
 
     <build>
-        <!--
-            只做版本与配置管理，不激活插件。
-            需要打成可执行 jar 的模块（gateway / system / business / monolithic）
-            须在自身 <build><plugins> 中显式声明 spring-boot-maven-plugin；
-            库模块（common / nacos）绝不声明，否则 repackage 会因找不到主类而构建失败。
-        -->
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -412,7 +393,6 @@
                     </configuration>
                 </plugin>
 
-                <!-- 一次性升级工具（Spring Boot 4 迁移已完成），仅保留配置不自动执行 -->
                 <plugin>
                     <groupId>org.openrewrite.maven</groupId>
                     <artifactId>rewrite-maven-plugin</artifactId>
