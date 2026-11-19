@@ -38,6 +38,7 @@ export class WebsocketManager {
   public onForceLogout: ((data: WebsocketMessage) => void) | null = null
   public aiAnwser: ((data: WebsocketMessage) => void) | null = null
   public refreshToken: ((data: WebsocketMessage) => void) | null = null
+  public onWorkflowNotify: ((data: WebsocketMessage) => void) | null = null
 
   public onOpen: (() => void) | null = null
   public onClose: ((code: number, reason: string) => void) | null = null
@@ -98,6 +99,10 @@ export class WebsocketManager {
           }
           case 'REFRESH_TOKEN': {
             this.refreshToken?.(data)
+            break
+          }
+          case 'WORKFLOW_NOTIFY': {
+            this.onWorkflowNotify?.(data)
             break
           }
           case 'PING': {

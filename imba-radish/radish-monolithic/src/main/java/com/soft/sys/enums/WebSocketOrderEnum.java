@@ -59,6 +59,11 @@ public enum WebSocketOrderEnum {
     AI,
 
     /**
+     * 工作流通知（仅服务端下发，客户端上行会被拒绝）
+     */
+    WORKFLOW_NOTIFY,
+
+    /**
      * 刷新token
      */
     REFRESH_TOKEN

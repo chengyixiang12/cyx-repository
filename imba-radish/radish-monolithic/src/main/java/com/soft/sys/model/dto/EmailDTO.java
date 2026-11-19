@@ -18,6 +18,11 @@ public class EmailDTO {
     private String email;
 
     /**
+     * 邮件主题；为空时由监听器回退到默认主题
+     */
+    private String subject;
+
+    /**
      * 消息内容
      */
     private String content;

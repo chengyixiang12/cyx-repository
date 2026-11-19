@@ -45,7 +45,9 @@ public class MessageEventListener {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
             helper.setFrom(Optional.ofNullable(mailProperties.getUsername()).orElseThrow());
             helper.setTo(emailDto.getEmail());
-            helper.setSubject(radishProperty.getCaptcha().getTopic());
+            // 优先使用事件自带主题（如工作流通知），未设置时回退到验证码默认主题
+            helper.setSubject(emailDto.getSubject() != null && !emailDto.getSubject().isBlank()
+                    ? emailDto.getSubject() : radishProperty.getCaptcha().getTopic());
             helper.setText(emailDto.getContent(), true);
             javaMailSender.send(mimeMessage);
             log.info("邮件发送成功");

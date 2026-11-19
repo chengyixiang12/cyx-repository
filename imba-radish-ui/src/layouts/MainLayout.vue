@@ -132,7 +132,7 @@ import {
 import { clearCache } from '../utils/clearCache'
 import { UserInfoVo } from '@/types/login'
 import { logouted } from '@/api/login'
-import { ElTooltip, ElMessageBox } from 'element-plus'
+import { ElTooltip, ElMessageBox, ElNotification } from 'element-plus'
 import type { MenuItem } from '@/types/menu'
 import { getMessageNumApi } from '@/api/message'
 import { getLeftMenusApi } from '@/api/dashboard'
@@ -340,6 +340,15 @@ const initWebsocket = async () => {
         if (token) {
             sessionStorage.setItem('Authorization', token);
         }
+    };
+    ws.onWorkflowNotify = (data: WebsocketMessage) => {
+        // 工作流待办/完成/驳回等通知，右上角桌面式提醒
+        ElNotification({
+            title: '工作流通知',
+            message: data.msg,
+            type: 'info',
+            duration: 6000
+        });
     };
 }
 

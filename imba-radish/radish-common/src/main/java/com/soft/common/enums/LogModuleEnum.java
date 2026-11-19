@@ -23,6 +23,7 @@ public enum LogModuleEnum {
     ROLE("角色"),
     USER("用户"),
     SECRET_KEY("密钥"),
+    WORKFLOW("工作流"),
     ;
 
     private final String name;

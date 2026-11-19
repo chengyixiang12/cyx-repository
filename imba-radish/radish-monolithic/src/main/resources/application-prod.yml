@@ -181,6 +181,9 @@ radish:
   graphics:
     # 图形验证码过期时间（秒）
     expire-time: 60
+  workflow:
+    # 工作流通知邮件主题
+    topic: 萝卜系统工作流通知
   token:
     # token过期时间（秒）
     expire-time: 600

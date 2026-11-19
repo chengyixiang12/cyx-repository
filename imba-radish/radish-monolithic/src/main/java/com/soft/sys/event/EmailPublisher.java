@@ -28,4 +28,19 @@ public class EmailPublisher {
         emailDTO.setContent(content);
         eventPublisher.publishEvent(emailDTO);
     }
+
+    /**
+     * 发送带自定义主题的邮件
+     *
+     * @param email   收件邮箱
+     * @param subject 邮件主题；为空时回退到默认主题
+     * @param content 邮件内容
+     */
+    public void send(String email, String subject, String content) {
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setEmail(email);
+        emailDTO.setSubject(subject);
+        emailDTO.setContent(content);
+        eventPublisher.publishEvent(emailDTO);
+    }
 }

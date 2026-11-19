@@ -24,6 +24,17 @@ public class RadishProperty {
 
     private Log log = new Log();
 
+    private Workflow workflow = new Workflow();
+
+    @Data
+    public static class Workflow {
+
+        /**
+         * 工作流通知邮件主题
+         */
+        private String topic;
+    }
+
     @Data
     public static class Captcha {
 
