@@ -4,6 +4,7 @@ import com.soft.common.exception.GlobalException;
 import com.soft.sys.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -251,7 +252,7 @@ public class ChunkStorage {
      *
      * @return 被回收的目录数量
      */
-    public int cleanupExpired(Duration ttl, boolean cleanupLegacy) {
+    public int cleanupExpired(@NonNull Duration ttl, boolean cleanupLegacy) {
         long cutoff = System.currentTimeMillis() - ttl.toMillis();
         int removed = 0;
         Path root = root();
