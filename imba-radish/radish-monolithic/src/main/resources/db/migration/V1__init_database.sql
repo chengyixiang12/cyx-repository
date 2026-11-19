@@ -198,7 +198,7 @@ CREATE TABLE `sys_file` (
                             `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '逻辑删除；1：存在；0：删除',
                             `original_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '源文件名',
                             `file_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储文件名',
-                            `location` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储地址；1：minio；2：磁盘',
+                            `location` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '存储地址；1：minio',
                             `bucket` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '桶名',
                             `object_key` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件路径',
                             `file_suffix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '文件后缀；示例：.txt、.jpg',
@@ -456,9 +456,6 @@ VALUES(1984483867253026821, 1984484774405574659, 1, 1984481955388682242, '2025-0
 INSERT INTO sys_dict_data
 (id, dict_type_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark)
 VALUES(1984483867282386946, 1984484774405574660, 1, 1984481955388682242, '2025-09-06 22:16:42', 1984481955388682242, '2025-11-01 19:41:54', '0', 'minio存储', '1', '', '', 1, 1, '');
-INSERT INTO sys_dict_data
-(id, dict_type_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark)
-VALUES(1984483867282386947, 1984484774405574660, 2, 1984481955388682242, '2025-09-06 22:16:58', 1984481955388682242, '2025-09-06 22:16:58', '0', '本地磁盘', '2', '', '', 0, 1, '');
 INSERT INTO sys_dict_data
 (id, dict_type_id, sort_order, create_by, create_time, update_by, update_time, del_flag, label, value, css_class, list_class, is_default, status, remark)
 VALUES(1984483867282386948, 1984484774405574661, NULL, 1984481955388682242, '2025-10-26 18:24:58', 1984481955388682242, '2025-10-26 18:24:58', '0', '简单调度', '0', '', '', 0, 1, '');

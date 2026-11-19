@@ -33,18 +33,13 @@ public class BaseConstant {
     }
 
     /**
-     * minio
+     * 文件存储位置；统一使用 MinIO
      */
     public static class Minio {
         /**
-         * 默认存储位置；minio
+         * minio 对象存储
          */
         public final static Integer MINIO = 1;
-
-        /**
-         * 存储位置；磁盘
-         */
-        public final static Integer DISK = 2;
     }
 
     public static class Permission {

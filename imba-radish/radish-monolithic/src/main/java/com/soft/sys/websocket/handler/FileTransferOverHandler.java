@@ -1,7 +1,5 @@
 package com.soft.sys.websocket.handler;
 
-import cn.hutool.core.date.DatePattern;
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.common.constants.BaseConstant;
 import com.soft.common.constants.RedisConstant;
@@ -9,7 +7,10 @@ import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.entity.SysFile;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDTO;
+import com.soft.sys.properties.MinioProperty;
 import com.soft.sys.service.SysFileService;
+import com.soft.sys.utils.FileNameUtil;
+import com.soft.sys.utils.MinioUtil;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.receive.FileTransferOverRequest;
 import com.soft.sys.websocket.send.WebSocketResponse;
@@ -22,12 +23,23 @@ import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * 文件传输结束处理器。
+ *
+ * <p>统一以 MinIO 作为文件存储介质：分片只是传输过程中的临时文件，按序拼接后直接
+ * 流式上传到 MinIO，不再落地到本地「大文件存储」目录。上传成功并确认对象存在后才落库，
+ * 失败则保留临时分片供重试。</p>
+ *
  * @Author: cyx
  * @Description: 文件传输结束处理器
  * @DateTime: 2024/12/30 20:00
@@ -40,121 +52,126 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
     @Value(value = "${tmp.path}")
     private String tmpPath;
 
-    @Value(value = "${storage.big-file.location}")
-    private String bigfileLocation;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final SysFileService sysFileService;
 
+    private final MinioUtil minioUtil;
+
+    private final MinioProperty minioProperty;
+
     @Override
     public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
-        FileTransferOverRequest fileTransferOverRecParam = JSON.parseObject(message.getPayload(), FileTransferOverRequest.class);
+        FileTransferOverRequest request = JSON.parseObject(message.getPayload(), FileTransferOverRequest.class);
         UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         Long userId = userDto.getId();
         String username = userDto.getUsername();
         String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
-        // 源文件名
-        String originalName = fileTransferOverRecParam.getOriginalName();
-        // 文件后缀
-        String suffix = originalName.substring(originalName.lastIndexOf("."));
-        String objectKey = File.separator + DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator + fileKey + suffix;
-
-        byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
-        int length = BaseConstant.BUFFER_SIZE;
-        long size = BaseConstant.LONG_INIT_VAL;
-        int index = BaseConstant.INTEGER_INIT_VAL;
+        String fileHash = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INFO + username);
+        String originalName = FileNameUtil.sanitize(request.getOriginalName());
+        // 文件名可能没有后缀，避免 lastIndexOf 返回 -1 导致下标越界
+        int dot = originalName.lastIndexOf(".");
+        String suffix = dot >= 0 ? originalName.substring(dot) : "";
 
         WebSocketResponse sendParams = new WebSocketResponse();
         sendParams.setStatus(false);
-        sendParams.setOrder(fileTransferOverRecParam.getOrder());
+        sendParams.setOrder(request.getOrder());
+
         Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
-        if (maxIndex == null) {
-            sendParams.setMsg("分片文件索引为空");
+        if (fileKey == null || maxIndex == null || maxIndex <= 0) {
+            sendParams.setMsg("分片文件信息为空");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
-            log.info("分片文件索引为空，{}", originalName);
+            log.warn("分片信息为空，用户：{}，文件：{}", username, originalName);
             return;
         }
 
-        // 大文件存储路径
-        File file = new File(bigfileLocation + objectKey);
-        if (!file.exists()) {
-            if (file.getParentFile() != null && !file.getParentFile().mkdirs()) {
-                sendParams.setMsg("文件夹创建失败");
-                log.info("文件夹创建失败，{}", file.getParent());
-                return;
-            }
-            if (!file.createNewFile()) {
-                sendParams.setMsg("文件创建失败");
-                log.info("文件创建失败，{}", file.getName());
-                return;
-            }
-        }
-        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
-            while (index < maxIndex) {
-                String filePath = tmpPath + File.separator + username + File.separator + fileKey + File.separator + index + BaseConstant.TMP_SUFFIX;
-                Path path = Path.of(filePath);
-                InputStream stream = Files.newInputStream(path);
-                length = stream.read(buffer, BaseConstant.INTEGER_INIT_VAL, length);
-                stream.close();
-                os.write(buffer, BaseConstant.INTEGER_INIT_VAL, length);
-                size += length;
-                index++;
-            }
-            os.flush();
-            log.info("文件写入完成，{}", file.getName());
+        Path sliceDir = Path.of(tmpPath, username, fileKey);
+        // objectKey 用 / 分隔，由 MinioUtil 统一生成，不能用 File.separator（Windows 下会写成反斜杠）
+        String objectKey = minioUtil.getObjectKey(fileKey, suffix);
 
-            LocalDateTime now = LocalDateTime.now();
-            SysFile sysFile = new SysFile();
-            sysFile.setFileSize(size);
-            sysFile.setCreateBy(userId);
-            sysFile.setUpdateBy(userId);
-            sysFile.setOriginalName(originalName);
-            sysFile.setCreateTime(now);
-            sysFile.setUpdateTime(now);
-            sysFile.setObjectKey(objectKey);
-            sysFile.setFileSuffix(suffix);
-            sysFile.setLocation(BaseConstant.Minio.MINIO);
-            sysFile.setFileKey(fileKey);
-            sysFile.setDelFlag(BaseConstant.LogicDelete.EXIST);
-            sysFileService.save(sysFile);
-            log.info("start save file data to database...");
+        // 按序拼接全部分片；MinIO putObject 需要明确对象大小，因此先累加各分片长度
+        List<InputStream> streams = new ArrayList<>(maxIndex);
+        long size = 0L;
+        try {
+            for (int i = 0; i < maxIndex; i++) {
+                Path part = sliceDir.resolve(i + BaseConstant.TMP_SUFFIX);
+                if (!Files.isRegularFile(part)) {
+                    sendParams.setMsg("分片缺失，索引：" + i);
+                    session.sendMessage(new TextMessage(sendParams.toJsonString()));
+                    log.warn("分片缺失：{}", part);
+                    return;
+                }
+                size += Files.size(part);
+                streams.add(Files.newInputStream(part));
+            }
 
-            log.info("start remove cache...");
-            redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
-            log.info("删除{}的分片文件key缓存", username);
-            redisTemplate.delete(RedisConstant.SLICE_FILE_INDEX_KEY + username);
-            log.info("删除{}的分片文件index缓存", username);
-            redisTemplate.delete(RedisConstant.SLICE_FILE_INFO + username);
-            log.info("删除{}的文件hash", username);
-
-            sendParams.setStatus(true);
+            try (InputStream is = new SequenceInputStream(Collections.enumeration(streams))) {
+                minioUtil.upload(is, size, objectKey);
+            }
+            if (!minioUtil.exists(objectKey)) {
+                minioUtil.delete(objectKey);
+                throw new IllegalStateException("对象存储校验失败");
+            }
+        } catch (Exception e) {
+            closeQuietly(streams);
+            log.error("文件写入 MinIO 失败，objectKey={}", objectKey, e);
+            sendParams.setMsg("文件写入存储失败，请重试");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
+            return;
+        }
 
-            File tmpFile = new File(tmpPath + File.separator + username + File.separator + fileKey);
-            if (deleteChildFile(tmpFile)) {
-                tmpFile.deleteOnExit();
+        LocalDateTime now = LocalDateTime.now();
+        SysFile sysFile = new SysFile();
+        sysFile.setFileSize(size);
+        sysFile.setCreateBy(userId);
+        sysFile.setUpdateBy(userId);
+        sysFile.setOriginalName(originalName);
+        sysFile.setCreateTime(now);
+        sysFile.setUpdateTime(now);
+        sysFile.setObjectKey(objectKey);
+        sysFile.setFileSuffix(suffix);
+        sysFile.setLocation(BaseConstant.Minio.MINIO);
+        sysFile.setBucket(minioProperty.getDefaultBucket());
+        sysFile.setFileKey(fileKey);
+        sysFile.setFileHash(fileHash);
+        sysFile.setDelFlag(BaseConstant.LogicDelete.EXIST);
+        sysFileService.save(sysFile);
+
+        redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
+        redisTemplate.delete(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+        redisTemplate.delete(RedisConstant.SLICE_FILE_INFO + username);
+        deleteRecursively(sliceDir);
+
+        sendParams.setStatus(true);
+        session.sendMessage(new TextMessage(sendParams.toJsonString()));
+    }
+
+    /** 打开分片流的中途失败时，逐个兜底关闭 */
+    private void closeQuietly(List<InputStream> streams) {
+        for (InputStream stream : streams) {
+            try {
+                stream.close();
+            } catch (IOException ignored) {
+                // 忽略关闭异常
             }
         }
     }
 
-    /**
-     * 递归删除文件夹中的文件
-     * @param folder
-     * @return
-     */
-    private boolean deleteChildFile(File folder) {
-        if (folder.isDirectory()) {
-            File[] files = folder.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                     if (!deleteChildFile(file)) {
-                         return false;
-                     }
-                }
-            }
+    private void deleteRecursively(Path path) {
+        if (path == null || !Files.exists(path)) {
+            return;
         }
-        return folder.delete();
+        try (var walk = Files.walk(path)) {
+            walk.sorted(java.util.Comparator.reverseOrder()).forEach(p -> {
+                try {
+                    Files.deleteIfExists(p);
+                } catch (IOException e) {
+                    log.warn("删除临时分片失败：{}", p, e);
+                }
+            });
+        } catch (IOException e) {
+            log.warn("遍历临时分片目录失败：{}", path, e);
+        }
     }
 
     @Override

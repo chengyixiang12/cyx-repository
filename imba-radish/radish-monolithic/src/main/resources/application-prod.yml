@@ -122,10 +122,6 @@ rate-limit:
   permit:
     url:
       - /file/uploadChunk
-# 大文件存储路径
-storage:
-  big-file:
-    location: /tmp
 # 启用knife4j文档
 knife4j:
   enable: false

@@ -27,7 +27,7 @@ public class SysFile extends BaseEntity {
     private String fileKey;
 
     /**
-     * 存储地址；1：minio；2：磁盘
+     * 存储地址；1：minio
      */
     @TableField(value = "location")
     private Integer location;

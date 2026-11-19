@@ -21,7 +21,7 @@ public class FileHashDTO {
     @Schema(description = "存储文件名")
     private String fileKey;
 
-    @Schema(description = "存储地址；1：minio；2：磁盘")
+    @Schema(description = "存储地址；1：minio")
     private Integer location;
 
     @Schema(description = "文件路径")

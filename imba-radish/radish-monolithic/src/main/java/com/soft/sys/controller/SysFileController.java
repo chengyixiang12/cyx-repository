@@ -65,9 +65,6 @@ public class SysFileController {
     private static final long MIN_CHUNK_SIZE = 1024L * 1024L;
     private static final long MAX_CHUNK_SIZE = 12L * 1024 * 1024L;
 
-    @Value(value = "${storage.big-file.location}")
-    private String bigfileLocation;
-
     @Value(value = "${radish.upload.max-total-file-size:2147483648}")
     private long maxTotalFileSize;
 
@@ -98,21 +95,14 @@ public class SysFileController {
             throw new GlobalException("不存在的文件");
         }
 
-        // 数据库有记录但存储介质里的对象可能已被删除（例如在文件管理里删掉了头像文件）。
+        // 数据库有记录但 MinIO 里的对象可能已被删除（例如在文件管理里删掉了头像文件）。
         // 必须在写响应头之前校验：一旦进入流式写出阶段，异常无法再转成正常的 JSON 错误响应，
         // 客户端只能拿到断流或 500。
-        Integer locationCode = fileDetail.getLocation();
-        if (BaseConstant.Minio.MINIO.equals(locationCode)) {
-            if (!minioUtil.exists(fileDetail.getObjectKey())) {
-                throw new GlobalException("文件不存在或已被删除");
-            }
-        } else if (BaseConstant.Minio.DISK.equals(locationCode)) {
-            File diskFile = new File(bigfileLocation + File.separator + fileDetail.getObjectKey());
-            if (!diskFile.exists()) {
-                throw new GlobalException("文件不存在或已被删除");
-            }
-        } else {
+        if (!BaseConstant.Minio.MINIO.equals(fileDetail.getLocation())) {
             throw new GlobalException("文件存储位置异常");
+        }
+        if (!minioUtil.exists(fileDetail.getObjectKey())) {
+            throw new GlobalException("文件不存在或已被删除");
         }
 
         try {
@@ -122,28 +112,14 @@ public class SysFileController {
             headers.setContentLength(fileDetail.getFileSize());
 
             StreamingResponseBody responseBody = outputStream -> {
-                byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
-                int bytesRead;
-                InputStream is;
-                File file;
-
-                if (BaseConstant.Minio.MINIO.equals(fileDetail.getLocation())) {
-                    is = minioUtil.download(fileDetail.getObjectKey());
-                } else if (BaseConstant.Minio.DISK.equals(fileDetail.getLocation())) {
-                    file = new File(bigfileLocation + File.separator + fileDetail.getObjectKey());
-                    if (!file.exists()) {
-                        throw new GlobalException("资源不存在");
+                try (InputStream is = minioUtil.download(fileDetail.getObjectKey())) {
+                    byte[] buffer = new byte[BaseConstant.BUFFER_SIZE];
+                    int bytesRead;
+                    while ((bytesRead = is.read(buffer)) != BaseConstant.FILE_OVER_SIGN) {
+                        outputStream.write(buffer, BaseConstant.INTEGER_INIT_VAL, bytesRead);
                     }
-                    is = new java.io.FileInputStream(file);
-                } else {
-                    throw new GlobalException("资源不存在");
+                    outputStream.flush();
                 }
-
-                while ((bytesRead = is.read(buffer)) != BaseConstant.FILE_OVER_SIGN) {
-                    outputStream.write(buffer, BaseConstant.INTEGER_INIT_VAL, bytesRead);
-                }
-                outputStream.flush();
-                is.close();
             };
 
             return ResponseEntity.ok()
