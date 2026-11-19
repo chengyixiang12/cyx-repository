@@ -30,7 +30,13 @@ spring:
         model: ${DEEPSEEK_MODEL}
     model:
       chat: deepseek
+    # 保留最近 N 轮原文上下文（一轮 = 用户 1 条 + AI 1 条）
     max-context-num: 7
+    # 历史上下文压缩：被挤出保留窗口的消息累积到该数量后，异步压缩成摘要
+    summary-enabled: true
+    summary-trigger-count: 10
+    summary-batch-size: 50
+    summary-max-chars: 400
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 #  config:

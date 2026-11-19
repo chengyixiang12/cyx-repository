@@ -16,8 +16,36 @@
             <result property="content" column="content" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <select id="getRecentContext" parameterType="java.lang.Long" resultType="GetRecentContentDto">
+    <select id="getRecentContext" resultType="GetRecentContentDto">
         SELECT
+            t.id,
+            t.tag,
+            t.content
+        FROM
+        (
+            SELECT
+                sdd.id,
+                sdd.tag,
+                sdd.content,
+                sdd.create_time
+            FROM
+                sys_dialogue_details sdd
+            WHERE
+                sdd.del_flag = '0'
+              AND sdd.parent_id = #{dialogueId}
+            ORDER BY
+                sdd.create_time DESC,
+                sdd.id DESC
+            LIMIT #{messageLimit}
+        ) t
+        ORDER BY
+            t.create_time ASC,
+            t.id ASC
+    </select>
+
+    <select id="getPendingSummaryMessages" resultType="GetRecentContentDto">
+        SELECT
+            sdd.id,
             sdd.tag,
             sdd.content
         FROM
@@ -25,8 +53,10 @@
         WHERE
             sdd.del_flag = '0'
           AND sdd.parent_id = #{dialogueId}
+          AND sdd.id &gt; #{afterId}
+          AND sdd.id &lt; #{cutoffId}
         ORDER BY
-            sdd.create_time ASC
-        LIMIT #{maxContextNum}
+            sdd.id ASC
+        LIMIT #{limit}
     </select>
 </mapper>

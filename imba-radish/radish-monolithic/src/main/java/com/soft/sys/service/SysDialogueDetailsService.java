@@ -16,7 +16,15 @@ import java.util.List;
 */
 public interface SysDialogueDetailsService extends IService<SysDialogueDetails> {
 
-    List<GetRecentContentDTO> getRecentContext(Long dialogueId, Long maxContextNum);
+    /**
+     * 取最近 messageLimit 条消息，并按时间正序返回
+     */
+    List<GetRecentContentDTO> getRecentContext(Long dialogueId, Integer messageLimit);
+
+    /**
+     * 取尚未压缩的旧消息，按 id 正序返回
+     */
+    List<GetRecentContentDTO> getPendingSummaryMessages(Long dialogueId, Long afterId, Long cutoffId, Integer limit);
 
     /**
      * 分页获取对话明细（倒序分页：第一页为最新消息，供前端向上懒加载更早记录）

@@ -1,6 +1,5 @@
 package com.soft.sys.websocket.handler;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.module.thirdapi.gaode.ThirdInterface;
 import com.soft.common.constants.BaseConstant;
@@ -8,8 +7,8 @@ import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.entity.SysDialogueDetails;
 import com.soft.common.enums.ResultEnum;
 import com.soft.sys.enums.WebSocketOrderEnum;
-import com.soft.sys.model.dto.GetRecentContentDTO;
 import com.soft.sys.model.dto.UserDTO;
+import com.soft.sys.service.DialogueContextService;
 import com.soft.sys.service.SysDialogueDetailsService;
 import com.soft.sys.websocket.api.WebSocketConcreteHandler;
 import com.soft.sys.websocket.receive.ChatRequest;
@@ -17,18 +16,12 @@ import com.soft.sys.websocket.send.ChatResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.AbstractWebSocketMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -41,19 +34,16 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class ChatHandler implements WebSocketConcreteHandler<String> {
 
-    private static final String SYSTEM_PROMPT = "使用中文回答。";
-
     /**
      * 流式下发节流间隔(ms): 按token攒批后统一推送, 避免每个token一帧
      */
     private static final long FLUSH_INTERVAL_MS = 60;
 
-    @Value(value = "${spring.ai.max-context-num}")
-    private Long maxContextNum;
-
     private final ChatClient.Builder chatClientBuilder;
 
     private final SysDialogueDetailsService sysDialogueDetailsService;
+
+    private final DialogueContextService dialogueContextService;
 
     private final ThirdInterface thirdInterface;
 
@@ -79,9 +69,9 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         AtomicLong lastFlush = new AtomicLong(System.currentTimeMillis());
 
         chatClientBuilder.build()
-                .prompt(SYSTEM_PROMPT)
+                .prompt(dialogueContextService.buildSystemPrompt(chatRecParam.getDialogueId()))
                 .tools(thirdInterface)
-                .messages(buildMessages(chatRecParam.getDialogueId()))
+                .messages(dialogueContextService.buildMessages(chatRecParam.getDialogueId()))
                 .stream()
                 .content()
                 .retry(10)
@@ -135,29 +125,6 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
     }
 
     /**
-     * 组装历史上下文
-     * @param dialogueId
-     * @return
-     */
-    private List<Message> buildMessages(Long dialogueId) {
-        List<GetRecentContentDTO> recentContext = sysDialogueDetailsService.getRecentContext(dialogueId, maxContextNum);
-
-        List<Message> messages = new ArrayList<>();
-//        messages.add(new SystemMessage(SYSTEM_PROMPT));
-
-        if (CollectionUtil.isNotEmpty(recentContext)) {
-            for (GetRecentContentDTO dto : recentContext) {
-                if (BaseConstant.CHAT_TAG_USER.equals(dto.getTag())) {
-                    messages.add(new UserMessage(dto.getContent()));
-                } else if (BaseConstant.CHAT_TAG_AI.equals(dto.getTag())) {
-                    messages.add(new AssistantMessage(dto.getContent()));
-                }
-            }
-        }
-        return messages;
-    }
-
-    /**
      * 流结束落库;出错时不落库
      * @param chatRecParam
      * @param user
@@ -175,6 +142,8 @@ public class ChatHandler implements WebSocketConcreteHandler<String> {
         answerEntity.setCreateBy(user.getId());
         answerEntity.setUpdateBy(user.getId());
         sysDialogueDetailsService.save(answerEntity);
+        // 回答落库后异步检查是否需要压缩历史上下文，不阻塞当前响应
+        dialogueContextService.compressIfNeeded(chatRecParam.getDialogueId());
     }
 
     @Override

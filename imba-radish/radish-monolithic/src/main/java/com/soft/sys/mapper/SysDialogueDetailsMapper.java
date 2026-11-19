@@ -16,8 +16,19 @@ import java.util.List;
 public interface SysDialogueDetailsMapper extends BaseMapper<SysDialogueDetails> {
 
 
+    /**
+     * 取最近 limit 条消息，并按时间正序返回
+     */
     List<GetRecentContentDTO> getRecentContext(@Param("dialogueId") Long dialogueId,
-                                               @Param("maxContextNum") Long maxContextNum);
+                                               @Param("messageLimit") Integer messageLimit);
+
+    /**
+     * 取摘要覆盖点之后、保留窗口之前、尚未压缩的旧消息
+     */
+    List<GetRecentContentDTO> getPendingSummaryMessages(@Param("dialogueId") Long dialogueId,
+                                                        @Param("afterId") Long afterId,
+                                                        @Param("cutoffId") Long cutoffId,
+                                                        @Param("limit") Integer limit);
 }
 
 

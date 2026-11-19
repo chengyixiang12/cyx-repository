@@ -31,4 +31,22 @@ public class SysDialogue extends BaseEntity {
      */
     @TableField(value = "top_flag")
     private Integer topFlag;
+
+    /**
+     * 历史上下文摘要（被挤出保留窗口的旧消息压缩结果）
+     */
+    @TableField(value = "context_summary")
+    private String contextSummary;
+
+    /**
+     * 摘要已覆盖到的最后一条对话详情ID
+     */
+    @TableField(value = "summary_up_to_id")
+    private Long summaryUpToId;
+
+    /**
+     * 摘要版本号，每次更新摘要自增
+     */
+    @TableField(value = "summary_version")
+    private Integer summaryVersion;
 }

@@ -15,6 +15,9 @@ import org.apache.ibatis.type.Alias;
 @Alias(value = "GetRecentContentDTO")
 public class GetRecentContentDTO {
 
+    @Schema(description = "消息ID")
+    private Long id;
+
     @Schema(description = "标识")
     private Integer tag;
 

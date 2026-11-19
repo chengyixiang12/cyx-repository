@@ -86,7 +86,8 @@
 
 ### AI 功能
 - **AI 对话**：DeepSeek 模型，基于 WebSocket 的**流式输出**（60ms 按 token 攒批推送，减少帧频率）
-- **上下文记忆**：按会话保留最近 N 条上下文（默认 7 轮，可配置 `spring.ai.max-context-num`）
+- **上下文记忆**：按会话保留最近 N 轮原文（默认 7 轮，1 轮 = 用户 1 条 + AI 1 条，可配置 `spring.ai.max-context-num`）
+- **上下文压缩**：被挤出保留窗口的旧消息累积到阈值后异步压缩成摘要，写回 `sys_dialogue.context_summary`，下次请求随 system prompt 一起送入模型，历史消息不删除
 - **Function Calling**：接入高德天气第三方 API，`ChatHandler` 通过 `.tools()` 注册工具，模型可自动调用
 - **对话管理**：会话与消息明细分表存储，支持回答历史回溯与 Markdown 渲染
 - **可靠性**：流式响应失败重试（10 次），异常仅下发错误提示、不落库
@@ -136,7 +137,7 @@ cyx-repository/
 │   │   │   └── module/                   # Spring Modulith 模块（高德天气 ThirdInterface + TestController）
 │   │   └── src/main/resources/
 │   │       ├── mapper/sys/               # MyBatis XML 映射（20 个）
-│   │       ├── db/migration/             # Flyway 迁移（V1__init_database.sql）
+│   │       ├── db/migration/             # Flyway 迁移（V1 init / V2 工作流 / V3 上下文摘要）
 │   │       └── application*.yml          # 配置文件
 │   ├── CLAUDE.md                         # 后端 AI 辅助开发指南
 │   ├── Dockerfile                        # 容器化构建
@@ -277,7 +278,7 @@ npm run format     # Prettier 格式化
 
 | 前缀 | 说明 |
 | :--- | :--- |
-| `spring.ai.*` | DeepSeek 模型、api-key、上下文轮数（`max-context-num`） |
+| `spring.ai.*` | DeepSeek 模型、api-key、上下文轮数（`max-context-num`）与摘要压缩（`summary-enabled` / `summary-trigger-count` / `summary-batch-size` / `summary-max-chars`） |
 | `spring.threads.virtual.*` | 虚拟线程开关 |
 | `radish.*` | 验证码、Token、分布式锁、日志设置 |
 | `websocket.allowed-origins` | WebSocket 允许的来源域名（不再硬编码） |
@@ -335,16 +336,18 @@ WebSocketInterceptor (握手鉴权 / 来源校验)
 前端 Chat.vue (WebSocket 发送 question + dialogueId)
   → ChatHandler
       ├─ 问题入库 (SysDialogueDetails, tag=USER)
-      ├─ buildMessages(): 按 dialogueId 取最近 N 条上下文（UserMessage / AssistantMessage）
+      ├─ DialogueContextService.buildSystemPrompt(): 拼接基础指令 + 历史摘要（<previous_summary> 标签包裹）
+      ├─ DialogueContextService.buildMessages(): 按 dialogueId 取最近 N 轮原文（UserMessage / AssistantMessage）
       ├─ ChatClient.prompt().tools(ThirdInterface).stream()
       │     └─ doOnNext: 攒批 60ms → 分片下发 (order=AI)
       ├─ doOnComplete: 冲刷尾部 + 完整回答入库 (tag=AI)
+      │     └─ compressIfNeeded(): 异步压缩被挤出窗口的旧消息，回写摘要与覆盖点
       └─ doOnError: 下发错误提示，不落库
   → 前端 markdown-it 渲染回答，AnswerHistory 回溯历史
 ```
 
 - **工具调用**：`ThirdInterface`（高德天气）通过 `.tools()` 注册，模型按需调用
-- **上下文窗口**：`spring.ai.max-context-num` 控制保留的历史轮数
+- **上下文窗口**：`spring.ai.max-context-num` 控制保留的历史轮数（1 轮 = 用户 1 条 + AI 1 条）；SQL 先取最近 N×2 条再恢复正序，并带 `id` 二级排序避免同时间乱序
 - **节流下发**：按 token 攒批（60ms）推送，完整内容仍落库，兼顾实时性与帧开销
 
 ## 📊 监控与趋势降采样

@@ -44,8 +44,14 @@ public class SysDialogueDetailsServiceImpl extends ServiceImpl<SysDialogueDetail
     }
 
     @Override
-    public List<GetRecentContentDTO> getRecentContext(Long dialogueId, Long maxContextNum) {
-        return sysDialogueDetailsMapper.getRecentContext(dialogueId, maxContextNum);
+    public List<GetRecentContentDTO> getRecentContext(Long dialogueId, Integer messageLimit) {
+        return sysDialogueDetailsMapper.getRecentContext(dialogueId, messageLimit);
+    }
+
+    @Override
+    public List<GetRecentContentDTO> getPendingSummaryMessages(Long dialogueId, Long afterId,
+                                                               Long cutoffId, Integer limit) {
+        return sysDialogueDetailsMapper.getPendingSummaryMessages(dialogueId, afterId, cutoffId, limit);
     }
 
     @Override
