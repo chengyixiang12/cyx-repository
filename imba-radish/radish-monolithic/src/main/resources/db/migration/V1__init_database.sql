@@ -255,6 +255,7 @@ CREATE TABLE `sys_menu` (
                             `sort_order` int DEFAULT NULL COMMENT '排序号，数字越小，排序越靠前',
                             `status` char(1) COLLATE utf8mb4_general_ci DEFAULT '1' COMMENT '菜单状态：0-禁用，1-启用',
                             `visible` char(1) COLLATE utf8mb4_general_ci DEFAULT '1' COMMENT '是否显示：0-隐藏，1-显示',
+                            `quick_entry_flag` char(1) COLLATE utf8mb4_general_ci DEFAULT '1' COMMENT '是否在首页快捷入口展示：0-不展示，1-展示',
                             `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注信息',
                             PRIMARY KEY (`id`),
                             KEY `idx_sys_menu_parent_id` (`parent_id`) COMMENT '父级菜单普通索引',

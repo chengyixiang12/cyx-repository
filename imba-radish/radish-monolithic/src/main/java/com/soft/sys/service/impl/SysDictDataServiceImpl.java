@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
 import com.soft.sys.entity.SysDictData;
 import com.soft.sys.mapper.SysDictDataMapper;
 import com.soft.sys.model.dto.DictDataDTO;
@@ -19,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,12 +37,8 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
 
     private final SysDictDataMapper sysDictDataMapper;
 
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper,
-                                  RedisTemplate<String, Object> redisTemplate) {
+    public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper) {
         this.sysDictDataMapper = sysDictDataMapper;
-        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -63,6 +57,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void saveDictData(SaveDictDataDTO request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
             sysDictDataMapper.setNotDefault(request.getDictTypeId());
@@ -73,7 +68,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
-    @CacheEvict(key = "#request.dictTypeId")
+    @CacheEvict(allEntries = true)
     public void editDictData(EditDictDataDTO request) {
         if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
             sysDictDataMapper.setNotDefault(request.getDictTypeId());
@@ -84,31 +79,35 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void deleteDictData(Long id) {
         sysDictDataMapper.deleteById(id);
-        removeCache(id);
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void deleteDictDataBatch(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
         sysDictDataMapper.deleteByIds(ids);
-        ids.forEach(this::removeCache);
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void enableDictData(Long id) {
         sysDictDataMapper.enableDictData(id);
-        removeCache(id);
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void forbiddenDictData(Long id) {
         sysDictDataMapper.forbiddenDictData(id);
-        removeCache(id);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(allEntries = true)
     public void setDefaultData(Long id, Long dictTypeId) {
         sysDictDataMapper.setNotDefault(dictTypeId);
         sysDictDataMapper.setDefaultData(id);
@@ -130,17 +129,4 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
     public String getDictDataByValue(String value, String dictType) {
         return sysDictDataMapper.getDictDataByValue(value, dictType);
     }
-
-    /**
-     * 移除缓存
-     * @param id
-     */
-    private void removeCache(Long id) {
-        SysDictData sysDictData = sysDictDataMapper.selectById(id);
-        redisTemplate.delete(RedisConstant.DICT_KEY + sysDictData.getDictTypeId());
-    }
 }
-
-
-
-

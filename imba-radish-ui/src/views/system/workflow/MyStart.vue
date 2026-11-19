@@ -71,10 +71,18 @@
     <el-dialog v-model="startDialogVisible" title="发起流程" width="520px" destroy-on-close>
         <el-form :model="startForm" label-width="90px">
             <el-form-item label="流程标识:" required>
-                <el-input v-model="startForm.processKey" maxlength="64" placeholder="如 leave-apply" />
+                <el-select v-model="startForm.processKey" filterable clearable placeholder="请选择流程"
+                    :filter-method="filterProcessOptions" @change="handleProcessChange" style="width: 100%">
+                    <el-option v-for="(label, value) in filteredProcessOptions" :key="value" :label="value" :value="value">
+                        <div class="process-option">
+                            <span>{{ value }}</span>
+                            <span class="process-option-label">{{ label }}</span>
+                        </div>
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="流程名称:" required>
-                <el-input v-model="startForm.processName" maxlength="100" placeholder="如 请假申请" />
+                <el-input v-model="startForm.processName" maxlength="100" readonly placeholder="选择流程标识后自动带出" />
             </el-form-item>
             <el-form-item label="流程标题:">
                 <el-input v-model="startForm.title" maxlength="200" placeholder="选填，默认同流程名称" />
@@ -106,8 +114,9 @@
 <script lang="ts" setup>
 import ListPage from '@/components/layout/ListPage.vue'
 import TraceDrawer from './components/TraceDrawer.vue'
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { getApproverOptionsApi, getMyWorkflowInstancesApi, startWorkflowApi } from '@/api/workflow'
+import { getDictMapApi } from '@/api/dictData'
 import type { WfInstancesVo, WfUserOptionVo } from '@/types/workflow'
 import { showMessage } from '@/utils/message'
 
@@ -168,6 +177,33 @@ const startForm = ref({
     comment: ''
 })
 
+const PROCESS_DICT_TYPE = 'workflow_process'
+const processOptions = ref<Record<string, string>>({})
+const processKeyword = ref('')
+const filteredProcessOptions = computed(() => {
+    const keyword = processKeyword.value.trim().toLowerCase()
+    if (!keyword) {
+        return processOptions.value
+    }
+    return Object.fromEntries(
+        Object.entries(processOptions.value)
+            .filter(([value, label]) => value.toLowerCase().includes(keyword) || label.toLowerCase().includes(keyword))
+    )
+})
+
+const filterProcessOptions = (keyword: string) => {
+    processKeyword.value = keyword
+}
+
+const handleProcessChange = (value: string) => {
+    if (!value) {
+        processKeyword.value = ''
+        startForm.value.processName = ''
+        return
+    }
+    startForm.value.processName = processOptions.value[value] || ''
+}
+
 const openStartDialog = async () => {
     startForm.value = {
         processKey: '',
@@ -176,6 +212,15 @@ const openStartDialog = async () => {
         businessKey: '',
         assigneeIds: [],
         comment: ''
+    }
+    processKeyword.value = ''
+    if (Object.keys(processOptions.value).length === 0) {
+        try {
+            processOptions.value = await getDictMapApi(PROCESS_DICT_TYPE)
+        } catch (error) {
+            console.error('加载流程类型字典失败:', error)
+            showMessage('流程类型字典加载失败', 'warning')
+        }
     }
     if (approverOptions.value.length === 0) {
         try {
@@ -189,11 +234,11 @@ const openStartDialog = async () => {
 
 const submitStart = async () => {
     if (!startForm.value.processKey.trim()) {
-        showMessage('请填写流程标识', 'warning')
+        showMessage('请选择流程标识', 'warning')
         return
     }
     if (!startForm.value.processName.trim()) {
-        showMessage('请填写流程名称', 'warning')
+        showMessage('流程名称未带出，请检查流程类型字典', 'warning')
         return
     }
     if (startForm.value.assigneeIds.length === 0) {
@@ -260,5 +305,17 @@ onMounted(() => {
     color: var(--radish-text-secondary);
     line-height: 1.5;
     margin-top: var(--radish-space-1);
+}
+
+.process-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--radish-space-4);
+}
+
+.process-option-label {
+    font-size: var(--radish-font-sm);
+    color: var(--radish-text-secondary);
 }
 </style>

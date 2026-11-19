@@ -39,6 +39,9 @@ public class PageMenuTreeVO {
     @Schema(description = "是否展示；1：展示；0：隐藏")
     private String visible;
 
+    @Schema(description = "是否在首页快捷入口展示：0-不展示，1-展示")
+    private String quickEntryFlag;
+
     @Schema(description = "是否有子集")
     private boolean hasChild;
 }

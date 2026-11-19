@@ -3,6 +3,15 @@ import { DictDatasRequest, DictDatasVo, DictDataVo, EditDictDataRequest, SaveDic
 import { get, post, put, del } from '@/utils/http'
 
 /**
+ * 根据字典类型获取字典映射（value -> label）
+ * @param dictType 字典类型
+ */
+export async function getDictMapApi(dictType: string): Promise<Record<string, string>> {
+    const res = await get<Record<string, string>>('/dictData/getDictMap', { flag: true, params: { dictType } });
+    return res.data;
+}
+
+/**
  * 获取字典数据（复）
  * @param data 
  */

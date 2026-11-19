@@ -11,7 +11,8 @@
         sm.path,
         sm.component,
         sm.parent_id AS "parentId",
-        sm.visible
+        sm.visible,
+        sm.quick_entry_flag AS "quickEntryFlag"
         FROM
         sys_menu sm
         JOIN sys_role_menu srm ON sm.id = srm.menu_id
@@ -32,6 +33,7 @@
             sm.type,
             sm.`status`,
             sm.visible,
+            sm.quick_entry_flag AS quickEntryFlag,
             sm.sort_order,
             sm.icon,
             sm.path,
@@ -69,6 +71,7 @@
             sm.sort_order,
             sm.`status`,
             sm.visible,
+            sm.quick_entry_flag AS quickEntryFlag,
             sm.remark
         FROM
             `sys_menu` sm
@@ -165,7 +168,9 @@
             sm.icon,
             sm.path,
             sm.component,
-            sm.parent_id AS "parentId"
+            sm.parent_id AS "parentId",
+            sm.visible,
+            sm.quick_entry_flag AS "quickEntryFlag"
         FROM
             sys_menu sm
                 JOIN sys_role_menu srm ON sm.id = srm.menu_id
@@ -191,6 +196,7 @@
         t1.sort_order,
         t1.status,
         t1.visible,
+        t1.quick_entry_flag AS quickEntryFlag,
         exists (select 1 from sys_menu t2 where t2.del_flag = '0' and t2.parent_id = t1.id) as hasChild
         from
         sys_menu t1

@@ -18,6 +18,7 @@ import com.soft.sys.service.SysDictTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +53,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void saveDictType(SaveDictTypeDTO request) {
         SysDictType sysDictType = new SysDictType();
         BeanUtils.copyProperties(request, sysDictType);
@@ -59,6 +61,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void editDictType(EditDictTypeDTO request) {
         SysDictType sysDictType = new SysDictType();
         BeanUtils.copyProperties(request, sysDictType);
@@ -72,6 +75,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(allEntries = true)
     public void deleteDictType(Long id) {
         sysDictTypeMapper.deleteById(id);
 
@@ -81,6 +85,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(allEntries = true)
     public void deleteDictTypeBatch(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return;
@@ -93,11 +98,13 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void enableDictType(Long id) {
         sysDictTypeMapper.enableDictType(id);
     }
 
     @Override
+    @CacheEvict(allEntries = true)
     public void forbiddenDictType(Long id) {
         sysDictTypeMapper.forbiddenDictType(id);
     }

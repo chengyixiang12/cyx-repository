@@ -1,5 +1,5 @@
 <template>
-  <ListPage title="菜单管理" :loading="loading" :count="menuList.length" :columns="9" :model="searchForm">
+  <ListPage title="菜单管理" :loading="loading" :count="menuList.length" :columns="10" :model="searchForm">
     <template #actions>
       <el-button type="primary" @click="handleAdd">
         新增
@@ -52,13 +52,19 @@
               inactive-color="#ff4949" @change="handleVisibleChange(scope.row)" />
           </template>
         </el-table-column>
+        <el-table-column prop="quickEntryFlag" label="快捷入口" align="center" min-width="80">
+          <template #default="scope">
+            <el-tag v-if="scope.row.quickEntryFlag === '1'" type="success" size="small">展示</el-tag>
+            <el-tag v-else type="info" size="small">不展示</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" min-width="200" align="center">
           <template #default="scope">
             <div class="action-buttons-container">
               <el-button type="primary" @click="handleEdit(scope.row)" class="action-button edit-button">
                 编辑
               </el-button>
-              <el-popconfirm title="确认删除该菜单吗？其所有子菜单及角色绑定会一并删除" width="280"
+              <el-popconfirm title="确认删除该菜单吗？" width="280"
                 confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(scope.row.id)">
                 <template #reference>
                   <el-button type="danger" class="action-button delete-button">

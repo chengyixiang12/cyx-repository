@@ -73,17 +73,17 @@ CREATE TABLE `wf_record` (
 -- （流程跟踪为列表页内抽屉，不单独占菜单）
 -- ============================================================
 INSERT INTO sys_menu
-(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, remark)
-VALUES(2119250000000000001, NULL, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '工作流', '/workflow', NULL, 'Connection', '0', 3, '1', '1', '工作流框架顶级菜单');
+(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, quick_entry_flag, remark)
+VALUES(2119250000000000001, NULL, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '工作流', '/workflow', NULL, 'Connection', '0', 3, '1', '1', '0', '工作流框架顶级菜单');
 INSERT INTO sys_menu
-(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, remark)
-VALUES(2119250000000000002, 2119250000000000001, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '待办任务', '/todo', 'system/workflow/Todo', 'Tickets', '1', 1, '1', '1', '');
+(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, quick_entry_flag, remark)
+VALUES(2119250000000000002, 2119250000000000001, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '待办任务', '/todo', 'system/workflow/Todo', 'Tickets', '1', 1, '1', '1', '1', '');
 INSERT INTO sys_menu
-(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, remark)
-VALUES(2119250000000000003, 2119250000000000001, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '已办任务', '/done', 'system/workflow/Done', 'CircleCheck', '1', 2, '1', '1', '');
+(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, quick_entry_flag, remark)
+VALUES(2119250000000000003, 2119250000000000001, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '已办任务', '/done', 'system/workflow/Done', 'CircleCheck', '1', 2, '1', '1', '1', '');
 INSERT INTO sys_menu
-(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, remark)
-VALUES(2119250000000000004, 2119250000000000001, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '我发起的', '/myStart', 'system/workflow/MyStart', 'Promotion', '1', 3, '1', '1', '');
+(id, parent_id, create_by, create_time, update_by, update_time, del_flag, name, `path`, component, icon, `type`, sort_order, status, visible, quick_entry_flag, remark)
+VALUES(2119250000000000004, 2119250000000000001, 1984481955388682242, '2026-11-19 11:30:00', 1984481955388682242, '2026-11-19 11:30:00', '0', '我发起的', '/myStart', 'system/workflow/MyStart', 'Promotion', '1', 3, '1', '1', '1', '');
 
 -- ============================================================
 -- 权限码

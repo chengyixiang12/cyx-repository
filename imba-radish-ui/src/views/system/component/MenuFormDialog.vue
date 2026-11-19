@@ -54,6 +54,21 @@
           </el-radio-group>
         </el-form-item>
 
+        <el-form-item prop="quickEntryFlag">
+          <template #label>
+            <span class="form-label-with-tip">
+              快捷入口
+              <el-tooltip content="开启后该菜单会显示在首页快捷入口中" placement="top">
+                <el-icon class="label-tip-icon"><QuestionFilled /></el-icon>
+              </el-tooltip>
+            </span>
+          </template>
+          <el-radio-group v-model="formData.quickEntryFlag">
+            <el-radio :value="1">展示</el-radio>
+            <el-radio :value="0">不展示</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :value="1">启用</el-radio>
@@ -81,6 +96,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { GetMenuVo, GetSelectMenuVo } from '@/types/menu'
 import { getMenuApi, getSelectMenu } from '@/api/menu'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { QuestionFilled } from '@element-plus/icons-vue'
 
 const iconsMap = new Map()
 
@@ -131,6 +147,7 @@ const formData = ref<GetMenuVo>({
   sortOrder: null,
   status: 1,
   visible: 1,
+  quickEntryFlag: 0,
   remark: '',
 })
 
@@ -231,5 +248,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.form-label-with-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
 
+.label-tip-icon {
+  color: var(--radish-text-placeholder);
+  cursor: help;
+}
 </style>

@@ -33,6 +33,9 @@ public class GetMenuListVO {
     @Schema(description = "显示状态")
     private Integer visible;
 
+    @Schema(description = "是否在首页快捷入口展示：0-不展示，1-展示")
+    private Integer quickEntryFlag;
+
     @Schema(description = "排序")
     private Integer sortOrder;
 

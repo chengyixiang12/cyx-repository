@@ -69,6 +69,12 @@ public class SysMenu extends BaseEntity {
     private String visible;
 
     /**
+     * 是否在首页快捷入口展示：0-不展示，1-展示
+     */
+    @TableField(value = "quick_entry_flag")
+    private String quickEntryFlag;
+
+    /**
      * 备注信息
      */
     @TableField(value = "remark")

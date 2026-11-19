@@ -2,6 +2,7 @@ package com.soft.module.thirdapi.gaode.weather.entity;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**

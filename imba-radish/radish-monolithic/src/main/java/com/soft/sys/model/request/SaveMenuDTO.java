@@ -44,6 +44,9 @@ public class SaveMenuDTO {
     @Schema(description = "是否显示：0-隐藏，1-显示")
     private Integer visible;
 
+    @Schema(description = "是否在首页快捷入口展示：0-不展示，1-展示")
+    private Integer quickEntryFlag;
+
     @Schema(description = "备注信息")
     private String remark;
 }

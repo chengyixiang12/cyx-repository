@@ -186,11 +186,14 @@
   padding: 10px 0;
 }
 
-/* 弹窗: 头部不留分割线, 标题加重 */
+/* 弹窗: 头部加分割线, 标题加重; body 顶部留出与分割线的间距 */
 .el-dialog__header {
   padding-bottom: 12px;
   border-bottom: 1px solid var(--radish-border-light);
   margin-right: 0;
+}
+.el-dialog__body {
+  padding-top: var(--radish-space-6);
 }
 .el-dialog__title {
   font-weight: 600;

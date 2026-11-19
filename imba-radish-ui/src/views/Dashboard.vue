@@ -40,6 +40,37 @@
       </div>
     </el-card>
 
+    <!-- 我的待办：仅当当前账号有工作流菜单权限时展示 -->
+    <el-card v-if="hasWorkflowMenu" shadow="hover" class="section-card">
+      <template #header>
+        <div class="card-header">
+          <span>我的待办<span v-if="todoTotal > 0" class="todo-count">（{{ todoTotal }}）</span></span>
+          <el-button v-if="todoPath" type="primary" size="small" plain @click="goTo(todoPath)">
+            查看全部
+          </el-button>
+        </div>
+      </template>
+      <ListSkeleton :loading="todoLoading" :count="todoList.length" />
+      <div v-if="!todoLoading && todoList.length === 0" class="empty-state">
+        <el-icon size="48" class="empty-icon">
+          <Tickets />
+        </el-icon>
+        <p>暂无待办任务</p>
+      </div>
+      <div v-else-if="!todoLoading" class="content-list">
+        <div v-for="item in todoList" :key="item.id" class="content-item" @click="openTodo">
+          <div class="content-title">{{ item.title || item.processName }}</div>
+          <div class="todo-meta">
+            <span>{{ item.processName }}</span>
+            <span class="todo-meta-dot">·</span>
+            <span>发起人：{{ item.startUserNickname || '-' }}</span>
+            <span class="todo-meta-dot">·</span>
+            <span>{{ formatTime(item.arriveTime) }}</span>
+          </div>
+        </div>
+      </div>
+    </el-card>
+
     <!-- 最近对话 + 最近登录（均为当前登录人自己的数据） -->
     <el-row :gutter="16" class="content-row">
       <el-col :xs="24" :sm="24" :md="12">
@@ -113,12 +144,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
-import { ChatDotSquare, Clock, Lock } from '@element-plus/icons-vue'
+import { ChatDotSquare, Clock, Lock, Tickets } from '@element-plus/icons-vue'
 import type { UserInfoVo } from '@/types/login'
 import type { MenuItem } from '@/types/menu'
 import type { RecentDialogue, RecentLogin } from '@/types/dashboard'
+import type { WfTasksVo } from '@/types/workflow'
 import ListSkeleton from '@/components/skeleton/ListSkeleton.vue'
 import { getLeftMenusApi, getRecentLoginsApi, getRecentDialoguesApi } from '@/api/dashboard'
+import { getWorkflowTodosApi } from '@/api/workflow'
 import { showMessage } from '@/utils/message'
 import { useAvatar } from '@/composables/useAvatar'
 
@@ -162,38 +195,92 @@ const menuList = ref<MenuItem[]>([])
 
 // 菜单里可能配置了前端尚未实现的页面，快捷入口只保留真实存在的组件
 const viewModules = import.meta.glob('../views/**/*.vue')
-const hasView = (component?: string) =>
-  !!component && !!viewModules[`../views/${component.replace(/\\/g, '/')}.vue`]
+// Vite 会把 glob 的 key 规范化为相对本文件的路径（如 ./system/User.vue），
+// 若按 '../views/' + component 硬拼会失配、导致所有入口被过滤光。
+// 这里按路径后缀匹配，兼容 ./xxx.vue 与 ../views/xxx.vue 两种形态。
+const hasView = (component?: string) => {
+  if (!component) return false
+  const normalized = component.replace(/\\/g, '/')
+  // 兼容 ./xxx.vue、../views/xxx.vue、/src/views/xxx.vue 等 glob key 形态
+  return Object.keys(viewModules).some(key => key.includes(`${normalized}.vue`))
+}
 
 // 菜单是后端按角色返回的，只从这里取入口，避免首页绕过菜单权限
+// 后端 getLeftMenus 的 SQL 已带 `sm.visible = 1` 条件，返回的都是可见菜单，无需前端再过滤。
+// 菜单里可能配置了前端尚未实现的页面，用组件是否存在做一道兜底。
 const collectLeafMenus = (menus: MenuItem[]): MenuItem[] =>
   menus.flatMap(menu => {
     const children = menu.children?.length ? collectLeafMenus(menu.children) : []
     return menu.path && hasView(menu.component) ? [menu, ...children] : children
   })
 
-const menuEntries = computed<QuickEntry[]>(() =>
+// 当前账号可用的全部叶子菜单（AI 入口、待办卡片等权限判断用，不受快捷入口标记影响）
+const allMenuEntries = computed<QuickEntry[]>(() =>
   collectLeafMenus(menuList.value)
-    .filter(menu => Number(menu.visible) === 1 && menu.path.startsWith('/'))
+    .filter(menu => menu.path.startsWith('/'))
     .map(menu => ({ name: menu.name, path: menu.path, icon: menu.icon || 'Menu' }))
 )
 
+// 快捷入口：仅展示被标记为 quickEntryFlag=1 的菜单（由菜单管理页配置）
+const menuEntries = computed<QuickEntry[]>(() =>
+  collectLeafMenus(menuList.value)
+    .filter(menu => menu.path.startsWith('/') && Number(menu.quickEntryFlag) === 1)
+    .map(menu => ({ name: menu.name, path: menu.path, icon: menu.icon || 'Menu' }))
+)
+
+// 首页置顶入口：个人中心恒可见；待办/已办在快捷入口里改用友好名称
+const pinnedEntries: Record<string, QuickEntry> = {
+  '/todo': { name: '我的待办', path: '/todo', icon: 'Tickets' },
+  '/done': { name: '我的已办', path: '/done', icon: 'CircleCheck' }
+}
+
 const quickEntries = computed<QuickEntry[]>(() => {
   // 个人中心是静态路由，所有登录用户都可访问
-  const fixed: QuickEntry = { name: '个人中心', path: '/profile', icon: 'User' }
-  const seen = new Set<string>([fixed.path])
+  const fixed: QuickEntry[] = [{ name: '个人中心', path: '/profile', icon: 'User' }]
+
+  // 快捷入口菜单：命中置顶映射的改用友好名称并前置，其余按原顺序补齐
+  const pinned: QuickEntry[] = []
   const rest: QuickEntry[] = []
   for (const item of menuEntries.value) {
-    if (seen.has(item.path)) continue
-    seen.add(item.path)
-    rest.push(item)
+    const friendly = pinnedEntries[item.path]
+    if (friendly) pinned.push(friendly)
+    else rest.push(item)
   }
-  return [fixed, ...rest].slice(0, 8)
+  return [...fixed, ...pinned, ...rest].slice(0, 8)
 })
 
-// AI 相关入口是否存在，取决于当前账号的菜单权限
-const chatPath = computed(() => menuEntries.value.some(item => item.path === '/dialog') ? '/dialog' : null)
-const historyPath = computed(() => menuEntries.value.some(item => item.path === '/answerHistory') ? '/answerHistory' : null)
+// AI 相关入口是否存在，取决于当前账号的菜单权限（与快捷入口标记无关）
+const chatPath = computed(() => allMenuEntries.value.some(item => item.path === '/dialog') ? '/dialog' : null)
+const historyPath = computed(() => allMenuEntries.value.some(item => item.path === '/answerHistory') ? '/answerHistory' : null)
+// 工作流待办入口（用于「查看全部」跳转与模块权限判断）
+const todoPath = computed(() => allMenuEntries.value.some(item => item.path === '/todo') ? '/todo' : null)
+const hasWorkflowMenu = computed(() => allMenuEntries.value.some(item => item.path === '/todo' || item.path === '/done'))
+
+// ==================== 我的待办 ====================
+
+const todoList = ref<WfTasksVo[]>([])
+const todoTotal = ref(0)
+const todoLoading = ref(false)
+
+// 首页只展示最近 5 条，完整列表在待办页
+const loadTodos = async () => {
+  if (!hasWorkflowMenu.value) return
+  try {
+    todoLoading.value = true
+    const res = await getWorkflowTodosApi({ keyword: '', pageNum: 1, pageSize: 5 })
+    todoList.value = res.records || []
+    todoTotal.value = res.total || 0
+  } catch (error) {
+    console.error('加载我的待办失败:', error)
+  } finally {
+    todoLoading.value = false
+  }
+}
+
+// 点击待办条目进入待办页（待办页暂无按 id 定位，先统一跳转列表）
+const openTodo = () => {
+  if (todoPath.value) router.push(todoPath.value)
+}
 
 // ==================== 最近对话 / 最近登录 ====================
 
@@ -222,7 +309,7 @@ const openDialogue = (id: number) => {
   router.push({ path: chatPath.value, query: { dialogueId: String(id) } })
 }
 
-// 三个请求互不阻塞，任一失败不影响其余板块
+// 待办与菜单数据一起加载：菜单决定权限与「查看全部」入口是否可见
 const loadData = async () => {
   loading.value = true
   const [loginsRes, dialoguesRes, menusRes] = await Promise.allSettled([
@@ -247,6 +334,9 @@ const loadData = async () => {
     console.error('加载快捷入口失败:', menusRes.reason)
   }
   loading.value = false
+
+  // 菜单就绪后 hasWorkflowMenu 才准确，此时再决定是否拉取待办
+  loadTodos()
 }
 
 onMounted(() => {
@@ -378,6 +468,25 @@ onMounted(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+.todo-count {
+  color: var(--radish-primary);
+  font-weight: var(--radish-weight-medium);
+}
+
+.todo-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--radish-space-1);
+  margin-top: var(--radish-space-1);
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
+}
+
+.todo-meta-dot {
+  color: var(--radish-text-placeholder);
 }
 
 /* ============ 内容区域 ============ */

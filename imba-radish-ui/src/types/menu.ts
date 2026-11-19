@@ -9,6 +9,7 @@ export interface MenuItem {
   noAuth?: boolean;  // 是否不需要认证
   parentId?: string;
   visible: number;
+  quickEntryFlag?: number;  // 是否在首页快捷入口展示：1-展示，0-不展示
   children?: MenuItem[];
 }
 
@@ -20,6 +21,7 @@ export interface GetMenuListVo {
   sortOrder: number;
   icon: string;
   visible: number;
+  quickEntryFlag?: number;
   path: string;
   component: string;
   hasChild: boolean;
@@ -53,6 +55,7 @@ export interface GetMenuVo {
   sortOrder: number | null;
   status: number;
   visible: number;
+  quickEntryFlag?: number;
   remark: string;
 }
 
@@ -65,6 +68,7 @@ export interface SaveMenuRequest {
   type: string;
   sortOrder: number;
   visible: number;
+  quickEntryFlag?: number;
   remark?: string;
 }
 
@@ -78,6 +82,7 @@ export interface EditMenuRequest {
   type: string;
   sortOrder: number;
   visible: number;
+  quickEntryFlag?: number;
   remark?: string;
 }
 
@@ -107,6 +112,7 @@ export interface PageMenuTreeVO {
   sortOrder: number | null
   status: string | null
   visible: string | null
+  quickEntryFlag?: string | null
   hasChild: boolean | null
 }
 

@@ -28,7 +28,7 @@ public class TestController {
     private final ThirdInterface thirdInterface;
 
     @GetMapping(value = "/getWeather")
-    public R<String> getWeather(@RequestParam(value = "code") String code) {
-        return R.ok(thirdInterface.getDistrictCode(code));
+    public R<Weather> getWeather(@RequestParam(value = "code") String code) {
+        return R.ok(thirdInterface.getWeather(code));
     }
 }

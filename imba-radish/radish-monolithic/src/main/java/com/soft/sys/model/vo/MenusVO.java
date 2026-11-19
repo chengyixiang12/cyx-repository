@@ -39,6 +39,9 @@ public class MenusVO implements MenuTree<MenusVO> {
     @Schema(description = "显示状态；1：显示；0：隐藏")
     private Integer visible;
 
+    @Schema(description = "是否在首页快捷入口展示；1：展示；0：不展示")
+    private Integer quickEntryFlag;
+
     @Schema(description = "子菜单列表")
     private List<MenusVO> children = new ArrayList<>();
 }
