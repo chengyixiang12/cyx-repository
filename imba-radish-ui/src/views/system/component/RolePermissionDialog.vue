@@ -20,26 +20,20 @@
 
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { getAllPermissionsApi, getAssignPerApi } from '@/api/permission'
 import { GetAllPermissionVo, SetPermissionsRequest } from '@/types/permission';
 
 interface FatherParam {
-    modelValue: boolean;
     roleId: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-    modelValue: false,
     roleId: ''
 })
 
-const emit = defineEmits(['update:modelValue', 'submit'])
-
-const visible = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>({ default: false })
 
 const permissionOptions = ref<GetAllPermissionVo[]>([])
 const selectedPermissions = ref<string[]>([])

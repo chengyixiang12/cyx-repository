@@ -20,20 +20,14 @@
 
 <script lang="ts" setup>
 import type { RegisterRequest } from '@/types/register'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
 
-const props = defineProps<{ modelValue: RegisterRequest }>()
+const formData = defineModel<RegisterRequest>({ required: true })
 const emit = defineEmits<{
-  (e: 'update:modelValue', val: RegisterRequest): void
   (e: 'next'): void
 }>()
-
-const formData = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
 
 const formRef = ref<FormInstance>()
 

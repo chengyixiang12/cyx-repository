@@ -22,16 +22,15 @@
 
 <script lang="ts" setup>
 import type { RegisterRequest } from '@/types/register'
-import { computed, ref, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { registerApi, sendRegistCaptchaApi } from '@/api/register'
 import type { FormInstance, FormRules } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa'
 import { getPublicKeyApi } from '@/api/auth'
 import { showMessage } from '@/utils/message'
 
-const props = defineProps<{ modelValue: RegisterRequest }>()
+const formData = defineModel<RegisterRequest>({ required: true })
 const emit = defineEmits<{
-  (e: 'update:modelValue', val: RegisterRequest): void
   (e: 'prev'): void
   (e: 'next'): void
 }>()
@@ -60,11 +59,6 @@ const startCountdown = (seconds: number = 300) => {
     }
   }, 1000)
 }
-
-const formData = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
 
 const sendCode = async () => {
   try {

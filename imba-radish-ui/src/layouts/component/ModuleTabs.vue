@@ -37,19 +37,18 @@ import { CachedTabsType } from '@/types/layout'
 
 interface FatherParam {
     tabs: CachedTabsType[]
-    activePath: string
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
     tabs: () => [],
-    activePath: ''
 })
 
-const emit = defineEmits(['update:activePath', 'close', 'switch', 'closeOther', 'closeAll'])
+const activePath = defineModel<string>('activePath', { default: '' })
+const emit = defineEmits(['close', 'switch', 'closeOther', 'closeAll'])
 
 const handleTabClick = (pane: any) => {
     const routePath: string = pane.props.name
-    emit('update:activePath', routePath)
+    activePath.value = routePath
     emit('switch', routePath)
 }
 
@@ -58,7 +57,7 @@ const handleTabClose = (tabName: string) => {
 }
 
 const canCloseCurrent = computed(() => {
-    const currentTab = props.tabs.find(tab => tab.path === props.activePath)
+    const currentTab = props.tabs.find(tab => tab.path === activePath.value)
     return currentTab?.isClose !== false
 })
 
@@ -66,11 +65,11 @@ const handleDropdownCommand = (command: string) => {
     switch (command) {
         case 'closeCurrent':
             if (canCloseCurrent.value) {
-                emit('close', props.activePath)
+                emit('close', activePath.value)
             }
             break
         case 'closeOther':
-            emit('closeOther', props.activePath)
+            emit('closeOther', activePath.value)
             break
         case 'closeAll':
             emit('closeAll')

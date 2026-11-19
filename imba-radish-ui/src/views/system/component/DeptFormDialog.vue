@@ -32,23 +32,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { getDeptApi, getDeptTreeApi } from '@/api/dept'
 import { DeptTreeVo, DeptVo } from '@/types/dept'
 
 interface FatherParam {
-  visible: boolean;
   isAdd: boolean;
   deptId?: string | null
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-  visible: false,
   isAdd: false,
   deptId: null,
 })
-const emit = defineEmits(['update:visible', 'submit'])
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>('visible', { default: false })
 const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
 const formData = ref<DeptVo>({
@@ -72,14 +71,9 @@ const rules: FormRules = {
   parentId: [{ required: false }],
 }
 
-const visible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
-
 // 关闭弹窗事件
 const handleClose = () => {
-  emit('update:visible', false)
+  visible.value = false
 }
 
 // 提交表单

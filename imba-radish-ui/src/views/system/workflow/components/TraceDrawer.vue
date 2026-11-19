@@ -58,32 +58,23 @@ import { ref, watch } from 'vue'
 import { getWorkflowTraceApi } from '@/api/workflow'
 import type { WfTraceVo } from '@/types/workflow'
 
+const visible = defineModel<boolean>({ default: false })
 const props = defineProps<{
-    /** 抽屉显隐（v-model） */
-    modelValue: boolean
     /** 流程实例id；为空时抽屉只展示空态 */
     instanceId?: string
 }>()
 
-const emit = defineEmits<{
-    (e: 'update:modelValue', value: boolean): void
-}>()
-
-const visible = ref(false)
-
 watch(
-    () => props.modelValue,
-    (value) => {
-        visible.value = value
-        if (value && props.instanceId) {
-            loadTrace(props.instanceId)
+    () => [visible.value, props.instanceId] as const,
+    ([show, instanceId]) => {
+        if (show && instanceId) {
+            loadTrace(instanceId)
         }
     }
 )
 
 watch(visible, (value) => {
     if (!value) {
-        emit('update:modelValue', false)
         trace.value = null
     }
 })

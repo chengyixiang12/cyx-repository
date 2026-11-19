@@ -24,27 +24,21 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, nextTick, computed } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { getAllMenuTreeApi, getAssignedMenuApi } from '@/api/menu'
 import type { GetMenuTreeVo } from '@/types/menu'
 import { SetMenusRequest } from '@/types/role';
 
 interface FatherParam {
-  modelValue: boolean;
   roleId: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-  modelValue: false,
   roleId: ''
 })
 
-const emit = defineEmits(['update:modelValue', 'submit'])
-
-const visible = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>({ default: false })
 
 const menuTree = ref<GetMenuTreeVo[]>([])
 const selectedMenuIds = ref<string[]>([])

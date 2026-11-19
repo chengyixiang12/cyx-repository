@@ -57,25 +57,21 @@ import { getRoleSelectApi } from '@/api/role'
 import { GetRoleSelectVo } from '@/types/role'
 
 interface FatherParam {
-  visible: boolean;
   isAdd: boolean;
   deptTree: DeptTreeVo[];
   userId?: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-  visible: false,
   isAdd: false,
   deptTree: () => [],
   userId: ''
 })
 
-const emit = defineEmits(['update:visible', 'submit'])
+const emit = defineEmits(['submit'])
 
-const dialogVisible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
+// dialogVisible 对应父组件 v-model:visible
+const dialogVisible = defineModel<boolean>('visible', { default: false })
 
 const dialogTitle = computed(() => props.isAdd ? '新增用户' : '编辑用户')
 

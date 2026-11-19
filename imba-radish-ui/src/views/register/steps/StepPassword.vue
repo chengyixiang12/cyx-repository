@@ -20,11 +20,10 @@
 <script lang="ts" setup>
 import type { RegisterRequest } from '@/types/register'
 import type { FormInstance, FormRules } from 'element-plus'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
-const props = defineProps<{ modelValue: RegisterRequest }>()
+const formData = defineModel<RegisterRequest>({ required: true })
 const emit = defineEmits<{
-  (e: 'update:modelValue', val: RegisterRequest): void
   (e: 'prev'): void
   (e: 'next'): void
 }>()
@@ -51,11 +50,6 @@ const rules: FormRules = {
     { validator: validateConfirmPassword, trigger: 'blur' }
   ]
 }
-
-const formData = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
 
 const handleNext = async () => {
   try {

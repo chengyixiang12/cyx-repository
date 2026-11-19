@@ -109,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import CronGenerate from './CronGenerate.vue'
@@ -122,12 +122,6 @@ const formRef = ref<FormInstance>()
 
 const submitLoading = ref(false)
 const showCronDrawer = ref(false)
-
-// 控制弹窗显示
-const visible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
 
 // 表单数据
 const formData = ref<GetJobVo>({
@@ -175,22 +169,21 @@ const rules = {
 }
 
 interface FatherParam {
-  visible: boolean
   isAdd: boolean
   jobId?: number | null
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-  visible: false,
   isAdd: false,
   jobId: null,
 })
 
-const emit = defineEmits(['update:visible', 'submit'])
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>('visible', { default: false })
 
 // 关闭弹窗
 const handleClose = () => {
-  emit('update:visible', false)
+  visible.value = false
 }
 
 // 提交表单

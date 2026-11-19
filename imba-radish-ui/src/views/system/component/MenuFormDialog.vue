@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { Component } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { GetMenuVo, GetSelectMenuVo } from '@/types/menu'
@@ -104,7 +104,6 @@ Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
 })
 
 interface FatherParam {
-  visible: boolean;
   isAdd: boolean;
   menuId?: string;
   type?: string;
@@ -114,10 +113,10 @@ const props = withDefaults(defineProps<FatherParam>(), {
   isAdd: false,
   menuId: '',
   type: '',
-  visible: false
 })
 
-const emit = defineEmits(['update:visible', 'submit'])
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>('visible', { default: false })
 
 const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
@@ -152,12 +151,6 @@ const treeProps = {
   label: 'name',
 }
 
-const visible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
-
-// 获取菜单树数据
 const getMenuTree = async (type: string) => {
   if (type !== '0') {  // 只有类型不是“目录”时才请求菜单数据
     const res = await getSelectMenu(type)
@@ -217,7 +210,7 @@ const getMenu = async () => {
 
 // 处理关闭事件
 const handleClose = () => {
-  emit('update:visible', false)
+  visible.value = false
 }
 
 // 排序表单输入校验
