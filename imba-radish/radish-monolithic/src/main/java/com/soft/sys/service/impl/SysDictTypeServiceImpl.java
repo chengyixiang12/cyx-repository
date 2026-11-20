@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +38,6 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     private final SysDictTypeMapper sysDictTypeMapper;
 
     private final SysDictDataMapper sysDictDataMapper;
-
-    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public PageVO<DictTypesVO> getdictTypes(GetDictTypesDTO request) {
