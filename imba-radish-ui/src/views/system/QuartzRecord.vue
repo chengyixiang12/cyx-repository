@@ -1,80 +1,83 @@
 <template>
-  <ListPage :loading="loading" :count="tableData.length" :columns="9" :model="searchForm">
-    <template #prefix>
-      <el-button link @click="goBack">
-        <el-icon><ArrowLeft /></el-icon>返回
-      </el-button>
-    </template>
+    <ListPage :loading="loading" :count="tableData.length" :columns="9" :model="searchForm">
+        <template #prefix>
+            <el-button link @click="goBack">
+                <el-icon>
+                    <ArrowLeft />
+                </el-icon>返回
+            </el-button>
+        </template>
 
-    <template #title>执行记录</template>
+        <template #title>执行记录</template>
 
-    <template #search>
-      <el-form-item label="模糊查询">
-                    <el-input v-model="searchForm.keyword" placeholder="请输入任务名称/任务组" clearable class="keyword-input" />
-                </el-form-item>
-                <el-form-item label="执行时间">
-                    <el-date-picker v-model="searchForm.timeRange" type="datetimerange" range-separator="至"
-                        start-placeholder="开始时间" end-placeholder="结束时间" value-format="YYYY-MM-DD HH:mm:ss" />
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleSearch">查询</el-button>
-                    <el-button type="primary" @click="handleReset">重置</el-button>
-      </el-form-item>
-    </template>
+        <template #search>
+            <el-form-item label="模糊查询">
+                <el-input v-model="searchForm.keyword" placeholder="请输入任务名称/任务组" clearable class="keyword-input" />
+            </el-form-item>
+            <el-form-item label="执行时间">
+                <el-date-picker v-model="searchForm.timeRange" type="datetimerange" range-separator="至"
+                    start-placeholder="开始时间" end-placeholder="结束时间" value-format="YYYY-MM-DD HH:mm:ss" />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="handleSearch">查询</el-button>
+                <el-button type="primary" @click="handleReset">重置</el-button>
+            </el-form-item>
+        </template>
 
-    <el-table v-loading="loading && tableData.length > 0" :data="tableData" border size="small" style="width: 100%" height="100%">
-                <el-table-column type="index" label="序号" min-width="50" align="center" />
-                <el-table-column prop="jobName" label="任务名称" min-width="120" show-overflow-tooltip />
-                <el-table-column prop="jobType" label="任务类型" min-width="120" />
-                <el-table-column prop="jobGroup" label="任务组" min-width="120" />
-                <el-table-column prop="status" label="运行状态" min-width="100">
-                    <template #default="{ row }">
-                        <el-tag v-if="row.status === '0'" type="info">未执行</el-tag>
-                        <el-tag v-else-if="row.status === '1'" type="warning">执行中</el-tag>
-                        <el-tag v-else-if="row.status === '2'" type="success">执行成功</el-tag>
-                        <el-tag v-else-if="row.status === '3'" type="danger">执行失败</el-tag>
-                        <el-tag v-else type="info">未知</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="executionTime" label="耗时(ms)" min-width="90" />
-                <el-table-column prop="startTime" label="开始时间" min-width="160" />
-                <el-table-column prop="endTime" label="结束时间" min-width="160" />
-                <el-table-column label="操作" min-width="140" align="center">
-                    <template #default="{ row }">
-                        <div class="action-buttons-container">
-                            <el-button type="primary" class="action-button" @click="viewLog(row.id)">
-                                日志
-                            </el-button>
-                            <el-button type="primary" class="action-button" @click="viewParams(row.id)">
-                                参数
-                            </el-button>
-                        </div>
-                    </template>
-                </el-table-column>
-            </el-table>
+        <el-table v-loading="loading && tableData.length > 0" :data="tableData" border size="small" style="width: 100%"
+            height="100%">
+            <el-table-column type="index" label="序号" min-width="50" align="center" />
+            <el-table-column prop="jobName" label="任务名称" min-width="120" show-overflow-tooltip />
+            <el-table-column prop="jobType" label="任务类型" min-width="120" />
+            <el-table-column prop="jobGroup" label="任务组" min-width="120" />
+            <el-table-column prop="status" label="运行状态" min-width="100">
+                <template #default="{ row }">
+                    <el-tag v-if="row.status === '0'" type="info">未执行</el-tag>
+                    <el-tag v-else-if="row.status === '1'" type="warning">执行中</el-tag>
+                    <el-tag v-else-if="row.status === '2'" type="success">执行成功</el-tag>
+                    <el-tag v-else-if="row.status === '3'" type="danger">执行失败</el-tag>
+                    <el-tag v-else type="info">未知</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="executionTime" label="耗时(ms)" min-width="90" />
+            <el-table-column prop="startTime" label="开始时间" min-width="160" />
+            <el-table-column prop="endTime" label="结束时间" min-width="160" />
+            <el-table-column label="操作" min-width="140" align="center">
+                <template #default="{ row }">
+                    <div class="action-buttons-container">
+                        <el-button type="primary" class="action-button" @click="viewLog(row.id)">
+                            日志
+                        </el-button>
+                        <el-button type="primary" class="action-button" @click="viewParams(row.id)">
+                            参数
+                        </el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
 
-    <template #footer>
-      <el-pagination v-model:current-page="pagination.pageNum" v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]" :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange"
-        @current-change="handlePageChange" />
-    </template>
-  </ListPage>
+        <template #footer>
+            <el-pagination v-model:current-page="pagination.pageNum" v-model:page-size="pagination.pageSize"
+                :page-sizes="[10, 20, 50, 100]" :total="pagination.total"
+                layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange"
+                @current-change="handlePageChange" />
+        </template>
+    </ListPage>
 
-  <!-- 执行日志弹窗 -->
-  <el-dialog v-model="logDialogVisible" title="执行日志" width="800px">
-    <pre class="log-content">{{ currentLog }}</pre>
-  </el-dialog>
+    <!-- 执行日志弹窗 -->
+    <el-dialog v-model="logDialogVisible" title="执行日志" width="800px">
+        <pre class="log-content">{{ currentLog }}</pre>
+    </el-dialog>
 
-  <!-- 任务执行参数弹窗 -->
-  <el-dialog v-model="paramsDialogVisible" title="任务执行参数" width="600px">
-    <pre class="params-content">{{ currentParams }}</pre>
-  </el-dialog>
+    <!-- 任务执行参数弹窗 -->
+    <el-dialog v-model="paramsDialogVisible" title="任务执行参数" width="600px">
+        <pre class="params-content">{{ currentParams }}</pre>
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
 import ListPage from '@/components/layout/ListPage.vue'
-import { getLogDetailApi, getQuartzRecordListApi } from '@/api/quartzRecord'
+import { getLogDetailApi, getParamsApi, getQuartzRecordListApi } from '@/api/quartzRecord'
 import { GetQuartzRecordListVo } from '@/types/quartzRecord'
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -168,12 +171,19 @@ const viewLog = async (id: string) => {
     } catch (error) {
         console.error('获取日志详情失败:', error)
         logDialogVisible.value = false
-           }
+    }
 }
 
 // 查看任务执行参数
 const viewParams = async (id: string) => {
-    paramsDialogVisible.value = true
+    try {
+        const params = await getParamsApi(id)
+        currentLog.value = params || ''
+        paramsDialogVisible.value = true
+    } catch (error) {
+        console.error('获取日志详情失败:', error)
+        logDialogVisible.value = false
+    }
 }
 
 // 返回上一页

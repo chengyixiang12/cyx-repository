@@ -38,7 +38,7 @@ import { getDeptApi, getDeptTreeApi } from '@/api/dept'
 import { DeptTreeVo, DeptVo } from '@/types/dept'
 
 interface FatherParam {
-  isAdd: boolean;
+  isAdd?: boolean;
   deptId?: string | null
 }
 

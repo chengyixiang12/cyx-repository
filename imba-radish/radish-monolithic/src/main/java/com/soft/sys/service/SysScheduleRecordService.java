@@ -5,6 +5,7 @@ import com.soft.sys.entity.SysScheduleRecord;
 import com.soft.sys.model.request.GetQuartzRecordListDTO;
 import com.soft.sys.model.vo.GetQuartzRecordListVO;
 import com.soft.sys.model.vo.PageVO;
+import jakarta.validation.constraints.NotNull;
 
 /**
 * @author 程益祥
@@ -16,4 +17,6 @@ public interface SysScheduleRecordService extends IService<SysScheduleRecord> {
     PageVO<GetQuartzRecordListVO> getQuartzRecordList(GetQuartzRecordListDTO request);
 
     String getLogDetail(Long id);
+
+    String getParams(Long id);
 }

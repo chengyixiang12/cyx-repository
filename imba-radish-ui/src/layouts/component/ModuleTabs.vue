@@ -36,7 +36,7 @@ import { MoreFilled } from '@element-plus/icons-vue'
 import { CachedTabsType } from '@/types/layout'
 
 interface FatherParam {
-    tabs: CachedTabsType[]
+    tabs?: CachedTabsType[]
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {

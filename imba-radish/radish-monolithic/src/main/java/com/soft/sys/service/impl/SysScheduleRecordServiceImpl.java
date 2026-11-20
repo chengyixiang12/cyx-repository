@@ -38,6 +38,11 @@ public class SysScheduleRecordServiceImpl extends ServiceImpl<SysScheduleRecordM
     public String getLogDetail(Long id) {
         return sysScheduleRecordMapper.getLogDetail(id);
     }
+
+    @Override
+    public String getParams(Long id) {
+        return sysScheduleRecordMapper.getParams(id);
+    }
 }
 
 

@@ -27,7 +27,6 @@ import { registerApi, sendRegistCaptchaApi } from '@/api/register'
 import type { FormInstance, FormRules } from 'element-plus'
 import { RSAUtil } from '@/utils/rsa'
 import { getPublicKeyApi } from '@/api/auth'
-import { showMessage } from '@/utils/message'
 
 const formData = defineModel<RegisterRequest>({ required: true })
 const emit = defineEmits<{

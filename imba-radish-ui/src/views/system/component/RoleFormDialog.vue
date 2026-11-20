@@ -53,7 +53,7 @@ import { getRoleApi } from '@/api/role'
 import { SysRoleVo } from '@/types/role'
 
 interface FatherParam {
-  isAdd: boolean;
+  isAdd?: boolean;
   roleId?: string;
 }
 

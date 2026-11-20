@@ -79,7 +79,7 @@
   </ListPage>
 
   <dict-type-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" @submit="handleAddSubmit" />
-  <dict-type-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :dictTypeId="dictTypeId" @submit="handleEditSubmit" />
+  <dict-type-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :dict-type-id="dictTypeId" @submit="handleEditSubmit" />
 </template>
 
 <script lang="ts" setup>

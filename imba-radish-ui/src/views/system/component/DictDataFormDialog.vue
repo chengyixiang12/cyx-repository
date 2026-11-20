@@ -50,7 +50,7 @@ import { SaveDictDataRequest } from '@/types/dictData'
 import { getDictDataApi } from '@/api/dictData'
 
 interface FatherParam {
-    isAdd: boolean
+    isAdd?: boolean
     dictDataId?: string | null
 }
 

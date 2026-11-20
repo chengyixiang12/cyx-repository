@@ -58,7 +58,7 @@
           </div>
     </div>
 
-    <answer-form-dialog v-model:visible="renameVisible" v-if="renameVisible" @submit="handleRenameSubmit" :dialogId="dialogId"/>
+    <answer-form-dialog v-model:visible="renameVisible" v-if="renameVisible" @submit="handleRenameSubmit" :dialog-id="dialogId"/>
 </template>
 
 <script setup lang="ts">

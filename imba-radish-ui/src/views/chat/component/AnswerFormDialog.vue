@@ -31,7 +31,7 @@ const formData = ref<GetTitleVo>({
 });
 
 interface FatherParam {
-  dialogId: string | null;
+  dialogId?: string | null;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {

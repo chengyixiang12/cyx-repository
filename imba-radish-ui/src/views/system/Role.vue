@@ -81,7 +81,7 @@
     @submit="handleAddSubmit" />
 
   <!-- 编辑角色弹窗 -->
-  <role-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :roleId="roleId"
+  <role-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :role-id="roleId"
     @submit="handleEditSubmit" />
 
   <!--赋予权限弹窗-->

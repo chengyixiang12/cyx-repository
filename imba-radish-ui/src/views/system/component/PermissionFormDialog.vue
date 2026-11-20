@@ -46,7 +46,7 @@ import { getPermissionApi } from '@/api/permission';
 
 
 interface FatherParam {
-  isAdd: boolean;
+  isAdd?: boolean;
   permissionId?: string;
 }
 

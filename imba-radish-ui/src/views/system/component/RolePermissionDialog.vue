@@ -25,7 +25,7 @@ import { getAllPermissionsApi, getAssignPerApi } from '@/api/permission'
 import { GetAllPermissionVo, SetPermissionsRequest } from '@/types/permission';
 
 interface FatherParam {
-    roleId: string;
+    roleId?: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {

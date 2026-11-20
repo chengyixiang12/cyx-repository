@@ -169,7 +169,7 @@ const rules = {
 }
 
 interface FatherParam {
-  isAdd: boolean
+  isAdd?: boolean
   jobId?: number | null
 }
 

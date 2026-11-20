@@ -39,7 +39,7 @@ import { getDictTypeApi } from '@/api/dictType'
 import type { SaveDictTypeRequest } from '@/types/dictType'
 
 interface FatherParam {
-    isAdd: boolean
+    isAdd?: boolean
     dictTypeId?: string
 }
 

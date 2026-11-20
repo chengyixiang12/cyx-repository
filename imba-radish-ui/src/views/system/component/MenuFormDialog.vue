@@ -120,7 +120,7 @@ Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
 })
 
 interface FatherParam {
-  isAdd: boolean;
+  isAdd?: boolean;
   menuId?: string;
   type?: string;
 }

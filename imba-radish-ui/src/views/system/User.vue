@@ -158,12 +158,12 @@
     </template>
   </ListPage>
 
-  <user-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" :deptTree="deptTree"
+  <user-form-dialog v-model:visible="addDialogVisible" :is-add="true" v-if="addDialogVisible" :dept-tree="deptTree"
     @submit="handleAddSubmit" />
 
   <!-- 编辑用户弹窗 -->
-  <user-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :userId="userId"
-    :deptTree="deptTree" @submit="handleEditSubmit" />
+  <user-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :user-id="userId"
+    :dept-tree="deptTree" @submit="handleEditSubmit" />
 </template>
 
 <script lang="ts" setup>

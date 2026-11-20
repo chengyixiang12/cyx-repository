@@ -75,7 +75,6 @@
 import ListPage from '@/components/layout/ListPage.vue'
 import TraceDrawer from './components/TraceDrawer.vue'
 import { ref, computed, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 import {
     approveWorkflowApi,
     getApproverOptionsApi,
@@ -124,13 +123,13 @@ const handleForm = ref({
 })
 const approverOptions = ref<WfUserOptionVo[]>([])
 
-const handleDialogTitle = computed(() => {
-    switch (handleMode.value) {
-        case 'approve': return '通过任务'
-        case 'reject': return '驳回任务'
-        case 'transfer': return '转办任务'
-    }
-})
+const HANDLE_TITLES: Record<HandleMode, string> = {
+    approve: '通过任务',
+    reject: '驳回任务',
+    transfer: '转办任务'
+}
+
+const handleDialogTitle = computed(() => HANDLE_TITLES[handleMode.value])
 
 const openHandleDialog = async (mode: HandleMode, row: WfTasksVo) => {
     handleMode.value = mode

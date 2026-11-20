@@ -30,7 +30,7 @@ import type { GetMenuTreeVo } from '@/types/menu'
 import { SetMenusRequest } from '@/types/role';
 
 interface FatherParam {
-  roleId: string;
+  roleId?: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {

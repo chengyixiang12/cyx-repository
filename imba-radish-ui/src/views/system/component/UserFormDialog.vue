@@ -57,8 +57,8 @@ import { getRoleSelectApi } from '@/api/role'
 import { GetRoleSelectVo } from '@/types/role'
 
 interface FatherParam {
-  isAdd: boolean;
-  deptTree: DeptTreeVo[];
+  isAdd?: boolean;
+  deptTree?: DeptTreeVo[];
   userId?: string;
 }
 

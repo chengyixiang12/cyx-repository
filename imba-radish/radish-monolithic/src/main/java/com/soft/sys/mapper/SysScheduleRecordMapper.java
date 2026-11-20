@@ -23,6 +23,8 @@ public interface SysScheduleRecordMapper extends BaseMapper<SysScheduleRecord> {
                                                      @Param("endTime") LocalDateTime endTime);
 
     String getLogDetail(@Param("id") Long id);
+
+    String getParams(@Param("id") Long id);
 }
 
 

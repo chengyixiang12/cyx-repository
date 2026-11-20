@@ -91,7 +91,7 @@
             <el-container class="main-right-wrapper">
                 <!-- 主内容区 -->
                 <el-main class="main-right">
-                    <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
+                    <module-tabs :tabs="cachedTabs" v-model:active-path="activePath" @switch="switchTab" @close="closeTab"
                         @close-other="closeOtherTabs" @close-all="closeAllTabs" />
                     <div class="router-view-wrapper">
                         <router-view v-slot="{ Component }">

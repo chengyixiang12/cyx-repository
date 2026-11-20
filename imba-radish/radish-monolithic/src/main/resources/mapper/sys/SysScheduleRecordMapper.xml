@@ -30,4 +30,10 @@
         where t1.del_flag = '0'
           and t1.id = #{id}
     </select>
+    <select id="getParams" parameterType="java.lang.Long" resultType="java.lang.String">
+        select t1.job_param
+        from sys_schedule_record t1
+        where t1.del_flag = '0'
+          and t1.id = #{id}
+    </select>
 </mapper>

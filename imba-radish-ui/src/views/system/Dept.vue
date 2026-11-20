@@ -57,7 +57,7 @@
     @submit="handleAddSubmit" />
 
   <!-- 编辑部门弹窗 -->
-  <dept-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :deptId="deptId"
+  <dept-form-dialog v-model:visible="editDialogVisible" :is-add="false" v-if="editDialogVisible" :dept-id="deptId"
     @submit="handleEditSubmit" />
 </template>
 
