@@ -83,6 +83,6 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
 
         redisTemplate.delete(keys);
 
-        ResponseUtil.writeMsg(response, HttpStatus.OK.value(), R.ok(ResultEnum.SUCCESS.getCode(), "注销成功"));
+        ResponseUtil.writeMsg(response, HttpStatus.OK.value(), R.ok("注销成功"));
     }
 }
