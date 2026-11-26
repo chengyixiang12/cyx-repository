@@ -15,6 +15,7 @@ import com.soft.sys.model.vo.ChunkProgressVO;
 import com.soft.sys.model.vo.FilesVO;
 import com.soft.sys.model.vo.PageVO;
 import com.soft.sys.model.vo.UploadFileVO;
+import com.soft.sys.properties.RadishProperty;
 import com.soft.sys.service.SysFileService;
 import com.soft.sys.utils.FileNameUtil;
 import com.soft.sys.utils.MinioUtil;
@@ -65,8 +66,7 @@ public class SysFileController {
     private static final long MIN_CHUNK_SIZE = 1024L * 1024L;
     private static final long MAX_CHUNK_SIZE = 12L * 1024 * 1024L;
 
-    @Value(value = "${radish.upload.max-total-file-size:2147483648}")
-    private long maxTotalFileSize;
+    private final RadishProperty radishProperty;
 
     private final SysFileService sysFileService;
 
@@ -187,7 +187,7 @@ public class SysFileController {
     public R<Object> uploadChunk(@RequestParam(value = "fileMd5", required = false) @NotBlank(message = "文件MD5不能为空") @Pattern(regexp = RegexConstant.FILE_HASH_REGEX, message = "文件MD5不合法") String fileMd5,
                                  @RequestParam(value = "chunkIndex", required = false) @NotNull(message = "索引不能为空") Integer chunkIndex,
                                  @RequestPart(value = "chunk", required = false) @NotNull(message = "分片不能为空") @LogIgnore MultipartFile chunk) throws IOException {
-        if (chunkIndex == null || chunkIndex < 0 || chunkIndex >= (maxTotalFileSize + MIN_CHUNK_SIZE - 1) / MIN_CHUNK_SIZE) {
+        if (chunkIndex == null || chunkIndex < 0 || chunkIndex >= (radishProperty.getUpload().getMaxTotalFileSize() + MIN_CHUNK_SIZE - 1) / MIN_CHUNK_SIZE) {
             throw new GlobalException("分片索引不合法");
         }
         if (chunk.isEmpty() || chunk.getSize() > MAX_CHUNK_SIZE) {
@@ -261,7 +261,7 @@ public class SysFileController {
     }
 
     private void validateFileParams(Long fileSize, Long chunkSize) {
-        if (fileSize == null || fileSize <= 0 || fileSize > maxTotalFileSize) {
+        if (fileSize == null || fileSize <= 0 || fileSize > radishProperty.getUpload().getMaxTotalFileSize()) {
             throw new GlobalException("文件大小超出限制");
         }
         if (chunkSize == null || chunkSize < MIN_CHUNK_SIZE || chunkSize > MAX_CHUNK_SIZE) {

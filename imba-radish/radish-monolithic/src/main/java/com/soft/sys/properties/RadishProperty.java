@@ -26,6 +26,8 @@ public class RadishProperty {
 
     private Workflow workflow = new Workflow();
 
+    private Upload upload = new Upload();
+
     @Data
     public static class Workflow {
 
@@ -84,6 +86,35 @@ public class RadishProperty {
          * 重试间隔时间（毫秒）
          */
         private Integer retryIntervalTime;
+    }
+
+    @Data
+    public static class Upload {
+
+        /**
+         * 单文件上限（字节）2GB，必须与前端 MAX_FILE_SIZE、nginx client_max_body_size 对齐
+         */
+        private Long maxTotalFileSize;
+
+        /**
+         * 未完成分片保留时长（小时）：留一段时间用于断点续传，超时由 ChunkCleanupJob 回收
+         */
+        private Integer chunkTtlHours;
+
+        /**
+         * 清理任务执行间隔（毫秒）
+         */
+        private Integer cleanupIntervalMs;
+
+        /**
+         * 启动后的首次延迟（毫秒）
+         */
+        private Integer cleanupInitialDelayMs;
+
+        /**
+         * 是否顺带清理改造前遗留的 tmp/{md5} 孤儿分片目录
+         */
+        private Boolean cleanupLegacy;
     }
 
     @Data

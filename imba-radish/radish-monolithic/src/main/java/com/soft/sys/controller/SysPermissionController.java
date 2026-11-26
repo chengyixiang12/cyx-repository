@@ -53,7 +53,7 @@ public class SysPermissionController {
     public R<Object> savePermission(@RequestBody SavePermissionDTO request) {
         // 权限编码是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         sysPermissionService.savePermission(request);
-        return R.ok("权限添加成功", null);
+        return R.ok("权限添加成功");
     }
 
     @PutMapping(value = "/editPermission")
@@ -61,7 +61,7 @@ public class SysPermissionController {
     @Operation(summary = "编辑权限")
     public R<Object> editPermission(@RequestBody EditPermissionDTO request) {
         sysPermissionService.editPermission(request);
-        return R.ok("权限编辑成功", null);
+        return R.ok("权限编辑成功");
     }
 
     @GetMapping(value = "/getAllPermission")
@@ -85,7 +85,7 @@ public class SysPermissionController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deletePermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysPermissionService.deletePermission(id);
-        return R.ok("删除成功", null);
+        return R.ok("删除成功");
     }
 
     @GetMapping(value = "/enablePermission")
@@ -94,7 +94,7 @@ public class SysPermissionController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enablePermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysPermissionService.enablePermission(id);
-        return R.ok("启用成功", null);
+        return R.ok("启用成功");
     }
 
     @GetMapping(value = "/forbiddenPermission")
@@ -103,7 +103,7 @@ public class SysPermissionController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> forbiddenPermission(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysPermissionService.forbiddenPermission(id);
-        return R.ok("禁用成功", null);
+        return R.ok("禁用成功");
     }
 
     @GetMapping(value = "/getPermission")

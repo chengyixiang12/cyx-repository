@@ -1,6 +1,7 @@
 package com.soft.sys.schedule;
 
 import com.soft.sys.file.ChunkStorage;
+import com.soft.sys.properties.RadishProperty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,20 +26,16 @@ public class ChunkCleanupJob {
 
     private final ChunkStorage chunkStorage;
 
-    @Value("${radish.upload.chunk-ttl-hours:24}")
-    private long ttlHours;
-
-    @Value("${radish.upload.cleanup-legacy:true}")
-    private boolean cleanupLegacy;
+    private final RadishProperty radishProperty;
 
     @Scheduled(fixedDelayString = "${radish.upload.cleanup-interval-ms:3600000}",
             initialDelayString = "${radish.upload.cleanup-initial-delay-ms:60000}")
     public void cleanup() {
         try {
-            Duration ttl = Duration.ofHours(Math.max(1L, ttlHours));
-            int removed = chunkStorage.cleanupExpired(ttl, cleanupLegacy);
+            Duration ttl = Duration.ofHours(Math.max(1L, radishProperty.getUpload().getChunkTtlHours()));
+            int removed = chunkStorage.cleanupExpired(ttl, radishProperty.getUpload().getCleanupLegacy());
             if (removed > 0) {
-                log.info("回收过期上传分片目录 {} 个（TTL {}h）", removed, ttlHours);
+                log.info("回收过期上传分片目录 {} 个（TTL {}h）", removed, radishProperty.getUpload().getChunkTtlHours());
             }
         } catch (Exception e) {
             // 清理失败不能影响调度线程后续执行

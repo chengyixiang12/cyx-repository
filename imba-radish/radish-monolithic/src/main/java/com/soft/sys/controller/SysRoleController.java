@@ -61,7 +61,7 @@ public class SysRoleController {
         sysRole.setIsDefault(BaseConstant.Role.UN_DEFAULT_ROLE_FLAG);
         sysRole.setFixRole(BaseConstant.Role.UN_FIX_ROLE_FLAG);
         sysRoleService.save(sysRole);
-        return R.ok("新增成功", null);
+        return R.ok("新增成功");
     }
 
     @SysLock(name = "role")
@@ -77,7 +77,7 @@ public class SysRoleController {
             request.setStatus(BaseConstant.Status.STATUS_ENABLE);
         }
         sysRoleService.editRole(request);
-        return R.ok("编辑成功", null);
+        return R.ok("编辑成功");
     }
 
     @SysLog(value = "删除角色", module = LogModuleEnum.ROLE)
@@ -92,7 +92,7 @@ public class SysRoleController {
         }
         // 走统一删除入口，级联清理角色与菜单、权限、用户的绑定关系
         sysRoleService.deleteRoleBatch(List.of(id));
-        return R.ok("删除成功", null);
+        return R.ok("删除成功");
     }
 
     @SysLog(value = "批量删除角色", module = LogModuleEnum.ROLE)
@@ -119,7 +119,7 @@ public class SysRoleController {
         }
 
         sysRoleService.deleteRoleBatch(ids);
-        return R.ok("删除成功", null);
+        return R.ok("删除成功");
     }
 
     @GetMapping(value = "/getRole")
@@ -146,7 +146,7 @@ public class SysRoleController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enableRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.enableRole(id);
-        return R.ok("启用成功", null);
+        return R.ok("启用成功");
     }
 
     @SysLog(value = "禁用", module = LogModuleEnum.ROLE)
@@ -156,7 +156,7 @@ public class SysRoleController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> forbiddenRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.forbiddenRole(id);
-        return R.ok("禁用成功", null);
+        return R.ok("禁用成功");
     }
 
     @SysLock(name = "role")
@@ -167,7 +167,7 @@ public class SysRoleController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> setDefaultRole(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.setDefaultRole(id);
-        return R.ok("设置成功", null);
+        return R.ok("设置成功");
     }
 
     @SysLog(value = "赋予菜单", module = LogModuleEnum.ROLE)
@@ -176,7 +176,7 @@ public class SysRoleController {
     @Operation(summary = "赋予菜单")
     public R<Object> setMenus(@RequestBody @Valid SetMenusDTO request) {
         sysRoleService.setMenus(request);
-        return R.ok("菜单赋予成功", null);
+        return R.ok("菜单赋予成功");
     }
 
     @SysLog(value = "赋予权限", module = LogModuleEnum.ROLE)
@@ -186,7 +186,7 @@ public class SysRoleController {
     public R<Object> setPermissions(@RequestBody @Valid SetPermissionsDTO request) {
         try {
             sysRoleService.setPermissions(request);
-            return R.ok("权限赋予成功", null);
+            return R.ok("权限赋予成功");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return R.fail();
@@ -200,7 +200,7 @@ public class SysRoleController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> setFixRole(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.setFixRole(id);
-        return R.ok("设置成功", null);
+        return R.ok("设置成功");
     }
 
     @SysLog(value = "取消固定角色", module = LogModuleEnum.ROLE)
@@ -210,7 +210,7 @@ public class SysRoleController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> cancelFixRole(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysRoleService.cancelFixRole(id);
-        return R.ok("取消成功", null);
+        return R.ok("取消成功");
     }
 
     @GetMapping(value = "/getRoleSelect")

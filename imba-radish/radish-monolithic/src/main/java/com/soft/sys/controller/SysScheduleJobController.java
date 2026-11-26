@@ -56,7 +56,7 @@ public class SysScheduleJobController {
     public R<Object> createJob(@RequestBody @Valid CreateJobDTO request) {
         // 同任务组下的任务类型是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         sysScheduleJobService.createJob(request);
-        return R.ok("创建成功", null);
+        return R.ok("创建成功");
     }
 
     @PostMapping(value = "/getQuartzTasks")
@@ -70,14 +70,14 @@ public class SysScheduleJobController {
     @Operation(summary = "启用任务")
     public R<Object> startJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysScheduleJobService.startJob(id);
-        return R.ok("任务已启动", null);
+        return R.ok("任务已启动");
     }
 
     @GetMapping(value = "/stopJob")
     @Operation(summary = "停止任务")
     public R<Object> stopJob(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysScheduleJobService.stopJob(id);
-        return R.ok("任务已停止", null);
+        return R.ok("任务已停止");
     }
 
     @GetMapping(value = "/parseCron")
@@ -114,7 +114,7 @@ public class SysScheduleJobController {
     @Operation(summary = "修改job")
     public R<Object> editJob(@RequestBody @Valid EditJobDTO request) {
         sysScheduleJobService.editJob(request);
-        return R.ok("修改成功", null);
+        return R.ok("修改成功");
     }
 
     @DeleteMapping(value = "/deleteJob")
@@ -142,7 +142,7 @@ public class SysScheduleJobController {
             if (scheduler.checkExists(jobKey)) {
                 // 立即触发任务执行
                 scheduler.triggerJob(jobKey);
-                return R.ok("任务执行成功", null);
+                return R.ok("任务执行成功");
             } else {
                 log.warn("任务不存在: {}.{}", jobGroup, jobType);
                 return R.fail("任务还未启动");

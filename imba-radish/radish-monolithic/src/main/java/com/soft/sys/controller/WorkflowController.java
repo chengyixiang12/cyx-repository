@@ -69,7 +69,7 @@ public class WorkflowController {
     @PreAuthorize(value = "@cps.hasPermission('sys_workflow_approve')")
     public R<Object> approve(@RequestBody @Valid HandleWorkflowDTO request) {
         workflowService.approve(request);
-        return R.ok("已通过", null);
+        return R.ok("已通过");
     }
 
     @SysLock(name = "workflow")
@@ -79,7 +79,7 @@ public class WorkflowController {
     @PreAuthorize(value = "@cps.hasPermission('sys_workflow_approve')")
     public R<Object> reject(@RequestBody @Valid HandleWorkflowDTO request) {
         workflowService.reject(request);
-        return R.ok("已驳回", null);
+        return R.ok("已驳回");
     }
 
     @SysLock(name = "workflow")
@@ -89,7 +89,7 @@ public class WorkflowController {
     @PreAuthorize(value = "@cps.hasPermission('sys_workflow_transfer')")
     public R<Object> transfer(@RequestBody @Valid TransferWorkflowDTO request) {
         workflowService.transfer(request);
-        return R.ok("已转办", null);
+        return R.ok("已转办");
     }
 
     @PostMapping(value = "/getTodos")

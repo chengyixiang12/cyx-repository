@@ -80,7 +80,7 @@ public class SysUserController {
         }
         Long id = securityUtil.getUserInfo().getId();
         sysUsersService.editPassword(request.getTargetPass(), id);
-        return R.ok("修改成功", null);
+        return R.ok("修改成功");
     }
 
     @SysLog(value = "重置密码", module = LogModuleEnum.USER)
@@ -89,7 +89,7 @@ public class SysUserController {
     @Operation(summary = "重置密码")
     public R<Object> resetPassword(@RequestParam(value = "id", required = false) @NotNull(message = "id不能为空") Long id) {
         sysUsersService.resetPassword(id);
-        return R.ok("密码重置成功", null);
+        return R.ok("密码重置成功");
     }
 
     @SysLock(name = "user")
@@ -103,7 +103,7 @@ public class SysUserController {
         }
         // 邮箱/用户名是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
         sysUsersService.saveUser(request);
-        return R.ok("添加成功", null);
+        return R.ok("添加成功");
     }
 
     @SysLock(name = "user")
@@ -114,7 +114,7 @@ public class SysUserController {
     public R<Object> editUser(@RequestBody @Valid EditUserDTO request) {
         String username = sysUsersService.getUsername(request.getId());
         sysUsersService.editUser(request, username);
-        return R.ok("修改成功", null);
+        return R.ok("修改成功");
     }
 
     @GetMapping(value = "/getUserInfo")
@@ -155,7 +155,7 @@ public class SysUserController {
     public R<Object> lockUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.lockUser(username);
-        return R.ok("用户已锁定", null);
+        return R.ok("用户已锁定");
     }
 
     @SysLog(value = "解锁用户", module = LogModuleEnum.USER)
@@ -166,7 +166,7 @@ public class SysUserController {
     public R<Object> unLockUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.unlockUser(username);
-        return R.ok("用户已解锁", null);
+        return R.ok("用户已解锁");
     }
 
     @SysLog(value = "重置用户名", module = LogModuleEnum.USER)
@@ -191,7 +191,7 @@ public class SysUserController {
     public R<Object> deleteUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.deleteUser(id, username);
-        return R.ok("删除成功", null);
+        return R.ok("删除成功");
     }
 
     @SysLog(value = "启用用户", module = LogModuleEnum.USER)
@@ -202,7 +202,7 @@ public class SysUserController {
     public R<Object> enableUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.enableUser(username);
-        return R.ok("用户已启用", null);
+        return R.ok("用户已启用");
     }
 
     @SysLog(value = "禁用用户", module = LogModuleEnum.USER)
@@ -213,7 +213,7 @@ public class SysUserController {
     public R<Object> forbiddenUser(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         String username = sysUsersService.getUsername(id);
         sysUsersService.forbiddenUser(username);
-        return R.ok("用户已禁用", null);
+        return R.ok("用户已禁用");
     }
 
     @SysLog(value = "强制下线", module = LogModuleEnum.USER)
@@ -225,7 +225,7 @@ public class SysUserController {
         String deviceType = StringUtils.isBlank(request.getDeviceType())
                 ? null : DeviceTypeEnum.normalize(request.getDeviceType());
         forceOfflineService.kick(request.getId(), deviceType, "您已被管理员强制下线");
-        return R.ok("已强制下线", null);
+        return R.ok("已强制下线");
     }
 
     @PutMapping(value = "/editSelf")
@@ -240,6 +240,6 @@ public class SysUserController {
         sysUser.setAvatar(request.getAvatar());
 
         sysUsersService.updateById(sysUser);
-        return R.ok("保存成功", null);
+        return R.ok("保存成功");
     }
 }

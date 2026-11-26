@@ -62,7 +62,7 @@ public class MessageController {
             return R.fail("请勿重复发送验证码");
         }
         emailProduce.send(email, getCaptchaEmailContent(RedisConstant.EMAIL_CAPTCHA_KEY, email));
-        return R.ok("验证码已发送，请留意您的邮箱", null);
+        return R.ok("验证码已发送，请留意您的邮箱");
     }
 
     @AccessControl(unit = TimeUnit.MINUTES, key = "send-mail")
@@ -79,7 +79,7 @@ public class MessageController {
             return R.fail("请勿重复发送验证码");
         }
         emailProduce.send(email, getCaptchaEmailContent(RedisConstant.EMAIL_CAPTCHA_KEY, email));
-        return R.ok("验证码已发送，请留意您的邮箱", null);
+        return R.ok("验证码已发送，请留意您的邮箱");
     }
 
     @AccessControl(unit = TimeUnit.MINUTES, key = "send-mail")
@@ -98,7 +98,7 @@ public class MessageController {
             return R.fail("请勿重复发送验证码");
         }
         emailProduce.send(email, getCaptchaEmailContent(RedisConstant.FORGET_PASSWORD_CAPTCHA_KEY, email));
-        return R.ok("验证码已发送，请留意您的邮箱", null);
+        return R.ok("验证码已发送，请留意您的邮箱");
     }
 
     @GetMapping(value = "/getMessage")

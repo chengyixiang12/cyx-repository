@@ -1,16 +1,15 @@
 package com.soft.sys.controller;
 
-import cn.hutool.core.io.FileUtil;
 import com.soft.common.annotation.SysLock;
 import com.soft.common.annotation.SysLog;
 import com.soft.common.enums.LogModuleEnum;
+import com.soft.common.resultapi.R;
 import com.soft.sys.model.request.DictDatasDTO;
 import com.soft.sys.model.request.EditDictDataDTO;
 import com.soft.sys.model.request.SaveDictDataDTO;
 import com.soft.sys.model.vo.DictDataVO;
 import com.soft.sys.model.vo.DictDatasVO;
 import com.soft.sys.model.vo.PageVO;
-import com.soft.common.resultapi.R;
 import com.soft.sys.service.SysDictDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -107,7 +106,7 @@ public class SysDictDataController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enableDictData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysDictDataService.enableDictData(id);
-        return R.ok("启用成功", null);
+        return R.ok("启用成功");
     }
 
     @SysLog(value = "禁用", module = LogModuleEnum.DICT_DATA)
@@ -116,7 +115,7 @@ public class SysDictDataController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> forbiddenDictData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysDictDataService.forbiddenDictData(id);
-        return R.ok("禁用成功", null);
+        return R.ok("禁用成功");
     }
 
     @SysLog(value = "设置默认", module = LogModuleEnum.DICT_DATA)
@@ -130,7 +129,7 @@ public class SysDictDataController {
     public R<Object> setDefaultData(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id,
                                     @RequestParam(value = "dictTypeId", required = false) @NotNull(message = "字典类型id不能为空") Long dictTypeId) {
         sysDictDataService.setDefaultData(id, dictTypeId);
-        return R.ok("设置成功", null);
+        return R.ok("设置成功");
     }
 
     @GetMapping(value = "/getDictMap")

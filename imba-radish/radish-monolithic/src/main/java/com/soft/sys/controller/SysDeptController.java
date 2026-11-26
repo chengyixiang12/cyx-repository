@@ -81,7 +81,7 @@ public class SysDeptController {
             return R.fail("父级id不能为空");
         }
         sysDeptService.saveDept(request);
-        return R.ok("添加成功", null);
+        return R.ok("添加成功");
     }
 
     @SysLock(name = "dept")
@@ -91,7 +91,7 @@ public class SysDeptController {
     @Operation(summary = "编辑部门")
     public R<Object> editDept(@RequestBody @Valid EditDeptDTO request) {
         sysDeptService.editDept(request);
-        return R.ok("修改成功", null);
+        return R.ok("修改成功");
     }
 
     @SysLog(value = "删除部门", module = LogModuleEnum.DEPT)

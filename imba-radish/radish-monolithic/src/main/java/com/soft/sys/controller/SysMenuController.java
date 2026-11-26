@@ -60,7 +60,7 @@ public class SysMenuController {
     @Operation(summary = "添加菜单")
     public R<Object> saveMenu(@RequestBody @Valid SaveMenuDTO request) {
         sysMenuService.saveMenu(request);
-        return R.ok("添加成功", null);
+        return R.ok("添加成功");
     }
 
     @SysLog(value = "编辑菜单", module = LogModuleEnum.MENU)
@@ -69,7 +69,7 @@ public class SysMenuController {
     @Operation(summary = "编辑菜单")
     public R<Object> editMenu(@RequestBody @Valid EditMenuDTO request) {
         sysMenuService.editMenu(request);
-        return R.ok("修改成功", null);
+        return R.ok("修改成功");
     }
 
     @SysLog(value = "删除菜单", module = LogModuleEnum.MENU)
@@ -79,7 +79,7 @@ public class SysMenuController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteMenu(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.deleteMenu(id);
-        return R.ok("删除成功", null);
+        return R.ok("删除成功");
     }
 
     @PostMapping(value = "/getMenuList")
@@ -103,7 +103,7 @@ public class SysMenuController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> enableMenu(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.enableMenu(id);
-        return R.ok("启用成功", null);
+        return R.ok("启用成功");
     }
 
     @SysLog(value = "禁用菜单", module = LogModuleEnum.MENU)
@@ -112,7 +112,7 @@ public class SysMenuController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> disableMenu(@RequestParam(value = "id") @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.disableMenu(id);
-        return R.ok("禁用成功", null);
+        return R.ok("禁用成功");
     }
 
     @GetMapping(value = "/getMenuTree")
@@ -135,7 +135,7 @@ public class SysMenuController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> menuShow(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.menuShow(id);
-        return R.ok("菜单已显示", null);
+        return R.ok("菜单已显示");
     }
 
     @GetMapping(value = "/menuHide")
@@ -143,7 +143,7 @@ public class SysMenuController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> menuHide(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysMenuService.menuHide(id);
-        return R.ok("菜单已隐藏", null);
+        return R.ok("菜单已隐藏");
     }
 
     @GetMapping(value = "/getLeftMenus")

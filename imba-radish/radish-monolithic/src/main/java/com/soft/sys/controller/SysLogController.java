@@ -65,6 +65,6 @@ public class SysLogController {
     @Parameter(name = "id", description = "主键", required = true, in = ParameterIn.QUERY)
     public R<Object> deleteLog(@RequestParam(value = "id", required = false) @NotNull(message = "主键不能为空") Long id) {
         sysLogService.deleteLog(id);
-        return R.ok("删除成功", null);
+        return R.ok("删除成功");
     }
 }
