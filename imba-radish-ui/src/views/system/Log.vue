@@ -29,8 +29,13 @@
                 <el-table-column prop="moduleName" align="center" label="模块名称" show-overflow-tooltip />
                 <el-table-column prop="nickname" align="center" label="创建人" show-overflow-tooltip />
                 <el-table-column prop="createTime" min-width="120" align="center" label="创建时间" show-overflow-tooltip />
-                <el-table-column prop="logLevel" align="center" label="日志级别" :formatter="logLevelType"
-                    show-overflow-tooltip />
+                <el-table-column prop="logLevel" align="center" label="日志级别" show-overflow-tooltip>
+                    <template #default="scope">
+                        <el-tag :type="logLevelTagType(scope.row.logLevel)" size="small">
+                            {{ logLevelText(scope.row.logLevel) }}
+                        </el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="executionTime" align="center" label="耗时（ms）" min-width="90" />
                 <el-table-column prop="requestMethod" align="center" label="请求方法" />
                 <el-table-column prop="statusCode" align="center" label="状态码" />
@@ -98,8 +103,8 @@ const searchForm = ref<LogsRequest>({
     pageSize: 10,
 })
 
-const logLevelType = (row: any, column: any, cellValue: string) => {
-    switch (cellValue) {
+const logLevelText = (level: string) => {
+    switch (level) {
         case '1':
             return '普通';
         case '2':
@@ -108,6 +113,18 @@ const logLevelType = (row: any, column: any, cellValue: string) => {
             return '错误';
         default:
             return '未知';
+    }
+};
+
+// 级别标签配色：普通灰(info) / 警告橙(warning) / 错误红(danger)，与日志详情页保持一致
+const logLevelTagType = (level: string) => {
+    switch (level) {
+        case '2':
+            return 'warning';
+        case '3':
+            return 'danger';
+        default:
+            return 'info';
     }
 };
 
