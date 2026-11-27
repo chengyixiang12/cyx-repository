@@ -1,6 +1,6 @@
 package com.soft.sys.websocket.interceptor;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.common.enums.DeviceTypeEnum;
 import com.soft.sys.model.dto.UserDTO;
@@ -31,7 +31,7 @@ public record WebSocketInterceptor(UserDetailsService userDetailsService,
     public boolean beforeHandshake(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response, @NonNull WebSocketHandler wsHandler, @NonNull Map<String, Object> attributes) {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             String token = servletRequest.getServletRequest().getParameter(WebSocketConstant.AUTHORIZATION);
-            String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
+            String username = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + token);
             if (StringUtils.isEmpty(username)) {
                 log.warn("token is expired...");
                 return false;

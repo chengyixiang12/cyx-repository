@@ -1,6 +1,6 @@
 package com.soft.sys.websocket.handler;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDTO;
@@ -16,7 +16,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: cyx
@@ -37,7 +36,7 @@ public class PongHandler implements WebSocketConcreteHandler<String> {
             String deviceType = (String) session.getAttributes().get(WebSocketConstant.DEVICE_TYPE);
             String sessionKey = WebSocketSessionManager.sessionKey(userDto.getId(), deviceType);
 
-            redisTemplate.delete(RedisConstant.PING_STATUS + sessionKey);
+            redisTemplate.delete(RedisKeyPrefix.PING_STATUS.getPrefix() + sessionKey);
 
             WebSocketSession current = WebSocketSessionManager.getSession(userDto.getId(), deviceType);
             if (current == null || current == session) {
@@ -47,7 +46,7 @@ public class PongHandler implements WebSocketConcreteHandler<String> {
             String token = (String) session.getAttributes().get(WebSocketConstant.AUTHORIZATION);
 
             // 校验token是否过期，实现token无感刷新
-            Long expire = redisTemplate.getExpire(RedisConstant.AUTHORIZATION_USERNAME + token);
+            Long expire = redisTemplate.getExpire(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + token);
             HeartBeatResponse heartBeatSendParams = new HeartBeatResponse();
             if (expire < 60) {
                 heartBeatSendParams.setRefreshFlag(true);

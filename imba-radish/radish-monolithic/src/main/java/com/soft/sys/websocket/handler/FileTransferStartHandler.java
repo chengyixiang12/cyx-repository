@@ -3,7 +3,7 @@ package com.soft.sys.websocket.handler;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson2.JSON;
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDTO;
@@ -61,11 +61,11 @@ public class FileTransferStartHandler implements WebSocketConcreteHandler<String
         }
 
         log.info("文件夹创建成功");
-        redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_KEY + username, fileKey);
+        redisTemplate.opsForValue().set(RedisKeyPrefix.SLICE_FILE_KEY.getPrefix() + username, fileKey);
         log.info("分片文件key缓存成功");
-        redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INDEX_KEY + username, BaseConstant.INTEGER_INIT_VAL);
+        redisTemplate.opsForValue().set(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username, BaseConstant.INTEGER_INIT_VAL);
         log.info("分片文件索引缓存成功");
-        redisTemplate.opsForValue().set(RedisConstant.SLICE_FILE_INFO + username, fileTransferStartRecParam.getFileHash());
+        redisTemplate.opsForValue().set(RedisKeyPrefix.SLICE_FILE_INFO.getPrefix() + username, fileTransferStartRecParam.getFileHash());
         log.info("分片文件hash缓存成功");
 
         sendParams.setStatus(true);

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
 import com.soft.common.constants.DictConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.async.FileDeleteAsync;
 import com.soft.sys.entity.SysFile;
@@ -196,7 +196,7 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile>
      */
     @Override
     public String getFileUrl(Long id, String isInline) {
-        String redisKey = RedisConstant.FILE_SIGNATURE_URL + id;
+        String redisKey = RedisKeyPrefix.FILE_SIGNATURE_URL.getPrefix() + id;
         String url = (String) redisTemplate.opsForValue().get(redisKey);
         if (StringUtils.isBlank(url)) {
             SysFile sysFile = sysFileMapper.selectById(id);

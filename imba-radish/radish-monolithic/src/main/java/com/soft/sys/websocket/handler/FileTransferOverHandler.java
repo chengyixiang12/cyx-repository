@@ -2,7 +2,7 @@ package com.soft.sys.websocket.handler;
 
 import com.alibaba.fastjson2.JSON;
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.entity.SysFile;
 import com.soft.sys.enums.WebSocketOrderEnum;
@@ -66,8 +66,8 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         Long userId = userDto.getId();
         String username = userDto.getUsername();
-        String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
-        String fileHash = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INFO + username);
+        String fileKey = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_KEY.getPrefix() + username);
+        String fileHash = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_INFO.getPrefix() + username);
         String originalName = FileNameUtil.sanitize(request.getOriginalName());
         // 文件名可能没有后缀，避免 lastIndexOf 返回 -1 导致下标越界
         int dot = originalName.lastIndexOf(".");
@@ -77,7 +77,7 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         sendParams.setStatus(false);
         sendParams.setOrder(request.getOrder());
 
-        Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+        Integer maxIndex = (Integer) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username);
         if (fileKey == null || maxIndex == null || maxIndex <= 0) {
             sendParams.setMsg("分片文件信息为空");
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
@@ -137,9 +137,9 @@ public class FileTransferOverHandler implements WebSocketConcreteHandler<String>
         sysFile.setDelFlag(BaseConstant.LogicDelete.EXIST);
         sysFileService.save(sysFile);
 
-        redisTemplate.delete(RedisConstant.SLICE_FILE_KEY + username);
-        redisTemplate.delete(RedisConstant.SLICE_FILE_INDEX_KEY + username);
-        redisTemplate.delete(RedisConstant.SLICE_FILE_INFO + username);
+        redisTemplate.delete(RedisKeyPrefix.SLICE_FILE_KEY.getPrefix() + username);
+        redisTemplate.delete(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username);
+        redisTemplate.delete(RedisKeyPrefix.SLICE_FILE_INFO.getPrefix() + username);
         deleteRecursively(sliceDir);
 
         sendParams.setStatus(true);

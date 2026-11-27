@@ -22,7 +22,7 @@ public class GetPermissionVO {
     private String type;
 
     @Schema(description = "权限状态")
-    private Integer status;
+    private String status;
 
     @Schema(description = "描述")
     private String description;

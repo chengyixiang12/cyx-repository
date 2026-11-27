@@ -1,6 +1,6 @@
 package com.soft.sys.websocket.service;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.websocket.send.ForceOfflineResponse;
@@ -44,7 +44,7 @@ public class ForceOfflineService {
      * @param msg        下线提示消息
      */
     public void kick(Long receiver, String deviceType, String msg) throws IOException {
-        String devicesKey = RedisConstant.USER_DEVICES + receiver;
+        String devicesKey = RedisKeyPrefix.USER_DEVICES.getPrefix() + receiver;
 
         if (StringUtils.isBlank(deviceType)) {
             // 未指定设备类型：该用户所有设备下线（改密码、禁用等场景）
@@ -99,11 +99,11 @@ public class ForceOfflineService {
         }
 
         if (StringUtils.isNotBlank(token)) {
-            redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + token);
+            redisTemplate.delete(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + token);
         }
         if (StringUtils.isNotBlank(deviceType)) {
-            redisTemplate.opsForHash().delete(RedisConstant.USER_DEVICES + receiver, deviceType);
-            redisTemplate.delete(RedisConstant.FINGERPRINT + receiver + ":" + deviceType);
+            redisTemplate.opsForHash().delete(RedisKeyPrefix.USER_DEVICES.getPrefix() + receiver, deviceType);
+            redisTemplate.delete(RedisKeyPrefix.FINGERPRINT.getPrefix() + receiver + ":" + deviceType);
             WebSocketSessionManager.removeSession(receiver, deviceType);
         }
     }

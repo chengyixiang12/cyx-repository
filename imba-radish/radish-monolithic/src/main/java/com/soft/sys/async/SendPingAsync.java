@@ -1,6 +1,6 @@
 package com.soft.sys.async;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.websocket.api.WebSocketConcreteHolder;
 import com.soft.sys.websocket.handler.PingHandler;
@@ -33,7 +33,7 @@ public class SendPingAsync {
         int TIME_OUT = 40;
         Long userId = WebSocketSessionManager.parseUserId(sessionKey);
         String deviceType = WebSocketSessionManager.parseDeviceType(sessionKey);
-        String pingKey = RedisConstant.PING_STATUS + sessionKey;
+        String pingKey = RedisKeyPrefix.PING_STATUS.getPrefix() + sessionKey;
         Boolean pingStatus = redisTemplate.opsForValue().setIfAbsent(pingKey, "1", Duration.ofSeconds(TIME_OUT));
         if (Boolean.FALSE.equals(pingStatus)) {
             WebSocketSessionManager.removeSession(userId, deviceType);

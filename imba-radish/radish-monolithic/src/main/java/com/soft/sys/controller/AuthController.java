@@ -2,7 +2,7 @@ package com.soft.sys.controller;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.RegexConstant;
 import com.soft.common.annotation.AccessControl;
 import com.soft.common.annotation.SysLock;
@@ -81,7 +81,7 @@ public class AuthController {
             return R.fail("未知的登录方式");
         }
         if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
-            String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + request.getUuid());
+            String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.LOGIN_GRAPHICS_CAPTCHA.getPrefix() + request.getUuid());
             if (StringUtils.isBlank(graphicsCaptcha)) {
                 return R.fail("图形验证码过期");
             }
@@ -89,7 +89,7 @@ public class AuthController {
                 return R.fail("图形验证码错误");
             }
         } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
-            Boolean existEmailCaptcha = redisTemplate.hasKey(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
+            Boolean existEmailCaptcha = redisTemplate.hasKey(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + request.getEmail());
             if (!existEmailCaptcha) {
                 return R.fail("邮箱验证码已过期");
             }
@@ -109,7 +109,7 @@ public class AuthController {
             return R.fail("非法邮箱");
         }
         // 用户名/邮箱是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
-        String captchaCache = (String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
+        String captchaCache = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + request.getEmail());
         if (!request.getVerificationCode().equals(captchaCache)) {
             return R.fail("验证码错误，请检查您的邮箱是否更改或者验证码是否过期");
         }
@@ -119,7 +119,7 @@ public class AuthController {
         sysUser.setNickname(request.getNickname());
         sysUser.setEmail(request.getEmail());
         authService.register(sysUser);
-        redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + request.getEmail());
+        redisTemplate.delete(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + request.getEmail());
         return R.ok();
     }
 
@@ -148,7 +148,7 @@ public class AuthController {
 
         String text = captchaProducer.createText();
 
-        redisTemplate.opsForValue().set(RedisConstant.LOGIN_GRAPHICS_CAPTCHA + uuid, text, radishProperty.getGraphics().getExpireTime(), TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(RedisKeyPrefix.LOGIN_GRAPHICS_CAPTCHA.getPrefix() + uuid, text, radishProperty.getGraphics().getExpireTime(), TimeUnit.SECONDS);
 
         BufferedImage image = captchaProducer.createImage(text);
         ByteArrayOutputStream bis = new ByteArrayOutputStream();

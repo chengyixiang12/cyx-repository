@@ -1,8 +1,7 @@
 package com.soft.sys.core.handle;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.TokenConstant;
-import com.soft.common.enums.ResultEnum;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.model.dto.UserDTO;
 import com.soft.common.resultapi.R;
@@ -48,7 +47,7 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, @NonNull HttpServletResponse response, Authentication authentication) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION).replaceFirst(TokenConstant.TOKEN_PREFIX, "");
-        String redisKeyAuth = RedisConstant.AUTHORIZATION_USERNAME + authorization;
+        String redisKeyAuth = RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + authorization;
         String username = (String) redisTemplate.opsForValue().get(redisKeyAuth);
 
         if (StringUtils.isBlank(username)) {
@@ -56,7 +55,7 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
         }
         UserDTO userDto = (UserDTO) userDetailsService.loadUserByUsername(username);
         Long id = userDto.getId();
-        String devicesKey = RedisConstant.USER_DEVICES + id;
+        String devicesKey = RedisKeyPrefix.USER_DEVICES.getPrefix() + id;
 
         // 反查当前 token 对应的设备类型，只清理当前设备
         String deviceType = null;
@@ -70,9 +69,9 @@ public class LogoutAfterSuccessHandler implements LogoutSuccessHandler {
 
         Set<String> keys = new HashSet<>();
         keys.add(redisKeyAuth);
-        keys.add(RedisConstant.USER_INFO + username);
+        keys.add(RedisKeyPrefix.USER_INFO.getPrefix() + username);
         if (deviceType != null) {
-            keys.add(RedisConstant.FINGERPRINT + id + ":" + deviceType);
+            keys.add(RedisKeyPrefix.FINGERPRINT.getPrefix() + id + ":" + deviceType);
             redisTemplate.opsForHash().delete(devicesKey, deviceType);
             WebSocketSessionManager.removeSession(id, deviceType);
         } else {

@@ -1,7 +1,7 @@
 package com.soft.sys.websocket.handler;
 
 import com.alibaba.fastjson2.JSON;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDTO;
@@ -39,7 +39,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
         UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
         FileTransferContinueRequest fileTransferContinueRecParam = JSON.parseObject(message.getPayload(), FileTransferContinueRequest.class);
-        String fileHash = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INFO + username);
+        String fileHash = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_INFO.getPrefix() + username);
         if (StringUtils.isBlank(fileHash) || !fileHash.equals(fileTransferContinueRecParam.getFileHash())) {
             WebSocketResponse sendParams = new WebSocketResponse();
             sendParams.setStatus(false);
@@ -48,7 +48,7 @@ public class FileTransferContinueHandler  implements WebSocketConcreteHandler<St
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
             return;
         }
-        Integer currIndex = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+        Integer currIndex = (Integer) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username);
         log.info("当前索引为：{}", currIndex);
         FileTransferContinueResponse fileTransferContinueSendParams = new FileTransferContinueResponse();
         fileTransferContinueSendParams.setStatus(true);

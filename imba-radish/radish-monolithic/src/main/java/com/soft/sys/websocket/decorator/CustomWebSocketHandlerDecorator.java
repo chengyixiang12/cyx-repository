@@ -1,6 +1,6 @@
 package com.soft.sys.websocket.decorator;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.model.dto.UserDTO;
 import com.soft.sys.websocket.session.WebSocketSessionManager;
@@ -33,7 +33,7 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         String deviceType = (String) session.getAttributes().get(WebSocketConstant.DEVICE_TYPE);
         String sessionKey = WebSocketSessionManager.sessionKey(userDto.getId(), deviceType);
         // 删除上一次连接的ping状态
-        redisTemplate.delete(RedisConstant.PING_STATUS + sessionKey);
+        redisTemplate.delete(RedisKeyPrefix.PING_STATUS.getPrefix() + sessionKey);
         // 同一设备类型只保留一个连接，关闭旧连接后登记新连接
         WebSocketSessionManager.removeSession(userDto.getId(), deviceType);
         WebSocketSessionManager.addSession(userDto.getId(), deviceType, session);
@@ -48,7 +48,7 @@ public class CustomWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
         // 只有当前连接仍是缓存中的连接时才移除，避免旧连接关闭误删同类型新连接
         if (WebSocketSessionManager.getSession(userDto.getId(), deviceType) == session) {
             WebSocketSessionManager.removeSession(userDto.getId(), deviceType);
-            redisTemplate.delete(RedisConstant.PING_STATUS + sessionKey);
+            redisTemplate.delete(RedisKeyPrefix.PING_STATUS.getPrefix() + sessionKey);
         }
         log.info("{} connect closed, deviceType={}", userDto.getUsername(), deviceType);
     }

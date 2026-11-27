@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.sys.entity.SysSecretKey;
 import com.soft.common.exception.GlobalException;
 import com.soft.sys.mapper.SysSecretKeyMapper;
@@ -87,8 +87,8 @@ public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSec
 
         // 清空redis中缓存的密钥
         Set<String> keys = new HashSet<>();
-        keys.add(RedisConstant.RSA_PUBLIC_KEY + type);
-        keys.add(RedisConstant.RSA_PRIVATE_KEY + type);
+        keys.add(RedisKeyPrefix.RSA_PUBLIC_KEY.getPrefix() + type);
+        keys.add(RedisKeyPrefix.RSA_PRIVATE_KEY.getPrefix() + type);
         redisTemplate.delete(keys);
     }
 

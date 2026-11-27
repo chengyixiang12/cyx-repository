@@ -1,7 +1,7 @@
 package com.soft.sys.websocket.handler;
 
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDTO;
@@ -43,9 +43,9 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
         String username = userDto.getUsername();
         // 分片文件key
-        String fileKey = (String) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_KEY + username);
+        String fileKey = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_KEY.getPrefix() + username);
         // 分片文件索引
-        Integer index = (Integer) redisTemplate.opsForValue().get(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+        Integer index = (Integer) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username);
         String filePath = tmpPath + File.separator + username + File.separator + fileKey + File.separator + index + BaseConstant.TMP_SUFFIX;
         File file = new File(filePath);
         WebSocketResponse sendParams = new WebSocketResponse();
@@ -69,7 +69,7 @@ public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer>
         } finally {
             sendParams.setStatus(true);
             session.sendMessage(new TextMessage(sendParams.toJsonString()));
-            redisTemplate.opsForValue().increment(RedisConstant.SLICE_FILE_INDEX_KEY + username);
+            redisTemplate.opsForValue().increment(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username);
             log.info("分片文件索引递增");
         }
 

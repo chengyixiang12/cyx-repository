@@ -1,7 +1,7 @@
 package com.soft.sys.controller;
 
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.RegexConstant;
 import com.soft.common.annotation.AccessControl;
 import com.soft.sys.entity.SysUser;
@@ -58,10 +58,10 @@ public class MessageController {
         if (!Pattern.matches(RegexConstant.EMAIL, email)) {
             return R.fail("非法邮箱");
         }
-        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + email))) {
+        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + email))) {
             return R.fail("请勿重复发送验证码");
         }
-        emailProduce.send(email, getCaptchaEmailContent(RedisConstant.EMAIL_CAPTCHA_KEY, email));
+        emailProduce.send(email, getCaptchaEmailContent(RedisKeyPrefix.EMAIL_CAPTCHA_KEY, email));
         return R.ok("验证码已发送，请留意您的邮箱");
     }
 
@@ -75,10 +75,10 @@ public class MessageController {
             return R.fail("邮箱尚未注册，请前往注册");
         }
 
-        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.EMAIL_CAPTCHA_KEY + email))) {
+        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + email))) {
             return R.fail("请勿重复发送验证码");
         }
-        emailProduce.send(email, getCaptchaEmailContent(RedisConstant.EMAIL_CAPTCHA_KEY, email));
+        emailProduce.send(email, getCaptchaEmailContent(RedisKeyPrefix.EMAIL_CAPTCHA_KEY, email));
         return R.ok("验证码已发送，请留意您的邮箱");
     }
 
@@ -94,10 +94,10 @@ public class MessageController {
             return R.fail("邮箱尚未注册，请前往注册");
         }
 
-        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisConstant.FORGET_PASSWORD_CAPTCHA_KEY + email))) {
+        if (StringUtils.isNotBlank((String) redisTemplate.opsForValue().get(RedisKeyPrefix.FORGET_PASSWORD_CAPTCHA_KEY.getPrefix() + email))) {
             return R.fail("请勿重复发送验证码");
         }
-        emailProduce.send(email, getCaptchaEmailContent(RedisConstant.FORGET_PASSWORD_CAPTCHA_KEY, email));
+        emailProduce.send(email, getCaptchaEmailContent(RedisKeyPrefix.FORGET_PASSWORD_CAPTCHA_KEY, email));
         return R.ok("验证码已发送，请留意您的邮箱");
     }
 
@@ -113,9 +113,9 @@ public class MessageController {
      * @param uniqueTag 通常是邮箱地址
      * @return
      */
-    private String getCaptchaEmailContent(String captchaKey, String uniqueTag) {
+    private String getCaptchaEmailContent(RedisKeyPrefix captchaKey, String uniqueTag) {
         String captChat = CommonUtil.generate(BaseConstant.LOGIN_CAPTCHA_LENGTH);
-        redisTemplate.opsForValue().set(captchaKey + uniqueTag, captChat, radishProperty.getCaptcha().getExpireTime(), TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(captchaKey.getPrefix() + uniqueTag, captChat, radishProperty.getCaptcha().getExpireTime(), TimeUnit.SECONDS);
         return  "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>验证码邮件</title><style>body {background-color: #f9f9f9;margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;}.email-container {max-width: 600px;margin: 50px auto;background-color: #ffffff;padding: 20px;border-radius: 8px;box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);text-align: center;}.email-header {font-size: 18px;font-weight: bold;margin-bottom: 20px;}.email-content p {font-size: 16px;line-height: 1.6;margin: 10px 0;} .email-content strong{color: #d9534f; }.email-footer{font-size: 12px;color: #999;margin-top: 20px;}</style></head><body><div class=\"email-container\"><div class=\"email-header\">验证码邮件</div><div class=\"email-content\"><p>尊敬的用户您好！</p><p>您的验证码是：<strong>" +
                 captChat +
                 "</strong>，请您在 5 分钟内完成验证。</p><p>如果该验证码不是您本人申请的，请忽略此邮件。</p><p>感谢您的使用！</p></div><div class=\"email-footer\">此邮件由系统自动发送，请勿回复。</div></div></body></html>";

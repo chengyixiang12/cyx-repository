@@ -2,7 +2,7 @@ package com.soft.sys.core.aspect;
 
 import cn.hutool.core.util.IdUtil;
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.annotation.SysLock;
 import com.soft.common.enums.ResultEnum;
 import com.soft.common.exception.GlobalException;
@@ -43,7 +43,7 @@ public class SysLockAspect {
         boolean locked = false;
         try {
             while (retryCount < radishProperty.getLock().getMaxRetry()) {
-                Boolean success = redisTemplate.opsForValue().setIfAbsent(RedisConstant.LOCK_KEY + key, lockFlag, radishProperty.getLock().getExpire(), TimeUnit.SECONDS);
+                Boolean success = redisTemplate.opsForValue().setIfAbsent(RedisKeyPrefix.LOCK_KEY.getPrefix() + key, lockFlag, radishProperty.getLock().getExpire(), TimeUnit.SECONDS);
                 if (Boolean.TRUE.equals(success)) {
                     locked = true;
                     break;
@@ -60,8 +60,8 @@ public class SysLockAspect {
 
         } finally {
             // 释放锁时确保是当前线程加的锁
-            if (locked && lockFlag.equals(redisTemplate.opsForValue().get(RedisConstant.LOCK_KEY + key))) {
-                redisTemplate.delete(RedisConstant.LOCK_KEY + key);
+            if (locked && lockFlag.equals(redisTemplate.opsForValue().get(RedisKeyPrefix.LOCK_KEY.getPrefix() + key))) {
+                redisTemplate.delete(RedisKeyPrefix.LOCK_KEY.getPrefix() + key);
             }
         }
     }

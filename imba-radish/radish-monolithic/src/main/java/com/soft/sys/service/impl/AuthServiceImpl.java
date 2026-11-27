@@ -1,7 +1,7 @@
 package com.soft.sys.service.impl;
 
 import com.soft.common.constants.BaseConstant;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.enums.DeviceTypeEnum;
 import com.soft.sys.entity.SysUser;
 import com.soft.sys.entity.SysUserRole;
@@ -101,23 +101,23 @@ public class AuthServiceImpl implements AuthService {
                     id = sysUser.getId();
                     request.setUsername(sysUser.getUsername());
                     String emailCaptcha = (String) redisTemplate.opsForValue()
-                            .get(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail());
+                            .get(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + sysUser.getEmail());
                     if (!request.getEmailCaptcha().equals(emailCaptcha)) {
                         throw new BadCredentialsException("验证码错误");
                     }
-                    redisTemplate.delete(RedisConstant.EMAIL_CAPTCHA_KEY + sysUser.getEmail());
+                    redisTemplate.delete(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + sysUser.getEmail());
                 }
                 default -> throw new GlobalException("无效的登录方式");
             }
 
             // 清空错误登录次数
-            String errorKey = RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername();
+            String errorKey = RedisKeyPrefix.USER_LOGIN_ERROR_TIME.getPrefix() + request.getUsername();
             redisTemplate.delete(errorKey);
 
             // 设备类型：不同类型设备可同时在线，同类型设备互斥
             String deviceType = DeviceTypeEnum.normalize(request.getDeviceType());
             String username = request.getUsername();
-            String devicesKey = RedisConstant.USER_DEVICES + id;
+            String devicesKey = RedisKeyPrefix.USER_DEVICES.getPrefix() + id;
             long expire = radishProperty.getToken().getExpireTime();
 
             // 同类型旧会话下线（服务端内部触发, 走 ForceOfflineService）
@@ -129,14 +129,14 @@ public class AuthServiceImpl implements AuthService {
             // 客户端指纹，按用户 + 设备类型存储
             String fingerprint = request.getFingerprint();
             if (StringUtils.isNotBlank(fingerprint)) {
-                redisTemplate.opsForValue().set(RedisConstant.FINGERPRINT + id + ":" + deviceType,
+                redisTemplate.opsForValue().set(RedisKeyPrefix.FINGERPRINT.getPrefix() + id + ":" + deviceType,
                         fingerprint, expire, TimeUnit.SECONDS);
             }
 
             // 生成 token
             LoginVO loginVo = new LoginVO();
             String token = UUID.randomUUID().toString();
-            redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token,
+            redisTemplate.opsForValue().set(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + token,
                     username, expire, TimeUnit.SECONDS);
             // 记录该用户当前设备类型对应的 token
             redisTemplate.opsForHash().put(devicesKey, deviceType, token);
@@ -155,7 +155,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void forgotPassword(ForgotPasswordDTO request) {
-        String captchaKey = RedisConstant.FORGET_PASSWORD_CAPTCHA_KEY + request.getEmail();
+        String captchaKey = RedisKeyPrefix.FORGET_PASSWORD_CAPTCHA_KEY.getPrefix() + request.getEmail();
         String captchaCache = (String) redisTemplate.opsForValue().get(captchaKey);
         if (captchaCache == null) {
             throw new GlobalException("验证码已过期，请重新获取");
@@ -180,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
      * 处理密码错误：递减错误次数，达到上限后锁定用户
      */
     private BadCredentialsException handleBadCredentials(LoginDTO request, BadCredentialsException e) {
-        String errorKey = RedisConstant.USER_LOGIN_ERROR_TIME + request.getUsername();
+        String errorKey = RedisKeyPrefix.USER_LOGIN_ERROR_TIME.getPrefix() + request.getUsername();
         Object cached = redisTemplate.opsForValue().get(errorKey);
         Long remaining;
 

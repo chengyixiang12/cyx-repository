@@ -1,7 +1,7 @@
 package com.soft.sys.websocket.handler;
 
 import com.alibaba.fastjson2.JSON;
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.WebSocketConstant;
 import com.soft.sys.enums.WebSocketOrderEnum;
 import com.soft.sys.model.dto.UserDTO;
@@ -50,7 +50,7 @@ public class RefreshTokenHandler implements WebSocketConcreteHandler<String> {
         refreshTokenSendParam.setOrder(WebSocketOrderEnum.REFRESH_TOKEN.toString());
 
         String fingerprintCache = (String) redisTemplate.opsForValue()
-                .get(RedisConstant.FINGERPRINT + userDto.getId() + ":" + deviceType);
+                .get(RedisKeyPrefix.FINGERPRINT.getPrefix() + userDto.getId() + ":" + deviceType);
         if (StringUtils.isBlank(fingerprintCache) || !fingerprintCache.equals(fingerprint)) {
             refreshTokenSendParam.setMsg("token刷新失败");
             log.warn("token refresh fail");
@@ -63,13 +63,13 @@ public class RefreshTokenHandler implements WebSocketConcreteHandler<String> {
         // 更新attributes的token
         session.getAttributes().put(WebSocketConstant.AUTHORIZATION, token);
         // 存储token，并更新该设备对应的 token 记录
-        redisTemplate.opsForValue().set(RedisConstant.AUTHORIZATION_USERNAME + token,
+        redisTemplate.opsForValue().set(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + token,
                 userDto.getUsername(), expire, TimeUnit.SECONDS);
-        redisTemplate.opsForHash().put(RedisConstant.USER_DEVICES + userDto.getId(), deviceType, token);
-        redisTemplate.expire(RedisConstant.USER_DEVICES + userDto.getId(), expire, TimeUnit.SECONDS);
+        redisTemplate.opsForHash().put(RedisKeyPrefix.USER_DEVICES.getPrefix() + userDto.getId(), deviceType, token);
+        redisTemplate.expire(RedisKeyPrefix.USER_DEVICES.getPrefix() + userDto.getId(), expire, TimeUnit.SECONDS);
         // 旧 token 立即失效
         if (StringUtils.isNotBlank(oldToken)) {
-            redisTemplate.delete(RedisConstant.AUTHORIZATION_USERNAME + oldToken);
+            redisTemplate.delete(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + oldToken);
         }
         log.info("{} token refreshed, deviceType={}", userDto.getUsername(), deviceType);
         refreshTokenSendParam.setToken(token);

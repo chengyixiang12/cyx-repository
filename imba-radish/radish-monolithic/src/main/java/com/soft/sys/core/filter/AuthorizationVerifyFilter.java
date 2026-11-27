@@ -1,6 +1,6 @@
 package com.soft.sys.core.filter;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.constants.TokenConstant;
 import com.soft.common.enums.ResultEnum;
 import com.soft.common.exception.GlobalException;
@@ -57,7 +57,7 @@ public class AuthorizationVerifyFilter extends OncePerRequestFilter {
             }
             // 去除token前缀
             token = token.substring(TokenConstant.TOKEN_PREFIX_LENGTH);
-            String username = (String) redisTemplate.opsForValue().get(RedisConstant.AUTHORIZATION_USERNAME + token);
+            String username = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + token);
             if (StringUtils.isEmpty(username)) {
                 log.info("{}，鉴权过期", token);
                 ResponseUtil.writeMsg(response, HttpStatus.UNAUTHORIZED.value(), R.fail(ResultEnum.AUTHENTICATION_FAIL));

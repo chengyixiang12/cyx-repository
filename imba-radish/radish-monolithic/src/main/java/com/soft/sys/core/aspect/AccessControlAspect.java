@@ -1,6 +1,6 @@
 package com.soft.sys.core.aspect;
 
-import com.soft.common.constants.RedisConstant;
+import com.soft.common.enums.RedisKeyPrefix;
 import com.soft.common.annotation.AccessControl;
 import com.soft.common.exception.GlobalException;
 import com.soft.common.utils.CommonUtil;
@@ -44,7 +44,7 @@ public class AccessControlAspect {
         String ip = CommonUtil.getIp(servletRequest);
         String key = accessControl.key();
 
-        String redisKey = RedisConstant.ACCESS_CONTROL + ip + key;
+        String redisKey = RedisKeyPrefix.ACCESS_CONTROL.getPrefix() + ip + key;
         redisTemplate.opsForValue().setIfAbsent(redisKey, 0, interval, unit);
         Long curTimes = redisTemplate.opsForValue().increment(redisKey);
         if (curTimes != null && curTimes <= times) {
