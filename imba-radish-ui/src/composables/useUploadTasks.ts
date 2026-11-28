@@ -30,6 +30,8 @@ export interface UploadTask {
   uploadedBytes: number
   md5?: string
   error?: string
+  /** 入队时的目标文件夹；NULL 表示根目录 */
+  folderId?: string | null
 }
 
 /**
@@ -85,6 +87,14 @@ const setPicker = (element: HTMLInputElement | null) => {
 
 const openPicker = () => picker?.click()
 
+/**
+ * 目标文件夹：入队瞬间快照到每个任务，切换目录不影响已在队列中的任务
+ */
+let uploadFolderId: string | null = null
+export const setUploadFolderId = (folderId: string | null) => {
+  uploadFolderId = folderId
+}
+
 const handleInputChange = (event: Event) => {
   const target = event.target as HTMLInputElement
   const files = Array.from(target.files ?? [])
@@ -121,7 +131,8 @@ const enqueue = (files: File[]) => {
       status: 'queued',
       percent: 0,
       hashPercent: 0,
-      uploadedBytes: 0
+      uploadedBytes: 0,
+      folderId: uploadFolderId
     }
     if (file.size > MAX_FILE_SIZE || file.size === 0) {
       skipped += 1
@@ -212,7 +223,7 @@ const runTask = async (task: UploadTask): Promise<void> => {
 
     // 2. 秒传检查（命中时后端会为当前用户/文件名建立记录，返回 id）
     task.status = 'checking'
-    const hitId = await getFileByMd5Api(md5, task.name, controller.signal)
+    const hitId = await getFileByMd5Api(md5, task.name, controller.signal, task.folderId)
     if (hitId) {
       markDone(task)
       return
@@ -224,6 +235,7 @@ const runTask = async (task: UploadTask): Promise<void> => {
       const formData = new FormData()
       formData.append('multipartFile', task.file)
       formData.append('fileMd5', md5)
+      if (task.folderId) formData.append('folderId', task.folderId)
       await uploadFileApi(formData, {
         signal: controller.signal,
         onUploadProgress: loaded => {
@@ -290,6 +302,7 @@ const runTask = async (task: UploadTask): Promise<void> => {
       total: totalChunks,
       fileSize: task.size,
       chunkSize,
+      folderId: task.folderId,
       signal: controller.signal
     })
     markDone(task)

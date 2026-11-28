@@ -73,6 +73,35 @@
         </if>
         ORDER BY sf.create_time DESC
     </select>
+    <select id="getFilesByFolder" resultType="FilesVO">
+        SELECT
+        sf.id,
+        sf.location,
+        sf.file_size AS fileSize,
+        sf.original_name AS originalName,
+        sf.file_suffix AS fileSuffix,
+        sf.folder_id AS folderId,
+        sf.create_time AS createTime,
+        su.nickname AS createBy
+        FROM
+        sys_file sf
+        LEFT JOIN sys_user su ON sf.create_by = su.id
+        WHERE
+        sf.del_flag = '0'
+        <choose>
+            <when test="keyword != null and keyword != ''">
+                <bind name="keywordLike" value="'%'+ keyword + '%'"/>
+                AND sf.original_name like #{keywordLike}
+            </when>
+            <when test="folderId != null">
+                AND sf.folder_id = #{folderId}
+            </when>
+            <otherwise>
+                AND sf.folder_id IS NULL
+            </otherwise>
+        </choose>
+        ORDER BY sf.create_time DESC
+    </select>
     <select id="getFileByMd5" parameterType="java.lang.String" resultType="SysFile">
         select
             t1.bucket,

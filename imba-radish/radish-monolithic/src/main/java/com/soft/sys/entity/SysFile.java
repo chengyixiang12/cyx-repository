@@ -61,4 +61,10 @@ public class SysFile extends BaseEntity {
      */
     @TableField(value = "file_hash")
     private String fileHash;
+
+    /**
+     * 所属文件夹主键；NULL：根目录
+     */
+    @TableField(value = "folder_id")
+    private Long folderId;
 }

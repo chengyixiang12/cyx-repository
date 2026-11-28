@@ -29,6 +29,12 @@ public class FilesVO {
     @Schema(description = "源文件名")
     private String originalName;
 
+    @Schema(description = "文件后缀；示例：.txt、.jpg")
+    private String fileSuffix;
+
+    @Schema(description = "所属文件夹主键；NULL：根目录")
+    private String folderId;
+
     @Schema(description = "上传时间")
     private LocalDateTime createTime;
 

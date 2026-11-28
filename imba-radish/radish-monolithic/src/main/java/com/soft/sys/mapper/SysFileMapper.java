@@ -33,6 +33,14 @@ public interface SysFileMapper extends BaseMapper<SysFile> {
     Long getFileIdByHashAndOwner(@Param("fileMd5") String fileMd5,
                                  @Param("originalName") String originalName,
                                  @Param("userId") Long userId);
+
+    /**
+     * 按文件夹分页查询文件；folderId 为 NULL 表示根目录（folder_id IS NULL），
+     * keyword 非空时忽略 folderId 做全局搜索
+     */
+    IPage<FilesVO> getFilesByFolder(IPage<FilesVO> page,
+                                    @Param("folderId") Long folderId,
+                                    @Param("keyword") String keyword);
 }
 
 

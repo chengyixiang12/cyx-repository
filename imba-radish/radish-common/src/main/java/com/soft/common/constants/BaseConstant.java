@@ -132,6 +132,11 @@ public class BaseConstant {
     public final static Long FILE_OVER_SIGN = -1L;
 
     /**
+     * 系统「文件夹」固定主键：根目录上传的文件默认归类到该文件夹（对应 Flyway V6 预置数据）
+     */
+    public final static Long SYSTEM_FOLDER_ID = 2126672855014608898L;
+
+    /**
      * 最大登录错误次数：5次
      */
     public final static Long MAX_LOGIN_ERROR_TIME = 4L;

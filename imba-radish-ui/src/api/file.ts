@@ -1,6 +1,6 @@
 import type { AxiosProgressEvent } from 'axios'
-import { post, get, del, getBlob } from '@/utils/http';
-import { ChunkProgressVo, FilesRequest, FilesVo, UploadFileVo } from '@/types/file';
+import { post, get, del, put, getBlob } from '@/utils/http';
+import { ChunkProgressVo, FilesRequest, FilesVo, FolderContentVo, FolderTreeNode, FolderVo, GetFileUrlVO, UploadFileVo } from '@/types/file';
 import { PaginatedData } from '@/types/api';
 
 /** 单个分片 / 小文件 / 合并的超时都要比全局 60s 长，慢网络下 5MB 分片很容易超时 */
@@ -17,12 +17,14 @@ export interface UploadRequestOptions {
 }
 
 export interface MergeChunkParams {
-  fileMd5: string;
-  fileName: string;
-  total: number;
-  fileSize: number;
-  chunkSize: number;
-  signal?: AbortSignal;
+    fileMd5: string;
+    fileName: string;
+    total: number;
+    fileSize: number;
+    chunkSize: number;
+    /** 目标文件夹主键；为空表示根目录 */
+    folderId?: string | null;
+    signal?: AbortSignal;
 }
 
 /**
@@ -105,14 +107,14 @@ export async function uploadChunkApi(formData: FormData, options: UploadRequestO
  * 合并分片（后端已改为 POST，副作用接口不再用 GET）
  */
 export async function mergeChunkApi(params: MergeChunkParams): Promise<UploadFileVo> {
-  const { signal, ...query } = params
-  const res = await post<UploadFileVo>('/file/mergeChunk', undefined, {
-    flag: true,
-    params: query,
-    timeout: MERGE_TIMEOUT,
-    signal
-  })
-  return res.data;
+    const { signal, folderId, ...query } = params
+    const res = await post<UploadFileVo>('/file/mergeChunk', undefined, {
+        flag: true,
+        params: { ...query, folderId: folderId ?? undefined },
+        timeout: MERGE_TIMEOUT,
+        signal
+    })
+    return res.data;
 }
 
 /**
@@ -121,17 +123,17 @@ export async function mergeChunkApi(params: MergeChunkParams): Promise<UploadFil
  * @param isInline 是否缩略图展示
  * @returns 
  */
-export async function getFileUrlApi(id: string, isInline: string): Promise<string> {
-  const res = await get<string>('/file/getFileUrl', { flag: true, params: { id, isInline}});
+export async function getFileUrlApi(id: string, isInline: string): Promise<GetFileUrlVO> {
+  const res = await get<GetFileUrlVO>('/file/getFileUrl', { flag: true, params: { id, isInline}});
   return res.data;
 }
 
 /**
  * 根据md5获取文件（秒传）；命中时返回文件 id，未命中返回 null
  */
-export async function getFileByMd5Api(fileMd5: string, fileName: string, signal?: AbortSignal): Promise<string | null> {
-  const res = await get<string | null>('/file/getFileByMd5', { flag: true, params: { fileMd5, fileName }, signal });
-  return res.data;
+export async function getFileByMd5Api(fileMd5: string, fileName: string, signal?: AbortSignal, folderId?: string | null): Promise<string | null> {
+    const res = await get<string | null>('/file/getFileByMd5', { flag: true, params: { fileMd5, fileName, folderId: folderId ?? undefined }, signal });
+    return res.data;
 }
 
 /**
@@ -166,5 +168,51 @@ export async function getUploadProgressApi(
  * 取消上传时清理服务端已落盘的分片（失败也无所谓，服务端 TTL 会兜底回收）
  */
 export async function cancelChunkApi(fileMd5: string): Promise<void> {
-  await del('/file/cancelChunk', null, { params: { fileMd5 }, flag: true, silent: true })
+    await del('/file/cancelChunk', null, { params: { fileMd5 }, flag: true, silent: true })
+}
+
+// ==================== 文件夹 ====================
+
+/**
+ * 获取文件夹层内容（子文件夹 + 文件分页 + 面包屑）
+ */
+export async function getFileListApi(data: { folderId?: string | null; keyword?: string; pageNum: number; pageSize: number }): Promise<FolderContentVo> {
+    const res = await post('/file/list', data, { flag: true });
+    return res.data;
+}
+
+/**
+ * 新建文件夹
+ */
+export async function addFolderApi(name: string, parentId?: string | null): Promise<void> {
+    await post('/file/folder', null, { flag: true, params: { name, parentId: parentId ?? undefined } });
+}
+
+/**
+ * 重命名文件夹
+ */
+export async function renameFolderApi(id: string, name: string): Promise<void> {
+    await put('/file/folder', null, { flag: true, params: { id, name } });
+}
+
+/**
+ * 删除文件夹（非空禁删）
+ */
+export async function deleteFolderApi(id: string): Promise<void> {
+    await del('/file/folder', null, { params: { id }, flag: true });
+}
+
+/**
+ * 获取全部文件夹树
+ */
+export async function getFolderTreeApi(): Promise<FolderTreeNode[]> {
+    const res = await get<FolderTreeNode[]>('/file/folderTree', { flag: true });
+    return res.data;
+}
+
+/**
+ * 移动文件到目标文件夹（folderId 为空时后端归入系统文件夹）
+ */
+export async function moveFileApi(id: string, folderId?: string | null): Promise<void> {
+    await put('/file/move', null, { flag: true, params: { id, folderId: folderId ?? undefined } });
 }
