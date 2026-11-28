@@ -1,0 +1,47 @@
+package com.soft.sys.model.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+/**
+ * @Author: cyx
+ * @Description: 
+ * @DateTime: 2024/11/21 11:27
+ **/
+
+@Data
+@Schema(description = "获取日志响应参数")
+public class LogsVO {
+
+    @Schema(description = "主键")
+    private String id;
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
+
+    @Schema(description = "创建人")
+    private String nickname;
+
+    @Schema(description = "模块名称")
+    private String moduleName;
+
+    @Schema(description = "请求方法")
+    private String requestMethod;
+
+    @Schema(description = "状态码")
+    private Integer statusCode;
+
+    @Schema(description = "耗时")
+    private Long executionTime;
+
+    @Schema(description = "操作描述")
+    private String operationDesc;
+
+    @Schema(description = "日志级别")
+    private String logLevel;
+
+    @Schema(description = "日志类型：1-登录日志，2-注册日志，3-业务操作日志")
+    private String type;
+}

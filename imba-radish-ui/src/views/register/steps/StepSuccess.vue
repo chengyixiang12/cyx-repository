@@ -32,9 +32,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import type { RegisterRequest } from '@/types/register'
 
-const props = defineProps<{ 
-  modelValue?: RegisterRequest 
-}>()
+const modelValue = defineModel<RegisterRequest>()
 
 const router = useRouter()
 const countdown = ref(5)
@@ -42,11 +40,11 @@ let timer: number | null = null
 
 // 使用 computed 处理显示名称，避免模板中的类型问题
 const displayName = computed(() => {
-  return props.modelValue?.nickname || props.modelValue?.username || '新用户'
+  return modelValue.value?.nickname || modelValue.value?.username || '新用户'
 })
 
 const subTitle = computed(() => {
-  const email = props.modelValue?.email
+  const email = modelValue.value?.email
   if (email) {
     return `恭喜您，账号已创建完成！验证邮件已发送至 ${email}，请注意查收。`
   }
@@ -94,12 +92,12 @@ onUnmounted(() => {
 }
 
 .user-info-tip {
-  font-size: 16px;
-  color: #67c23a;
+  font-size: var(--radish-font-lg);
+  color: var(--radish-success);
   margin: 20px 0;
   padding: 10px;
-  background-color: #f0f9eb;
-  border-radius: 8px;
+  background-color: var(--radish-success-light);
+  border-radius: var(--radish-radius);
   display: inline-block;
 }
 
@@ -111,8 +109,8 @@ onUnmounted(() => {
 }
 
 .countdown-tip {
-  font-size: 14px;
-  color: #909399;
+  font-size: var(--radish-font-base);
+  color: var(--radish-text-secondary);
   margin-top: 16px;
 }
 

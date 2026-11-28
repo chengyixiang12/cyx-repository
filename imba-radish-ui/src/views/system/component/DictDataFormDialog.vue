@@ -44,24 +44,23 @@
     </el-dialog>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { SaveDictDataRequest } from '@/types/dictData'
 import { getDictDataApi } from '@/api/dictData'
 
 interface FatherParam {
-    visible: boolean
-    isAdd: boolean
+    isAdd?: boolean
     dictDataId?: string | null
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-    visible: false,
     isAdd: false,
     dictDataId: ''
 })
 
-const emit = defineEmits(['update:visible', 'submit'])
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>('visible', { default: false })
 const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
 const formData = ref<SaveDictDataRequest>({
@@ -82,13 +81,8 @@ const rules: FormRules = {
     value: [{ required: true, message: '请选择键值', trigger: 'blur' }]
 }
 
-const visible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
-
 const handleClose = () => {
-    emit('update:visible', false)
+    visible.value = false
 }
 
 const submitForm = async () => {

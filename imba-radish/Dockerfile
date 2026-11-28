@@ -12,11 +12,11 @@ RUN apt-get update \
 WORKDIR /app
 
 # 配置文件（Spring Boot 会从 classpath 加载，外部化到 /app/config/ 以支持覆盖）
-COPY src/main/resources/application.yml /app/config/application.yml
-COPY src/main/resources/application-prod.yml /app/config/application-prod.yml
+COPY radish-monolithic/src/main/resources/application.yml /app/config/application.yml
+COPY radish-monolithic/src/main/resources/application-prod.yml /app/config/application-prod.yml
 
 # Spring Boot fat JAR（需先在项目根目录执行 mvn clean package）
-COPY target/imba-radish-1.0-SNAPSHOT.jar /app/app.jar
+COPY radish-monolithic/target/radish-monolithic-1.0-SNAPSHOT.jar /app/app.jar
 
 # JVM 参数对齐 script/start.sh
 ENV JAVA_OPTS="-Xms256m \

@@ -58,9 +58,11 @@
           </el-button>
         </el-form-item>
 
-        <!-- 注册引导 -->
+        <!-- 注册引导 / 忘记密码 -->
         <div class="register-link">
           <el-link type="primary" @click="goToRegister">没有账号？前往注册</el-link>
+          <el-divider direction="vertical" />
+          <el-link type="info" @click="goToForgotPassword">忘记密码？</el-link>
         </div>
 
         <!-- 源码地址 -->
@@ -91,6 +93,7 @@ import router from '@/router/routers';
 import { LoginRequest } from '@/types/login';
 import { getUserInfoApi } from '@/api/user';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { deviceType } from '@/common/global-config';
 
 const currentLoginType = ref<'password' | 'email'>('password');
 const loginFormRef = ref<FormInstance>();
@@ -166,6 +169,10 @@ const goToRegister = () => {
   router.push('/register')
 }
 
+const goToForgotPassword = () => {
+  router.push('/forgotPassword')
+}
+
 const handleLogin = async () => {
   try {
     const valid = await loginFormRef.value?.validate();
@@ -173,7 +180,8 @@ const handleLogin = async () => {
 
     loading.value = true;
     const loginParam: LoginRequest = {
-      loginMethod: currentLoginType.value
+      loginMethod: currentLoginType.value,
+      deviceType: deviceType,
     };
 
     if (currentLoginType.value === 'password') {
@@ -218,7 +226,7 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, var(--radish-primary-light-9) 0%, var(--radish-primary-light-8) 45%, var(--radish-deco-purple) 100%);
   padding: 20px;
 }
 
@@ -227,7 +235,7 @@ onMounted(() => {
   max-width: 420px;
   padding: 40px;
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radish-radius-xl);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
@@ -246,13 +254,13 @@ onMounted(() => {
 
 .login-header h2 {
   margin: 10px 0;
-  color: #303133;
-  font-size: 24px;
+  color: var(--radish-text-primary);
+  font-size: var(--radish-font-2xl);
 }
 
 .login-header p {
-  color: #909399;
-  font-size: 14px;
+  color: var(--radish-text-secondary);
+  font-size: var(--radish-font-base);
 }
 
 .captcha-wrapper {
@@ -264,8 +272,8 @@ onMounted(() => {
 .captcha-img {
   width: 150px;
   height: 40px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
+  border: 1px solid var(--radish-border);
+  border-radius: var(--radish-radius-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -280,8 +288,8 @@ onMounted(() => {
 }
 
 .captcha-loading {
-  color: #909399;
-  font-size: 12px;
+  color: var(--radish-text-secondary);
+  font-size: var(--radish-font-xs);
 }
 
 .login-btn {
@@ -292,14 +300,18 @@ onMounted(() => {
 .register-link {
   margin-top: 10px;
   text-align: center;
-  font-size: 14px;
-  color: #666;
+  font-size: var(--radish-font-base);
+  color: var(--radish-text-regular);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
 }
 
 .source-link {
   margin-top: 16px;
   text-align: center;
-  font-size: 13px;
+  font-size: var(--radish-font-sm);
   opacity: 0.7;
   transition: opacity 0.2s;
 }
@@ -312,10 +324,10 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #606266;
+  color: var(--radish-text-regular);
 }
 
 .source-link .el-link:hover {
-  color: #409eff;
+  color: var(--radish-primary);
 }
 </style>

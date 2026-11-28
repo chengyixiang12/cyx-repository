@@ -47,32 +47,51 @@ function parseResponse<T>(response: AxiosResponse<ApiResponse<T>>) {
 }
 
 // 错误统一处理
-function handleResponseError(error: any) {
+async function handleResponseError(error: any) {
+  let data = error.response?.data;
+  // 静默请求（如背景加载头像）失败时不弹全局提示、也不触发错误码弹窗
+  const silent = error.config?.silent === true;
+
+  // blob 响应失败时，后端返回的是 JSON 错误体（被 axios 包成 Blob），
+  // 必须先解析出 msg/code，否则既弹不出提示、也走不到错误码处理
+  if (data instanceof Blob && data.type.includes('json')) {
+    try {
+      data = JSON.parse(await data.text());
+      error.response.data = data;
+    } catch {
+      // 解析失败则按原始错误处理
+      data = null;
+    }
+  }
+
   const apiError: ApiError = {
-    message: error.response?.data?.msg || error.message,
+    message: data?.msg || error.message,
     response: {
-      data: error.response?.data,
+      data,
       status: error.response?.status,
     },
     config: error.config,
     name: ''
   };
 
-  if (error.response?.data?.code) {
-    handleErrorCode(error.response.data);
+  if (data?.code) {
+    handleErrorCode(data, silent);
   }
 
   return Promise.reject(apiError);
 }
 
 // 错误码处理
-function handleErrorCode(data: ApiResponse) {
+function handleErrorCode(data: ApiResponse, silent = false) {
   const authErrorCodes = [10003, 10005, 10006];
   if (authErrorCodes.includes(data.code)) {
+    // 认证失效属于全局状态，即使静默请求也必须处理
     clearCache();
     router.push('/login');
   }
-  showCustomMessage(data.msg, data.code)
+  if (!silent) {
+    showCustomMessage(data.msg, data.code)
+  }
 }
 
 // 核心请求方法
@@ -104,6 +123,11 @@ async function request<T = any>(
       // 其他 axios 标准配置（如 responseType/timeout 等）
       responseType: axiosConfig.responseType,
       timeout: axiosConfig.timeout,
+      // 分片上传需要真实取消在途请求 + 逐分片上报字节进度
+      signal: axiosConfig.signal,
+      onUploadProgress: axiosConfig.onUploadProgress,
+      // 透传 silent，供响应拦截器判断是否需要全局错误提示
+      ...(silent !== undefined && { silent }),
     };
 
     // 3. 发送请求

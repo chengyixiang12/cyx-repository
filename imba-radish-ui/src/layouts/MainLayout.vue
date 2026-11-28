@@ -17,6 +17,15 @@
                         <span v-if="unreadCount > 0" class="message-dot"></span>
                     </el-icon>
                 </div>
+                <el-tooltip :content="uploadTooltip" placement="bottom" effect="light">
+                    <div class="upload-entry" @click="togglePanel">
+                        <el-badge v-if="taskCount > 0" :value="taskCount" :max="99" type="primary"
+                            class="upload-entry__badge" />
+                        <el-icon class="upload-icon">
+                            <Upload />
+                        </el-icon>
+                    </div>
+                </el-tooltip>
                 <el-tooltip content="首页" placement="bottom" effect="light">
                     <el-icon class="home-icon" @click="goHome">
                         <HomeFilled />
@@ -48,9 +57,9 @@
         <!-- 主体内容区：左侧菜单 + 右侧内容（main + footer） -->
         <el-container class="page-body">
             <!-- 左侧菜单栏 -->
-            <el-aside :width="isCollapsed ? '64px' : '160px'" class="main-left">
-                <el-menu router :default-active="$route.path" :unique-opened="true" background-color="#767e87"
-                    text-color="#e7e8e9" active-text-color="#99c0e7" :collapse="isCollapsed"
+            <el-aside :width="isCollapsed ? '64px' : '200px'" class="main-left">
+                <el-menu router :default-active="$route.path" :unique-opened="true" background-color="transparent"
+                    text-color="#4E5969" active-text-color="#4F6EF2" :collapse="isCollapsed"
                     :collapse-transition="false">
                     <template v-for="menu in menuList" :key="menu.path">
                         <el-sub-menu v-if="menu.children?.length" :index="menu.path">
@@ -82,15 +91,14 @@
             <el-container class="main-right-wrapper">
                 <!-- 主内容区 -->
                 <el-main class="main-right">
-                    <module-tabs :tabs="cachedTabs" v-model:activePath="activePath" @switch="switchTab" @close="closeTab"
+                    <module-tabs :tabs="cachedTabs" v-model:active-path="activePath" @switch="switchTab" @close="closeTab"
                         @close-other="closeOtherTabs" @close-all="closeAllTabs" />
                     <div class="router-view-wrapper">
                         <router-view v-slot="{ Component }">
-                            <transition name="fade" mode="out-in">
-                                <div>
-                                    <component :is="Component" :key="Component" />
-                                </div>
-                            </transition>
+                            <!-- key 必须是字符串: 用组件对象作 key 会导致 keep-alive 缓存永远不命中 -->
+                            <keep-alive :include="cachedComponentNames">
+                                <component :is="Component" :key="route.path" />
+                            </keep-alive>
                         </router-view>
                     </div>
                 </el-main>
@@ -103,11 +111,14 @@
                 </el-footer>
             </el-container>
         </el-container>
+
+        <!-- 全局上传任务面板：关闭后仍可从顶栏图标重新打开，切页面不丢任务 -->
+        <upload-task-panel />
     </el-container>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import {
     User,
@@ -115,12 +126,13 @@ import {
     Expand,
     Fold,
     HomeFilled,
-    Bell
+    Bell,
+    Upload
 } from '@element-plus/icons-vue'
 import { clearCache } from '../utils/clearCache'
 import { UserInfoVo } from '@/types/login'
 import { logouted } from '@/api/login'
-import { ElTooltip, ElMessageBox } from 'element-plus'
+import { ElTooltip, ElMessageBox, ElNotification } from 'element-plus'
 import type { MenuItem } from '@/types/menu'
 import { getMessageNumApi } from '@/api/message'
 import { getLeftMenusApi } from '@/api/dashboard'
@@ -130,10 +142,17 @@ import { CachedTabsType } from '@/types/layout'
 import { getWebSocketInstance } from '@/utils/websocket'
 import { showMessage } from '@/utils/message'
 import { WebsocketMessage } from '@/utils/websocketManager'
-import { downloadFileApi } from '@/api/file';
+import { useAvatar } from '@/composables/useAvatar';
+import { useUploadTasks } from '@/composables/useUploadTasks'
+import UploadTaskPanel from '@/components/UploadTaskPanel.vue'
 
 const router = useRouter()
-const avatarUrl = ref('')
+const { avatarUrl, refreshAvatar } = useAvatar()
+// 顶栏图标 / 徽章 / 全局任务面板共用同一份上传队列
+const { taskCount, activeTaskCount, togglePanel, resetUploadTasks } = useUploadTasks()
+const uploadTooltip = computed(() =>
+    activeTaskCount.value > 0 ? `上传任务（${activeTaskCount.value} 个进行中）` : '上传任务'
+)
 const route = useRoute()
 const isCollapsed = ref(false)
 // 未读消息数
@@ -211,6 +230,30 @@ watch(
     { immediate: true }
 )
 
+/**
+ * keep-alive include 名单: 由"当前打开的标签页"推导各页面的组件名。
+ * - 组件经 vue-router 懒加载首次解析后, record.components.default 即为 SFC 对象,
+ *   其 name 来自 SFC 文件名(script setup 自动推断), 与 keep-alive 的 include 匹配规则一致。
+ * - 懒加载函数尚未解析时取不到 name, 自动跳过(该页面也尚未被访问过)。
+ * - 标签页关闭 => 名单移除对应组件名 => keep-alive 自动释放缓存, 重开为全新实例。
+ */
+const cachedComponentNames = computed<string[]>(() => {
+    const names = new Set<string>()
+    for (const tab of cachedTabs.value) {
+        try {
+            const matched = router.resolve(tab.path).matched
+            const comp = matched[matched.length - 1]?.components?.default as any
+            const name = comp && (comp.name || comp.__name)
+            if (typeof name === 'string' && name) {
+                names.add(name)
+            }
+        } catch {
+            // 路由解析失败时忽略该标签
+        }
+    }
+    return Array.from(names)
+})
+
 // 个人中心
 const goProfile = () => {
     router.push('/profile')
@@ -218,6 +261,8 @@ const goProfile = () => {
 
 // 退出登录
 const logout = () => {
+    // 清空上传队列，避免下一个账号看到上一账号的文件名与任务
+    resetUploadTasks();
     const ws = getWebSocketInstance();
     ws.close();
     logouted().then(() => {
@@ -285,6 +330,7 @@ const initWebsocket = async () => {
     const ws = getWebSocketInstance();
     ws.connect(token);
     ws.onForceLogout = (data: WebsocketMessage) => {
+        resetUploadTasks()
         clearCache()
         router.push('/login')
         showMessage(data.msg, 'warning')
@@ -295,17 +341,15 @@ const initWebsocket = async () => {
             sessionStorage.setItem('Authorization', token);
         }
     };
-}
-
-// 获取用户头像
-const getAvatar = async () => {
-    const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
-    if (!userInfo.avatar) {
-        avatarUrl.value = ''
-        return
-    }
-    const res = await downloadFileApi(userInfo.avatar)
-    avatarUrl.value = URL.createObjectURL(res)
+    ws.onWorkflowNotify = (data: WebsocketMessage) => {
+        // 工作流待办/完成/驳回等通知，右上角桌面式提醒
+        ElNotification({
+            title: '工作流通知',
+            message: data.msg,
+            type: 'info',
+            duration: 6000
+        });
+    };
 }
 
 onMounted(() => {
@@ -313,7 +357,7 @@ onMounted(() => {
     getMessageNum();
     existDashboard();
     initWebsocket();
-    getAvatar();
+    refreshAvatar();
 })
 </script>
 
@@ -321,31 +365,26 @@ onMounted(() => {
 .page-container {
     height: 100vh;
     overflow: hidden;
+    background: var(--radish-bg-page);
 }
 
+/* ---------- 顶栏: 微灰白底 + 清晰分割线 ---------- */
 .page-header {
-    height: 64px;
-    background: #858ea1;
-    color: white;
+    height: var(--radish-header-height);
+    background: var(--radish-bg-bar);
+    color: var(--radish-text-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--radish-border);
 }
 
-.page-body {
-    flex: 1;
-    /* margin: 5px 0 5px 5px; */
-    min-height: 0;
-}
-
+/* ---------- 侧边栏: 微灰白底, 与内容区靠色阶+分割线区分 ---------- */
+/* 滚动逻辑在 global.css: .main-left 定位容器 + 顶层菜单绝对定位自行滚动 */
 .main-left {
-    background: #dadbdd;
-    overflow: hidden;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
+    background: var(--radish-bg-bar);
+    border-right: 1px solid var(--radish-border);
 }
 
 .main-right-wrapper {
@@ -356,6 +395,11 @@ onMounted(() => {
     min-height: 0;
 }
 
+/* flex 纵向子项默认 min-height:auto 会被内容撑开, 必须归零才能让内层滚动生效 */
+.page-body {
+    min-height: 0;
+}
+
 .main-right {
     flex: 1;
     display: flex;
@@ -363,12 +407,14 @@ onMounted(() => {
     overflow: hidden;
     padding: 0;
     min-height: 0;
+    background: var(--radish-bg-page);
 }
 
 .router-view-wrapper {
     flex: 1;
-    padding: 5px;
-    overflow: hidden;
+    padding: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
     min-height: 0;
 }
 
@@ -378,18 +424,21 @@ onMounted(() => {
     overflow: hidden;
 }
 
+/* ---------- 页脚 ---------- */
 .page-footer {
-    height: 40px;
-    background: #dadbdd;
+    height: var(--radish-footer-height);
+    background: var(--radish-bg-bar);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--radish-border);
 }
 
 .footer-content {
     text-align: center;
+    font-size: var(--radish-font-xs);
+    color: var(--radish-text-secondary);
 }
 
 :deep(.el-tabs__header) {
@@ -397,20 +446,29 @@ onMounted(() => {
     margin-top: 0px;
 }
 
+/* ---------- 顶栏元素 ---------- */
 .header-left {
     display: flex;
     align-items: center;
     padding: 10px 0;
 }
 
+/* 右侧图标组: flex 垂直居中, 替代原来的 margin-top 对齐 hack */
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
 .logo {
-    height: 40px;
-    margin-right: 15px;
+    height: 32px;
+    margin-right: 12px;
 }
 
 .system-name {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: var(--radish-font-lg);
+    font-weight: 700;
+    color: var(--radish-text-primary);
+    letter-spacing: 0.5px;
 }
 
 .user-info {
@@ -418,45 +476,84 @@ onMounted(() => {
     display: flex;
     align-items: center;
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: all 0.3s;
+    padding: 6px 12px;
+    border-radius: var(--radish-radius-round);
+    transition: background 0.25s;
 }
 
 .user-info:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--radish-fill);
 }
 
 .user-name {
     margin-left: 10px;
+    font-size: var(--radish-font-base);
+    color: var(--radish-text-primary);
 }
 
+/* ---------- 菜单样式 ---------- */
+/* 尺寸/滚动在 global.css (.main-left > .el-menu), 这里只管视觉 */
 .el-menu {
     border-right: none;
     width: 100%;
+    padding: 8px;
 }
 
-.el-menu-item,
-.el-sub-menu {
-    margin-bottom: 4px;
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title) {
+    border-radius: var(--radish-radius-sm);
+    margin: 2px 0;
+    height: 40px;
+    line-height: 40px;
+    transition: background 0.2s, color 0.2s;
 }
 
-.el-menu-item:not(:last-child),
-.el-sub-menu:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+:deep(.el-menu-item:hover),
+:deep(.el-sub-menu__title:hover) {
+    background: var(--radish-border-light);
+}
+
+:deep(.el-menu-item.is-active) {
+    background: var(--radish-primary-light-9);
+    font-weight: 600;
+}
+
+/* ---------- 顶栏图标 ---------- */
+/* 上传入口: Badge 数字在图标左侧, 点击整块切换任务面板 */
+.upload-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--radish-space-2);
+    margin-right: 16px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.upload-entry__badge {
+    flex-shrink: 0;
+}
+
+.upload-icon {
+    font-size: var(--radish-font-xl);
+    color: var(--radish-text-regular);
+    transition: color 0.25s;
+}
+
+.upload-entry:hover .upload-icon {
+    color: var(--radish-primary);
 }
 
 .home-icon {
-    margin-top: 17px;
-    margin-right: 20px;
-    font-size: 20px;
+    margin-right: 16px;
+    font-size: var(--radish-font-xl);
     cursor: pointer;
-    transition: color 0.3s;
-    color: #e6e7e8;
+    transition: color 0.25s;
+    color: var(--radish-text-regular);
+    vertical-align: middle;
 }
 
 .home-icon:hover {
-    color: #409EFF;
+    color: var(--radish-primary);
 }
 
 /* 消息图标容器 */
@@ -464,22 +561,20 @@ onMounted(() => {
     position: relative;
     display: inline-block;
     margin-right: 20px;
-    margin-top: 17px;
-    /* 保持与其他图标对齐 */
+    vertical-align: middle;
 }
 
 /* 消息图标基础样式 */
 .message-icon {
-    font-size: 20px;
-    color: #e6e7e8;
+    font-size: var(--radish-font-xl);
+    color: var(--radish-text-regular);
     cursor: pointer;
-    transition: color 0.3s;
+    transition: color 0.25s;
     position: relative;
-    /* 为红点定位做准备 */
 }
 
 .message-icon:hover {
-    color: #409eff;
+    color: var(--radish-primary);
 }
 
 /* 小红点样式 */
@@ -489,10 +584,9 @@ onMounted(() => {
     right: -3px;
     width: 8px;
     height: 8px;
-    background-color: #f56c6c;
+    background-color: var(--radish-danger);
     border-radius: 50%;
-    border: 1px solid #b3b9bf;
-    /* 与header背景色一致 */
+    border: 2px solid var(--radish-bg-card);
     box-sizing: border-box;
     animation: pulse 1.5s infinite;
 }
@@ -513,12 +607,13 @@ onMounted(() => {
 
 .collapse-icon {
     margin-right: 15px;
-    font-size: 20px;
+    font-size: var(--radish-font-xl);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: color 0.25s;
+    color: var(--radish-text-regular);
 }
 
 .collapse-icon:hover {
-    color: #99c0e7;
+    color: var(--radish-primary);
 }
 </style>

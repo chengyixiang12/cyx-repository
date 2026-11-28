@@ -1,7 +1,7 @@
 /* 确保 html 和 body 可以产生滚动条 */
 html {
   overflow: auto;
-  font-size: 14px;
+  font-size: var(--radish-font-base);
 }
 
 body {
@@ -10,19 +10,19 @@ body {
   min-height: 100vh;
   overflow: auto;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  color: #303133;
-  font-size: 14px;
+  color: var(--radish-text-primary);
+  font-size: var(--radish-font-base);
 }
 
 .el-select-dropdown__item {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 12px;
-  color: #303133;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-primary);
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -30,16 +30,16 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d9d9d9;
-  border-radius: 2px;
+  background: var(--radish-scrollbar);
+  border-radius: var(--radish-radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #bfbfbf;
+  background: var(--radish-scrollbar-hover);
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: #999999;
+  background: var(--radish-scrollbar-active);
 }
 
 ::-webkit-scrollbar-button {
@@ -64,13 +64,51 @@ body {
   flex-direction: column;
 }
 
+/* ============================================================
+   侧边栏滚动 (全局样式, 不依赖 scoped / flex 链路 / 绝对定位)
+   aside 显式锁定高度 = 视口 - 顶栏, 自身作为滚动容器
+   ============================================================ */
+.main-left {
+  height: calc(100vh - var(--radish-header-height));
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  /* 收起/展开宽度动画: el-aside 的 width 是行内样式直改, 必须在这里补过渡 */
+  transition: width 0.28s ease;
+}
+
+/* 仅用 webkit 自定义滚动条: 常驻可见。
+   注意不要再加 scrollbar-width / scrollbar-color 标准属性,
+   Chrome 121+ 会因它们禁用 webkit 样式并启用原生(可能是悬浮式)滚动条 */
+.main-left::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-left::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-left::-webkit-scrollbar-thumb {
+  background: var(--radish-scrollbar);
+  border-radius: var(--radish-radius-sm);
+}
+
+.main-left::-webkit-scrollbar-thumb:hover {
+  background: var(--radish-scrollbar-hover);
+}
+
+.main-left::-webkit-scrollbar-thumb:active {
+  background: var(--radish-scrollbar-active);
+}
+
 .list-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 1px solid #ebeef5;
-  background-color: #fff;
+  border-bottom: 1px solid var(--radish-border-light);
+  background-color: var(--radish-bg-card);
+  border-radius: var(--radish-radius-lg) var(--radish-radius-lg) 0 0;
   flex-shrink: 0;
 }
 
@@ -78,9 +116,9 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
+  font-size: var(--radish-font-md);
   font-weight: 600;
-  color: #303133;
+  color: var(--radish-text-primary);
 }
 
 .right-header {
@@ -88,14 +126,8 @@ body {
   gap: 8px;
 }
 
-.search-container {
-  padding: 10px;
-  background-color: #fafafa;
-  border-radius: 6px;
-  margin: 10px 5px 10px 5px;
-  flex-shrink: 0;
-}
-
+/* 列表页骨架(search-container / table-wrapper)已由 components/layout/ListPage.vue 接管,
+   这里只保留表单内部元素与操作列的公共样式 */
 .search-form {
   display: flex;
   flex-wrap: wrap;
@@ -109,14 +141,6 @@ body {
 
 .search-form .el-form-item {
   margin-bottom: 0;
-}
-
-.table-wrapper {
-  flex: 1;
-  min-height: 0;
-  border-radius: 6px;
-  margin: 0 5px 0 5px;
-  overflow: hidden;
 }
 
 .action-buttons-container {
@@ -159,4 +183,52 @@ body {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+/* ============================================================
+   骨架屏 (Skeleton) 基础样式
+   用法: 容器内放 .sk-bar / .sk-avatar, 由各 Skeleton 组件负责布局
+   ============================================================ */
+.sk-bar,
+.sk-avatar {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--radish-border-light) 25%,
+    var(--radish-fill) 37%,
+    var(--radish-border-light) 63%
+  );
+  background-size: 400% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+}
+
+.sk-bar {
+  height: 10px;
+  border-radius: var(--radish-radius-sm);
+}
+
+.sk-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@keyframes sk-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* 尊重系统「减少动效」设置 */
+@media (prefers-reduced-motion: reduce) {
+
+  .sk-bar,
+  .sk-avatar {
+    animation: none;
+    background: var(--radish-border-light);
+  }
 }

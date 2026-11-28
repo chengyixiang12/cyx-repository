@@ -1,0 +1,153 @@
+package com.soft.sys.websocket.handler;
+
+import com.alibaba.fastjson2.JSON;
+import com.soft.module.thirdapi.gaode.ThirdInterface;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.constants.WebSocketConstant;
+import com.soft.sys.entity.SysDialogueDetails;
+import com.soft.common.enums.ResultEnum;
+import com.soft.sys.enums.WebSocketOrderEnum;
+import com.soft.sys.model.dto.UserDTO;
+import com.soft.sys.service.DialogueContextService;
+import com.soft.sys.service.SysDialogueDetailsService;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
+import com.soft.sys.websocket.receive.ChatRequest;
+import com.soft.sys.websocket.send.ChatResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.AbstractWebSocketMessage;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
+
+/**
+ * @Author: cyx
+ * @Description:
+ * @DateTime: 2025/5/28 17:37
+ **/
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class ChatHandler implements WebSocketConcreteHandler<String> {
+
+    /**
+     * 流式下发节流间隔(ms): 按token攒批后统一推送, 避免每个token一帧
+     */
+    private static final long FLUSH_INTERVAL_MS = 60;
+
+    private final ChatClient.Builder chatClientBuilder;
+
+    private final SysDialogueDetailsService sysDialogueDetailsService;
+
+    private final DialogueContextService dialogueContextService;
+
+    private final ThirdInterface thirdInterface;
+
+    @Override
+    public void handle(WebSocketSession session, AbstractWebSocketMessage<String> message) throws IOException {
+        ChatRequest chatRecParam = JSON.parseObject(message.getPayload(), ChatRequest.class);
+        UserDTO user = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+
+        // 问题入库
+        SysDialogueDetails question = new SysDialogueDetails();
+        question.setCreateBy(user.getId());
+        question.setUpdateBy(user.getId());
+        question.setContent(chatRecParam.getQuestion());
+        question.setTag(BaseConstant.CHAT_TAG_USER);
+        question.setParentId(chatRecParam.getDialogueId());
+        sysDialogueDetailsService.save(question);
+
+        ChatResponse chatSendParams = new ChatResponse();
+        chatSendParams.setOrder(WebSocketOrderEnum.AI.toString());
+        StringBuilder answerStr = new StringBuilder();
+        // 下发缓冲: 攒批以降低 WS 帧频率, 完整内容仍在 answerStr 中用于落库
+        StringBuilder sendBuffer = new StringBuilder();
+        AtomicLong lastFlush = new AtomicLong(System.currentTimeMillis());
+
+        chatClientBuilder.build()
+                .prompt(dialogueContextService.buildSystemPrompt(chatRecParam.getDialogueId()))
+                .tools(thirdInterface)
+                .messages(dialogueContextService.buildMessages(chatRecParam.getDialogueId()))
+                .stream()
+                .content()
+                .retry(10)
+                .doOnNext(partialText -> {
+                    if (partialText.isEmpty()) {
+                        return;
+                    }
+                    answerStr.append(partialText);
+                    sendBuffer.append(partialText);
+                    long now = System.currentTimeMillis();
+                    if (now - lastFlush.get() >= FLUSH_INTERVAL_MS) {
+                        lastFlush.set(now);
+                        sendChunk(session, chatSendParams, sendBuffer.toString());
+                        sendBuffer.setLength(0);
+                    }
+                })
+                .doOnError(error -> {
+                    log.error("AI 流式响应异常: {}", error.getMessage(), error);
+                    if (session.isOpen()) {
+                        try {
+                            session.sendMessage(new TextMessage(ResultEnum.FAIL_NORMAL.getMessage()));
+                        } catch (IOException e) {
+                            log.error("发送错误消息失败: {}", e.getMessage(), e);
+                        }
+                    }
+                })
+                .doOnComplete(() -> {
+                    // 冲刷缓冲区中剩余的尾部内容, 保证回答完整送达
+                    if (!sendBuffer.isEmpty()) {
+                        sendChunk(session, chatSendParams, sendBuffer.toString());
+                        sendBuffer.setLength(0);
+                    }
+                    saveAnswer(chatRecParam, user, answerStr.toString());
+                })
+                .subscribe();
+    }
+
+    /**
+     * 下发一个回答分片
+     */
+    private void sendChunk(WebSocketSession session, ChatResponse chatSendParams, String chunk) {
+        if (!session.isOpen() || chunk.isEmpty()) {
+            return;
+        }
+        try {
+            chatSendParams.setAnswer(chunk);
+            session.sendMessage(new TextMessage(chatSendParams.toJsonString()));
+        } catch (IOException e) {
+            log.error("发送 AI 回答失败: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 流结束落库;出错时不落库
+     * @param chatRecParam
+     * @param user
+     * @param answer
+     */
+    private void saveAnswer(ChatRequest chatRecParam, UserDTO user, String answer) {
+        if (answer == null || answer.isEmpty()) {
+            log.warn("AI 未生成回答内容,跳过保存, dialogueId={}", chatRecParam.getDialogueId());
+            return;
+        }
+        SysDialogueDetails answerEntity = new SysDialogueDetails();
+        answerEntity.setParentId(chatRecParam.getDialogueId());
+        answerEntity.setContent(answer);
+        answerEntity.setTag(BaseConstant.CHAT_TAG_AI);
+        answerEntity.setCreateBy(user.getId());
+        answerEntity.setUpdateBy(user.getId());
+        sysDialogueDetailsService.save(answerEntity);
+        // 回答落库后异步检查是否需要压缩历史上下文，不阻塞当前响应
+        dialogueContextService.compressIfNeeded(chatRecParam.getDialogueId());
+    }
+
+    @Override
+    public WebSocketOrderEnum getOrder() {
+        return WebSocketOrderEnum.AI;
+    }
+}

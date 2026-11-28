@@ -1,40 +1,26 @@
 <template>
-    <div class="container">
-        <!-- 头部 -->
-        <div class="list-header">
-            <div class="header-title">
-                <span>日志管理</span>
-            </div>
-            <div class="right-header">
-            </div>
-        </div>
+    <ListPage title="日志管理" :loading="loading" :count="logList.length" :columns="10" :model="searchForm">
+    <template #search>
+      <el-form-item label="关键字:">
+          <el-input v-model="searchForm.keyword" placeholder="模块名称/请求ip/访问路径" clearable
+              class="keyword-input" />
+      </el-form-item>
+      <el-form-item label="日志级别:">
+          <el-select v-model="searchForm.logLevel" placeholder="请选择" clearable
+              style="width: 100px">
+              <el-option label="普通" :value="1" />
+              <el-option label="警告" :value="2" />
+              <el-option label="错误" :value="3" />
+          </el-select>
+      </el-form-item>
 
-        <!-- 搜索条件 -->
-        <div class="search-container">
-            <el-form :inline="true" :model="searchForm" class="search-form">
-                <el-form-item label="关键字:">
-                    <el-input v-model="searchForm.keyword" placeholder="模块名称/请求ip/访问路径" clearable
-                        class="keyword-input" />
-                </el-form-item>
-                <el-form-item label="日志级别:">
-                    <el-select v-model="searchForm.logLevel" placeholder="请选择" clearable
-                        style="width: 100px">
-                        <el-option label="普通" :value="1" />
-                        <el-option label="警告" :value="2" />
-                        <el-option label="错误" :value="3" />
-                    </el-select>
-                </el-form-item>
+      <el-form-item>
+          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button type="primary" @click="resetSearch">重置</el-button>
+      </el-form-item>
+    </template>
 
-                <el-form-item>
-                    <el-button type="primary" @click="handleSearch">查询</el-button>
-                    <el-button type="primary" @click="resetSearch">重置</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
-
-        <!-- 日志表格 -->
-        <div class="table-wrapper">
-            <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading" height="calc(100vh - 325px)">
+    <el-table :data="logList" border size="small" style="width: 100%" v-loading="loading && logList.length > 0" height="100%">
                 <el-table-column label="序号" min-width="50" align="center">
                     <template #default="scope">
                         {{ (searchForm.pageNum - 1) * searchForm.pageSize + scope.$index + 1 }}
@@ -43,8 +29,13 @@
                 <el-table-column prop="moduleName" align="center" label="模块名称" show-overflow-tooltip />
                 <el-table-column prop="nickname" align="center" label="创建人" show-overflow-tooltip />
                 <el-table-column prop="createTime" min-width="120" align="center" label="创建时间" show-overflow-tooltip />
-                <el-table-column prop="logLevel" align="center" label="日志级别" :formatter="logLevelType"
-                    show-overflow-tooltip />
+                <el-table-column prop="logLevel" align="center" label="日志级别" show-overflow-tooltip>
+                    <template #default="scope">
+                        <el-tag :type="logLevelTagType(scope.row.logLevel)" size="small">
+                            {{ logLevelText(scope.row.logLevel) }}
+                        </el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="executionTime" align="center" label="耗时（ms）" min-width="90" />
                 <el-table-column prop="requestMethod" align="center" label="请求方法" />
                 <el-table-column prop="statusCode" align="center" label="状态码" />
@@ -78,19 +69,18 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </div>
 
-        <!-- 分页 -->
-        <div class="pagination">
-            <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize"
-                :total="total" :page-sizes="[10, 20, 50, 100]"
-                layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
-                @size-change="handleSizeChange" />
-        </div>
-    </div>
+    <template #footer>
+      <el-pagination :current-page="searchForm.pageNum" :page-size="searchForm.pageSize"
+          :total="total" :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper" @current-change="handlePageChange"
+          @size-change="handleSizeChange" />
+    </template>
+  </ListPage>
 </template>
 
 <script lang="ts" setup>
+import ListPage from '@/components/layout/ListPage.vue'
 import { ref, onMounted } from 'vue'
 import { getLogsApi, deleteLogApi } from '@/api/log'
 import type { LogsRequest, LogsVo } from '@/types/log'
@@ -113,8 +103,8 @@ const searchForm = ref<LogsRequest>({
     pageSize: 10,
 })
 
-const logLevelType = (row: any, column: any, cellValue: string) => {
-    switch (cellValue) {
+const logLevelText = (level: string) => {
+    switch (level) {
         case '1':
             return '普通';
         case '2':
@@ -123,6 +113,18 @@ const logLevelType = (row: any, column: any, cellValue: string) => {
             return '错误';
         default:
             return '未知';
+    }
+};
+
+// 级别标签配色：普通灰(info) / 警告橙(warning) / 错误红(danger)，与日志详情页保持一致
+const logLevelTagType = (level: string) => {
+    switch (level) {
+        case '2':
+            return 'warning';
+        case '3':
+            return 'danger';
+        default:
+            return 'info';
     }
 };
 

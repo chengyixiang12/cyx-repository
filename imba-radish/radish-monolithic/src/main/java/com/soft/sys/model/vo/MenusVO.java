@@ -1,0 +1,47 @@
+package com.soft.sys.model.vo;
+
+import com.soft.common.model.ctf.MenuTree;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.apache.ibatis.type.Alias;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @Author: cyx
+ * @Description: 
+ * @DateTime: 2024/11/10 13:47
+ **/
+@Data
+@Schema(description = "获取菜单响应参数")
+@Alias(value = "MenusVO")
+public class MenusVO implements MenuTree<MenusVO> {
+
+    @Schema(description = "菜单唯一标识")
+    private String id;
+
+    @Schema(description = "菜单名称")
+    private String name;
+
+    @Schema(description = "菜单图标")
+    private String icon;
+
+    @Schema(description = "菜单路由路径")
+    private String path;
+
+    @Schema(description = "前端组件路径")
+    private String component;
+
+    @Schema(description = "父菜单 ID")
+    private String parentId;
+
+    @Schema(description = "显示状态；1：显示；0：隐藏")
+    private Integer visible;
+
+    @Schema(description = "是否在首页快捷入口展示；1：展示；0：不展示")
+    private Integer quickEntryFlag;
+
+    @Schema(description = "子菜单列表")
+    private List<MenusVO> children = new ArrayList<>();
+}

@@ -58,6 +58,12 @@ const constantRoutes: RouteRecordRaw[] = [
     name: 'register',
     component: () => import('../views/register/Register.vue'),
     meta: { title: '注册', requiresAuth: false, isClose: false, visible: 1 }
+  },
+  {
+    path: '/forgotPassword',
+    name: 'forgotPassword',
+    component: () => import('../views/login/ForgotPassword.vue'),
+    meta: { title: '忘记密码', requiresAuth: false, isClose: false, visible: 1 }
   }
 ]
 
@@ -130,7 +136,7 @@ function createRouteFromMenu(menu: MenuItem, parentPath = ''): RouteRecordRaw {
   }
 
   // 确保 path 为相对片段（去除前后斜杠），这样才能正确拼接在父级路由下
-  let cleanPath = menu.path.replace(/^\/|\/$/g, '')
+  const cleanPath = menu.path.replace(/^\/|\/$/g, '')
   // 可以保留一个前导/用于显示，但实际注册路由时使用相对路径更安全
   // 这里根据业务习惯：如果是根级菜单可能期望绝对路径，但作为 MainLayout 的子路由必须相对。
   // 我们统一处理为相对路径，由 addDynamicRoutes 添加到 MainLayout 时自动拼接。
@@ -188,7 +194,7 @@ router.beforeEach(async (to, _from, next) => {
   const token = getToken()
 
   // 白名单路径直接放行
-  const whiteList = ['/login', '/register', '/404']
+  const whiteList = ['/login', '/register', '/forgotPassword', '/404']
   if (whiteList.includes(to.path)) {
     if (to.path === '/login' && token) {
       next('/')
@@ -234,7 +240,9 @@ router.beforeEach(async (to, _from, next) => {
     }
 
     // 重新尝试当前路径（此时路由表已完整）
-    next({ ...to, replace: true })
+    // 注意: 不能直接展开 to —— 未匹配时 to 已被预解析为 404 兜底路由(name='404'),
+    // 带 name 重新导航会被 vue-router 按 name 命中 404。必须用 path 重新解析。
+    next({ path: to.path, query: to.query, hash: to.hash, replace: true })
     return
   }
 

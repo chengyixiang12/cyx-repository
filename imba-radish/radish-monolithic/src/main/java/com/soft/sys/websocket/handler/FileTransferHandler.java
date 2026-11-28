@@ -1,0 +1,82 @@
+package com.soft.sys.websocket.handler;
+
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.enums.RedisKeyPrefix;
+import com.soft.common.constants.WebSocketConstant;
+import com.soft.sys.enums.WebSocketOrderEnum;
+import com.soft.sys.model.dto.UserDTO;
+import com.soft.sys.websocket.api.WebSocketConcreteHandler;
+import com.soft.sys.websocket.send.WebSocketResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.AbstractWebSocketMessage;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+
+/**
+ * @Author: cyx
+ * @Description: 文件传输处理器
+ * @DateTime: 2024/12/30 18:16
+ **/
+
+@Slf4j
+@Component
+public class FileTransferHandler implements WebSocketConcreteHandler<ByteBuffer> {
+
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    @Value(value = "${tmp.path}")
+    private String tmpPath;
+
+    public FileTransferHandler(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
+    @Override
+    public void handle(WebSocketSession session, AbstractWebSocketMessage<ByteBuffer> message) throws IOException {
+        ByteBuffer payload = message.getPayload();
+        UserDTO userDto = (UserDTO) session.getAttributes().get(WebSocketConstant.WEBSOCKET_USER);
+        String username = userDto.getUsername();
+        // 分片文件key
+        String fileKey = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_KEY.getPrefix() + username);
+        // 分片文件索引
+        Integer index = (Integer) redisTemplate.opsForValue().get(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username);
+        String filePath = tmpPath + File.separator + username + File.separator + fileKey + File.separator + index + BaseConstant.TMP_SUFFIX;
+        File file = new File(filePath);
+        WebSocketResponse sendParams = new WebSocketResponse();
+        sendParams.setOrder(WebSocketOrderEnum.FILE_TRANSFER.toString());
+        if (!file.exists() && !file.createNewFile()) {
+            log.info("文件创建失败，{}", file.getName());
+            sendParams.setStatus(false);
+            sendParams.setOrder(WebSocketOrderEnum.FILE_TRANSFER.toString());
+            sendParams.setMsg("文件创建失败");
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
+            return;
+        }
+        int byteIndex = BaseConstant.INTEGER_INIT_VAL;
+        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
+            while (byteIndex < payload.remaining()) {
+                os.write(payload.array(), byteIndex, BaseConstant.BUFFER_SIZE);
+                byteIndex += BaseConstant.BUFFER_SIZE;
+            }
+            os.flush();
+            log.info("分片文件保存成功");
+        } finally {
+            sendParams.setStatus(true);
+            session.sendMessage(new TextMessage(sendParams.toJsonString()));
+            redisTemplate.opsForValue().increment(RedisKeyPrefix.SLICE_FILE_INDEX_KEY.getPrefix() + username);
+            log.info("分片文件索引递增");
+        }
+
+    }
+
+    @Override
+    public WebSocketOrderEnum getOrder() {
+        return WebSocketOrderEnum.FILE_TRANSFER;
+    }
+}

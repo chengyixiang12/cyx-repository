@@ -1,3 +1,5 @@
+import { PageRequest } from "./api";
+
 /**
  * 保存用户的请求参数
  */
@@ -31,7 +33,7 @@ export interface GetUserVo {
     avatar?: string | null;
 }
 
-export interface AllUserVo {
+export interface UsersVO {
     id: string;
     username: string;
     phone: string;
@@ -39,6 +41,8 @@ export interface AllUserVo {
     nickname: string;
     enabled: number;
     accountNonLocked: number;
+    webIsOnline: number;
+    miniProgramIsOnline: number;
 }
 
 export interface EditSelfRequest {
@@ -46,4 +50,11 @@ export interface EditSelfRequest {
     email: string | null;
     phone: string | null;
     avatar?: string | null;
+}
+
+export interface GetUsersDTO extends PageRequest {
+    deptId?: string | null;
+    nameLikeQry?: string | null;
+    enabled?: number | null;
+    accountNonLocked?: number | null;
 }

@@ -1,0 +1,50 @@
+package com.soft.sys.service.impl;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.sys.entity.SysScheduleRecord;
+import com.soft.sys.mapper.SysScheduleRecordMapper;
+import com.soft.sys.model.request.GetQuartzRecordListDTO;
+import com.soft.sys.model.vo.GetQuartzRecordListVO;
+import com.soft.sys.model.vo.PageVO;
+import com.soft.sys.service.SysScheduleRecordService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+/**
+* @author 程益祥
+* @description 针对表【sys_schedule_record(定时任务执行记录)】的数据库操作Service实现
+* @createDate 2026-04-23 14:11:58
+*/
+@Service
+@RequiredArgsConstructor
+public class SysScheduleRecordServiceImpl extends ServiceImpl<SysScheduleRecordMapper, SysScheduleRecord>
+    implements SysScheduleRecordService{
+
+    private final SysScheduleRecordMapper sysScheduleRecordMapper;
+
+    @Override
+    public PageVO<GetQuartzRecordListVO> getQuartzRecordList(GetQuartzRecordListDTO request) {
+        IPage<GetQuartzRecordListVO> page = new Page<>(request.getPageNum(), request.getPageSize());
+        page = sysScheduleRecordMapper.getQuartzRecordList(page, request.getKeyword(), request.getJobId(), request.getStartTime(), request.getEndTime());
+        PageVO<GetQuartzRecordListVO> pageVo = new PageVO<>();
+        pageVo.setRecords(page.getRecords());
+        pageVo.setTotal(page.getTotal());
+        return pageVo;
+    }
+
+    @Override
+    public String getLogDetail(Long id) {
+        return sysScheduleRecordMapper.getLogDetail(id);
+    }
+
+    @Override
+    public String getParams(Long id) {
+        return sysScheduleRecordMapper.getParams(id);
+    }
+}
+
+
+
+

@@ -1,0 +1,201 @@
+package com.soft.sys.service.impl;
+
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.enums.RedisKeyPrefix;
+import com.soft.common.enums.DeviceTypeEnum;
+import com.soft.sys.entity.SysUser;
+import com.soft.sys.entity.SysUserRole;
+import com.soft.sys.enums.KeyTypeEnum;
+import com.soft.common.exception.GlobalException;
+import com.soft.sys.model.request.ForgotPasswordDTO;
+import com.soft.sys.model.request.LoginDTO;
+import com.soft.sys.model.vo.LoginVO;
+import com.soft.sys.properties.RadishProperty;
+import com.soft.sys.service.*;
+import com.soft.common.utils.RSAUtil;
+import com.soft.sys.websocket.service.ForceOfflineService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+    private final RadishProperty radishProperty;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final RSAUtil rsaUtil;
+
+    private final SysUsersService sysUsersService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final RedisTemplate<String,Object> redisTemplate;
+
+    private final SecretKeyService secretKeyService;
+
+    private final SysDeptService sysDeptService;
+
+    private final SysUserRoleService sysUserRoleService;
+
+    private final SysRoleService sysRoleService;
+
+    private final ForceOfflineService forceOfflineService;
+
+    @Override
+    public void register(SysUser sysUser) {
+        try {
+            // 解密密码
+            String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
+            String decrypt = rsaUtil.decrypt(sysUser.getPassword(), privateKey);
+            // 使用BCrypt 算法加密密码
+            String encode = passwordEncoder.encode(decrypt);
+            sysUser.setPassword(encode);
+            // 设置默认值
+            sysUser.setDefault();
+            Long deptId = sysDeptService.getRootDept();
+            sysUser.setDeptId(deptId);
+            sysUsersService.save(sysUser);
+
+            // 赋予注册用户角色
+            SysUserRole sysUserRole = new SysUserRole();
+            sysUserRole.setUserId(sysUser.getId());
+            sysUserRole.setRoleId(sysRoleService.getDefaultRole(BaseConstant.Role.DEFAULT_ROLE_FLAG));
+            sysUserRoleService.save(sysUserRole);
+        } catch (DuplicateKeyException e) {
+            // 用户名/邮箱唯一索引冲突直接抛出，由全局异常处理器翻译成业务提示
+            throw e;
+        } catch (Exception e) {
+            throw new GlobalException(e.getMessage());
+        }
+    }
+
+    @Override
+    public LoginVO authenticate(LoginDTO request) {
+        Long id;
+        try {
+            switch (request.getLoginMethod()) {
+                case BaseConstant.LOGIN_METHOD_PASSWORD -> {
+                    String privateKey = secretKeyService.getPrivateKey(KeyTypeEnum.USER_PASSWORD_KEY.getType());
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                            request.getUsername(), rsaUtil.decrypt(request.getPassword(), privateKey)));
+                    id = sysUsersService.getPrimaryKeyByUsername(request.getUsername());
+                }
+                case BaseConstant.LOGIN_METHOD_EMAIL -> {
+                    SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
+                    id = sysUser.getId();
+                    request.setUsername(sysUser.getUsername());
+                    String emailCaptcha = (String) redisTemplate.opsForValue()
+                            .get(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + sysUser.getEmail());
+                    if (!request.getEmailCaptcha().equals(emailCaptcha)) {
+                        throw new BadCredentialsException("验证码错误");
+                    }
+                    redisTemplate.delete(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + sysUser.getEmail());
+                }
+                default -> throw new GlobalException("无效的登录方式");
+            }
+
+            // 清空错误登录次数
+            String errorKey = RedisKeyPrefix.USER_LOGIN_ERROR_TIME.getPrefix() + request.getUsername();
+            redisTemplate.delete(errorKey);
+
+            // 设备类型：不同类型设备可同时在线，同类型设备互斥
+            String deviceType = DeviceTypeEnum.normalize(request.getDeviceType());
+            String username = request.getUsername();
+            String devicesKey = RedisKeyPrefix.USER_DEVICES.getPrefix() + id;
+            long expire = radishProperty.getToken().getExpireTime();
+
+            // 同类型旧会话下线（服务端内部触发, 走 ForceOfflineService）
+            String oldToken = (String) redisTemplate.opsForHash().get(devicesKey, deviceType);
+            if (StringUtils.isNotBlank(oldToken)) {
+                forceOfflineService.kick(id, deviceType, "该账号已在其他地方登录");
+            }
+
+            // 客户端指纹，按用户 + 设备类型存储
+            String fingerprint = request.getFingerprint();
+            if (StringUtils.isNotBlank(fingerprint)) {
+                redisTemplate.opsForValue().set(RedisKeyPrefix.FINGERPRINT.getPrefix() + id + ":" + deviceType,
+                        fingerprint, expire, TimeUnit.SECONDS);
+            }
+
+            // 生成 token
+            LoginVO loginVo = new LoginVO();
+            String token = UUID.randomUUID().toString();
+            redisTemplate.opsForValue().set(RedisKeyPrefix.AUTHORIZATION_USERNAME.getPrefix() + token,
+                    username, expire, TimeUnit.SECONDS);
+            // 记录该用户当前设备类型对应的 token
+            redisTemplate.opsForHash().put(devicesKey, deviceType, token);
+            redisTemplate.expire(devicesKey, expire, TimeUnit.SECONDS);
+            loginVo.setToken(token);
+            loginVo.setUserId(id);
+            loginVo.setUsername(username);
+            loginVo.setDeviceType(deviceType);
+            return loginVo;
+        } catch (BadCredentialsException e) {
+            throw handleBadCredentials(request, e);
+        } catch (IOException e) {
+            throw new GlobalException(e);
+        }
+    }
+
+    @Override
+    public void forgotPassword(ForgotPasswordDTO request) {
+        String captchaKey = RedisKeyPrefix.FORGET_PASSWORD_CAPTCHA_KEY.getPrefix() + request.getEmail();
+        String captchaCache = (String) redisTemplate.opsForValue().get(captchaKey);
+        if (captchaCache == null) {
+            throw new GlobalException("验证码已过期，请重新获取");
+        }
+        if (!request.getVerificationCode().equals(captchaCache)) {
+            throw new GlobalException("验证码错误，请检查您的邮箱是否输入正确或验证码是否过期");
+        }
+
+        SysUser sysUser = sysUsersService.getUserByEmail(request.getEmail());
+        if (sysUser == null) {
+            throw new GlobalException("邮箱尚未注册");
+        }
+
+        // 复用 editPassword：RSA 解密 + BCrypt 加密 + 强制该账号所有设备下线
+        sysUsersService.editPassword(request.getPassword(), sysUser.getId());
+
+        // 验证码一次性使用
+        redisTemplate.delete(captchaKey);
+    }
+
+    /**
+     * 处理密码错误：递减错误次数，达到上限后锁定用户
+     */
+    private BadCredentialsException handleBadCredentials(LoginDTO request, BadCredentialsException e) {
+        String errorKey = RedisKeyPrefix.USER_LOGIN_ERROR_TIME.getPrefix() + request.getUsername();
+        Object cached = redisTemplate.opsForValue().get(errorKey);
+        Long remaining;
+
+        if (cached == null) {
+            // 首次错误，初始化计数器
+            remaining = BaseConstant.MAX_LOGIN_ERROR_TIME;
+            redisTemplate.opsForValue().set(errorKey, BaseConstant.MAX_LOGIN_ERROR_TIME);
+        } else {
+            long current = Long.parseLong(cached.toString());
+            if (BaseConstant.LONG_INIT_VAL.equals(current)) {
+                sysUsersService.lockUser(request.getUsername());
+                throw new LockedException("账号已锁定");
+            }
+            remaining = redisTemplate.opsForValue().decrement(errorKey);
+        }
+        return new BadCredentialsException(e.getMessage() + "，您还有" + remaining + "次登录机会");
+    }
+}

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysMetricRollupMapper">
+
+    <select id="selectRollupRange" resultType="MetricRowDTO">
+        select t1.bucket_time as collect_time,
+               t1.cpu_usage_avg as cpu_usage,
+               t1.process_cpu_usage_avg as process_cpu_usage,
+               t1.heap_used_avg as heap_used,
+               t1.heap_max_avg as heap_max,
+               t1.nonheap_used_avg as nonheap_used,
+               t1.threads_live_avg as threads_live,
+               0 as threads_blocked,
+               t1.gc_count_sum as gc_count,
+               t1.gc_pause_ms_sum as gc_pause_ms,
+               t1.qps_avg as qps,
+               t1.p95_ms_max as p95_ms,
+               t1.error_rate_avg as error_rate,
+               t1.pool_active_max as pool_active,
+               t1.pool_pending_max as pool_pending,
+               t1.pool_max_avg as pool_max,
+               t1.disk_free_min as disk_free
+        from sys_metric_rollup t1
+        where t1.granularity = #{granularity}
+          and t1.bucket_time &gt;= #{start}
+          and t1.bucket_time &lt; #{end}
+        order by t1.bucket_time
+    </select>
+
+    <insert id="insert1hRollup">
+        insert into sys_metric_rollup (granularity, bucket_time,
+                                       cpu_usage_avg, process_cpu_usage_avg,
+                                       heap_used_avg, heap_used_max, heap_max_avg, nonheap_used_avg,
+                                       threads_live_avg, threads_live_max,
+                                       gc_count_sum, gc_pause_ms_sum,
+                                       qps_avg, qps_max, p95_ms_max,
+                                       error_rate_avg, error_rate_max,
+                                       pool_active_max, pool_pending_max, pool_max_avg,
+                                       disk_free_min)
+        select '1h',
+               from_unixtime(floor(unix_timestamp(t1.bucket_time) / 3600) * 3600),
+               round(avg(t1.cpu_usage_avg), 2),
+               round(avg(t1.process_cpu_usage_avg), 2),
+               round(avg(t1.heap_used_avg)),
+               max(t1.heap_used_max),
+               round(avg(t1.heap_max_avg)),
+               round(avg(t1.nonheap_used_avg)),
+               round(avg(t1.threads_live_avg)),
+               max(t1.threads_live_max),
+               ifnull(sum(t1.gc_count_sum), 0),
+               ifnull(sum(t1.gc_pause_ms_sum), 0),
+               round(avg(t1.qps_avg), 2),
+               max(t1.qps_max),
+               max(t1.p95_ms_max),
+               round(avg(t1.error_rate_avg), 2),
+               max(t1.error_rate_max),
+               max(t1.pool_active_max),
+               max(t1.pool_pending_max),
+               round(avg(t1.pool_max_avg)),
+               min(t1.disk_free_min)
+        from sys_metric_rollup t1
+        where t1.granularity = '5m'
+          and t1.bucket_time &gt;= #{start}
+          and t1.bucket_time &lt; #{end}
+        <!-- group by 必须与 select 中的表达式完全一致，否则 only_full_group_by 会报错 -->
+        group by from_unixtime(floor(unix_timestamp(t1.bucket_time) / 3600) * 3600)
+    </insert>
+
+    <delete id="deleteRange">
+        delete from sys_metric_rollup
+        where granularity = #{granularity}
+          and bucket_time &gt;= #{start}
+          and bucket_time &lt; #{end}
+    </delete>
+
+    <delete id="deleteBefore">
+        delete from sys_metric_rollup
+        where granularity = #{granularity}
+          and bucket_time &lt; #{time}
+        limit #{batch}
+    </delete>
+</mapper>

@@ -54,6 +54,21 @@
           </el-radio-group>
         </el-form-item>
 
+        <el-form-item prop="quickEntryFlag">
+          <template #label>
+            <span class="form-label-with-tip">
+              快捷入口
+              <el-tooltip content="开启后该菜单会显示在首页快捷入口中" placement="top">
+                <el-icon class="label-tip-icon"><QuestionFilled /></el-icon>
+              </el-tooltip>
+            </span>
+          </template>
+          <el-radio-group v-model="formData.quickEntryFlag">
+            <el-radio :value="1">展示</el-radio>
+            <el-radio :value="0">不展示</el-radio>
+          </el-radio-group>
+        </el-form-item>
+
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="formData.status">
             <el-radio :value="1">启用</el-radio>
@@ -75,12 +90,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { Component } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { GetMenuVo, GetSelectMenuVo } from '@/types/menu'
 import { getMenuApi, getSelectMenu } from '@/api/menu'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import { QuestionFilled } from '@element-plus/icons-vue'
 
 const iconsMap = new Map()
 
@@ -104,8 +120,7 @@ Object.entries(ElementPlusIconsVue).forEach(([key, component]) => {
 })
 
 interface FatherParam {
-  visible: boolean;
-  isAdd: boolean;
+  isAdd?: boolean;
   menuId?: string;
   type?: string;
 }
@@ -114,10 +129,10 @@ const props = withDefaults(defineProps<FatherParam>(), {
   isAdd: false,
   menuId: '',
   type: '',
-  visible: false
 })
 
-const emit = defineEmits(['update:visible', 'submit'])
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>('visible', { default: false })
 
 const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
@@ -132,6 +147,7 @@ const formData = ref<GetMenuVo>({
   sortOrder: null,
   status: 1,
   visible: 1,
+  quickEntryFlag: 0,
   remark: '',
 })
 
@@ -152,12 +168,6 @@ const treeProps = {
   label: 'name',
 }
 
-const visible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
-
-// 获取菜单树数据
 const getMenuTree = async (type: string) => {
   if (type !== '0') {  // 只有类型不是“目录”时才请求菜单数据
     const res = await getSelectMenu(type)
@@ -217,7 +227,7 @@ const getMenu = async () => {
 
 // 处理关闭事件
 const handleClose = () => {
-  emit('update:visible', false)
+  visible.value = false
 }
 
 // 排序表单输入校验
@@ -238,5 +248,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.form-label-with-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
 
+.label-tip-icon {
+  color: var(--radish-text-placeholder);
+  cursor: help;
+}
 </style>

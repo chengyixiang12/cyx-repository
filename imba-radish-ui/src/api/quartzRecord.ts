@@ -18,3 +18,12 @@ export async function getLogDetailApi(id: string): Promise<string> {
   return res.data;
 }
 
+/**
+ * 获取定时任务参数详情
+ * @param id 
+ */
+export async function getParamsApi(id: string): Promise<string> {
+  const res = await get<string>('/scheduleRecordgetParams', { flag: true, params: { id } })
+  return res.data;
+}
+

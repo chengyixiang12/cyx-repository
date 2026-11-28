@@ -1,0 +1,127 @@
+package com.soft.sys.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.enums.RedisKeyPrefix;
+import com.soft.sys.entity.SysSecretKey;
+import com.soft.common.exception.GlobalException;
+import com.soft.sys.mapper.SysSecretKeyMapper;
+import com.soft.sys.model.request.GenerateKeyDTO;
+import com.soft.sys.model.request.GetSecretKeyListDTO;
+import com.soft.sys.model.vo.PageVO;
+import com.soft.sys.model.vo.SysSecretKeyVO;
+import com.soft.sys.service.SecretKeyService;
+import com.soft.common.utils.AESUtil;
+import com.soft.common.utils.RSAUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+* @author cyq
+* @description 针对表【sys_secret_key】的数据库操作Service实现
+* @createDate 2024-11-26 16:19:51
+*/
+@Service
+@RequiredArgsConstructor
+public class SecretKeyServiceImpl extends ServiceImpl<SysSecretKeyMapper, SysSecretKey>
+    implements SecretKeyService{
+
+    private final SysSecretKeyMapper sysSecretKeyMapper;
+
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private final RSAUtil rsaUtil;
+
+    private final AESUtil aesUtil;
+
+    @Cacheable(cacheNames = "radish:rsa:public", key = "#type")
+    @Override
+    public String getPublicKey(Integer type) {
+        return sysSecretKeyMapper.getPublicKey(type);
+    }
+
+    @Cacheable(cacheNames = "radish:rsa:private", key = "#type")
+    @Override
+    public String getPrivateKey(Integer type) {
+        return sysSecretKeyMapper.getPrivateKey(type);
+    }
+
+    @Override
+    public void generateKey(GenerateKeyDTO request) throws NoSuchAlgorithmException {
+        String privateKey = null;
+        String publicKey = null;
+        switch (request.getSecretType()) {
+            case BaseConstant.SecretType.SECRET_TYPE_RSA: {
+                Map<String, String> generate = rsaUtil.generate();
+                privateKey = generate.get("privateKey");
+                publicKey = generate.get("publicKey");
+            }
+            break;
+            case BaseConstant.SecretType.SECRET_TYPE_AES: {
+                privateKey = aesUtil.generate();
+                // AES 无需公钥，publicKey 保持 null
+            }
+            break;
+            default:
+                throw new GlobalException("未知的密钥类型");
+        }
+        Integer type = request.getType();
+        SysSecretKey sysSecretKey = new SysSecretKey();
+        sysSecretKey.setPrivateKey(privateKey);
+        sysSecretKey.setSecretType(request.getSecretType());
+        sysSecretKey.setPublicKey(publicKey);
+        sysSecretKey.setType(request.getType());
+        sysSecretKey.setDescription(request.getDescription());
+        sysSecretKeyMapper.insert(sysSecretKey);
+
+        // 清空redis中缓存的密钥
+        Set<String> keys = new HashSet<>();
+        keys.add(RedisKeyPrefix.RSA_PUBLIC_KEY.getPrefix() + type);
+        keys.add(RedisKeyPrefix.RSA_PRIVATE_KEY.getPrefix() + type);
+        redisTemplate.delete(keys);
+    }
+
+    @Override
+    public PageVO<SysSecretKeyVO> getSecretKeyList(GetSecretKeyListDTO request) {
+        Page<SysSecretKey> page = new Page<>(request.getPageNum(), request.getPageSize());
+
+        LambdaQueryWrapper<SysSecretKey> wrapper = new LambdaQueryWrapper<SysSecretKey>()
+            .eq(request.getType() != null, SysSecretKey::getType, request.getType())
+            .orderByAsc(SysSecretKey::getType);
+
+        page = baseMapper.selectPage(page, wrapper);
+
+        PageVO<SysSecretKeyVO> pageVo = new PageVO<>();
+        pageVo.setTotal(page.getTotal());
+        pageVo.setRecords(page.getRecords().stream().map(entity -> {
+            SysSecretKeyVO vo = new SysSecretKeyVO();
+            BeanUtils.copyProperties(entity, vo);
+            // 公钥脱敏：只显示前后20个字符
+            if (entity.getPublicKey() != null && entity.getPublicKey().length() > 40) {
+                vo.setPublicKey(entity.getPublicKey().substring(0, 20) + "..." + entity.getPublicKey().substring(entity.getPublicKey().length() - 20));
+            }
+            // 私钥脱敏（AES 密钥存储在私钥字段）
+            if (entity.getPrivateKey() != null && entity.getPrivateKey().length() > 40) {
+                vo.setPrivateKey(entity.getPrivateKey().substring(0, 20) + "..." + entity.getPrivateKey().substring(entity.getPrivateKey().length() - 20));
+            }
+            return vo;
+        }).collect(Collectors.toList()));
+
+        return pageVo;
+    }
+}
+
+
+
+

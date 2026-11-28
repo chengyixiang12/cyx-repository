@@ -17,12 +17,12 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { getTitleApi } from '@/api/dialogueHistory'
 import { GetTitleVo } from '@/types/dialogueHistory';
 
-const emit = defineEmits(['update:visible', 'submit']);
+const emit = defineEmits(['submit']);
 const formRef = ref<FormInstance>();
 const submitLoading = ref(false);
 const formData = ref<GetTitleVo>({
@@ -31,19 +31,14 @@ const formData = ref<GetTitleVo>({
 });
 
 interface FatherParam {
-  visible: boolean;
-  dialogId: string | null;
+  dialogId?: string | null;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-  visible: false,
   dialogId: null,
 })
 
-const visible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
+const visible = defineModel<boolean>('visible', { default: false })
 
 // 获取标题
 const getTitle = async () => {
@@ -53,7 +48,7 @@ const getTitle = async () => {
 
 // 关闭弹窗事件
 const handleClose = () => {
-  emit('update:visible', false)
+  visible.value = false
 }
 
 // 提交表单
@@ -88,7 +83,7 @@ onMounted(() => {
 }
 .dialog-body-wrapper::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  border-radius: var(--radish-radius-sm);
 }
 
 .scrollable-form {

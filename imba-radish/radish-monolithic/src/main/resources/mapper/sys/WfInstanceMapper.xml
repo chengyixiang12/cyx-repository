@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.WfInstanceMapper">
+
+    <select id="getMyInstances" parameterType="GetMyInstancesDTO" resultType="WfInstancesVO">
+        SELECT
+        wi.id,
+        wi.process_key AS processKey,
+        wi.process_name AS processName,
+        wi.title,
+        wi.business_key AS businessKey,
+        wi.status,
+        wi.current_node AS currentNode,
+        wi.create_time AS createTime,
+        wi.end_time AS endTime,
+        cur.assigneeNicknames AS currentAssigneeNickname
+        FROM
+        wf_instance wi
+        LEFT JOIN (
+            SELECT
+            wt.instance_id,
+            GROUP_CONCAT(DISTINCT su.nickname) AS assigneeNicknames
+            FROM wf_task wt
+            LEFT JOIN sys_user su ON wt.assignee_id = su.id
+            WHERE wt.del_flag = '0'
+            AND wt.status = 1
+            GROUP BY wt.instance_id
+        ) cur ON cur.instance_id = wi.id
+        WHERE
+        wi.del_flag = '0'
+        AND wi.create_by = #{userId}
+        <if test="request.keyword != null and request.keyword != ''">
+            <bind name="request.keyword" value="'%'+ request.keyword + '%'"/>
+            AND ( wi.title LIKE #{request.keyword}
+            OR wi.process_name LIKE #{request.keyword} )
+        </if>
+        <if test="request.status != null">
+            AND wi.status = #{request.status}
+        </if>
+        ORDER BY wi.create_time DESC
+    </select>
+</mapper>

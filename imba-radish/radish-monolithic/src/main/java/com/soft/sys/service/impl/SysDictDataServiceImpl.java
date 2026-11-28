@@ -1,0 +1,132 @@
+package com.soft.sys.service.impl;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.common.constants.BaseConstant;
+import com.soft.sys.entity.SysDictData;
+import com.soft.sys.mapper.SysDictDataMapper;
+import com.soft.sys.model.dto.DictDataDTO;
+import com.soft.sys.model.request.DictDatasDTO;
+import com.soft.sys.model.request.EditDictDataDTO;
+import com.soft.sys.model.request.SaveDictDataDTO;
+import com.soft.sys.model.vo.DictDataVO;
+import com.soft.sys.model.vo.DictDatasVO;
+import com.soft.sys.model.vo.PageVO;
+import com.soft.sys.service.SysDictDataService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+* @author cyq
+* @description 针对表【sys_dict_data】的数据库操作Service实现
+* @createDate 2024-11-05 17:23:13
+*/
+@Service
+@CacheConfig(cacheNames="radish:dict")
+public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDictData>
+    implements SysDictDataService{
+
+    private final SysDictDataMapper sysDictDataMapper;
+
+    public SysDictDataServiceImpl(SysDictDataMapper sysDictDataMapper) {
+        this.sysDictDataMapper = sysDictDataMapper;
+    }
+
+    @Override
+    public PageVO<DictDatasVO> getDictDatas(DictDatasDTO request) {
+        IPage<DictDatasVO> page = new Page<>(request.getPageNum(), request.getPageSize());
+        page = sysDictDataMapper.getDictDatas(page, request);
+        PageVO<DictDatasVO> pageVo = new PageVO<>();
+        pageVo.setTotal(page.getTotal());
+        pageVo.setRecords(page.getRecords());
+        return pageVo;
+    }
+
+    @Override
+    public DictDataVO getDictData(Long id) {
+        return sysDictDataMapper.getDictData(id);
+    }
+
+    @Override
+    @CacheEvict(allEntries = true)
+    public void saveDictData(SaveDictDataDTO request) {
+        if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
+            sysDictDataMapper.setNotDefault(request.getDictTypeId());
+        }
+        SysDictData sysDictData = new SysDictData();
+        BeanUtils.copyProperties(request, sysDictData);
+        sysDictDataMapper.insert(sysDictData);
+    }
+
+    @Override
+    @CacheEvict(allEntries = true)
+    public void editDictData(EditDictDataDTO request) {
+        if (BaseConstant.Status.STATUS_ENABLE.equals(request.getIsDefault())) {
+            sysDictDataMapper.setNotDefault(request.getDictTypeId());
+        }
+        SysDictData sysDictData = new SysDictData();
+        BeanUtils.copyProperties(request, sysDictData);
+        sysDictDataMapper.updateById(sysDictData);
+    }
+
+    @Override
+    @CacheEvict(allEntries = true)
+    public void deleteDictData(Long id) {
+        sysDictDataMapper.deleteById(id);
+    }
+
+    @Override
+    @CacheEvict(allEntries = true)
+    public void deleteDictDataBatch(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        sysDictDataMapper.deleteByIds(ids);
+    }
+
+    @Override
+    @CacheEvict(allEntries = true)
+    public void enableDictData(Long id) {
+        sysDictDataMapper.enableDictData(id);
+    }
+
+    @Override
+    @CacheEvict(allEntries = true)
+    public void forbiddenDictData(Long id) {
+        sysDictDataMapper.forbiddenDictData(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(allEntries = true)
+    public void setDefaultData(Long id, Long dictTypeId) {
+        sysDictDataMapper.setNotDefault(dictTypeId);
+        sysDictDataMapper.setDefaultData(id);
+    }
+
+    @Override
+    public List<DictDataDTO> getByDictType(String dictType) {
+        return sysDictDataMapper.getByDictType(dictType);
+    }
+
+    @Override
+    @Cacheable(key = "#dictType", unless = "#result.size() == 0")
+    public Map<String, String> getDictDataMap(String dictType) {
+        List<DictDataDTO> sysDictDataList = sysDictDataMapper.getByDictType(dictType);
+        return sysDictDataList.stream().collect(Collectors.toMap(DictDataDTO::getValue, DictDataDTO::getLabel, (a, b) -> a));
+    }
+
+    @Override
+    public String getDictDataByValue(String value, String dictType) {
+        return sysDictDataMapper.getDictDataByValue(value, dictType);
+    }
+}

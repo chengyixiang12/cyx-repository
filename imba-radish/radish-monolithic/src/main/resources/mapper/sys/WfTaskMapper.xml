@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.WfTaskMapper">
+
+    <select id="getTodos" parameterType="GetWorkflowTasksDTO" resultType="WfTasksVO">
+        SELECT
+        wt.id,
+        wt.instance_id AS instanceId,
+        wi.process_key AS processKey,
+        wi.process_name AS processName,
+        wi.title,
+        wi.business_key AS businessKey,
+        wi.current_node AS currentNode,
+        wt.task_name AS taskName,
+        wt.arrive_time AS arriveTime,
+        su.nickname AS startUserNickname
+        FROM
+        wf_task wt
+        JOIN wf_instance wi ON wt.instance_id = wi.id
+        LEFT JOIN sys_user su ON wi.create_by = su.id
+        WHERE
+        wt.del_flag = '0'
+        AND wi.del_flag = '0'
+        AND wt.assignee_id = #{userId}
+        AND wt.status = 1
+        <if test="request.keyword != null and request.keyword != ''">
+            <bind name="request.keyword" value="'%'+ request.keyword + '%'"/>
+            AND ( wi.title LIKE #{request.keyword}
+            OR wi.process_name LIKE #{request.keyword} )
+        </if>
+        ORDER BY wt.arrive_time DESC
+    </select>
+
+    <select id="getDones" parameterType="GetWorkflowTasksDTO" resultType="WfTasksVO">
+        SELECT
+        wt.id,
+        wt.instance_id AS instanceId,
+        wi.process_key AS processKey,
+        wi.process_name AS processName,
+        wi.title,
+        wi.business_key AS businessKey,
+        wi.current_node AS currentNode,
+        wt.task_name AS taskName,
+        wt.arrive_time AS arriveTime,
+        wt.handle_time AS handleTime,
+        wt.action,
+        wt.comment,
+        su.nickname AS startUserNickname
+        FROM
+        wf_task wt
+        JOIN wf_instance wi ON wt.instance_id = wi.id
+        LEFT JOIN sys_user su ON wi.create_by = su.id
+        WHERE
+        wt.del_flag = '0'
+        AND wi.del_flag = '0'
+        AND wt.assignee_id = #{userId}
+        AND wt.status = 2
+        <if test="request.keyword != null and request.keyword != ''">
+            <bind name="request.keyword" value="'%'+ request.keyword + '%'"/>
+            AND ( wi.title LIKE #{request.keyword}
+            OR wi.process_name LIKE #{request.keyword} )
+        </if>
+        ORDER BY wt.handle_time DESC
+    </select>
+</mapper>

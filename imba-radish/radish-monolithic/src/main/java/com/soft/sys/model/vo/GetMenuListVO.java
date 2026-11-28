@@ -1,0 +1,50 @@
+package com.soft.sys.model.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.apache.ibatis.type.Alias;
+
+/**
+ * @Author: cyx
+ * @Description: 
+ * @DateTime: 2025/4/4 23:10
+ **/
+
+@Data
+@Schema(description = "获取菜单列表响应参数")
+@Alias(value = "GetMenuListVO")
+public class GetMenuListVO {
+
+    @Schema(description = "主键")
+    private String id;
+
+    @Schema(description = "菜单名称")
+    private String name;
+
+    @Schema(description = "父级菜单名称")
+    private String parentName;
+
+    @Schema(description = "菜单类型")
+    private String type;
+
+    @Schema(description = "菜单状态")
+    private Integer status;
+
+    @Schema(description = "显示状态")
+    private Integer visible;
+
+    @Schema(description = "是否在首页快捷入口展示：0-不展示，1-展示")
+    private Integer quickEntryFlag;
+
+    @Schema(description = "排序")
+    private Integer sortOrder;
+
+    @Schema(description = "图标")
+    private String icon;
+
+    @Schema(description = "前端路由路径")
+    private String path;
+
+    @Schema(description = "前端组件路径")
+    private String component;
+}

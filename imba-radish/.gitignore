@@ -1,25 +1,27 @@
-# 编译输出目录
-/target/
-/out/
+# 编译输出目录（不锚定，需覆盖 radish-* 各子模块）
+target/
+out/
 
 # IDE 相关配置
-/.idea/
-/*.iml
+.idea/
+*.iml
 *.class
-/.vscode/
+.vscode/
 
 # 操作系统文件
 .DS_Store
 Thumbs.db
 
 # 日志文件
-/logs/
+logs/
 *.log
 *.gz
 
 # 环境配置文件
 .env
 *.properties
+# 但保留随源码分发的配置文件
+!**/src/main/resources/*.properties
 
 #临时文件
-/tmp/
+tmp/

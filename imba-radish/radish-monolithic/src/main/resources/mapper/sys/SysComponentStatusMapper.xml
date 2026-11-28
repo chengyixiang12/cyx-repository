@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soft.sys.mapper.SysComponentStatusMapper">
+
+    <select id="selectAllOrdered" resultType="SysComponentStatus">
+        select t1.component,
+               t1.component_name,
+               t1.status,
+               t1.detail,
+               t1.since_time,
+               t1.last_check_time
+        from sys_component_status t1
+        order by t1.component
+    </select>
+
+    <insert id="upsert">
+        insert into sys_component_status (component, component_name, status, detail, since_time, last_check_time)
+        values (#{component}, #{componentName}, #{status}, #{detail}, #{now}, #{now})
+        on duplicate key update component_name = #{componentName},
+                                detail         = #{detail},
+                                since_time     = if(status = #{status}, since_time, #{now}),
+                                status         = #{status},
+                                last_check_time = #{now}
+    </insert>
+</mapper>

@@ -36,3 +36,22 @@ export async function sendCaptchaApi(email: string): Promise<string> {
   const res = await get('/message/sendLoginCaptcha', { flag: false, params: { email } })
   return res.msg
 }
+/**
+ * 发送忘记密码验证码
+ * @param email
+ */
+export async function sendForgotPasswordCaptchaApi(email: string): Promise<string> {
+  const res = await get('/message/sendForgotPasswordCaptcha', { flag: false, params: { email } })
+  return res.msg
+}
+
+/**
+ * 忘记密码-通过邮箱验证码重置密码
+ * @param email 邮箱
+ * @param verificationCode 邮箱验证码
+ * @param password RSA 加密后的新密码
+ */
+export async function forgotPasswordApi(email: string, verificationCode: string, password: string): Promise<string> {
+  const res = await post('/auth/forgotPassword', { email, verificationCode, password }, { flag: false, silent: true })
+  return res.msg
+}

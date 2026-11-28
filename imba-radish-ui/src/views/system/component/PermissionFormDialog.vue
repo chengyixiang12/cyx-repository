@@ -39,25 +39,24 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { GetPermissionVo } from '@/types/permission';
 import { getPermissionApi } from '@/api/permission';
 
 
 interface FatherParam {
-  visible: boolean;
-  isAdd: boolean;
+  isAdd?: boolean;
   permissionId?: string;
 }
 
 const props = withDefaults(defineProps<FatherParam>(), {
-  visible: false,
   isAdd: false,
   permissionId: '',
 })
 
-const emit = defineEmits(['update:visible', 'submit'])
+const emit = defineEmits(['submit'])
+const visible = defineModel<boolean>('visible', { default: false })
 
 const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
@@ -76,14 +75,9 @@ const rules: FormRules = {
   status: [{ required: true, message: '请选择角色状态', trigger: 'blur' }]
 }
 
-const visible = computed({
-  get: () => props.visible,
-  set: (val) => emit('update:visible', val)
-})
-
 // 关闭弹窗事件
 const handleClose = () => {
-  emit('update:visible', false)
+  visible.value = false
 }
 
 // 提交表单

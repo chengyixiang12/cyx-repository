@@ -115,6 +115,7 @@ import { getPublicKeyApi } from '@/api/auth'
 import { RSAUtil } from '@/utils/rsa'
 import { calculateFileMd5 } from '@/utils/filemd5'
 import { showMessage } from '@/utils/message'
+import { useAvatar } from '@/composables/useAvatar'
 
 // 定义表单引用
 const basicFormRef = ref<FormInstance>()
@@ -136,6 +137,8 @@ const profileForm = ref<GetUserVo>({
 })
 
 const avatarUrl = ref('');
+// 全局头像状态：保存资料后调用 refreshAvatar 让顶栏/首页立即同步
+const { refreshAvatar } = useAvatar()
 
 // 密码修改表单
 const passwordForm = reactive({
@@ -213,12 +216,15 @@ const uploadAvatar = async (options: any) => {
   profileForm.value.avatar = res.fileId
   // 上传成功后立即显示头像
   avatarUrl.value = URL.createObjectURL(file)
+  // 上传接口不再返回 msg 以避免批量上传刷屏，这里单独给头像一个提示
+  showMessage('头像上传成功，保存信息后生效', 'success')
 }
 
-// 删除头像
+// 删除头像：仅清空引用与预览，点击「保存信息」后才会真正写库
 const removeAvatar = () => {
   avatarUrl.value = ''
-  showMessage('头像已删除', 'success')
+  profileForm.value.avatar = null
+  showMessage('头像已移除，保存信息后生效', 'success')
 }
 
 // 更新用户信息
@@ -230,6 +236,18 @@ const updateProfile = async () => {
     phone: profileForm.value.phone,
     avatar: profileForm.value.avatar
   })
+  // 同步 sessionStorage（登录时写入的那份缓存），否则顶栏要重新登录才能看到新头像
+  const cached = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
+  sessionStorage.setItem('userInfo', JSON.stringify({
+    ...cached,
+    nickname: profileForm.value.nickname,
+    email: profileForm.value.email,
+    phone: profileForm.value.phone,
+    avatar: profileForm.value.avatar
+  }))
+  // 刷新全局头像状态，顶栏/首页立即生效
+  await refreshAvatar()
+  showMessage('保存成功', 'success')
 }
 
 // 修改密码
@@ -254,21 +272,30 @@ const resetPasswordForm = (formEl: FormInstance | undefined) => {
   formEl.resetFields()
 }
 
-// 获取用户信息
+// 获取用户信息：头像加载独立处理，避免头像文件丢失时整页初始化被判为失败
 const getUserInfo = async () => {
   const userInfo: UserInfoVo = JSON.parse(sessionStorage.getItem('userInfo') || '{}')
   try {
     const res = await getUserApi(userInfo.id)
     profileForm.value = res
-
-    if (!res.avatar) {
-      avatarUrl.value = ''
-      return
-    }
-    const blob = await downloadFileApi(res.avatar)
-    avatarUrl.value = URL.createObjectURL(blob)
   } catch (error) {
     ElMessage.error('获取用户信息失败')
+    return
+  }
+  await loadAvatar(profileForm.value.avatar)
+}
+
+// 加载头像：文件可能已被删除（服务端会返回错误），此处静默降级为默认头像
+const loadAvatar = async (fileId?: string | null) => {
+  avatarUrl.value = ''
+  if (!fileId) return
+  try {
+    const blob = await downloadFileApi(fileId, true)
+    avatarUrl.value = URL.createObjectURL(blob)
+  } catch (error) {
+    console.warn('头像加载失败，文件可能已被删除:', error)
+    // 清掉失效的头像引用，避免保存资料时把悬空的文件 id 再写回数据库
+    profileForm.value.avatar = null
   }
 }
 
@@ -282,7 +309,7 @@ onMounted(() => {
 .profile-container {
   padding: 20px;
   height: 100%;
-  background-color: #f5f7fa;
+  background-color: var(--radish-fill);
 }
 
 .profile-card {
@@ -290,7 +317,7 @@ onMounted(() => {
 }
 
 .card-header {
-  font-size: 18px;
+  font-size: var(--radish-font-xl);
   font-weight: bold;
 }
 
@@ -304,7 +331,7 @@ onMounted(() => {
 }
 
 .user-avatar {
-  border: 2px solid #eaeaea;
+  border: 2px solid var(--radish-border);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
@@ -316,8 +343,8 @@ onMounted(() => {
 }
 
 .avatar-tip {
-  font-size: 12px;
-  color: #999;
+  font-size: var(--radish-font-xs);
+  color: var(--radish-text-secondary);
   margin: 0;
 }
 

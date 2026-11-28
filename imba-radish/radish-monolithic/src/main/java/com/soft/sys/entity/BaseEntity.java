@@ -1,0 +1,53 @@
+package com.soft.sys.entity;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+/**
+ * @author cyq
+ * @date 2025/11/1
+ * @description
+ */
+@Data
+public abstract class BaseEntity {
+
+    /**
+     * 主键
+     */
+    @TableId(value = "id")
+    private Long id;
+
+    /**
+     * 创建人
+     */
+    @TableField(value = "create_by", fill = FieldFill.INSERT)
+    private Long createBy;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+
+    /**
+     * 修改人
+     */
+    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
+    private Long updateBy;
+
+    /**
+     * 修改时间
+     */
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
+
+    /**
+     * 逻辑删除标记（已停用逻辑删除，字段保留仅为兼容历史数据，插入时恒为 0，不参与任何查询条件）
+     */
+    @TableField(value = "del_flag", fill = FieldFill.INSERT)
+    private Integer delFlag;
+}

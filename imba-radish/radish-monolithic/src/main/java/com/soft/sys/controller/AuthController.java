@@ -1,0 +1,164 @@
+package com.soft.sys.controller;
+
+import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.soft.common.constants.BaseConstant;
+import com.soft.common.enums.RedisKeyPrefix;
+import com.soft.common.constants.RegexConstant;
+import com.soft.common.annotation.AccessControl;
+import com.soft.common.annotation.SysLock;
+import com.soft.sys.entity.SysUser;
+import com.soft.sys.model.request.ForgotPasswordDTO;
+import com.soft.sys.model.request.LoginDTO;
+import com.soft.sys.model.request.RegisterDTO;
+import com.soft.sys.model.vo.LoginVO;
+import com.soft.sys.properties.RadishProperty;
+import com.soft.common.resultapi.R;
+import com.soft.sys.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
+@RestController
+@Tag(name = "鉴权")
+@RequestMapping(value = "/auth")
+@Slf4j
+@Validated
+@RequiredArgsConstructor
+public class AuthController {
+
+    private final RadishProperty radishProperty;
+
+    private final AuthService authService;
+
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private final DefaultKaptcha captchaProducer;
+
+    @PostMapping("/login")
+    @Operation(summary = "登录")
+    public R<LoginVO> authenticate(@RequestBody @Valid LoginDTO request) {
+        if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
+            if (StringUtils.isBlank(request.getGraphicsCaptcha())) {
+                return R.fail("图形验证码不能为空");
+            }
+            if (StringUtils.isBlank(request.getUsername())) {
+                return R.fail("用户名不能为空");
+            }
+            if (StringUtils.isBlank(request.getPassword())) {
+                return R.fail("密码不能为空");
+            }
+            if (StringUtils.isBlank(request.getUuid())) {
+                return R.fail("唯一标识不能为空");
+            }
+        } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
+            if (StringUtils.isBlank(request.getEmail())) {
+                return R.fail("邮箱不能为空");
+            }
+            if (StringUtils.isBlank(request.getEmailCaptcha())) {
+                return R.fail("邮箱验证码不能为空");
+            }
+        } else {
+            return R.fail("未知的登录方式");
+        }
+        if (BaseConstant.LOGIN_METHOD_PASSWORD.equals(request.getLoginMethod())) {
+            String graphicsCaptcha = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.LOGIN_GRAPHICS_CAPTCHA.getPrefix() + request.getUuid());
+            if (StringUtils.isBlank(graphicsCaptcha)) {
+                return R.fail("图形验证码过期");
+            }
+            if (!graphicsCaptcha.equalsIgnoreCase(request.getGraphicsCaptcha())) {
+                return R.fail("图形验证码错误");
+            }
+        } else if (BaseConstant.LOGIN_METHOD_EMAIL.equals(request.getLoginMethod())) {
+            Boolean existEmailCaptcha = redisTemplate.hasKey(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + request.getEmail());
+            if (!existEmailCaptcha) {
+                return R.fail("邮箱验证码已过期");
+            }
+        }
+        LoginVO loginVo = authService.authenticate(request);
+        return R.ok(loginVo);
+    }
+
+    @SysLock(name = "user")
+    @PostMapping(value = "/register")
+    @Operation(summary = "注册")
+    public R<Object> register(@RequestBody @Valid RegisterDTO request) {
+        if (!Pattern.matches(RegexConstant.USERNAME_PATTERN, request.getUsername())) {
+            return R.fail("用户名只能包含英文字母或数字");
+        }
+        if (!Pattern.matches(RegexConstant.EMAIL, request.getEmail())) {
+            return R.fail("非法邮箱");
+        }
+        // 用户名/邮箱是否重复由唯一索引兜底，冲突时全局异常处理器返回具体提示
+        String captchaCache = (String) redisTemplate.opsForValue().get(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + request.getEmail());
+        if (!request.getVerificationCode().equals(captchaCache)) {
+            return R.fail("验证码错误，请检查您的邮箱是否更改或者验证码是否过期");
+        }
+        SysUser sysUser = new SysUser();
+        sysUser.setUsername(request.getUsername());
+        sysUser.setPassword(request.getPassword());
+        sysUser.setNickname(request.getNickname());
+        sysUser.setEmail(request.getEmail());
+        authService.register(sysUser);
+        redisTemplate.delete(RedisKeyPrefix.EMAIL_CAPTCHA_KEY.getPrefix() + request.getEmail());
+        return R.ok();
+    }
+
+    @PostMapping("/forgotPassword")
+    @Operation(summary = "忘记密码-通过邮箱验证码重置密码")
+    public R<Object> forgotPassword(@RequestBody @Valid ForgotPasswordDTO request) {
+        if (!Pattern.matches(RegexConstant.EMAIL, request.getEmail())) {
+            return R.fail("非法邮箱");
+        }
+        if (request.getVerificationCode().length() != BaseConstant.LOGIN_CAPTCHA_LENGTH) {
+            return R.fail("验证码错误");
+        }
+        authService.forgotPassword(request);
+        return R.ok("密码重置成功，请使用新密码登录");
+    }
+
+    @GetMapping(value = "/getGraphicCaptcha")
+    @Operation(summary = "获取图形验证码")
+    @AccessControl(interval = 2, key = "graphic-captcha")
+    @Parameter(name = "uuid", description = "唯一标识", required = true, in = ParameterIn.QUERY)
+    public ResponseEntity<Object> getGraphicCaptcha(@RequestParam(value = "uuid", required = false) @NotNull(message = "唯一标识不能为空") @Size(min = 15, max = 20, message = "唯一标识范围异常") String uuid) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Pragma", "No-cache");
+        headers.set("Cache-Control", "no-cache");
+
+        String text = captchaProducer.createText();
+
+        redisTemplate.opsForValue().set(RedisKeyPrefix.LOGIN_GRAPHICS_CAPTCHA.getPrefix() + uuid, text, radishProperty.getGraphics().getExpireTime(), TimeUnit.SECONDS);
+
+        BufferedImage image = captchaProducer.createImage(text);
+        ByteArrayOutputStream bis = new ByteArrayOutputStream();
+        ImageIO.write(image, BaseConstant.GRAPHICS_CAPTCHA_TYPE, bis);
+        byte[] byteArray = bis.toByteArray();
+
+        headers.setContentType(MediaType.IMAGE_PNG);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(byteArray);
+    }
+}

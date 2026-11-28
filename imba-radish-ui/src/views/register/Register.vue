@@ -1,23 +1,29 @@
 <template>
-    <div class="register-container">
-        <el-card class="register-card">
-            <el-steps :active="activeStep" finish-status="success" simple>
-                <el-step title="用户信息" />
-                <el-step title="设置密码" />
-                <el-step title="验证邮箱" />
-                <el-step title="完成注册" />
-            </el-steps>
+  <div class="register-container">
+    <div class="register-card">
+      <!-- 注册标题 -->
+      <div class="register-header">
+        <h2>创建账号</h2>
+        <p>填写信息，几步完成注册</p>
+      </div>
 
-            <div class="form-body">
-                <component :is="currentStepComponent" v-model="formData" @next="handleNext" @prev="handlePrev"
-                    @done="handleDone" />
-            </div>
+      <el-steps :active="activeStep" finish-status="success" simple class="register-steps">
+        <el-step title="用户信息" />
+        <el-step title="设置密码" />
+        <el-step title="验证邮箱" />
+        <el-step title="完成注册" />
+      </el-steps>
 
-            <div class="bottom-actions" v-if="activeStep === 3">
-                <el-button type="primary" @click="goToLogin">前往登录</el-button>
-            </div>
-        </el-card>
+      <div class="form-body">
+        <component :is="currentStepComponent" v-model="formData" @next="handleNext" @prev="handlePrev"
+            @done="handleDone" />
+      </div>
+
+      <div class="bottom-actions" v-if="activeStep === 3">
+        <el-button type="primary" size="large" round class="goto-login-btn" @click="goToLogin">前往登录</el-button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -64,34 +70,60 @@ const goToLogin = () => {
 
 <style scoped>
 .register-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 150px;
-    background-color: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--radish-primary-light-9) 0%, var(--radish-primary-light-8) 45%, var(--radish-deco-purple) 100%);
+  padding: 20px;
 }
 
 .register-card {
-    width: 700px;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  background: white;
+  border-radius: var(--radish-radius-xl);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.register-card .el-form-item {
-    margin-bottom: 20px;
+.register-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.register-header h2 {
+  margin: 10px 0;
+  color: var(--radish-text-primary);
+  font-size: var(--radish-font-2xl);
+}
+
+.register-header p {
+  color: var(--radish-text-secondary);
+  font-size: var(--radish-font-base);
+}
+
+.register-steps {
+  margin-bottom: 24px;
+}
+
+.register-steps :deep(.el-step__title) {
+  font-size: var(--radish-font-sm);
 }
 
 .form-body {
-    margin-top: 30px;
-    min-height: 300px;
+  min-height: 230px;
+}
+
+.register-card :deep(.el-form-item) {
+  margin-bottom: 20px;
 }
 
 .bottom-actions {
-    margin-top: 30px;
-    text-align: center;
-    padding-top: 20px;
-    border-top: 1px solid #e4e7ed;
+  margin-top: 10px;
+}
+
+.goto-login-btn {
+  width: 100%;
 }
 </style>

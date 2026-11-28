@@ -1,0 +1,99 @@
+package com.soft.sys.service.impl;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.soft.sys.entity.SysDialogue;
+import com.soft.sys.entity.SysDialogueDetails;
+import com.soft.sys.mapper.SysDialogueDetailsMapper;
+import com.soft.sys.mapper.SysDialogueMapper;
+import com.soft.sys.model.request.GetDialoguesDTO;
+import com.soft.sys.model.request.RenameDTO;
+import com.soft.sys.model.request.SaveDialogueDTO;
+import com.soft.sys.model.vo.GetDialoguesVO;
+import com.soft.sys.model.vo.GetTitleVO;
+import com.soft.sys.model.vo.PageVO;
+import com.soft.sys.service.SysDialogueService;
+import com.soft.sys.utils.SecurityUtil;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+* @author cyq
+* @description 针对表【sys_dialogue_history(智能对话表)】的数据库操作Service实现
+* @createDate 2025-05-30 11:01:21
+*/
+@Service
+public class SysDialogueServiceImpl extends ServiceImpl<SysDialogueMapper, SysDialogue>
+    implements SysDialogueService {
+
+    private final SysDialogueMapper sysDialogueMapper;
+
+    private final SysDialogueDetailsMapper sysDialogueDetailsMapper;
+
+    private final SecurityUtil securityUtil;
+
+    public SysDialogueServiceImpl(SysDialogueMapper sysDialogueMapper,
+                                  SysDialogueDetailsMapper sysDialogueDetailsMapper,
+                                  SecurityUtil securityUtil) {
+        this.sysDialogueMapper = sysDialogueMapper;
+        this.sysDialogueDetailsMapper = sysDialogueDetailsMapper;
+        this.securityUtil = securityUtil;
+    }
+
+    @Override
+    public PageVO<GetDialoguesVO> getDialogues(GetDialoguesDTO request) {
+        IPage<GetDialoguesVO> page = new Page<>(request.getPageNum(), request.getPageSize());
+        Long userId = securityUtil.getUserInfo().getId();
+        if (securityUtil.isAdmin()) {
+            userId = null;
+        }
+        page = sysDialogueMapper.getDialogues(page, request.getKeyword(), userId);
+        PageVO<GetDialoguesVO> pageVo = new PageVO<>();
+        pageVo.setRecords(page.getRecords());
+        pageVo.setTotal(page.getTotal());
+        return pageVo;
+    }
+
+    @Override
+    public Long saveDialogue(SaveDialogueDTO request) {
+        SysDialogue sysDialogue = new SysDialogue();
+        BeanUtils.copyProperties(request, sysDialogue);
+        sysDialogueMapper.insert(sysDialogue);
+        return sysDialogue.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteDialogue(Long id) {
+        sysDialogueMapper.deleteById(id);
+
+        // 级联删除对话明细
+        sysDialogueDetailsMapper.delete(
+                Wrappers.lambdaQuery(SysDialogueDetails.class).eq(SysDialogueDetails::getParentId, id));
+    }
+
+    @Override
+    public void rename(RenameDTO request) {
+        SysDialogue sysDialogue = new SysDialogue();
+        sysDialogue.setId(request.getId());
+        sysDialogue.setTitle(request.getTitle());
+        sysDialogueMapper.updateById(sysDialogue);
+    }
+
+    @Override
+    public GetTitleVO getTitle(Long id) {
+        GetTitleVO getTitleVo = new GetTitleVO();
+        SysDialogue sysDialogue = sysDialogueMapper.selectById(id);
+        getTitleVo.setId(String.valueOf(id));
+        getTitleVo.setTitle(sysDialogue.getTitle());
+        return getTitleVo;
+    }
+
+}
+
+
+
+

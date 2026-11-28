@@ -17,6 +17,8 @@ export interface WebsocketConfig {
   maxReconnectAttempts?: number
 }
 
+import { deviceType } from '@/common/global-config';
+
 export class WebsocketManager {
   private socket: WebSocket | null = null
   private reconnectTimer: number | null = null
@@ -36,6 +38,7 @@ export class WebsocketManager {
   public onForceLogout: ((data: WebsocketMessage) => void) | null = null
   public aiAnwser: ((data: WebsocketMessage) => void) | null = null
   public refreshToken: ((data: WebsocketMessage) => void) | null = null
+  public onWorkflowNotify: ((data: WebsocketMessage) => void) | null = null
 
   public onOpen: (() => void) | null = null
   public onClose: ((code: number, reason: string) => void) | null = null
@@ -62,7 +65,7 @@ export class WebsocketManager {
 
     this.setStatus(ConnectionStatus.CONNECTING)
 
-    this.socket = new WebSocket(`${this.url}?Authorization=${encodeURIComponent(token)}`)
+    this.socket = new WebSocket(`${this.url}?Authorization=${encodeURIComponent(token)}&deviceType=${encodeURIComponent(deviceType)}`)
 
     this.socket.onopen = () => {
       console.log('[WebSocket] 连接成功')
@@ -96,6 +99,10 @@ export class WebsocketManager {
           }
           case 'REFRESH_TOKEN': {
             this.refreshToken?.(data)
+            break
+          }
+          case 'WORKFLOW_NOTIFY': {
+            this.onWorkflowNotify?.(data)
             break
           }
           case 'PING': {
